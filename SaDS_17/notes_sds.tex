@@ -26,7 +26,7 @@
 \tableofcontents
 \newpage
 
-\part{Introduction} % one week
+\part{Introduction}
 
  \chapter{Meta-Remarks}
   \input{../generalremarks}
@@ -41,78 +41,58 @@
   % this course: overview of current methods with different degrees of adoption in practice 
    \input{challenges}
 
-  \chapter{Concepts} % one week
+  \chapter{Concepts}
     % correctness, dependability, quality, safety, security, privacy
     % Avizienis et al - Fundamental Concepts of Dependability (2001)
    \input{concepts}
 
 % guard against human error; during software development
-\part{Dependable Software}
+\part{Systematic Software Development}
 
-  \chapter{Development Processes} % one week
-   % documentation, coding style, versioning, code review, issue-tracking, travis-style testing
-   % code analysis: coverage, coding style, indentation, documentation, unreachable code, non-exhaustive match, ill-typed equality
-   %   tools: https://en.wikipedia.org/wiki/Static_code_analysis (findbugs for java)
-   %          dynamic: https://en.wikipedia.org/wiki/Memory_debugger Valgrind, Purify
+  \chapter{Implementation}
+    \input{process}
         
-  \chapter{Common Criteria}
+  \chapter{Specification}
+    \input{spec}
 
-  \chapter{Systematic Testing} %one week
-   % overview, unit testing framework, code coverage framework, based on Java libraries
+  \chapter{Testing}
     \input{test}
 
-   % database dependency -> peter
-   % network dependency -> jürgen
+  \chapter{Code Analysis}
+    \input{analysis}
 
-  % \chapter{Design Principles}
-  % input validation, no string, high-level data structures
-  % buffer bounds, array bounds null pointers
-  % typed languages, casting
-  % safe by default, minimal access rights
-  % expose minimal functionality in interfaces
-  % strong, stable specification, documentation
-  
+\part{High-Level Data Structures}
+
+  \chapter{Inductive Data Types}
+
+  \chapter{Functional Programing}
+
+\part{Formal Methods}
+
+  \chapter{Logical Foundations}
+    % sat, hol, LTL, CTL
+
+  \chapter{Model Checking} % two weeks
+    \input{modelcheck}
+
+  \chapter{Program Verification} % two weeks
+   \input{verify}
 
 % guard against attack
 \part{Security}
 
-  \chapter{Institution Security}
-   % phishing, social engineering etc., antivirus?
+  \chapter{Sytems and Institutions}
+   % identity theft: phishing, social engineering, two-factor authentication
+   % software ware: antivirus etc.
 
-  \chapter{Data Security} % two weeks
-    % symmetric key: substitution, one-time pad DES, AES, key generation/distribution
-    % asymmetric/public key: RSA
-    % authentication: via public key
-    % hashing: MD5, SHA-1
+  \chapter{Data Security}
     \input{secure}
 
    % database security -> peter
-   % network security -> jürgen, slides 269-324
+   % network security: see also Jürgen Schönwälder, slides 269-324
 
-   % differential privacy (wikipedia or http://www.cis.upenn.edu/~aaroth/courses/privacyF11.html)
-
-%%  hands-on micro-projects in state-of-the-art tools (e.g., Isabelle for program verification)
-
-% verify formally often after software development
-\part{Formal Foundations}
-
-  \chapter{Automata} % one week
-  
-  \chapter{Functional Programming} % one week
-  
-  \chapter{Logic} % one week
-  % sat, hol, LTL, CTL
-
-\part{Formal Methods for Software Engineering}
-  % static program analysis:  control/data flow analysis, abstract interpretation
-
-  \chapter{Model Checking} % two weeks
-    \input{modelcheck}
-   % cegar, computational tree logic, ...
-   % blast, frama-c
-
-  \chapter{Program Verification} % two weeks
-   % Hoare calculus, dynamic logic, theorem proving
+  \chapter{Privacy}
+   % differential privacy: see also wikipedia or http://www.cis.upenn.edu/~aaroth/courses/privacyF11.html
 
 %\part{Summary}
 %

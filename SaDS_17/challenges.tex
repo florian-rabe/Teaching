@@ -1,9 +1,18 @@
-\section{Major Disasters Caused by Programming Errors}
+This chapter lists examples of disasters and failures that serve as examples of what secure and dependable systems should avoid.
 
-All damage estimates are relative to the time of the failure and not adjusted to inflation.
+The lists are not complete and may be biased by whether
+\begin{compactitem}
+ \item I became aware of it and found it interesting enough
+ \item the cause could be determined and was made public
+\end{compactitem}
+Feel free to edit these notes by adding important examples that I forgot when I compiled the lists.
+
+All damage estimates are relative to the time of the event and not adjusted to inflation.
 
 Note that for security problems, the size of the damage is naturally unknown because attacks will typically remain secret.
-Only the cost of updating the software can be estimated, but that value is often small.
+Only the cost of updating the systems can be estimated, which may or may not be indicative of the severity of the security problem.
+
+\section{Major Disasters Caused by Programming Errors}
 
 \paragraph{Mariner 1}
 The 1962 rocket launch of Mariner 1 failed causing damage of around \$20 million.
@@ -189,7 +198,7 @@ But even using C, it could have been caught by a variety of measures including u
 Details: \url{https://www.imperialviolet.org/2014/02/22/applebug.html}
 %https://www.dwheeler.com/essays/apple-goto-fail.html
 
-\section{Major Problems Caused By System Updates}
+\section{Major Failures Caused By System Updates}
 
 \paragraph{Odyssey Court Software}
 In an ongoing crisis since 2016, US county court and California and other states have difficulties using the new Odyssey software for recording and dissemination of court decisions.
@@ -221,15 +230,7 @@ In 2015, hundreds of flights in the North Eastern US had to be canceled or delay
 The cause was a problem with new and behind-schedule computer system installed in air traffic control centers.
 % http://www.bbc.com/news/world-us-canada-33950381
 
-\section{Other Notable Problems}
-
-\paragraph{Excel Gene Names}
-In 2016, researchers found that about 20\% of papers in genomics journals contain errors in supplementary spreadsheets.
-
-The cause is that Microsoft Excel by default guesses the type of cell data that is entered as a string and converts the string into that type.
-This affects gene names like "SEPT2" (Septin 2, converted to the date September 02) or REKIN identifiers like "2310009E13" (converted to the floating point number $2.31E+13$).
-
-Details: \url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}
+\section{Other Interesting Failures}
 
 \paragraph{FBI Virtual Case File Project}
 In 2005 the Virtual Case File project of the FBI, which had been developed since 2000, was scrapped.
@@ -251,6 +252,14 @@ The above had two negative effects on the code base
 \end{compactitem}
 which exacerbated the management and programming problems.
 
+\paragraph{Excel Gene Names}
+In 2016, researchers found that about 20\% of papers in genomics journals contain errors in supplementary spreadsheets.
+
+The cause is that Microsoft Excel by default guesses the type of cell data that is entered as a string and converts the string into that type.
+This affects gene names like "SEPT2" (Septin 2, converted to the date September 02) or REKIN identifiers like "2310009E13" (converted to the floating point number $2.31E+13$).
+
+Details: \url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}
+
 \paragraph{Failures in Involving Computer-Related Manufacturing}
 This is a selection of other notable failures that involve hardware manufacturing.
 
@@ -266,13 +275,64 @@ In 2016, Samsung Galaxy phones had to be recalled due to faulty batteries.
 
 \subsection{Software and Internet}
 
-% identity theft, two-factor authentication
-
 \paragraph{Operating Systems}
-forced updates, i love you, government-sponsored exploits, ios article
+Vulnerabilities in operating systems are critical because only a few systems are used worldwide so that any problem is shared by many users.
+Moreover, the operating system usually has full access to the computer and its network, which allows any attack to do great damage.
+
+Moreover, operating systems are usually bundled with standard applications (e.g., web browser, email viewer).
+These are tightly integrated with the OS (e.g., by using the same libraries for encryption or accessing files).
+Thus, a vulnerability often badly affects the majority of users who use these standard applications.
+
+In 2000, the ILOVEYOU worm used weaknesses in the Windows and Outlook to infect a significant share of all internet-connected computers within a few days.
+Its damage was estimated at over \$$5$ billion and the removal costs at over \$$410$ billion.
+
+In recent years operating system companies have reacted to these problems.
+They have become more sensitive to security issues and allow for coordinated disclosure of vulnerabilities together with swift updates.
+Most noticably for end users, they more and more nudge or even force users to install updates.
+For example,
+\begin{compactitem}
+\item Microsoft Windows 10 automatically downloads and installs updates in a way that users cannot prevent.
+\item Google's Android now reserves the right to download minor updates immediately, even via mobile data.
+\end{compactitem}
+This has greatly reduced the frequency of major problems.
+
+An additional problem is that attacks are often conducted by state governments for purposes of terrorism, oppresion, espionage, sabotage, or law enforcement.
+
+In 2010, the stuxnet worm was used by presumably the US and/or Israel to sabotage Iran's nuclear program.
+It was the most sophisticated attack to become public, involving multiple zero-day exploits and including attacks on programmable logic controllers.
+
+In 2013, Edward Snowden revealed a massive secret surveillance program run by the US government.
+It used many ways to intercept data sent by users either at transmission nodes or at company data centers.
+This included connection metadata and any unencrypted or decryptable content.
+The stolen data remains mostly secret so that it remains unclear what was compromised and how it was used.
+In response, many software companies introduced end-to-end encryption that precludes even themselves to access their users data.
+
+In 2016, Citizen Lab discovered an attack that used previously unknown vulnerabilities in Apple's Safari on iOS.
+It allowed, for the first time, an attacker to remotely take full control of the iPhone, triggered as soon as Safari was pointed to the attack URL.
+It is suspected that the exploit was produced commercially by the Israeli company NSO Group and used (at least) by the United Arab Emirates to spy on dissidents.
+
+Details: \url{http://www.vanityfair.com/news/2016/11/how-bill-marczak-spyware-can-control-the-iphone}
 
 \paragraph{Cloud Services}
-storage, social networks, synchronization, fappening
+Consumers are more and more using internet services for their processing needs.
+These include
+\begin{compactitem}
+\item file storage, e.g., via Dropbox
+\item email and calendar services, e.g., via gmail
+\item office applications, e.g., directly via Google's office web site or indirectly via Microsoft's office suite
+\item social networking, e.g., via Facebook
+\end{compactitem}
+Most modern operating systems and their bundled applications store large amounts of user data on the company's web servers, including, e.g., message archive, photographs, or location history.
+This creates unprecented risks for privacy with legal regulation mostly lagging behind.
+(Most legislation was designed to limit the government from violating privacy.
+Corporations were barely restricted they used to have less power.)
+
+Because most users do not understand the technical issues, accept terms of service blindly, and grant access rights to applications generously, more and more user data is available to the free market.
+This is used for both legitimate (e.g., advertising-financed free services) or questionable purposes (e.g., manipulating voter preferences through personalized messages).
+
+In 2014, The Fappening was an attack that combined phishing and password-guessing to gain access to many user accounts on Apple's iCloud.
+These acounts included, among other things, backups of all photographs taken with iPhones.
+Among the private data stolen and published were hundreds of nude pictures of celebrities.
 
 \paragraph{Large Institutions}
 In 2014, Sony Pictures suffered a major break in (possibly by North Korea to blackmail or punish Sony in relation to the movie \emph{The Interview}) mostly facilitated by unprecedented negligence.
@@ -288,11 +348,13 @@ Problems included
 \end{compactitem}
 Stolen data included employee data (including financial data), internal emails, and movies.
 
-% DNC email hack
+In 2016, the US democratic party's headquarters suffered a breakin (possibly by Russia to manipulate or discredit that year's presidential election).
+The stolen data included in particular internal emails and personal data of donors.
+Especially, the former hurt the public perception of the party's campaign to an unknown degree that may or may not have been decisive.
 
 \paragraph{Web Site Account Data}
 Many organizations holding user data employ insufficient security against digital break-ins and insufficient (if any) encryption of user data.
-They get hacked routinely.
+They get hacked so routinely that a strong market for stolen identities has developed, often pricing bulk datasets at a few dollars per identity.
 An overview can be found at \url{https://haveibeenpwned.com/}.
 
 The effects are exacerbated by two effects:
@@ -303,8 +365,13 @@ The effects are exacerbated by two effects:
  Thus, any breach also compromises accounts on any other sites that use the same user name or email address and password.
 \end{compactitem}
 
-The following describes a few high-profile cases.
+Many websites now offer and nudge users to use two-factor authentification to protect accounts from identity theft.
+A second factor (e.g., via email or text message) may be required for every login, for every login from a new location, or for every sensitive action like changing the password.
+Security questions, which are particularly vulnerable, are phased out by leading companies.
+But both websites and users are slow to get used to it.
 \medskip
+
+The following describes a few high-profile cases.
 
 In a (estimated) 2008 (only reported in 2016) of myspace, about $360$ million accounts were compromised.
 The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
@@ -332,6 +399,15 @@ Often this is done by engineers with little training in computer science and eve
 In many cases, the resulting systems are highly susceptible to attacks, spared only by the priorities of potential hackers and terrorists.
 
 \paragraph{Embedded Systems}
+Embedded systems are increasingly running high-level operating systems, typically variants of Linux or Windows, and software.
+They are particularly vulnerable due to a number of systemic flaws:
+\begin{compactitem}
+\item Software often cannot be updated at all or not conveniently. Thus, they collect many security vulnerabilities over time.
+\item Affected devices may be in use for years or decades, thus accumulating many vulnerabities.
+\item It is hard or impossible for users to interact with the software in a way that would allow them to understand or patch its vulnerabilities.
+\item Access is often not secured or not secured well.
+Often master passwords (possibly the same on every instance of the system and possibly hard-coded) are used to allow access for technicians.
+\end{compactitem}
 
 \paragraph{Cars}
 The upcoming wave of self-driving cars requires the heavy use of experienced software developers and a thorough regulation process.
