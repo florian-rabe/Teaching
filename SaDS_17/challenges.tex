@@ -12,6 +12,47 @@ All damage estimates are relative to the time of the event and not adjusted to i
 Note that for security problems, the size of the damage is naturally unknown because attacks will typically remain secret.
 Only the cost of updating the systems can be estimated, which may or may not be indicative of the severity of the security problem.
 
+\section{General Aspects}
+
+\highlightframe{
+State-of-the-art software and hardware systems simply are not safe, secure, and dependable.
+
+Moreover, we do not understand very well yet how to make them so.
+}
+
+This is different from many other areas such as mechanical or chemical engineering.
+While these occasionally cause disasters, these can usually be traced back to human error, foul play, or negligent or intentional violation of regulations.
+Such disasters usually result in criminal proceedings, civil litigation, or revision or extension of regulations.
+% what engineers know and how they know it
+
+The situation is very different for computer systems.
+There is no general methodology for designing and operating computer systems well that can be easily described, taught, or codified.
+
+The situation will hopefully improve over the course of the 21st century.
+The problem has been recognized decades ago, and many companies and researchers are working on it.
+They approach from very different directions with different goals and different methodologies.
+
+\highlightframe{
+This has resulted in a wide and diverse variety of not coherently connected methods with varying degrees of depth, maturity, cost, benefit, and practical adoption.
+}
+
+A typical effect is a trade-off along a spectrum of methods:
+\begin{compactitem}
+ \item cheap but weak methods on one end
+ \item strong but expensive methods on the other end.
+\end{compactitem}
+Therefore, it is often necessary to choose a degree of safety assurance rather than actually guarantee safety.
+This spectrum is so extreme that
+\begin{compactitem}
+ \item the majority of practical software development does not systematically ensure any kind of safety,
+ \item the majority of theoretical solutions are neither ready nor affordable for practical use.
+\end{compactitem}
+
+Incidentally, this means that this course's subject matter is much less well-defined than that of other courses.%
+\footnote{For example, the other two courses in this module almost design themselves because the subject matter is very well understood and standardized.}
+That makes it particular difficult to design a syllabus for.
+It will give a overview of the most important state-of-the-art methods.
+
 \section{Major Disasters Caused by Programming Errors}
 
 \paragraph{Mariner 1}
