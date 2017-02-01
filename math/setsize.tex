@@ -1,0 +1,74 @@
+The size $|S|$ of a set $S$ is a very complex topic of mathematics because there are different degrees of infinity.
+Specifically, we have that $|\pwr(S)|>|S|$, i.e., we have infinitely many degrees of infinity.
+
+In computer science, we are only interested in countable sets.
+We use a very simple definition that writes $C$ for countable and merges all greater sizes into uncountable sets, whose size we write as $U$.
+
+\begin{definition}[Size of sets]\label{def:setsize}
+The size $|S|\in\N\cup\{C,U\}$ of a set $S$ is defined by:
+\begin{itemize}
+\item if $S$ is finite: $|S|$ is the number of elements of $S$
+\item if $S$ is infinite and bijective to $\N$: $|S|=C$, and we say that $S$ is countable
+\item if $S$ is infinite and not bijective to $\N$: $|S|=U$, and we say that $S$ is uncountable
+\end{itemize}
+\end{definition}
+
+We can compute with set sizes as follows:
+
+\begin{definition}[Computing with Sizes]\label{def:setsizecomp}
+For two sizes $s,t\in \N\cup\{C,U\}$, we define addition, multiplication, and exponentiation by the following tables:
+
+\begin{center}
+\begin{tabular}{cc|ccc}
+      &           & \multicolumn{3}{c}{$t$} \\
+      & $s+t$ & $n\in \N$ & $C$ & $U$ \\
+\hline
+      & $m\in \N$ & $m+n$ & $C$ & $U$ \\ 
+$s$   & $C$       & $C$   & $C$ & $U$ \\
+      & $U$       & $U$   & $U$ & $U$
+\end{tabular}
+\tb\tb
+\begin{tabular}{cc|ccc}
+      &           & \multicolumn{3}{c}{$t$} \\
+      & $s*t$     & $n\in \N$ & $C$ & $U$ \\
+\hline
+      & $m\in \N$ & $m*n$ & $C$ & $U$ \\ 
+$s$   & $C$       & $C$   & $C$ & $U$ \\
+      & $U$       & $U$   & $U$ & $U$
+\end{tabular}
+
+\begin{tabular}{cc|ccccc}
+      &                  & \multicolumn{5}{c}{$t$} \\
+      & $s^t$            & $0$ & $1$ & $n\in\N\sm\{0\}$ & $C$ & $U$ \\
+\hline
+      & $0$              & $1$ & $0$ & $0$ & $0$ & $0$ \\ 
+      & $1$              & $1$ & $1$ & $1$ & $1$ & $1$ \\ 
+$s$   & $m\in\N\sm\{0\}$ & $1$ & $m$ &$m^n$& $U$ & $U$ \\ 
+      & $C$              & $1$ & $C$ & $C$ & $U$ & $U$ \\
+      & $U$              & $1$ & $U$ & $U$ & $U$ & $U$
+\end{tabular}
+\end{center}
+Because exponentiation $s^t$ is not commutative, the order matters: $s$ is given by the row and $t$ by the column.
+\end{definition}
+
+The intuition behind these rules is given by the following:
+\begin{theorem}
+For all sets $S,T$, we have for the size of the
+\begin{compactitem}
+ \item disjoint union: \[|S \uplus T| = |S| + |T|\]\
+ \item Cartesian product: \[|S\times T| = |S| * |T|\]
+ \item set of functions from $T$ to $S$: \[|S^T| = |S| ^{|T|}\]
+\end{compactitem}
+\end{theorem}
+
+Thus, we can understand the rules for exponentiation as follows.
+Let us first consider the $4$ cases where one of the arguments has size $0$ or $1$: For every set $A$
+\begin{compactenum}
+\item there is exactly one function from the empty set (namely the empty function): $|A^\es|=1$,
+\item there are as many functions from a singleton set as there are elements of $A$: $|A^{\{x\}}|=|A|$,
+\item there are no functions to the empty set (unless $A$ is empty): $|\es^A|=0$ if $A\neq\es$,
+\item there is exactly one function into a singleton set (namely the constant function): $|\{x\}^A|=1$,
+\end{compactenum}
+
+Now we need only one more rule: The set of functions from a non-empty finite set to a finite/countable/uncountable set is again finite/countable/uncountable.
+In all other cases, the set of functions is uncountable.

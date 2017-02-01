@@ -1,0 +1,156 @@
+The meaning and purpose of a data structure is to describe a set in the sense of mathematics.
+Similarly, the meaning and purpose of an algorithm is to describe a function between two sets.
+
+Thus, it is helpful to collect some sets and functions as examples.
+These are typically among the first data structures and algorithms implemented in any programming language and they serve as test cases for evaluating our languages.
+
+\subsection{Base Sets}\label{sec:math:sets:prim}
+
+When building sets, we have to start somewhere with some sets that are assumed to exist.
+These are called the \emph{bases sets} or the \emph{primitive sets}.
+
+The following table gives an overview, where we also list the size of each set according to Def.~\ref{def:setsize}:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+set & description/definition & size \\
+\hline
+\hline
+\multicolumn{3}{|c|}{typical base sets of mathematics\footnotemark} \\
+\hline
+$\es$ & empty set & $0$ \\
+$\N$  & natural numbers & $C$ \\
+$\Z$  & integers & $C$ \\
+$\Z_m$ for $m>0$ & integers modulo $m$, $\{0,\ldots,m-1\}$ \footnotemark & $m$\\
+$\Q$ & rational numbers & $C$\\
+$\R$ & real numbers & $U$\\
+\hline
+\hline
+\multicolumn{3}{|c|}{additional or alternative base sets used in computer science} \\
+\hline
+$\Unit$     & unit type, $\{()\}$, equivalent to $\Z_1$ & $1$ \\
+$\B$  & booleans, $\{\false,\true\}$, equivalent to $\Z_2$ & $2$ \\
+$\Int $ & primitive integers, $-2^{n-1},\ldots,2^{n-1}-1$ for machine-dependent $n$, equivalent to $\Z_{2^n}$\footnotemark & $2^n$ \\
+$\Float$ & IEEE floating point approximations of real numbers & $C$ \\
+$\Char$ & characters & finite\footnotemark \\
+$\String$ & lists of characters & $C$ \\
+\hline
+\end{ctabular}
+\begin{multfootnotetext}{4}
+\footnotetext{All of mathematics can be built by using $\es$ as the only base set because the others are definable. But it is common to assume at least the number sets as primitives.}
+\footnotetext{$\Z_0$ also exists but is trivial: $\Z_0=\Z$.}
+\footnotetext{Primitive integers are the $2^n$ possible values for a sequence of $n$ bits.
+Old machines used $n=8$ (and the integers were called ``bytes''), later machines used $n=16$ (called ``words'').
+Modern machines typically use $32$-bit or $64$-bit integers.
+Modern programmers usually---but dangerously---assume that $2^n$ is much bigger than any number that comes up in practice so that essentially $\Int =\Z$.}
+\footnotetext{The ASCII standard defined $2^7$ or $2^8$ characters. Nowadays, we use Unicode characters, which is a constantly growing set containing the characters of virtually any writing system, many scientific symbols, emojis, etc.
+Many programming languages assume that there is one character for every primitive integers, e.g., typically $2^{32}$ characters.}
+\end{multfootnotetext}
+
+\subsection{Functions on the Base Sets}\label{sec:math:sets:primfun}
+
+For every base set, we can define some basic operations.
+These are usually built-in features of programming languages whenever the respective base set is built-in.
+
+We only list a few examples here.
+
+\subsubsection{Numbers}
+For all number sets, we can define addition, subtraction, multiplication, and division in the usual way.
+
+Some care must be taken when subtracting or dividing because the result may be in a different set.
+For example, the difference of two natural numbers is not in general a natural number but only an integer (e.g., $3-5\nin\N$).
+Moreover, division by $0$ is always forbidden.
+
+\subsubsection{Quotients of the Integers}
+The function $\modulus_m$ (see Sect.~\ref{sec:math:moduloarith}) for $m\in \N$ maps $x\in\Z$ to $x\modop m\in\Z_m$.
+
+In programming languages, the set $\Z_m$ is usually not provided.
+Instead, $x\modop y$ is built-in as a functions on $\Int$.
+
+\subsubsection{Booleans}
+On booleans, we can define the usual boolean operations conjunction (usually written $\&$ or $\&\&$), disjunction (usually written $|$ or $||$), and negation (usually written $!$).
+
+Moreover, we have the equality and inequality functions, which take two objects $x,y$ and return a boolean.
+These are usually written $x==y$ and $x!=y$ in text files languages and $x=y$ and $x\neq y$ on paper.
+
+\subsection{Set Constructors}\label{sec:math:sets:deriv}
+
+From the base sets, we build all other sets by applying set constructors.
+Those are operations that take sets and return new sets.
+
+The following table gives an overview, where we also list the size of each set according to Def.~\ref{def:setsizecomp}:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+set & description/definition & size \\
+\hline
+\hline
+\multicolumn{3}{|c|}{typical constructors in mathematics} \\
+\hline
+$A\uplus B$ & disjoint union & $|A|+|B|$ \\
+$A\times B$ & (Cartesian) product & $|A|*|B|$ \\
+$A^n$ for $n\in\N$ & $n$-dimensional vectors over $A$ & $|A|^n$ \\
+$B^A$ or $A\to B$ & functions from $A$ to $B$ & $|B|^{|A|}$ \\
+$\pwr(A)$ & power set, equivalent to $\B^A$ & $2^{|A|}=\cas{2^n \mifc |A|=n \\ U \mothw}$\\
+$\{x\in A|P(x)\}$ & subset of $A$ given by property $P$ & $\leq |A|$ \\
+$\{f(x):x\in A\}$ & image of function $f$ when applied to elements of $A$ & $\leq |A|$ \\
+$A/r$& quotient set for an equivalence relation $r$ on $A$ & $\leq|A|$ \\
+\hline
+\hline
+\multicolumn{3}{|c|}{selected additional constructors often used in computer science} \\
+\hline
+$A^*$       & lists over $A$ & $\cas{1 \mifc A=\es\\ U \mifc |A|=U \\ C \mothw}$ \\
+$A^?$       & optional element{\footnotemark} of $A$ & $1 + |A|$ \\
+\hline
+\multicolumn{3}{|c|}{for new names $l_1,\ldots,l_n$} \\
+$\Enum\{l_1,\ldots,l_n\}$  & enumeration: like $\Z_n$ but also introduces &$n$ \\
+                           & \tb named elements $l_i$ of the enumeration &  \\ 
+$l_1(A_1)|\ldots|l_n(A_n)$ & labeled union: like $A_1\uplus \ldots \uplus A_n$ but also introduces & $|A_1|+\ldots+|A_n|$\\
+                           & \tb named injections $l_i$ from $A_i$ into the union & \\ 
+$\{l_1:A_1,\ldots,l_n:A_n\}$ & record: like $A_1\times\ldots\times A_n$ but also introduces  & $|A_1|*\ldots*|A_n|$\\
+                           & \tb named projections $l_i$ from the record into $A_i$ & \\ 
+\hline
+\multicolumn{2}{|l|}{inductive data types\footnotemark} & $C$ \\
+\multicolumn{2}{|l|}{classes\footnotemark}              & $U$ \\
+\hline
+\end{ctabular}
+
+\begin{multfootnotetext}{3}
+\footnotetext{An optional element of $A$ is either absent or an element of $A$.}
+\footnotetext{These are too complex to define at this point. They are a key feature of functional programming languages like SML.}
+\footnotetext{These are too complex to define at this point. They are a key feature of object-oriented programming languages like Java.}
+\end{multfootnotetext}
+
+\subsection{Characteristic Functions of the Set Constructors}\label{sec:math:sets:derivfun}
+
+Every set constructor comes systematically with characteristic functions into and out of the constructed sets $C$.
+These functions allow building elements of $C$ or using elements of $C$ for other computations.
+
+For some sets, these functions do not have standard notations in mathematics.
+In those cases, different programming languages may use slightly different notations.
+
+The following table gives an overview:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+set $C$ & build an element of $C$ & use an element $x$ of $C$ \\
+\hline
+\hline
+$A_1\uplus A_2$ & $\inj_1(a_1)$ or $\inj_2(a_2)$ for $a_i\in A_i$ & pattern-matching \\
+$A_1\times A_2$ & $(a_1,a_2)$ for $a_i\in A_i$ & $x.i \in A_i$ for $i=1,2$ \\
+$A^n$           & $(a_1,\ldots,a_n)$ for $a_i\in A$ & $x.i \in A$ for $i=1,\ldots,n$ \\
+$B^A$ &  $(a\in A) \mapsto b(a)$ & $x(a)$ for $a\in A$ \\
+\hline
+\hline
+$A^*$       & $[a_0,\ldots,a_{l-1}]${\footnotemark} for $a_i\in A$ & pattern-matching \\
+$A^?$       & $None$ or $Some(a)$ for $a\in A$ & pattern-matching \\
+$\Enum\{l_1,\ldots,l_n\}$  & $l_1$ or \ldots or $l_n$ & switch statement or pattern-matching \\
+$l_1(A_1)|\ldots|l_n(A_n)$ & $l_1(a_1)$ or \ldots or $l_n(a_n)$ for $a_i\in A_i$ & pattern-matching \\ 
+$\{l_1:A_1,\ldots,l_n:A_n\}$ & $\{l_1=a_1,\ldots,l_n=a_n\}$ for $a_i\in A_i$ & $x.l_i \in A_i$\\
+inductive data type $A$ & $l(u_1,\ldots,u_n)$ for a constructor $l$ of $A$ & pattern-matching \\
+class $A$               & $\mathbf{new}\;A$    & $x.l(u_1,\ldots,u_n)$ for a field $l$ of $A$ \\
+\hline
+\end{ctabular}
+\footnotetext{Mathematicians start counting at $1$ and would usually write a list of length $n$ as $[a_1,\ldots,a_n]$.
+However, computer scientists always start counting at $0$ and therefore write it as $[a_0,\ldots,a_{n-1}]$.
+We use the computer science numbering here.}

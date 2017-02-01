@@ -1,0 +1,358 @@
+\section{Major Disasters Caused by Programming Errors}
+
+All damage estimates are relative to the time of the failure and not adjusted to inflation.
+
+Note that for security problems, the size of the damage is naturally unknown because attacks will typically remain secret.
+Only the cost of updating the software can be estimated, but that value is often small.
+
+\paragraph{Mariner 1}
+The 1962 rocket launch of Mariner 1 failed causing damage of around \$20 million.
+
+The cause was a programming error, where a mathematical formula in the specification was misread.
+
+Details: \url{https://en.wikipedia.org/wiki/Mariner_1}
+
+\paragraph{Therac-25}
+Between 1985 and 1987, the Therac-25 machine for medical radiation therapy caused death and/or serious injury in at least $6$ cases.
+Patients received a radiation overdose because the high intensity energy beam was administered while using the protection meant for the low intensity beam.
+
+The cause was that the hardware protection was discontinued relying exclusively on software to prevent a mismatch of beam and protection configuration.
+But the software had always been buggy due to a systemic failures in the software engineering process including complex systems (code written in assembly, machine had its own OS), lack of software review, insufficient testing (overall system could not be tested), bad documentation (error codes were not documented), and bad user interface (critical safety errors could be manually overridden, thus effectively being warnings).
+
+Details: \url{https://en.wikipedia.org/wiki/Therac-25}
+
+\paragraph{Patriot Rounding Error}
+In 1991 during the Gulf war, a US Patriot anti-missile battery failed to track an incoming Iraqi Scud missile resulting the death of 28 people.
+
+The cause was a rounding error in the floating point computation used for analyzing the missile's path.
+The software had to divide a large integer (number of $0.1s$ clock cycles since boot $100$ hours ago) by $10$ to obtain the time.
+This was done using a floating-point multiplication by $0.1$---but $0.1$ is off by around $0.000000095$ when chopped to a $24$-bits binary float.
+The resulting time was off by $0.3$ seconds, which combined with the high speed of Scud missile led to a serious miscalculation of the flight path.
+
+Details: \url{http://www-users.math.umn.edu/~arnold/disasters/patriot.html}
+
+\paragraph{Ariane 5}
+In 1996, the first launch of an Ariane 5 rocket (overall development cost \$$7$ billion) failed, and the rocket had to be destructed after launch.
+Both the primary and the backup system had shut down, each trying to transfer control to the other, after encountering the same behavior, which they interpreted as a hardware error.
+
+The cause was an overflow exception in the alignment system caused by converting a $64$-bit float to a $16$-bit integer, which was not caught and resulted in the display of diagnostic data that the autopilot could not interpret.
+The programmers were away of the problem but had falsely concluded that no conversion check was needed (and therefore omitted the check to speed up processing).
+Their conclusion had been made based on Ariane 4 flight data that turned out to be inappropriate for Ariane 5.
+
+The faulty component was not even needed for flight and was only kept active for a brief time after launch for convenience and in order to avoid changing a running system.
+
+Details: \url{http://www-users.math.umn.edu/~arnold/disasters/ariane5rep.html}
+
+\paragraph{Intel Pentium Bug}
+In 1994, it was discovered that the Intel Pentium processor (at the time widely used in desktop computers) wrongly computed certain floating point divisions.
+The cost of replacing the CPUs was estimated at about \$$400$ million.
+
+The error occurred in about 1 in 9 billion divisions.
+For example, $4195835.0/3145727.0$ yielded $1.333 739 068 902 037 589$ instead of $1.333 820 449 136 241 000$.
+
+The cause was a bug in the design of the floating point unit's circuit.
+
+\paragraph{Kerberos Random Number Generator}
+From 1988 to 1996, the network authentification protocol Kerberos used a mis-designed random number generation algorithm.
+The resulting keys were so predictable that brute force attacks became trivial although it is unclear if the bug was ever exploited.
+
+The cause was the lack of a truly random seed value for the algorithm.
+Moreover, the error persisted across attempted fixes because of process failures (code hard to read, programmers had moved on to next version).
+
+Detail: \url{http://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=2331&context=cstech}
+
+\paragraph{USS Yorktown}
+In 1997, critical navigation and weapons hardware on the USS Yorktown was paralyzed at sea for $3$ hours while rebooting machines.
+
+The cause was a blank field in a database that was interpreted as $0$ leading to a division-by-zero.
+Special floating point values such as infinity or NaN were not used resulting in an exception.
+The exception was handled by neither the software nor the operating systems (Windows NT) thus crashing both.
+
+Details: \url{http://www.cs.berkeley.edu/~wkahan/Boulder.pdf}
+
+\paragraph{Mars Climate Orbiter}
+In 1998 the Mars Climate Orbiter was lost causing damage of around \$$300$ million after software had calculated a false trajectory when updating the position of the spacecraft.
+
+The cause was that two components by different manufacturers exchanged physical quantities as plain numbers (i.e., without units).
+One component assumed customary units (pound seconds) whereas the other assumed SI units (Newton seconds).
+The first component was in violation of the specification of the interface.
+
+\paragraph{Year 2000 and 2038 Problems}
+Leading to the year 2000, about \$$300$ billion were spent worldwide to update outdated software that was unable to handle dates with a year of $2000$ or higher.
+
+The cause was that much software was used far beyond the originally envisioned lifetime.
+At programming time, especially at times when memory was still scarce, it made sense to use only two digits for the year in a date.
+That assumption became flawed when dates over $2000$ had to be handled.
+
+A related problem is expected in the year 2038.
+At that point the number of seconds since 1970-01-01, which is the dominant way of storing time on Unix, will exceed the capacity of a $32$-bit integer.
+While application software is expected to be updated by then anyway, modern embedded systems may or may not still be in use.
+
+\paragraph{Los Angeles Airport Network Outage}
+In 2007, LA airport was partially blocked for $10$ due to a network outage that prevented passenger processing.
+About 17,000 passengers were affected.
+
+The cause was a single network card malfunction that flooded the network and propagated through the local area network.
+
+Details: \url{https://www.oig.dhs.gov/assets/Mgmt/OIGr_08-58_May08.pdf}
+
+\paragraph{Debian OpenSSL Random Number Generator}
+From 2006 to 2008 Debian's variant of OpenSSL used a flawed random number generator.
+This made the generated keys easily predictable and thus compromised.
+It is unclear whether this was exploited.
+
+The cause was that two values were used to obtain random input: the process ID and an uninitialized memory field.
+Uninitialized memory should never be used but is sometimes used as a convenient way to cheaply obtain a random number in a low-level programming language like C.
+The respective line of code had no immediately obvious purpose because it was not commented.
+Therefore, it was removed by one contributor after code analysis tools had detected the use of uninitialized memory and flagged it as a potential bug.
+
+Detail: \url{https://github.com/g0tmi1k/debian-ssh}
+
+\paragraph{Knight Capital Trading Software}
+In 2012, high-frequency trading company Knight Capital lost about \$$10$ million per minute for 45 minutes trading on the New York Stock Exchange.
+
+The cause was an undisclosed bug in their automatic trading software.
+% http://www.bbc.com/news/magazine-19214294
+
+\paragraph{Heartbleed}
+From 2012 to 2014, the OpenSSL library was susceptible to an attack that allowed remotely reading out sections of raw physical memory.
+The affected sections were random but repeated attacks could piece together large parts of the memory.
+The compromised memory sections could include arbitrary critical data such as passwords or encryption keys.
+OpenSSL was used not only by many desktop and server applications but also in portable and embedded devices running Linux.
+The upgrade costs are very hard to estimate but were put at multiple \$$100$ millions by some experts.
+
+The cause was a bug in the Heartbeat component, which allowed sending a message to the server, which the server echoed back to test if the connection is alive.
+The server code did not check whether the given message length $l$ was actually the length of the message $m$.
+Instead, it always returned $l$ bytes starting from the memory address of $m$ even if $l$ was larger than the length of $m$.
+This was possible because the used low-level programming language (C) let the programmers store $m$ in a memory buffer and then over-read from that buffer.
+
+Details: \url{http://www.theregister.co.uk/2014/04/09/heartbleed_explained/}
+
+\paragraph{Shellshock (Bashdoor)}
+From 1998 to 2014, it was possible for any user to gain root access in the bash shell on Unix-based systems.
+The upgrade cost is unknown but was generally small because updates were rolled out within $1$ week of publication.
+Moreover, in certain server applications that passed data to bash this was possible for arbitrary clients as well.
+
+The cause was the use of unvalidated strings to represent complex data.
+Bash allowed storing function definitions as environment variables in order to share function definitions across multiple instances.
+The content of these environment variables was trusted because function definitions are meant to be side-effect-free.
+However, users could append $; C$ to the value of an environment variable defining a function.
+When executing this function definition, bash also executed $C$.
+
+%env x='() { :;}; C bash -c :
+%means
+%x = 'lambda(). : ; C
+%and C is also executed (with root privileges)
+
+Independently, many server applications (including the widely used cgi-bin) pass input provided by remote users to bash through environment variables.
+This resulted in input provided by remote clients being passed to the bash parser, which was against the assumptions of the parser.
+Indeed, several bugs in the bash parser caused remotely exploitable vulnerabilities.
+
+Details: \url{https://fedoramagazine.org/shellshock-how-does-it-actually-work/}
+
+\paragraph{Apple 'goto fail' Bug}
+From 2012 to 2014, Apple's iOS SSL/TLS library falsely accepted faulty certificates.
+This left most iOS applications susceptible to impersonation or man-in-the-middle attacks.
+Because Apple updated the software after detecting the bug, its cost is unclear.
+
+The immediately cause was a falsely-duplicated line of code, which ended the verification of the certificate instead of moving on to the next check.
+But a number of insufficiencies in the code and the software engineering process exacerbated the effect of the small bug.
+
+The code was as follows:
+
+\begin{lstlisting}
+static OSStatus SSLVerifySignedServerKeyExchange(
+  SSLContext *ctx, bool isRsa, SSLBuffer signedParams,
+  uint8_t *signature, UInt16 signatureLen)
+{
+	OSStatus        err;
+	...
+
+	if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;serverRandom)) != 0)
+		goto fail;
+	if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;signedParams)) != 0)
+		goto fail;
+		goto fail;
+	if ((err = SSLHashSHA1.final(&amp;hashCtx, &amp;hashOut)) != 0)
+		goto fail;
+	...
+
+fail:
+	SSLFreeBuffer(&amp;signedHashes);
+	SSLFreeBuffer(&amp;hashCtx);
+	return err;
+\end{lstlisting}
+
+In a better programming language that emphasizes the use of high-level data structures, the bug would likely not have happened or be caught easily.
+But even using C, it could have been caught by a variety of measures including unreachable code analysis, indentation style analysis, code coverage analysis, unit testing, or coding styles that enforce braces around one-command blocks.
+ 
+Details: \url{https://www.imperialviolet.org/2014/02/22/applebug.html}
+%https://www.dwheeler.com/essays/apple-goto-fail.html
+
+\section{Major Problems Caused By System Updates}
+
+\paragraph{Odyssey Court Software}
+In an ongoing crisis since 2016, US county court and California and other states have difficulties using the new Odyssey software for recording and dissemination of court decisions.
+This has caused dozens of human rights violations due to erroneous arrests or imprisonment.
+This includes cases where people spent 20 days in jail based on warrants that had already been dismissed.
+
+The cause is a tight staffing situation combined with the switch to a new, more modern software system for recording court decisions.
+The new software expects uses more high-level data types (e.g., reference to a law instead of string) in many places.
+This has led to the erroneous recording of decisions and a backlog of converting old decisions into the new database (including decisions that invalidate decisions that are already in the database).
+
+Details: \url{https://arstechnica.com/tech-policy/2016/12/court-software-glitches-result-in-erroneous-arrests-defense-lawyers-say/}
+
+\paragraph{Other Notable Cases}
+This is a selection of failures that did not cause direct damage but led to availability failures on important infrastructure.
+
+In 1990, all AT\&T phone switching centers shut down for 9 hours due to a bug in a software update.
+An estimated 75 million phone calls were missed.
+
+In 1999, a faulty software update in the British passport office delayed procedures.
+About half a million passports were issued late.
+
+In 2004, the UK's child support agency EDS introduced a software update while restructuring the personnel.
+This led to several million people receiving too much or too little money and hundreds of thousands of back-logged cases.
+
+In 2015, the New York Stock Exchange had to pause for $3$ hours for a reboot after a software problem.
+700,000 trades had to be canceled.
+
+In 2015, hundreds of flights in the North Eastern US had to be canceled or delayed for several hours.
+The cause was a problem with new and behind-schedule computer system installed in air traffic control centers.
+% http://www.bbc.com/news/world-us-canada-33950381
+
+\section{Other Notable Problems}
+
+\paragraph{Excel Gene Names}
+In 2016, researchers found that about 20\% of papers in genomics journals contain errors in supplementary spreadsheets.
+
+The cause is that Microsoft Excel by default guesses the type of cell data that is entered as a string and converts the string into that type.
+This affects gene names like "SEPT2" (Septin 2, converted to the date September 02) or REKIN identifiers like "2310009E13" (converted to the floating point number $2.31E+13$).
+
+Details: \url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}
+
+\paragraph{FBI Virtual Case File Project}
+In 2005 the Virtual Case File project of the FBI, which had been developed since 2000, was scrapped.
+The software was never deployed, but the project resulted in the loss of \$$170$ million of development cost
+
+The cause was systemic failures in the software engineering process including
+\begin{compactitem}
+ \item poor specification, which caused bad design decisions
+ \item repeated specification changes
+ \item repeated change in management
+ \item micromanagement of software developers
+ \item inclusion of many personnel which little training in computer science in key positions
+\end{compactitem}
+These problems were exacerbated by the planned flash deployment instead of a gradual phasing-in of the new system---a decision that does have advantages but made the systems difficult to test and made it easier for design flaws to creep in.
+The above had two negative effects on the code base
+\begin{compactitem}
+ \item increasing code size due to changing specifications
+ \item increasing scope due to continually added features
+\end{compactitem}
+which exacerbated the management and programming problems.
+
+\paragraph{Failures in Involving Computer-Related Manufacturing}
+This is a selection of other notable failures that involve hardware manufacturing.
+
+In 2006, two Airbus plants used incompatible version of CAD software.
+This resulted in cables being produced too short to connect.
+
+In 2006, Sony batteries mostly used in Dell notebooks had to be recalled.
+The resulting cost was about \$$100$ million.
+
+In 2016, Samsung Galaxy phones had to be recalled due to faulty batteries.
+
+\section{Major Vulnerabilities due to Weak Security}
+
+\subsection{Software and Internet}
+
+% identity theft, two-factor authentication
+
+\paragraph{Operating Systems}
+forced updates, i love you, government-sponsored exploits, ios article
+
+\paragraph{Cloud Services}
+storage, social networks, synchronization, fappening
+
+\paragraph{Large Institutions}
+In 2014, Sony Pictures suffered a major break in (possibly by North Korea to blackmail or punish Sony in relation to the movie \emph{The Interview}) mostly facilitated by unprecedented negligence.
+Problems included
+\begin{compactitem}
+ \item unencrypted storage of sensitive information
+ \item password stored in plain text files (sometimes even called ``passwords'' or placed in the same directory as encrypted files)
+ \item easily guessable passwords
+ \item large number of unmonitored devices
+ \item lack of accountability and responsibility for security, ignorance towards recommendations and audits
+ \item lack of systematic lesson-learning from previous failures (which included 2011 hacks of Sony PlayStation Network and Sony Pictures that stole account information including unsalted or plain text passwords)
+ \item weak IT and information security teams
+\end{compactitem}
+Stolen data included employee data (including financial data), internal emails, and movies.
+
+% DNC email hack
+
+\paragraph{Web Site Account Data}
+Many organizations holding user data employ insufficient security against digital break-ins and insufficient (if any) encryption of user data.
+They get hacked routinely.
+An overview can be found at \url{https://haveibeenpwned.com/}.
+
+The effects are exacerbated by two effects:
+\begin{compactitem}
+ \item System administrators are not sufficiently educated about password hashing, often false believing default hash configurations to be secure.
+ Thus, hacks often allow inverting the hash function thus exposing passwords in addition to the possibly sensitive user data.
+ \item Users are not sufficiently educated about systematically using different passwords on every site.
+ Thus, any breach also compromises accounts on any other sites that use the same user name or email address and password.
+\end{compactitem}
+
+The following describes a few high-profile cases.
+\medskip
+
+In a (estimated) 2008 (only reported in 2016) of myspace, about $360$ million accounts were compromised.
+The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
+
+In a 2012 hack of linkedin, $160$ million accounts were compromised.
+The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
+
+In a 2015 hack of Ashley Madison, about $30$ accounts were compromised.
+The stolen records included name, email address, hashed password, physical description, and sexual preferences.
+Most passwords were hashed securely (using bcrypt for salting and stretching), but about $10$ million passwords were hashed insecurely (using a single MD5 application).
+This led to multiple extortion attempts and possibly suicides.
+% https://nakedsecurity.sophos.com/2015/09/10/11-million-ashley-madison-passwords-cracked-in-10-days/
+
+In a 2016 hack of the Friend Finder network, about $400$ million accounts were compromised.
+The stolen records included name, email address, registration date, and unhashed or badly hashed passwords.
+% https://www.leakedsource.com
+
+In two separate hacks in 2013 (only reported in 2016) and 2014 of Yahoo, over $1$ billion user accounts were compromised by presumably state-sponsored actors.
+The stolen records included name, email address, phone number, date of birth, and hashed passwords, and in some cases security questions and answers.
+
+\subsection{Dedicated Systems}
+
+Many domains are increasingly using computer technology.
+Often this is done by engineers with little training in computer science and even less training in security aspects.
+In many cases, the resulting systems are highly susceptible to attacks, spared only by the priorities of potential hackers and terrorists.
+
+\paragraph{Embedded Systems}
+
+\paragraph{Cars}
+The upcoming wave of self-driving cars requires the heavy use of experienced software developers and a thorough regulation process.
+It is therefore reasonable to hope that security will play a major role in the design and legal regulation.
+
+But even today's traditional cars are susceptible to attacks including remote takeover of locks, wheels, or engine.
+The causes are
+\begin{compactitem}
+ \item not or not properly protected physical interfaces for diagnostics and repair,
+ \item permanent internet connections, which are useful for navigation and entertainment, that are not strictly separated from engine controls.
+\end{compactitem}
+One of the more high-profile benevolent attack demonstrations was described in \url{https://www.wired.com/2015/07/hackers-remotely-kill-jeep-highway/}.
+
+\paragraph{Medical Systems}
+Hospitals and manufacturers of medical devices are notoriously easy to hack.
+
+Weaknesses include unchangeable master passwords, unencrypted communication between devices, outdated and non-updateable software running in devices, and outdated or non-existent protection against attackers.
+Systemic causes include a highly-regulated release process that precludes fast patching of software and a slow update cycle.
+
+Details:
+\url{http://cacm.acm.org/magazines/2015/4/184691-security-challenges-for-medical-devices/fulltext}
+
+See also the Symantec 2016 Healthcare Internet Security Threat Report available at \url{https://www.symantec.com/solutions/healthcare}
+

@@ -1,0 +1,132 @@
+\documentclass{book}
+
+%\usepackage{graphicx}
+%\usepackage{xkeyval}
+%\usepackage{multirow}
+%\usepackage{bm} %% bold face math symbols
+\usepackage{listings}
+%\usepackage{tikz}
+%\usetikzlibrary{shapes}
+%\usetikzlibrary{arrows}
+%\usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
+%\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
+
+%\usepackage{algorithm}
+%\usepackage{ded}
+\usepackage{../mylecturenotes}
+
+\title{Lectures Notes on Secure and Dependable Systems}
+\author{Florian Rabe}
+\date{2017}
+
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\part{Introduction} % one week
+
+ \chapter{Meta-Remarks}
+  \input{../generalremarks}
+
+ \chapter{Challenges}
+  % systems are not secure and dependable
+  % we don't know how to build them
+  % harder to teach than algos, logic, etc
+  % works for engineers, book how they know it
+  % will hopefully change during your careers
+  % typical: low cost vs. safe
+  % this course: overview of current methods with different degrees of adoption in practice 
+   \input{challenges}
+
+  \chapter{Concepts} % one week
+    % correctness, dependability, quality, safety, security, privacy
+    % Avizienis et al - Fundamental Concepts of Dependability (2001)
+   \input{concepts}
+
+% guard against human error; during software development
+\part{Dependable Software}
+
+  \chapter{Development Processes} % one week
+   % documentation, coding style, versioning, code review, issue-tracking, travis-style testing
+   % code analysis: coverage, coding style, indentation, documentation, unreachable code, non-exhaustive match, ill-typed equality
+   %   tools: https://en.wikipedia.org/wiki/Static_code_analysis (findbugs for java)
+   %          dynamic: https://en.wikipedia.org/wiki/Memory_debugger Valgrind, Purify
+        
+  \chapter{Common Criteria}
+
+  \chapter{Systematic Testing} %one week
+   % overview, unit testing framework, code coverage framework, based on Java libraries
+    \input{test}
+
+   % database dependency -> peter
+   % network dependency -> jürgen
+
+  % \chapter{Design Principles}
+  % input validation, no string, high-level data structures
+  % buffer bounds, array bounds null pointers
+  % typed languages, casting
+  % safe by default, minimal access rights
+  % expose minimal functionality in interfaces
+  % strong, stable specification, documentation
+  
+
+% guard against attack
+\part{Security}
+
+  \chapter{Institution Security}
+   % phishing, social engineering etc., antivirus?
+
+  \chapter{Data Security} % two weeks
+    % symmetric key: substitution, one-time pad DES, AES, key generation/distribution
+    % asymmetric/public key: RSA
+    % authentication: via public key
+    % hashing: MD5, SHA-1
+    \input{secure}
+
+   % database security -> peter
+   % network security -> jürgen, slides 269-324
+
+   % differential privacy (wikipedia or http://www.cis.upenn.edu/~aaroth/courses/privacyF11.html)
+
+%%  hands-on micro-projects in state-of-the-art tools (e.g., Isabelle for program verification)
+
+% verify formally often after software development
+\part{Formal Foundations}
+
+  \chapter{Automata} % one week
+  
+  \chapter{Functional Programming} % one week
+  
+  \chapter{Logic} % one week
+  % sat, hol, LTL, CTL
+
+\part{Formal Methods for Software Engineering}
+  % static program analysis:  control/data flow analysis, abstract interpretation
+
+  \chapter{Model Checking} % two weeks
+    \input{modelcheck}
+   % cegar, computational tree logic, ...
+   % blast, frama-c
+
+  \chapter{Program Verification} % two weeks
+   % Hoare calculus, dynamic logic, theorem proving
+
+%\part{Summary}
+%
+%\chapter{}
+%  \input{summary}
+
+\part{Appendix}
+
+\appendix
+
+\chapter{Mathematical Preliminaries}\label{sec:math}
+\input{../math/all}
+
+\bibliographystyle{alpha}
+\bibliography{../../Program_Data/Latex/bib/rabe,../../Program_Data/Latex/bib/pub_rabe,../../Program_Data/Latex/bib/systems,../../Program_Data/Latex/bib/institutions,../../Program_Data/Latex/bib/historical}
+
+\end{document}

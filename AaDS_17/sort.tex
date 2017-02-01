@@ -1,0 +1,748 @@
+\section{Specification}\label{sec:ad:listsort:spec}
+
+Lists are the most important non-primitive data structure in computer science.
+
+\subsection{Lists}\label{sec:ad:list:spec}
+
+For a set $A$, the set $A^*$ contains all lists $[a_0,\ldots,a_{l-1}]$ with elements $a_i\in A$ for some $l\in\N$.
+$l$ is called the length of the list.
+
+The following table specifies the most important functions involving lists:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & abbreviation\\
+\hline
+$nil\in A^*$ & $[]$ & \\
+$range(m\in\N,n\in\N)\in\N^*$ & $[m,\ldots,n-1]$ or $[]$ if $m\geq n$ & \\
+\hline
+\multicolumn{3}{|c|}{below, let $l\in A^*$ be of the form $[a_0,\ldots,a_{l-1}]$ and assume $n<l$} \\
+$length(x\in A^*)\in \N$ & $l$ & \\
+$get(x\in A^*, n\in\N)\in A^*$ & $a_n$ & $x_n$ or $x[n]$\\
+$append(x\in A^*, y\in A*)\in A^*$ & $[a_0,\ldots,a_{l-1},b_0,\ldots,b_{k-1}]$ if $y=[b_0,\ldots,b_{k-1}]$ &  $x+y$\\
+$map(x\in A^*, f\in A\to B)\in B^*$ & $[f(a_0),\ldots,f(a_{l-1})]$ & $l\;map\;f$\\
+$fold(x\in A^*, b\in B, f\in A*B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
+\hline
+$delete(x\in A^*, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a_{n+1},\ldots,a_{l-1}]$ & \\
+$insert(x\in A^*, a\in A, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a,a_n,a_{n+1},\ldots,a_{l-1}]$ & \\
+$update(x\in A^*, a\in A, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a,a_{n+1},\ldots,a_{l-1}]$ & \\ % $insert(delete(l,n),a,n)
+\hline
+\end{ctabular}
+
+These are split into three groups:
+\begin{compactitem}
+\item The first group contains functions to create new lists. These are important to have any lists.
+\item The second group contains functions that take a list $l\in A^*$ as their first argument and return data about $l$ or use $l$ to build new data.
+\item The third group also takes a list $l\in A^*$ but also returns an element of $A^*$.
+ This distinction is irrelevant in mathematics but critical in computer science: These functions may be implemented using in-place-updates.
+ With in-place update, the list $l$ is changed to become the intended result. The original value of $l$ is lost in the process.
+ If this is the case, we speak of \emph{mutable} lists.
+\end{compactitem}
+
+The following table specifies the most important functions on mutable lists.
+Instead of returning a new list, they have the effect of assigning a new value to the first argument.
+
+\begin{ctabular}{|l|l|l|l|}
+\hline
+function & returns & effect & abbreviation\\
+\hline
+\multicolumn{4}{|c|}{below, let $l\in A^*$ be of the form $[a_0,\ldots,a_{l-1}]$ and assume $n<l$} \\
+$delete(x\in A^*, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a_{n+1},\ldots,a_{l-1}]$ & \\
+$insert(x\in A^*, a\in A, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a,a_n,a_{n+1},\ldots,a_{l-1}]$ & \\
+$update(x\in A^*, a\in A, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a,a_{n+1},\ldots,a_{l-1}]$ & $x_n := a$ or $x[n]:= a$\\ % $insert(delete(l,n),a,n)
+\hline
+\end{ctabular}
+
+
+\subsection{Sorting}\label{sec:ad:sort:spec}
+
+Sorting a list is intuitively straightforward.
+We need a function that takes a list and returns a list with the same elements in a different order, namely such that all elements occur according to their size.
+
+\begin{example}
+Consider $x=[4,6,5,3,5,0]\in\N^*$.
+Then $sort(x)$ must yield $[0,3,4,5,5,6]$.
+
+Here we made the implicit assumption that we want to sort with respect to the $\leq$-order on $\N$.
+We could also use the $\geq$-order.
+Then $sort(x)$ should return $[6,5,5,4,3,0]$.
+
+Thus, sorting always depends on the chosen order.
+\end{example}
+
+\begin{definition}[Sorting]
+Fix a set $A$ and a total order $\leq$ on $A$.
+
+A list $x=[a_0,\ldots,a_l]\in A^*$ is called $\leq$-\textbf{sorted} if $a_0\leq a_1 \leq \ldots \leq a_{l-1}\leq a_l$.
+
+Let $count(x\in A^*,a\in A)\in\N$ be the number of times that $a$ occurs in $x$.
+Two list $x,y\in A^*$ are a \textbf{permutation} of each other if $count(x,a)=count(y,a)$ for all $a\in A$.
+
+$sort:A^*\to A^*$ is called a $\leq$-\textbf{sorting} function if for all $x\in A^*$, the list $sort(x)$ is a $\leq$-sorted permutation of $x$.
+\end{definition}
+
+As usual we check that the specification indeed defines a function:
+
+\begin{theorem}[Uniqueness]
+The function $sort$ from Def.~\ref{def:ad:sort:spec} exists uniquely.
+\end{theorem}
+\begin{proof}
+Because $\leq$ is assumed to be total, every list $x$ has a unique least element, which must occur first in $sort(x)$.
+By induction on the length of $x$, we show that all elements of $sort(x)$ are determined.
+\end{proof}
+
+For immutable lists, the above definition is all the specification we need.
+For mutable lists, we specify an alternative sorting function that does not create a new list:
+
+\begin{definition}[In-place Sorting]
+An effectful function $sort$ that takes an argument $x\in A^*$ and has the side-effect of modifying the value $v$ of $x$ to $v'$ is called an \textbf{in-place} $\leq$-\textbf{sorting} function if $v'=s(v)$ for a $\leq$-sorting function $s$.
+\end{definition}
+
+\subsection{Sorting by a Property}\label{sec:ad:sort:stable}
+
+Often we do not have a total order on $A$, and we want to sort according to a certain property.
+The property must be given by a function $p:A\to P$ such that we have a total order $\leq$ on $P$.
+
+For example, we may want to sort a list of students by age.
+Then $A=Student$, $P=\N$, and $p:(s\in Student)\mapsto age(s)$.
+
+However, there may be ties: A list may contain multiple different elements that agree in the value of $p$.
+To break, we require that the order in the original list should be preserved.
+Formally:
+
+\begin{definition}[Sorting by Property]\label{def:ad:sort:stable}
+Fix sets $A$ and $P$, a function $p:A\to P$, and a total order $\leq$ on $P$.
+
+Given a list $x\in A^*$, we define a total order $\leq^p$ on the elements of $x$ as follows:
+ \[x_i \leq^p x_j \tb\miff\tb p(x_i) < p(x_j) \tb \mor \tb p(x_i)=p(x_j) \mand i\leq j\]
+
+$sort:A^*\to A^*$ is called a \textbf{stable sorting} function for $p$ and $\leq$ if it is a sort function for $\leq^p$.
+\end{definition}
+
+Note that normal sorting becomes a special case of sorting by property using $P=A$ and $p(a)=a$.
+
+\subsection{Why Do We Care About Sorting?}
+
+Thus, a good, modern programmer might respond as follows:
+\begin{compactenum}
+\item How do you implement sorting a list? --- I call the $\mathit{sort}$ function of my programming language's basic library.
+\item OK, but what if there is no $\mathit{sort}$ function? --- I import a library that provides it.
+\item OK, but what if there is no such library? --- I use a different programming language.
+\item OK, but what if circumstances beyond your control prevent you from using third-party libraries? --- I copy-paste a definition from the internet.\footnote{Nowadays an internet search for elementary problems almost always finds a solution for every programming language, usually on \url{http://www.stackexchange.org}.}
+\end{compactenum}
+
+Thus, for most people the only realistic situations in which to implement sorting algorithms is in exams, job interviews, or similar situations.
+Then the question is never actually about sorting---it just uses sorting as an example to see whether the programmer understands how to design algorithms, analyze their complexity, and verify their correctness.
+
+In any case, sorting is an extremely good subject for an introductory computer science class because it
+\begin{compactitem}
+ \item is an elementary problem that is easy to understand for students,
+ \item is complex enough to exhibit many important general principles in interesting ways,
+ \item is simple enough for all analysis to be doable manually,
+ \item has multiple solutions, none of which is better than all the others,
+ \item is extremely well-studied,
+ \item is widely taught so that the internet is full of good visualizations that help learners.
+\end{compactitem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Design: Data Structures for Lists}\label{sec:ad:list:ds}
+
+
+Besides natural numbers, the most important examples of a data structure are lists.
+There are many different data structures for lists that differ subtly in how simply and/or efficiently the various functions can be implemented.
+
+\subsection{Immutable Lists}
+
+For immutable lists, functions like $delete$, $insert$, and $update$ (see Sect.~\ref{sec:math:sets:derivfun}) always return new lists.
+That may require copying, which takes more time and memory.
+
+\subsubsection{Functional Style: Lists as an Inductive Type}
+
+Functional languages usually implement lists an in inductive data type:
+\begin{acode}
+\adata{{List[A]}}{nil,{cons(head: A,\, tail:List[A])}}
+\end{acode}
+Now the list $[1,2,3]$ is built as $cons(1,cons(2,cons(3,nil)))$.
+
+Then functions on lists are implemented using recursion and pattern-matching.
+For example:
+\begin{acode}
+\afun[{List[B]}]{map}{x:List[A],f:A\to B}{\amatch{x}{\acase{nil}{nil},\acase{cons(h,t)}{cons(f(h),map(t,f))}}}
+\end{acode}
+
+\subsubsection{Object-Oriented Style: Linked Lists}
+
+Every inductive data type can also be systematically realized in an object-oriented language.
+The correspondence is as follows:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+inductive type & class & example: lists\\
+\hline
+name of the type & abstract class & $List$ \\
+parameters of the type & parameters of the class & $A$ \\
+constructor & concrete subclass & e.g., $cons$\\
+constructor arguments & constructor arguments & $head:A,tail:List[A]$ \\
+\hline
+\end{ctabular}
+
+A basic realization looks as follows:
+\begin{acode}
+\aclassA{{List[A]}}{}{}{}\\
+\aclass{{nil[A]}}{}{List[A]()}{}\\
+\aclass{{cons[A]}}{head:A,tail:List[A]}{List[A]()}{}
+\end{acode}
+Now the list $[1,2,3]$ is built as $\anew{cons}{1, \anew{cons}{2, \anew{cons}{3, \anew{nil}{}}}}$.
+
+Instead of pattern-matching, we have to use instance-checking to split cases.
+For example:
+\begin{acode}
+\afun[{List[B]}]{map}{x:List[A],f:A\to B}{
+  \aifelse{\aisinst{x}{nil}}
+    {\anew{nil}{}}
+    {xc := \aasinst{x}{cons} \\
+     \anew{cons}{f(xc.head), map(x.tail,f)}
+    }
+}
+\end{acode}
+
+\subsubsection{Complexity}
+
+Most operations on lists are linear because the algorithm must traverse the whole list.
+For example, the straightforward implementation of $length$ takes $O(n)$.
+
+Similarly, $get(x,i)$ takes $i$ steps to find the element. This is $n$ in the worst case and $n/2$ on average.
+So it also takes $O(n)$.
+
+In general, immutable lists require copying the list, whenever we insert, delete, or update elements.
+These algorithms must traverse the list.
+Therefore, they usually take $O(n)$ time where $n$ is the length of the list.
+
+In the case of $map(x,f)$ and $fold(x,a,f)$, the complexity depends on the passed function $f$.
+However, because the run time of $f$ does not depend on the length of the list, it takes constant time $c$.
+Thus, the overall run time is $O(cn)=O(n)$.
+
+However, there is one exception: prepending an element takes $O(1)$.
+This is because we can prepend to $x$ simply by calling $cons(a,x)$.
+Similarly, removing the first element takes $O(1)$.
+
+\subsection{Mutable Lists}
+
+Mutable lists allow assignments to the individual elements of the list.
+This allows updating an element without copying the list.
+
+Because we can update the list in place, it becomes critical how exactly the list is stored in memory.
+Three cases are of great importance:
+
+\begin{ctabular}{|l|l|p{5cm}|}
+\hline
+data structure & memory layout & remark \\
+\hline
+array & all in a row & easy to find elements but difficult to extend length \\
+linked list & every element points to next one & easy to change but traversal needed \\
+doubly-linked list &  every element points to next and previous & traversal in both directions, more overhead\\
+growable array & linked list of arrays & compromise between the above \\
+\hline
+\end{ctabular}
+
+\subsubsection{Arrays}
+
+In an array all elements are stored in a row in memory.
+
+For example, the list $x=[1,2,5]$ is stored in $3$ consecutive memory locations:
+\begin{amemory}
+\avar{x}{\N^*}{P}
+\alocations
+\aloc{P}{1}
+\aloc{P+1}{3}
+\aloc{P+2}{5}
+\end{amemory}
+
+That allows implementing $get$ and $update$ in $O(1)$.
+$get(x,n)$ is evaluated by retrieving the element in memory location $P+n$.
+That takes one step to retrieve $x$, one step for the addition, and one step to retrieve the element at $P+n$.
+$update(x,a,n)$ works accordingly.
+
+Inserting and deleting elements still takes $O(n)$.
+For example, we can implement deleting by:
+\begin{acode}
+\afun{delete}{x:List[A],n:\N}{
+  \afor{i}{n}{length(x)-1}{
+    x_n := x_{n+1}
+  }
+}
+\end{acode}
+
+Inserting an element into an array is difficult though: The memory location behind the array may not be available because it was already used for something else.
+Therefore, arrays are often realized in such a way that the programmer chooses a priority the maximal length of the array.
+Thus, technically this data structure does not realize the set $A^*$ but the set $A^n$ for some length $n$.
+
+\subsubsection{Linked Lists}
+
+Mutable linked list consist of a reference to the first element.
+Each element consists of a value and a reference to its successor.
+\begin{acode}
+\aclass{{List[A]}}{head:Elem[A]}{}{}\\
+\aclass{{Elem[A]}}{value:A, next:Elem[A]}{}{}
+\end{acode}
+
+Technically, $head$ and $next$ should have the type $Elem(A)^?$ to allow for empty lists and the end of the list, respectively.
+However, object-oriented programmers usually use a dirty trick where the built-in value $null$ is used those cases.
+
+Now the list $[1,2,5]$ is built as $x:=\anew{List}{\anew{Elem}{1, \anew{Elem}{2, \anew{Elem}{5, null}}}}$.
+It is stored in memory as
+\begin{amemory}
+\avar{x}{\N^*}{P}
+\alocations
+\aloc{P.head}{Q}
+\hline
+\aloc{Q.value}{1}
+\aloc{Q.next}{R}
+\hline
+\aloc{R.value}{2}
+\aloc{R.next}{S}
+\hline
+\aloc{S.value}{5}
+\aloc{S.next}{null}
+\end{amemory}
+
+Deletion can now be realized in-place as follows
+\begin{acode}
+\afun{delete}{x:List[A],n:\N}{
+ \aifelse{n==0}{x.head := x.head.next}{
+  previous := x.head \\
+  current := x.head.next\\
+  \afor{i}{1}{n-1}{
+    previous := current\\
+    current := current.next\\
+  }
+  previous.next := current.next
+ }
+}
+\end{acode}
+
+Like immutable lists, linked-lists take $O(n)$ for most operations.
+However, they still perform better because changes can be done in-place.
+Moreover, they require $O(1)$ memory whereas immutable lists require $O(n)$ memory to copy the list.
+
+We can also define a constant-time variant of $insert$.
+Instead of taking the position $n$ at which to insert (which takes linear time to find), we take the element after which to insert:
+\begin{acode}
+\afun{insert}{x:List[A],after:Elem[A],a:A}{
+ after.next := \anew{Elem}{a, after.next}
+}
+\end{acode}
+
+The same trick does not work for $delete$: Even if we have the element that we want to delete, we still need to search for predecessor to update the list.
+
+\subsubsection{Doubly-Linked Lists}
+
+Doubly-linked linked list are the same as linked lists except that each element also knows its predecessor ($null$ for the first element).
+Moreover, the list knows its first and last element.
+Thus, a doubly-linked list can be traversed in both directions.
+
+\begin{acode}
+\aclass{{List[A]}}{head:Elem[A], last:Elem[A]}{}{}\\
+\aclass{{Elem[A]}}{value:A, previous: Elem[A], next:Elem[A]}{}{}
+\end{acode}
+
+Now the list $x=[1,2,5]$ is stored in memory as
+\begin{amemory}
+\avar{x}{\N^*}{P}
+\alocations
+\aloc{P.head}{Q}
+\aloc{P.last}{S}
+\hline
+\aloc{Q.value}{1}
+\aloc{Q.previous}{null}
+\aloc{Q.next}{R}
+\hline
+\aloc{R.value}{2}
+\aloc{R.previous}{Q}
+\aloc{R.next}{S}
+\hline
+\aloc{S.value}{5}
+\aloc{S.previous}{R}
+\aloc{S.next}{null}
+\end{amemory}
+
+In a double-linked list, we can define constant-time variants for both $insert$ and $delete$.
+For example:
+\begin{acode}
+\afun{delete}{x:List[A],e:Elem[A]}{
+ \aifelse{e.previous == null}{x.head := e.next}{e.previous.next := e.next} \\
+ \aifelse{e.next == null}{x.last := e.previous}{e.next.previous := e.previous}
+}
+\end{acode}
+
+
+\subsubsection{Growable Arrays}
+
+Growable arrays are a compromise between arrays and linked lists.
+Initially, they behave like an array with a fixed length $l$.
+However, we insert an element such that the length become $>l$, we create a second array of length $l$ (elsewhere in memory) and connect the two.
+
+Retrieval and update technically are linear now.
+To access the element in position $n$, we have to make $n/l$ retrievals to jump to the needed array.
+Because is $l$ constant, that yields $O(n)$ retrievals.
+However, $l$ is usually large so that element access is only a little slower than for an array and much faster than for a linked list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Design: Algorithms for Sorting}\label{sec:ad:sort:algo}
+
+We assume a fixed set $A$ and a fixed comparison function $\leq:A\times A \to \B$.
+For $x\in A^*$, we write $Sorted(x)$ if $x$ is $\leq$-sorted.
+
+\paragraph{Auxiliary Functions}
+Many in-place sorting algorithms have to swap two elements in a mutable list at some point.
+Therefore, we define an auxiliary function
+
+\begin{acode}
+\afun{swap}{x:MutableList[A], i:\N, j:\N}{
+  h := x_i\\
+  x_i := x_j\\
+  x_j := h
+}
+\end{acode}
+
+It is easy to see that this function indeed has the side effect of swapping two elements in $x$.
+If $x$ is an array, the complexity of $swap$ is $O(1)$.
+
+
+\subsection{Bubble Sort}
+
+Bubble sort is a stable in-place sorting algorithm that closely follows the natural way how a human would sort.
+The idea is to find two elements that are not in order and swap them.
+If no such elements exist, the list is sorted.
+
+\begin{acode}
+\afun{bubblesort}{x:Array[A]}{
+ sorted := \false \\
+ \awhile{!sorted}{
+   sorted:=\true \\
+   \afor{i}{0}{length(x)-2}{
+     \aif{! x[i]\leq x[i+1]}{
+       sorted := \false \\
+       swap(x,i,i+1)
+     }
+   }
+ }
+}
+\end{acode}
+
+\paragraph{Correctness}
+The for-loop compares all $length(x)-1$ pairs of neighboring elements.
+It sets $sorted$ to $\false$ if the list is not sorted.
+Thus, we obtain the loop invariant $F(x,sorted)=sorted==Sorted(x)$, which immediately yields partial correctness.
+
+Total correctness follows from the termination ordering
+ \[T(x,sorted)=\text{number of pairs $i,j$ such that $! x_i\leq x_j$} + \cas{1\mifc sorted==\false\\ 0\mifc sorted==\true}\]
+Indeed, this number decreases in every iteration of the loop in which $x$ is not sorted.
+The second summand is necessary to make $T(x,sorted)$ also decreases if $x$ is already sorted (which happens exactly one in the last iteration).
+
+\paragraph{Complexity}
+If $n$ is the length of $x$, each iteration of the while-loop has complexity $\Theta(n)$.
+Moreover, the while-loop iterates at most $n$ times.
+That happens in the worst-case: when $x$ is reversely sorted initially.
+Thus, the complexity is $\Theta(n^2)$.
+
+In the best-case, when $x$ is already sorted initially, the complexity is $\Theta(n)$.
+That is already optimal because it requires $n-1$ comparisons to determine that a list is sorted.
+
+\subsection{Insertion Sort}
+
+Insertion is also a stable in-place algorithm.
+
+The idea is to sort increasingly large prefixes of a list $x$.
+If $[x_0,\ldots,x_{i-1}]$ is sorted already, the element $x_i$ is inserted among them.
+
+\begin{acode}
+\afun{insertionsort}{x:Array[A]}{
+  \afor{i}{0}{length(x)-1}{
+    current := x[i] \\
+    pos := i \\
+    \awhile[shift elements to the right to make space for $current$]{pos > 0 \aand ! current \leq x.(pos-1)}{
+       x[pos] := x[pos-1] \\
+       pos := pos - 1
+    }\\
+    x[pos] := current
+  }
+}
+\end{acode}
+
+\paragraph{Correctness}
+We use a loop-invariant for the for-loop: $F(x,i)=Sorted([x.0,\ldots,x.(i-1)])$.
+The preservation of the loop-invariant is non-obvious but easy to verify.
+It holds initially because the empty list is trivially sorted.
+That yields partial correctness.
+
+Termination is easy to show using the termination ordering $T(x,i,current,pos)=pos$.
+
+\paragraph{Complexity}
+If $n$ is the length of $x$, the for-loop runs $n$ times with $i=0,\ldots,n-1$
+Inside, the while-loop runs $i$ times in the worst-case: if $x$ is reversely sorted, all $i$ elements before $current$ must be shifted to the right.
+That sums up to $0+1+\ldots+n-1\in \Theta(n^2)$.
+
+Everything else is $O(n)$.
+Thus, the worst-case complexity is $\Theta(n^2)$.
+
+In the best-case, if $x$ is already sorted, the while-loop never runs, and the complexity is $\Theta(n)$.
+
+\subsection{Merge Sort}
+
+Merge sort is based on the observation that
+\begin{compactitem}
+  \item sorting smaller lists is much easier than sorting larger lists (because the number of pairs that have to be compared in $\Theta(n^2)$,
+  \item merging two sorted lists is easy (liner time).
+\end{compactitem}
+Thus, we can divide a list into two halves, sort them recursively, then merge the results.
+This is similar to the idea of square-and-multiply (Sect.~\ref{sec:ad:exp:sqmult}) and an example of the family of divide-and-conquer algorithms.
+
+Because it needs auxiliary memory to do the merging of two half lists into one, it is easiest to implement as non-in-place algorithm.
+Then the input data structure does not matter and can be assumed to be immutable.
+The following is a straightforward realization:
+
+\begin{acode}
+\afun[{List[A]}]{mergesort}{x:List[A]}{
+  n := length(x) \\
+  \aifelse{n<2}{x}{
+    k := n\divop 2\\
+    x1 := mergesort([x.0,\ldots,x.(k-1)]) \\
+    x2 := mergesort([x.k,\ldots,x.(n-1)]) \\
+    \areturn{merge(x1,x2)}
+  }
+}\\
+\\
+\afun[{List[A]}]{merge}{x:List[A], y:List[A]}{
+  xLeft := x\\
+  yLeft := y\\
+  res = [] \\
+  \awhile{nonempty(xLeft) \aor nonempty(yLeft)}{
+    takefromX := empty(yLeft) \aor (nonempty(xLeft) \aand xLeft.head \leq yLeft.head)\\
+    \aifelse{takefromX}{
+      res := cons(xLeft.head, res) \\
+      xLeft := xLeft.tail
+    }{
+      res := cons(yLeft.head, res) \\
+      yLeft := yLeft.tail
+    }
+  }\\
+  \areturn{reverse(res)}
+}
+\end{acode}
+
+\paragraph{Correctness}
+Because the function $merge$ is not part of the specification, we have to first specify which property we want to prove about it.
+The needed property for $z:=merge(x,y)$ is:
+ \begin{compactitem}
+   \item precondition: $Sorted(x)$ and $Sorted(y)$
+   \item postcondition: $Sorted(z)$ and $z$ is a permutation of $x+y$
+ \end{compactitem}
+
+Now we can prove each function correct.
+\medskip
+
+First we consider $mergesort$.
+Partial correctness means to prove $Sorted(mergesort(x))$.
+That is very easy:
+\begin{compactitem}
+  \item If $n<2$, $x$ is trivially sorted.
+  \item Otherwise:
+   \begin{compactitem}
+     \item $Sorted(x1)$ and $Sorted(x2)$ follow from the recursive call.
+     \item Then the property of $merge$ yields $Sorted(merge(x1,x2))$.
+   \end{compactitem}
+\end{compactitem}
+
+Relative termination is immediate (assuming that $merge$ always terminates, which we prove below).
+A termination ordering is given by $T(x)=length(x)$.
+Indeed, $mergesort$ recurses only into strictly shorted lists.
+\medskip
+
+Second we consider $merge$.
+We use a loop invariant $F(x,y,xLeft,yLeft,res)$ that states that
+ \begin{compactitem}
+  \item $Sorted(reverse(res))$ and $Sorted(xLeft)$ and $Sorted(yLeft)$
+  \item All elements in $res$ are in $\leq$-relation to all elements in $xLeft+yLeft$.
+  \item $res+xLeft+yLeft$ is a permutation of $x+y$
+ \end{compactitem}
+It is non-obvious but it is straightforward to see that this indeed a loop invariant:
+ \begin{compactitem}
+   \item $reverse(res)$ remains sorted because we always take the smallest element in $yLeft+xRight$ and prepend it to $res$.
+    In particular, because $xLeft$ and $yLeft$ are sorted, the smallest element must be $xLeft.head$ or $yLeft.head$.
+   \item For the same reason, all elements of $res$ remain smaller than the ones of $xLeft$ and $yLeft$.
+   \item Because we only remove elements from $xLeft$ and $yLeft$, they remain sorted.
+   \item Because every element that is removed from $xLeft$ or $yLeft$ is immediately added to $res$, they remain a permutation.
+ \end{compactitem}
+
+To show partial correctness, we see that
+\begin{compactitem}
+  \item The loop invariant holds initially, which is obvious.
+  \item After completing the loop, $xLeft$ and $yLeft$ are empty.
+  \item Then, using the loop invariant, it is easy to show that $reverse(res)$ is sorted and a permutation of $x+y$.
+\end{compactitem}
+
+To show termination, we use $T(x,y,xLeft,yLeft,res)=length(xLeft)+length(yLeft)$.
+It is easy to see that $T$ is a the termination ordering for the while-loop.
+
+\paragraph{Complexity}
+We have to analyze the complexity of both functions.
+
+First we consider $merge$.
+Let $n=length(x)+length(y)$.
+\begin{compactitem}
+ \item The three assignments in the beginning are $O(1)$.
+ \item The while-loop is repeated once for every element of $x$ and $y$, which requires $\Theta(n)$ steps.
+ The body of the loop takes $O(1)$. So $\Theta(n)$ in total.
+ \item The last step requires reverting $res$, which has $n$ elements at this point.
+ Reverting a list requires building a new list by traversing the old one. That is $\Theta(n)$ as well.
+\end{compactitem}
+Thus, the total complexity of $merge$ is $\Theta(n)=\Theta(length(x)+length(y))$.
+\medskip
+
+Second we consider $mergesort$.
+Let $n=length(x)$ and let $C(n)$ be the needed complexity.
+We compute $C(n)$:
+\begin{compactitem}
+ \item The assignments and the if-statement are in $O(1)$.
+ \item The recursive calls to $mergesort$ take $C(n/2)$ each.
+ \item The call to $merge$ takes $\Theta(length(x1)+length(x2))=\Theta(n)$.
+\end{compactitem}
+That yields
+ \[C(n)=2\cdot C(n/2)+\Theta(n) = \ldots = 2^k\cdot C(n/2^k) + k\cdot \Theta(n)\]
+ Using $k=\log_2 n$ and $C(1)=C(0)\in O(1)$, we obtain
+ \[C(n)=n\cdot O(1)+\log_2 n\cdot \Theta(n)=\Theta(n\log_2 n)\]
+\medskip
+
+Thus, merge sort is quasilinear and thus strictly more efficient than bubble sort and insertion sort.
+
+Contrary to bubble sort and insertion sort, merge sort takes the same amount of time no matter how sorted the input already is.
+The recursion and the merging happen in essentially the same way independent of the input list.
+Thus, its best-case complexity is also $\Theta(n\log_2 n)$.
+
+\begin{remark}[Building the list reversely in $merge$]
+$merge$ could be simplified by always adding the element $xLeft.head$ or $yLeft.head$ to the \emph{end} of $res$ instead of the beginning.
+However, as discussed in Sect.~\ref{sec:ad:list:ds}, adding an element to the beginning of an immutable list takes constant time whereas adding to the end takes linear time.
+
+Therefore, if we added elements to the end of $res$ would become quadratic instead of linear.
+Then merge sort as a whole would also be quadratic.
+\end{remark}
+
+\subsection{Quick Sort}
+
+Quick sort is similar to merge sort in that two sublists are sorted recursively.
+The main differences are:
+\begin{compactitem}
+ \item It does not divide the list $x$ in half.
+  Instead if picks some element $a$ from the list (called the \emph{pivot}).
+  Then it divides $x$ into sublists $x1$ and $x2$ containing the elements smaller and greater than $x$ respectively.\\
+  No merging is necessary because all elements in $x1$ are smaller than all elements in $x2$.
+  Thus the sorted list is $quicksort(x1)+x+quicksort(x2)$.
+ \item To divide the list, quick sort has to traverse and reorder the list anyway.
+ Therefore, it can easily be implemented in-place avoiding the use of auxiliary memory.
+\end{compactitem}
+
+When implemented as an in-place sorting algorithm, the recursive call takes two additional arguments: two numbers $first$ and $last$ that describe the sublist that should be sorted.
+Carrying along auxiliary information is very typical for recursive algorithms.
+Therefore, we often find pairs of function:
+ \begin{compactitem}
+  \item A recursive function that takes additional arguments.\\
+   That is $quicksortSublist$ below, which takes the entire list and the information about which sublist to sort.
+  \item A non-recursive function that does nothing but the other function with the initial arguments.\\
+   That is $quicksort$ below, which calls $quicksortSublist$ on the entire list (e.g., on the sublist from $0$ to the end of $x$).
+ \end{compactitem}
+
+\begin{acode}
+\afun{quicksort}{x:Array[A]}{
+  quicksortSublist(x,0,length(x)-1)
+}\\
+\\
+\afun{quicksortSublist}{x:Array[A], first:\N, last: \N}{
+  \aifelse{first \geq last}{
+    \areturn{}
+  }{
+    pivot := A[last]\\
+    pivotPos := first\\ %%    // place for swapping
+    \aloopinv{x[k]\leq pivot \mfor k=first,\ldots,pivotPos-1 \mand pivot \leq x[k] \mfor k=pivotPos,\ldots,j-1}
+    \afor{j}{first}{last - 1}{
+      \aif{x[j] \leq pivot}{
+         swap(x,pivotPos,j) \\
+         pivotPos := pivotPos + 1
+      }
+    }\\
+    swap(x,pivotPos,last)\\
+    \\
+    quicksortSubList(x, first, pivotPos - 1)\\
+    quicksortSubList(x, pivotPos + 1, last)
+  }
+}
+\end{acode}
+
+\paragraph{Correctness}
+Before proving correctness we have to specify the behavior of the auxiliary function $quicksortSublist$:
+\begin{compactitem}
+ \item precondition: none
+ \item postcondition: $Sorted([x_{first},\ldots,x_{last}])$
+\end{compactitem}
+Then the correctness of $quicksort$ follows immediately from that of $quicksortSublist$.
+\medskip
+
+Now we prove the partial correctness of $quicksortSublist$.
+First, the base case is trivially correct: It does nothing for lists of length $0$ or $1$.
+For the recursive case, we prove that the following two properties holds just before the two recursive calls:
+\begin{compactitem}
+ \item The sublist $[x_{first},\ldots,x_{last}]$ is a permutation of its original value, and no other elements of $x$ have changed.
+  That is easy to because we only change $x$ by calling $swap$ on positions between $first$ and $last$.
+ \item All values $x_k$ are
+  \begin{compactitem}
+    \item smaller than $pivot$ for $k=first,\ldots,pivotPos-1$,
+    \item equal to $pivot$ for $k=pivotPos$,
+    \item greater than $pivot$ for $k=pivotPos+1,\ldots,last$.
+  \end{compactitem}
+  We prove that by using the indicated loop invariant for the for-loop.
+  It is trivially true before the for-loop because $first=pivotPos$ and $pivotPos=j$.
+  It is straightforward to check that it is preserved by the for-loop.
+  Therefore, it holds after the for-loop for the value $j=last-1$.
+  The last call to $swap$ moves the pivot element into $x_{pivotPos}$ so that the loop invariant is now also true for $j=last$.
+  Then the needed properties can be seen easily.
+\end{compactitem}
+\medskip
+
+To prove the termination of $quicksortSublist$, we use the termination ordering $T(x,first,last)=last-first+1$ (which is the length of the sublist).
+That value always decreases because the pivot element is never part of the recursive call.
+
+\paragraph{Complexity}
+Let $n=last-first-1$ be the length of the sublist.
+It is easy to see that, apart from the recursion, $quicksortSublist$ takes $\Theta(n)$ steps because the for-loop traverses the sublist.
+Thus, the complexity of quick sort depends entirely on the lengths of the sublists in the recursive calls.
+However, the pivot position and therefore those lengths are hard to predict.
+
+The best-case complexity arises if the pivot always happens to be in the middle.
+Then the same reasoning as for merge sort, yields best-case complexity $\Theta(n\log_2 n)$.
+The worst-case arises if the list is already sorted: then the pivot position will always be the last one, and the two sublists have sizes $n-1$ and $0$.
+That results in $n$ recursive calls on sublists of length $n$, $n-1$, \ldots, $1$ as well as $n$ calls on empty sublists.
+Consequently, the worst-case complexity is $\Theta(n^2)$.
+
+However, the worst-case complexity does not do quick sort justice because it is much higher than its average-case complexity.
+Because there are only finitely many permutations for a list of fixed length, the average-case complexity can be worked out systematically.
+The result is $\Theta(n\log_2 n)$.
+\medskip
+
+It may seem that quick sort is less attractive than merge sort because of its higher worst-case complexity.
+However, that is a minor effect because the algorithms have the same best-case and average-case complexity.
+Instead, the constant factors, which are rounded away by using $\Theta$-classes, become important to compare two algorithms with such similar complexity.
+
+Here quick sort is superior to merge sort.
+Moreover, quick sort can be optimized in many ways.
+In particular, the choice of the pivot can be tuned in order to increase the likelihood that the two sublists end up having the same size.
+For example, we can randomly pick $3$ elements of the sublist and use the middle-size one as the pivot.
+With such optimizations, quick sort can become substantially faster than merge sort.
+
+\subsection{Other Algorithms and Overview}
+
+\subsubsection{Counting Sort}
+
+\subsubsection{Radix Sort}
+
+\subsubsection{Bucket Sort}

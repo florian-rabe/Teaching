@@ -1,0 +1,26 @@
+A binary function on $A$ is a function $\circ: A\times A\to A$.
+We usually write $\circ(x,y)$ as $x\circ y$.
+
+\begin{definition}[Properties of Binary Functions]\label{def:math:binop}
+We say that $\circ$ is \ldots if the following holds:
+\begin{compactitem}
+ \item associative: for all $x,y,z$, $x\circ(y\circ z)=(x\circ y)\circ z$
+ \item commutative: for all $x,y$, $x\circ y=y\circ x$
+ \item idempotent: for all $x$, $x\circ x=x$
+\end{compactitem}
+
+An element $a\in A$ is called a \ldots element of $\circ$ if the following holds:
+ \begin{compactitem}
+  \item left-neutral: for all $x$, $a\circ x=x$
+  \item right-neutral: for all $x$, and $x\circ a=x$
+  \item neutral: left-neutral and right-neutral
+  \item left-absorbing: for all $x$, $a\circ x=a$
+  \item right-absorbing: for all $x$, $x\circ a=a$
+  \item absorbing: left-absorbing and right-absorbing
+ \end{compactitem}
+\end{definition}
+
+\begin{theorem}\label{thm:math:binop}
+Neutral and absorbing element of $\circ$ are unique whenever they exist.
+\end{theorem}
+

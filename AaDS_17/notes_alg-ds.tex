@@ -1,0 +1,139 @@
+\documentclass{book}
+
+\usepackage{graphicx}
+\usepackage{xkeyval}
+\usepackage{multirow}
+%\usepackage{bm} %% bold face math symbols
+\usepackage{listings}
+\usepackage{tikz}
+%\usetikzlibrary{shapes}
+\usetikzlibrary{arrows}
+%\usepackage{stmaryrd}%\new2command{\contra}{\lightning}
+%\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
+
+\usepackage{algorithm}
+%\usepackage{ded}
+
+\usepackage{../mylecturenotes}
+
+\title{Lectures Notes on Data Structures and Algorithms}
+\author{Florian Rabe}
+\date{2017}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\part{Introduction and Foundations}
+
+\chapter{Meta-Remarks}
+ \input{../generalremarks}
+
+\chapter{Basic Concepts}\label{sec:ad:fund}
+  \input{fund}
+
+\chapter{Design Goals}\label{sec:ad:goals}
+  \input{goals}
+
+\chapter{Arithmetic Examples}
+  \input{arith}
+
+\chapter{Example: Lists and Sorting}\label{sec:ad:sort}
+  \input{sort}
+
+\part{Important Data Structures}
+
+\chapter{Finite Data Structures}
+% empty (for jumps), unit (for delaying and procedures), boolean, zmodn
+% enumerations
+
+%char, string, pointer
+
+\chapter{Number-Based Data-Structures}
+% nat, int, rat, real, comp
+
+\chapter{List-Like Data Structures}
+% specification, inductive type, array, heap, stack, queue, linked list, doubly-linked list
+% infinite lists, iterator, iterable
+
+\chapter{Tree-Like Data Structures}
+% specification (labeled nodes vs. labeled leafs), as inductive type, binary trees, heaps, red-black trees
+% bfs, dfs, minmax, heapsort
+
+% a binary tree is a heap if all branches are ordered
+
+\chapter{Set-Like Data Structures}
+% specification, list sets, binary search trees, hash sets
+
+\chapter{Function-Like Data Structures}
+% specification, list map, hash map
+
+\chapter{Product-Like Data Structures}
+% specification, products, records, classes
+
+\chapter{Union-Like Data Structures}
+% disjoint union, Option/null, inductive types
+ % exercise: 1567 -> 21
+
+\chapter{Graph-Like Data Structures} % 2-3 weeks
+% specification
+% algorithms for graphs: search, minimum spanning tree, shortest path, maximum flow
+
+\chapter{Algebraic Data Structures}
+% based on one operation, based on two operations, based on one relation
+
+\part{Important Families of Algorithms} % one week
+
+\chapter{Divide and Conquer}
+% binary search vs. linear search
+% multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication (taken from Beth Q2.2)
+ 
+\chapter{Dynamic Programming}
+
+\chapter{Greedy Algorithms}
+
+% what else?
+\chapter{Recursion}
+
+\chapter{Backtracking}
+
+\chapter{Randomization}
+
+\chapter{Parallelization and Distribution}
+
+\chapter{Protocols}
+
+% one week of geometry
+
+
+\part{Concrete Languages}
+
+\chapter{Data Description Languages}
+ 
+ \section{JSON}
+
+ \section{XML}
+ 
+ \section{UML}
+
+\chapter{Programming Languages}
+ 
+
+%\part{Conclusion}
+%
+%\chapter{Summary}
+%  \input{summary-abs}
+
+\part{Appendix}
+
+\appendix
+
+\chapter{Mathematical Preliminaries}\label{sec:math}
+\input{../math/all}
+
+\bibliographystyle{alpha}
+\bibliography{../../Program_Data/Latex/bib/rabe,../../Program_Data/Latex/bib/pub_rabe,../../Program_Data/Latex/bib/systems,../../Program_Data/Latex/bib/institutions,../../Program_Data/Latex/bib/historical}
+
+\end{document}

@@ -1,0 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% pseudo code
+
+\definecolor{shadecolor}{RGB}{245,245,245}
+\newenvironment{acode}{\setcounter{aindent}{0}\let\@anewline=\\\renewcommand{\\}{\anewline}\noindent\begin{snugshade}$}{$\end{snugshade}}
+
+\newcommand{\akey}[1]{\textbf{#1}\;}
+
+\newcounter{aindent}
+\newcommand{\anewline}{\@anewline\ntimes{\theaindent}{\tb}}
+\newcommand{\ablock}[1]{\addtocounter{aindent}{1}\anewline #1\addtocounter{aindent}{-1}}
+
+% expressions
+\newcommand{\alam}[3][]{\ifnonempty[#2]{#1}{(#2:#1)}\mapsto #3}
+\newcommand{\amatch}[2]{\akey{match}\,#1\ablock{\fold{\\}{#2}}}
+\newcommand{\acase}[2]{#1 \mapsto #2}
+\newcommand{\anew}[2]{\akey{new} #1(#2)}
+
+\newcommand{\aisinst}[2]{#1 \,\akey{isInstanceOf} #2}
+\newcommand{\aasinst}[2]{#1 \,\akey{asInstanceOf} #2}
+
+%% operators
+\newcommand{\aand}{\;\&\&\;}
+\newcommand{\aor}{\;||\;}
+\newcommand{\aeq}{==}
+\newcommand{\aneq}{\neq}
+
+% statements
+\newcommand{\aseq}[2][]{\fold{;}{#2} \acomment{#1}}
+\newcommand{\awhile}[3][]{\akey{while} #2 \acomment{#1} \ablock{#3}}
+% for{i}{m}{n}{code(i)} = code(m) ; ... ; code(n)
+\newcommand{\afor}[5][]{\akey{for} #2 \;\akey{from}#3 \;\akey{to} #4 \acomment{#1} \ablock{#5}}
+\newcommand{\aif}[3][]{\akey{if} #2\acomment{#1} \ablock{#3}}
+\newcommand{\aifelse}[4][]{\aif[#1]{#2}{#3}\anewline\akey{else}\ablock{#4}}
+\newcommand{\areturn}[2][]{\akey{return} #2\acomment{#1}}
+
+\newcommand{\aloopinv}[1]{\acomment{loop invariant: $#1$}\\}
+
+% inline variants
+\newcommand{\ablockI}[1]{\{#1\}}
+\newcommand{\awhileI}[3][]{\akey{while}\; #2\; \ablockI{#3} \acomment{#1}}
+\newcommand{\aifI}[3][]{\akey{if} (#2) \;\ablockI{#3}\acomment{#1}}
+\newcommand{\aifelseI}[4][]{\aifI{#2}{#3}\;\akey{else}\ablockI{#4}\acomment{#1}}
+
+% declarations
+\newcommand{\aclassH}[5][class]{\akey{#1} #2(#3)\ifnonempty{#4}{\;\akey{extends}#4}}
+\newcommand{\aclass}[4]{\aclassH{#1}{#2}{#3}\ablockI{#4}}
+\newcommand{\aclassA}[4]{\aclassH[abstract class]{#1}{#2}{#3}\ablockI{#4}}
+\newcommand{\aclassI}[4]{\aclassH{#1}{#2}{#3}\ablock{#4}}
+
+\newcommand{\adata}[2]{\akey{data} #1 \, =\, \fold{\;|\;}{#2}}
+\newcommand{\atypedef}[2]{#1 = #2}
+
+\newcommand{\afunH}[3]{\akey{fun} #1(\fold{,\,}{#2})\ifnonempty{#3}{:#3} \, =}
+\newcommand{\afun}[4][]{\afunH{#2}{#3}{#1} \ablock{#4}}
+\newcommand{\afunI}[4][]{\afunH{#2}{#3}{#1} \,\ablockI{#4}}
+
+\newcommand{\acomment}[1]{\ifnonempty{#1}{\hfill {\color{gray}\text{#1}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% memory layout
+
+\newcommand{\alocations}{\hline\endtabular\tb\tb\tabular{|l|l|}\hline location & value \\\hline}
+\newenvironment{amemory}{\center\tabular{|l|l|l|}\hline variable & type & value \\\hline}{\hline\endtabular\endcenter}
+\newcommand{\avar}[3]{\ensuremath{#1} & \ensuremath{#2} & \ensuremath{#3} \\}
+\newcommand{\aloc}[2]{\ensuremath{#1} & \ensuremath{#2} \\}

@@ -1,0 +1,282 @@
+\section{Exponentiation}\label{sec:ad:exp}
+
+\subsection{Specification}\label{sec:ad:exp:spec}
+
+The function $exp(x\in\Z,n\in\N)\in\N$ returns the $n$-the power of $x$ defined by
+\[x^0=1\]
+\[x^{n}=x\cdot x^{n-1} \tb\mif n > 0\]
+
+By induction on $n$, we show this indeed specifies a unique function.
+
+\subsection{Naive Algorithm}\label{sec:ad:exp:naive}
+
+It is straightforward to give an algorithm for exponentiation.
+For example,
+\begin{acode}
+\afun[\N]{power}{x:\Z,n:\N}{
+  \aifelse{x==0}{1}{x\cdot power(x,n-1)}
+}
+\end{acode}
+
+\paragraph{Correctness}
+The correctness of this algorithm is immediate because it follows the specification literally.
+
+\paragraph{Complexity}
+Assuming that all multiplications take $O(1)$ no matter how big $x$ is, the complexity of this algorithm is $\Theta(n)$ because we need $n$ multiplications and recursive calls.
+
+\subsection{Square-and-Multiply Algorithm}\label{sec:ad:exp:sqmult}
+
+It is easy to think that $\Theta(n)$ is also the complexity of the specification, i.e., that there is no sub-linear algorithm for it.
+But that is not true.
+
+Consider the square-and-multiply algorithm:
+\begin{acode}
+\afun[\N]{sqmult}{x:\Z,n:\N}{
+  \aifelse{n==0}{1}{
+	  r := sqmult(x, n\divop 2)\\
+	  sq := r\cdot r\\
+	  \aifelseI{n \modop 2==0}{sq}{x\cdot sq}
+  }
+}
+\end{acode}
+
+\paragraph{Correctness}
+To prove the correctness of this algorithm, we note that
+\[x^{2i+0}=(x^i)^2\]
+\[x^{2i+1}=x\cdot(x^i)^2\]
+Moreover, we know that $n=2(n\divop 2)+(n\modop 2)$.
+Partial correctness of $sqmult$ follows immediately.
+
+To prove termination, we observe that $T(x,n)=n$ is a termination ordering: $n\divop 2$ always decreases (because $n\neq 0$) and remains positive.
+
+\paragraph{Complexity}
+Computing the run time of a recursive function often leads to a recurrence relation: The function occurs on both sides with different arguments.
+In this case, we get:
+ \[C(n)=C(n\divop 2) + c\]
+where $c\in O(1)$ is the constant-time effort needed in each iteration.
+We systematically expand this further
+ \[C(n)=C(n\divop 2) + c = C(n\divop 2\divop 2) + 2\cdot c=\ldots=C(n\overbrace{\divop 2\ldots\divop 2}^{k+1\,\text{times}})+(k+1)\cdot c\]
+
+Now let $n=(b_k\,\ldots\,b_0)_2$ be the binary representation of the exponent.
+We know that $k=\lfloor\log_2 n\rfloor$ and $n\overbrace{\divop 2\ldots\divop 2}^{k+1\,\text{times}}=0$.
+Moreover, we know from the base case that $C(0)=1$.
+
+Substituting these above yield
+\[C(n)\in O(1)+\Theta(\log_2 n)\cdot O(1)=\Theta(\log_2 n)\]
+
+Thus, we can compute power in logarithmic time.
+
+\section{Fibonacci Numbers}\label{sec:ad:fib}
+
+\subsection{Specification}\label{sec:ad:fib:spec}
+
+The Fibonacci numbers $Fib(n\in\N)\in\N$ are defined by
+\[fib(0)=0\]
+\[fib(1)=1\]
+\[fib(n)=fib(n-1)+fib(n-2) \tb\mif n>1\]
+
+By induction on $n$, we prove that this indeed specifies a unique function.
+
+Moreover, we can prove the non-obvious result that
+ \[fib(n)=\frac{\phi^n-(1-\phi)^n}{\sqrt{5}} \tb\mfor \phi=\frac{1+\sqrt{5}}{2}\]
+($\phi$ is also called the golden ratio.)
+That can be further simplified to
+ \[fib(n)=round\left(\frac{\phi^n}{\sqrt{5}}\right)\]
+where we round to the nearest integer.
+
+\subsection{Naive Algorithm}\label{sec:ad:fib:naive}
+
+It is straightforward to give an algorithm for computing Fibonacci numbers.
+For example:
+\begin{acode}
+\afun[\N]{fib}{n:\N}{
+  \aifelse{x\leq 1}{x}{fib(n-1)+fib(n-2)}
+}
+\end{acode}
+
+\paragraph{Correctness}
+The correctness of this algorithm is immediate because it follows the specification literally.
+
+\paragraph{Complexity}
+We obtain the recurrence relation $C(n)=C(n-1)+C(n-2)+c$ where $c\in O(1)$ is the constant-time effort of the recursion.
+That is the same recurrence as for the definition of the Fibonacci numbers themselves, thus $C(n)\in O(fib(n))=\Exp$.
+
+This naive approach is exponential because every functions spawns $2$ further calls.
+Each time $n$ is reduced only by $1$ or $2$, so we have to double the number of calls about $n$ times to $\Theta(2^n)$ calls.
+
+\subsection{Linear Algorithms}\label{sec:ad:fib:linear}
+
+It is straightforward to improve on the naive algorithm turning an exponential into a liner solution.
+For example:
+\begin{acode}
+\afun[\N]{fib}{n:\N}{
+  \aifelse{x\leq 1}{x}{
+    prev = 0
+    current = 1 \\
+    i = 1 \\
+    \awhile{i<n}{
+      next = current + prev \\
+      prev = current \\
+      current = next
+      i = i+1
+    }
+    \areturn{current}
+   }
+}
+\end{acode}
+
+\paragraph{Correctness}
+As a loop invariant, we use
+\[F(prev,current,i) = prev==fib(i-1)\aand current==fib(i)\]
+which is straightforward to verify.
+After the loop, we have $i==n$ and thus $current=fib(n)$, which yields partial correctness.
+
+As a termination ordering, we use $T(prev,current,i)=n-i$.
+Again this is straightforward to verify.
+
+\paragraph{Complexity}
+Both the code before and inside the loop take $O(1)$, and the loop is repeated $n-1$ times.
+Thus, the complexity is $O(n)$.
+
+\paragraph{Inexact Algorithm}
+
+It is tempting to compute $fib(n)$ directly using $fib(n)=round(\phi^n/\sqrt{5})$.
+Because we can precompute $1/\sqrt{5}$, that requires $n+1$ floating point multiplications, i.e., also $O(n)$.
+
+However, it is next to impossible verify the correctness of the algorithm.
+We know that the formula $fib(n)=round(\phi^n/\sqrt{5})$ is true, but that has no immediate to floating point arithmetic.
+Rounding errors will accumulate over time and may eventually lead to a false result.
+
+%% exercise: implement all of the above; find smallest n for which inexact algo wrong (for me in python: 71), highest computable with fibExp (for me: around 35)
+
+\subsection{Sublinear Algorithm}\label{sec:ad:fib:sublinear}
+
+Maybe surprisingly, we can still do better.
+Inspecting the body of the while loop in the linear algorithm, we see that we can rewrite the assignments as
+\[(current,prev):=(current+prev, current)\]
+which we can write in matrix form as
+\[(current,prev):=(current,prev)\cdot\begin{pmatrix}1&1\\1&0\end{pmatrix}\]
+
+Thus, we obtain
+\[(fib(n),fib(n-1))= (1,0)\cdot\begin{pmatrix}1&1\\1&0\end{pmatrix}^n \tb\mfor n>0\]
+
+The $n$-th power of a matrix can be computed in $O(\log n)$ in the same way as in Sect.~\ref{sec:ad:exp:sqmult}.
+Thus, we can compute $fib(n)$ with logarithmic complexity.
+
+\section{Matrices}
+
+\subsection{Specification}
+
+We write $\Z^{mn}$ for the set $(\Z^n)^m$ of vectors over vectors (i.e., matrices) over integers.
+
+Addition: For of $x,y\in \Z^{mn}$, we define $x+y\in\Z^{mn}$ by
+\[(x+y)_{ij}=x_{ij}+y_{ij}\]
+
+Multiplication: For $x\in \Z^{lm}$ and $y\in \Z^{mn}$, we define $x\cdot y\in\Z^{ln}$ by
+\[(x\cdot y)_{ij}=x_{i1}\cdot y_{1j} +\ldots +x_{im}\cdot y_{mj}\]
+
+\subsection{Naive Algorithms}
+
+Vectors and matrices are best stored using arrays.
+We assume that
+\begin{compactitem}
+ \item $Mat$ is the data structure of arrays of arrays of the same length of integers,
+ \item if $x$ is an object of $Mat$, then $x.rows$ is the length of the array and $x.columns$ is the length of the inner arrays,
+ \item $\anew{Mat}{m,n}$ produces a new array of length $m$ of arrays of length $n$ in which all fields are initialized as $0$.
+\end{compactitem}
+
+Then we have the straightforward algorithms
+\begin{acode}
+\afun[Mat]{add}{x:Mat,y:Mat}{
+  r = \anew{Mat}{x.rows,x.columns}\\
+  \afor{i}{1}{x.rows}{
+    \afor{j}{1}{x.columns}{
+      r.i.j := x.i.j+y.i.j
+     }
+  }\\
+  \areturn{r}
+} \\
+\\
+\afun[Mat]{mult}{x:Mat,y:Mat}{
+  r = \anew{Mat}{x.rows,y.columns}\\
+  \afor{i}{1}{x.rows}{
+    \afor{j}{1}{y.columns}{
+      \afor{k}{1}{x.columns}{
+        r.i.j := r.i.j + x.i.k+y.k.j
+      }
+    }
+  }\\
+  \areturn{r}
+}
+\end{acode}
+
+\paragraph{Correctness}
+The algorithms directly implement the definitions.
+Thus, correctness---seemingly---obvious.
+
+But there is one subtlety: The functions take two arbitrary matrices---there is no way to force the user to pass matrices of the correct dimensions.
+Therefore, we have to state correctness a bit more carefully:
+\begin{compactitem}
+ \item for $z:=add(x,y)$
+   \begin{compactitem}
+     \item[precondition:] $x.rows==y.rows$ and $x.columns==y.columns$,
+     \item[postcondition:] $z==x+y$ and $z.rows==x.rows$ and $z.columns==x.columns$.
+   \end{compactitem}
+ \item for $z:=mult(x,y)$
+   \begin{compactitem}
+     \item[precondition:]  $x.rows==y.columns$
+     \item[postcondition:] $z:=mult(x,y)$ is $x\cdot y$ and $z.rows==x.rows$ and $z.columns==y.columns$
+   \end{compactitem}
+\end{compactitem}
+Then we can easily show that $add$ and $mult$ are correct in the sense that the precondition implies the postcondition.
+
+\paragraph{Complexity}
+Assuming that all additions and multiplications take constant time, the complexity is easy to analyze.
+For addition it is $\Theta(mn)$ and for multiplication $\Theta(lmn)$ where $l$, $m$, and $n$ are the dimensions of the respective matrices.
+
+For addition, we can immediately see that we cannot improve on $\Theta(mn)$: Just creating the new array and returning it already takes $\Theta(mn)$ steps.
+Thus, $\Theta(mn)$ is the complexity of the specification, and the naive algorithm is optimal.
+
+This is not obvious for multiplication.
+Using the same argument, we can say that the complexity of multiplication is $\Omega(ln)$.
+But there cannot be an $\Theta(ln)$-algorithm because $m$ must matter---if $m$ increases, it must take longer.
+
+\subsection{Strassen's Algorithm}
+
+Inspecting the definition of matrix multiplication, we see that we can split up matrices into rectangular areas of submatrices, for example, like so:
+\[\begin{pmatrix}x_{11} & x_{12} & x_{13} & x_{14} \\ x_{21} & x_{22} & x_{23} & x_{24} \\ x_{31} & x_{32} & x_{33} & x_{34} \\ x_{41} & x_{42} & x_{43} & x_{44}\end{pmatrix}
+= \begin{pmatrix}
+    \begin{pmatrix}x_{11} & x_{12}\\ x_{21} & x_{22}\end{pmatrix} & \begin{pmatrix} x_{13} & x_{14} \\ x_{23} & x_{24} \end{pmatrix} \\
+    \begin{pmatrix}x_{31} & x_{32}\\ x_{41} & x_{42}\end{pmatrix} & \begin{pmatrix} x_{33} & x_{34} \\ x_{43} & x_{44} \end{pmatrix}
+  \end{pmatrix}
+\]
+Moreover, if matrices are split up like that, we can still obtain their product in the same way using recursive matrix multiplication:
+\[\begin{pmatrix} a & b \\ c & d\end{pmatrix}\cdot \begin{pmatrix} e & f \\ g & h\end{pmatrix}=
+  \begin{pmatrix} ae+bg & af+bh \\ ce+dg & cf+dh\end{pmatrix}=\begin{pmatrix} p & q \\ r & s\end{pmatrix}\]
+
+Strassen's algorithm works in the general.
+But for simplicity, we only consider the case $l=m=n$, i.e., we are multiplying square matrices.
+Then the naive algorithm has complexity $\Theta(n^3)$, and we know the specification has complexity $\Omega(n^2)$.
+The question is to find a solution in between.
+
+We further simplify to $n=2^k$, i.e., we can recursively subdivide our $2^k$-matrices $4$ $2^{k-1}$-matrices.
+Then we can design a recursive algorithm that only needs $k$ nested recursions.
+
+The complexity depends on the details of the implementation.
+Naively, computing $p,q,r,s$ requires $8$ recursive calls to multiplications and $4$ additions of $2^{k-1}$-matrices.
+That yields
+ \[C(n)=8\cdot C(n/2) + \Theta(n^2) = \ldots = 8^k\cdot C(1)+\Theta(n^2)\]
+Because $k=\log_2 n$ and $C(1)\in O(1)$, that yields $C(n)\in\Theta(n^{\log_2 8}=\Theta(n^3)$.
+
+However, Strassen observed that we can do better.
+With some fiddling around, we can replace the $8$ multiplications and $4$ additions with $7$ multiplications and $18$ additions.
+The extra additions do not harm because they are $\Theta(n^2)$.
+But turning the $8$ into a $7$ yields $C(n)=\Theta(n^{\log_2 7}$.
+Thus, Strassen's algorithm reduces $n^3$ to $n^{2.81\ldots}$, which can yield practically relevant improvements for relatively small $n$, e.g., $n\approx 30$.
+\medskip
+
+Even more efficient algorithms are found regularly.
+The current record is $\Theta(n^{2.37\ldots})$.
+However, the sufficiently large $n$ for which these are actually faster than Strassen's algorithm is so large that they have no practical relevance at the moment.
+
+% multiplication: polynomials, n-digit numbers (optimal solution unknown)

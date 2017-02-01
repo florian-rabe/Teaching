@@ -1,0 +1,29 @@
+A binary relation is on $A$ is a subset $\#\sq A\times A$.
+We usually write $(x,y)\in\#$ as $x\# y$.
+
+\begin{definition}[Properties of Binary Relations]\label{def:math:binrel}
+We say that $\#$ is \ldots if the following holds:
+ \begin{compactitem}
+ \item reflexive:  for all $x$, $x\# x$
+ \item transitive: for all $x,y,z$, if $x\# y$ and $y\# z$, then $x\# z$
+ \item a preorder: reflexive and transitive
+ \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
+ \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
+ \item an order: preorder and anti-symmetric
+ \item an equivalence: preorder and symmetric
+ \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
+ \end{compactitem}
+
+An element $a\in A$ is called \ldots of $\#$ if the following holds:
+ \begin{compactitem}
+  \item least element:  for all $x$, $a\# x$
+  \item greatest element: for all $x$, $x\# a$
+  \item least upper bound for $x,y$: $x\# a$ and $y\# a$ and for all $z$, if $x\# z$ and $y\# z$, then $a\# z$
+  \item greatest lower bound for $x,y$: $a\# x$ and $a\# y$ and for all $z$, if $z\# x$ and $z\# y$, then $z\# a$
+ \end{compactitem}
+\end{definition}
+
+\begin{theorem}\label{thm:math:binrel}
+If $\#$ is an order, then least element, greatest element, least upper bound of $x,y$, and greatest lower bound of $x,y$ are unique whenever they exist.
+\end{theorem}
+

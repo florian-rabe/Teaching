@@ -1,0 +1,89 @@
+\newif\iflfsyntax
+\DeclareOption{lfsyntax}{\lfsyntaxtrue}
+\ProcessOptions
+
+% key words
+\newcommand{\lfkw}[1]{\%\texttt{#1}}
+
+% Strangely, ooptional arguments in the \t... commands don't work. They seem to conflict with \multicolumn
+
+% customizable parts (use renewcommand to set)
+\newcommand{\dotatend}{} % placed at the end of a declaration
+\newcommand{\assigoperator}{:=} % operator in assignments
+
+% environment and commands for Twelf signatures, include "\\" after every declarations
+\newenvironment{twelfsig}{\par\medskip\begin{tabular}{@{\tb}lllr}}{\end{tabular}\medskip\par}
+\newenvironment{twelfdecls}{\par\medskip\begin{tabular}{lllr}}{\end{tabular}\medskip\par}
+\newcommand{\tnamespace}[2]{\multicolumn{4}{l}{$\lfkw{namespace}\;\ifnonempty{#1}{#1=\;} "\mathtt{#2}"\dotatend$}} % \tnamespace[PREFIX]{URI}
+\newcommand{\tcomment}[1]{\multicolumn{4}{r}{{\color{gray}\%\%\;#1}}} % \tcomment{COMMENT}
+\newcommand{\tsig}[1]{\multicolumn{3}{l}{$\lfkw{sig}\;#1\;=\;\{$}} % \tsig{NAME}
+\newcommand{\tview}[3]{\multicolumn{3}{l}{$\lfkw{view}\;#1\;:#2\;\arr#3\;=\{$}} % \tview{NAME}{FROM}{TO}
+\newcommand{\trel}[3]{\multicolumn{3}{l}{$\lfkw{rel}\;#1:\fold{\times}{#2}\ifnonempty{#3}{:#3}\;=\{$}} % \trel{NAME}{MORPHS}{FROM\arr TO}
+\newcommand{\tstruct}[3]{\multicolumn{4}{@{\tb}l}{$\lfkw{struct}\;#2\;:#3\ifnonempty{#1}{\;=\{#1\}}\dotatend$}} % \tstruct[SIGMA]{s}{S}
+\newcommand{\tinclude}[2]{\multicolumn{3}{@{\tb}l}{$\lfkw{include}\;#1$\ifnonempty{#2}{ #2}\dotatend}} % \tinclude{S}{OPEN}
+% \newcommand{\tmodend}{\multicolumn{3}{l}{$\}$}} deprecated
+\newcommand{\tsigend}{\multicolumn{3}{l}{$\}\dotatend$}} % \tsigend
+\newcommand{\tviewend}{\multicolumn{3}{l}{$\}\dotatend$}} % \tviewend
+\newcommand{\trelend}{\multicolumn{3}{l}{$\}\dotatend$}} % \trelend
+
+\newcommand{\tcolon}{& \ensuremath{:} &}
+\newcommand{\tequal}{\ensuremath{=}}
+\newcommand{\tcoleq}{& \ensuremath{\assigoperator} &}
+\newcommand{\tnl}{$\\ & & $} % newline within the type/definiens of \decl
+\newcommand{\decl}[3][]{$#2$\tcolon $#3$\dotatend & #1} % \decl[COMMENTorFIXITY]{c}{F}
+\newcommand{\decldef}[4][]{$#2$\tcolon $#3\tequal #4$\dotatend & #1} % \decl[COMMENTorFIXITY]{c}{F}{f}
+\newcommand{\decldefnl}[4][]{$#2$\tcolon $#3$ \\ & \tequal & $#4$\dotatend & #1} % \decl[COMMENTorFIXITY]{c}{F}{f}
+\newcommand{\assig}[2]{$#1$ \tcoleq $#2$}      % \assig{c}{E}
+\newcommand{\assigs}[3][]{\lfkw{struct} $#2\ifnonempty{#1}{:#1}$\tcoleq $#3$} % \assigs[R]{s}{\mu}
+\newcommand{\assigi}[2][]{\lfkw{include} $\ifnonempty{#1}{#1}$ \tcoleq $#2$} % \assigi[R]{s}{\mu}
+
+\newcommand{\textension}[2]{\multicolumn{3}{l}{$\lfkw{extension}\;#1 = #2$}}
+\newcommand{\tpragmatic}[3]{\multicolumn{3}{l}{$#2\;#1\;\fold{\,}{#3}$}}
+
+% inline versions of the above, to be called in math mode
+\newcommand{\itnamespace}[2][]{\lfkw{namespace}\;\ifnonempty{#1}{#1=\;} "#2"}
+\newcommand{\itnamespacethis}{\lfkw{namespace}}
+\newcommand{\itcomment}[1]{{\color{gray}\%\%\;#1}}
+\newcommand{\itsig}[2]{\lfkw{sig}\; #1\;=\;\{#2\}}
+\newcommand{\itview}[4]{\lfkw{view}\; #1\;:#2\;\arr#3\;=\{#4\}}
+\newcommand{\itrel}[4][]{\lfkw{rel}\; #2\;:\fold{\times}{#3}\ifnonempty{#1}{:#1}\;=\{#4\}}
+\newcommand{\itinclude}[3][]{\lfkw{include}\; \ifnonempty{#1}{ #1 := }#2\ifnonempty{#3}{ #3}}
+\newcommand{\idecl}[2]{#1:#2}
+\newcommand{\iassig}[2]{#1:=#2}
+\newcommand{\iassigs}[3][]{\lfkw{struct}\;#2\ifnonempty{#1}{:#1}:=#3}
+\newcommand{\iassigi}[2][]{\lfkw{include}\;\ifnonempty{#1}{#1}:=#2}
+\newcommand{\itstruct}[3][]{\lfkw{struct}\; #2\;:#3\ifnonempty{#1}{\;=\{#1\}}}
+
+% fixity declarations
+\newcommand{\infix}[3][]{\lfkw{infix} #2\ifnonempty{#3}{ #3}\ifnonempty{#1}{ #1}}
+\newcommand{\prefix}[2][]{\lfkw{prefix} #2\ifnonempty{#1}{ #1}}
+
+% expressions
+\newcommand{\type}{\mathtt{type}}
+\newcommand{\kind}{\mathtt{kind}}
+\iflfsyntax
+  \newcommand{\tPi}[2][]{\Pi_{#2\ifnonempty{#1}{:#1}}\,}
+  \newcommand{\tlam}[2][]{\lambda_{#2\ifnonempty{#1}{:#1}}\,}
+\else
+  \newcommand{\tPi}[2][]{\{#2\ifnonempty{#1}{:#1}\}\,}
+  \newcommand{\tlam}[2][]{[#2\ifnonempty{#1}{:#1}]\,}
+\fi
+\newcommand{\tPis}[2][]{\{#2\ifnonempty{#1}{:#1}\}\,}
+\newcommand{\tlams}[2][]{[#2\ifnonempty{#1}{:#1}]\,}
+
+% identifiers
+\newcommand{\mpath}[2]{#1.#2}
+\newcommand{\ma}[2]{#1^{#2}}
+\newcommand{\mc}[3]{#1.#2^{#3}}
+
+% judgments
+%\newcommand{\issig}[1]{\der #1\;\mathtt{Sig}} %well-formed signature
+%\newcommand{\iscont}[2]{\der_{#1} #2\;\mathtt{Ctx}} %well-formed context
+%\newcommand{\issubs}[4]{\der_{#1}#4:#2\arr #3} %well-formed substitution from #2 into #3
+%\newcommand{\iskind}[3]{#2\der_{#1} #3\;\mathtt{kind}} %well-formed kind
+%\newcommand{\oftype}[4]{#2\der_{#1} #3:#4} %typing judgment
+
+%hiding
+\newcommand{\thide}{\lfkw{hide}}
+\newcommand{\ihide}[1]{\thide\;#1}
+\newcommand{\ihides}[1]{\thide\;\lfkw{struct}\;#1}

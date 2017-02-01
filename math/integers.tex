@@ -1,0 +1,254 @@
+\subsection{Divisibility}\label{sec:math:divisible}
+
+\begin{definition}[Divisibility]
+ For $x,y\in\Z$, we write $x|y$ iff there is a $k\in \Z$ such that $x*k=y$.
+ 
+ We say that $y$ is divisible by $x$ or that $x$ divides $y$.
+\end{definition}
+
+\begin{remark}[Divisible by $0$ and $1$]
+Even though division by $0$ is forbidden, the case $x=0$ is perfectly fine.
+But it is boring: $0|x$ iff $x=0$.
+
+Similarly, the case $x=1$ is trivial: $1|x$ for all $x$.
+\end{remark}
+
+\begin{theorem}[Divisibility]
+Divisibility has the following properties for all $x,y,z\in Z$
+\begin{compactitem}
+\item reflexive: $x|x$
+\item transitive: if $x|y$ and $y|z$ then $x|z$
+\item anti-symmetric for natural numbers $x,y\in \N$: if $x|y$ and $y|x$, then $x=y$
+\item $1$ is a least element: $1|x$
+\item $0$ is a greatest element: $x|0$
+\item $\gcd(x,y)$ is a greatest lower bound of $x,y$
+\item $\lcm(x,y)$ is a least upper bound of $x,y$
+\end{compactitem}
+Thus, $|$ is a preorder on $\Z$ and an order on $\N$.
+\medskip
+
+Divisibility is preserved by arithmetic operations: If $x|m$ and $y|m$, then
+\begin{compactitem}
+\item preserved by addition: $x+y|m$
+\item preserved by subtraction: $x-y|m$
+\item preserved by multiplication: $x*y|m$
+\item preserved by division if $x/y\in Z$: $x/y|m$
+\item preserved by negation of any argument: $-x|m$ and $x|-m$
+\end{compactitem}
+\medskip
+
+$\gcd$ has the following properties for all $x,y\in\N$:
+\begin{compactitem}
+\item associative: $\gcd(\gcd(x,y),z)=\gcd(x,\gcd(y,z))$
+\item commutative: $\gcd(x,y)=\gcd(y,x)$
+\item idempotence: $\gcd(x,x)=x$
+\item $0$ is a neutral element: $\gcd(0,x)=x$
+\item $1$ is an absorbing element: $\gcd(1,x)=1$
+\end{compactitem}
+$\lcm$ has the same properties as $\gcd$ except that $1$ is neutral and $0$ is absorbing.
+\end{theorem}
+
+\begin{theorem}\label{thm:math:extendedeuclid}
+For all $x,y\in\Z$, there are numbers $a,b\in\Z$ such that $ax+by=\gcd(x,y)$.
+
+$a$ and $b$ can be computed using the extended Euclidean algorithms.
+\end{theorem}
+
+\begin{definition}
+If $\gcd(x,y)=1$, we call $x$ and $y$ \textbf{coprime}.
+
+For $x\in\N$, the number of coprime $y\in\{0,\ldots,x-1\}$ is called $\phi(x)$.
+$\phi$ is called Euler's \textbf{totient function}.
+\end{definition}
+
+We have $\phi(0)=0$, $\phi(1)=\phi(2)=1$, $\phi(3)=2$, $\phi(4)=1$, and so on.
+Because $\gcd(x,0)=x$, we have $\phi(x)\leq x-1$.
+$x$ is prime iff $\phi(x)=x-1$.
+
+\subsection{Equivalence Modulo}\label{sec:math:modulo}
+
+\begin{definition}[Equivalence Modulo]\label{def:math:modulo}
+ For $x,y,m\in\Z$, we write $x\Equiv_m y$ iff $m|x-y$.
+\end{definition}
+
+\begin{theorem}[Relationship between Divisibility and Modulo]
+The following are equivalent:
+\begin{compactitem}
+\item $m|n$
+\item $\Equiv_m\supseteq \Equiv_n$ (i.e., for all $x,y$ we have that $x\Equiv_n y$ implies $x\Equiv_m y$)
+\item $n\Equiv_m 0$
+\end{compactitem}
+\end{theorem}
+
+\begin{remark}[Modulo $0$ and $1$]
+In particular, the cases $m=0$ and $m=1$ are trivial again:
+\begin{compactitem}
+\item $x\Equiv_0 y$ iff $x=y$,
+\item $x\Equiv_1 y$ always
+\end{compactitem}
+
+Thus, just like $0$ and $1$ are greatest and least element for $|$, we have that $\Equiv_0$ and $\Equiv_1$ are the smallest and the largest equivalence relation on $\Z$.
+\end{remark}
+
+\begin{theorem}[Modulo]\label{thm:modulo}
+The relation $\Equiv_m$ has the following properties
+\begin{compactitem}
+\item reflexive: $x\Equiv_m x$
+\item transitive: if $x\Equiv_m y$ and $y\Equiv_m z$ then $x\Equiv_m z$
+\item symmetric: if $x|y$ then $y|x$
+\end{compactitem}
+Thus, it is an equivalence relation.
+\medskip
+
+It is also preserved by arithmetic operations: If $x\Equiv_m x'$ and $y\Equiv_m y'$, then
+\begin{compactitem}
+\item preserved by addition: $x+y\Equiv_m x'+y'$
+\item preserved by subtraction: $x-y\Equiv_m x'-y'$
+\item preserved by multiplication: $x*y\Equiv_m x'*y'$
+\item preserved by division if $x/y\in Z$ and $x'/y'\in \Z$: $x/y\Equiv_m x'/y'$
+\item preserved by negation of both arguments: $-x\Equiv_m -x'$
+\end{compactitem}
+\end{theorem}
+
+\subsection{Arithmetic Modulo}\label{sec:math:moduloarith}
+
+\begin{definition}[Modulus]\label{def:math:modulofun}
+ We write $x\modop m$ for the smallest $y\in\N$ such that $x\Equiv_m y$.
+ 
+ We also write $\modulus_m$ for the function $x\mapsto x\modop m$.
+ We write $\Z_m$ for the image of $\modulus_m$.
+\end{definition}
+
+\begin{remark}[Modulo $0$ and $1$]
+The cases $m=0$ and $m=1$ are trivial again:
+\begin{compactitem}
+\item $x\modop 0=x$ and $\Z_0=\Z$
+\item $x\modop 1=0$ and $\Z_1=\{0\}$
+\end{compactitem}
+\end{remark}
+
+\begin{remark}[Possible Values]
+For $m\neq 0$, we have $x\modop m\in \{0,\ldots,m-1\}$.
+In particular, there are $m$ possible values $m\modop x$.
+
+For example, we have $x\modop 1\in \{0\}$.
+And we have $x\modop 2=0$ if $x$ is even and $x\modop 2=1$ if $x$ is odd.
+\end{remark}
+
+\begin{definition}[Arithmetic Modulo $m$]\label{def:math:moduloarith}
+For $x,y\in\Z$, we define arithmetic operations modulo $m$ by \[x\circ_m y = (x\circ y)\modop m \tb\mfor\tb \circ \in\{+,-,\cdot\}\]
+
+Moreover, if there is a unique $q\in\Z_m$ such that $q\cdot x\Equiv_m y$, we define $x/_m y=q$.
+\end{definition}
+
+Note that the condition $y|x$ is neither necessary nor sufficient for $x/_m y$ to de defined.
+For example, $2/_4 2$ is undefined because $1\cdot 2\Equiv_4 3\cdot 2\Equiv_4 2$.
+Conversely, $2/_4 3$ is defined, namely $2$.
+
+\begin{theorem}[Arithmetic Modulo $m$]\label{thm:math:moduloarith}
+For $x,y\in\Z$, $\mod$ commutes with arithmetic operations in the sense that
+ \[(x\circ y)\modop m=(x\modop m)\circ_m (y\modop m) \tb\mfor\tb \circ \in\{+,-,\cdot\}\]
+
+Moreover, $x/_m y$ is defined iff $\gcd(y,m)=1$ and
+ \[(x/y)\modop m=(x \modop m)/_m (y\modop m) \tb\mif\tb y|x\]
+ \[x/_m y=x\cdot_m a \tb\mif ay+bm=1 \text{ as in see Thm.~\ref{thm:math:extendedeuclid}}\]
+\end{theorem}
+
+\begin{theorem}[Fermat's Little Theorem]\label{thm:math:fermatlittle}
+For all prime numbers $p$ and $x\in\Z$, we have that $x^p\Equiv_p x$.
+
+If $x$ and $p$ are coprime, that is equivalent to $x^{p-1}\Equiv 1$.
+\end{theorem}
+
+\subsection{Digit-Base Representations}\label{sec:math:base}
+
+Fix $m\in \N\sm\{0\}$, which we call the base.
+\medskip
+
+\begin{theorem}[Div-Mod Representation]
+Every $x\in\Z$ can be uniquely represented as $a\cdot m+b$ for $a\in\Z$ and $b\in\Z_m$.
+
+Moreover, $b=x\modop m$.
+We write $b\divop m$ for $a$.
+\end{theorem}
+
+\begin{definition}[Base-$m$-Notation]\label{def:math:base}
+For $d_i\in\Z_m$, we define $(d_k\,\ldots\,d_0)_m =d_k\cdot m^k+\ldots+d_1\cdot k+d_0$.
+
+The $d_i$ are called digits.
+\end{definition}
+
+\begin{theorem}[Base-$m$ Representation]\label{thm:math:base}
+Every $x\in\N$ can be uniquely represented as $(0)_m$ or $(d_k\,\ldots\,d_0)_m$ such that $d_k\neq 0$.
+
+Moreover, we have $k=\lfloor \log_m x \rfloor$ and  $d_0=x\modop m$, $d_1=(x\divop m)\modop m$, $d_2=((x\divop m)\divop m)\modop m$ and so on.
+\end{theorem}
+
+\begin{example}[Important Bases]
+We call $(d_k\,\ldots\,d_0)_m$ the binary/octal/decimal/hexadecimal representation if $m=2,8,10,16$, respectively.
+
+In case $m=16$, we write the elements of $\Z_m$ as $\{0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f\}$
+\end{example}
+
+\subsection{Finite Fields}\label{sec:math:finfield}
+
+In this section, let $m=p$ be prime.
+
+\paragraph{Construction}
+Then $x/_p y$ is defined for all $x,y\in\Z_p$ with $y\neq 0$.
+Consequently, $\Z_p$ is a field.
+
+Up to isomorphism, all finite fields are obtained as an $n$-dimensional vector space $\Z_p^n$ for $n\geq 1$.
+This field is usually called $F_{p^n}$ because it has $p^n$ elements.
+From now on, let $q=p^n$.
+
+All elements of $F_q$ are vectors $(a_0,\ldots,a_{n-1})$ for $a_i\in\Z_p$.
+Addition and subtraction are component-wise, the $0$-element is $(0,\ldots,0)$, the $1$-elements is $(1,0,\ldots,0)$.
+
+However, multiplication in $F_q$ is tricky.
+To multiply two elements, we think of the vectors $(a_0,\ldots,a_{n-1})$ as polynomials $a_{n-1}X^{n-1}+\ldots+a_1X+a_0$, and multiply the polynomials.
+This can introduce powers $X^n$ and higher, which we eliminate using $X^n=k_{n-1}X^{n-1}+\ldots+k_1X+k_0$.
+The resulting polynomial has degree at most $n-1$, and its coefficient (modulo $p$) yield the result.
+
+The values $k_i$ always exists but are non-trivial to find.
+They must be such that the polynomial $X^n-k_{n-1}X^{n-1}-\ldots-k_1X-k_0$ has no roots in $\Z_p$.
+There may be multiple polynomials, which may lead to different multiplication operations.
+However, all of them yield isomorphic fields.
+
+\paragraph{Binary Fields}
+The operations become particularly easy if $p=2$.
+The elements of $F_{2^n}$ are just the bit strings of length $n$.
+Addition and subtraction are the same operation and can be computed by component-wise XOR.
+Multiplication is a bit more complex but can be obtained as a sequence of bit-shifts and XORs.
+
+\paragraph{Exponentiation and Logarithm}
+Because $F_q$ has multiplication, we can define natural powers in the usual way:
+
+\begin{definition}
+For $x\in F^q$ and $l\in\N$, we define $x^l\in F_q$ by $x^0=1$ and $x^{l+1}=x\cdot x^l$.
+
+If $l$ is the smallest number such that $x^l=y$, we write $l=\log_x y$ and call $n$ the \textbf{discrete $q$-logarithm} of $y$ with base $x$.
+\end{definition}
+
+The powers $1,x,x^2,\ldots\in F_q$ of $x$ can take only $q-1$ different values because $F_q$ has only $q$ elements and $x^l$ can never be $0$ (unless $x=0$).
+Therefore, they must be periodic:
+
+\begin{theorem}
+For every $x\in F_q$, we have $x^q=x$ or equivalently $x^{q-1}=1$ for $x\neq 0$.
+\end{theorem}
+
+For some $x$, the period is indeed $q-1$, i.e., we have $\{1,x,x^2,\ldots,x^{q-1}=F_q\sm\{0\}$.
+Those $x$ are called primitive elements of $F_q$.
+But the period may be smaller.
+For example, the powers of $1$ are $1,\ldots,1$, i.e., $1$ has period $1$.
+For a non-trivial example consider $p=5$, $n=1$, (i.e., $q=5$): The powers of $4$ are $4^0=1$, $4^1=4$, $4^2=16\modop 5=1$, and $4^3=4$.
+
+If the period is smaller, $x^l$ does not take all possible values in $F_q$.
+Therefore, $\log_x y$ is not defined for all $y\in F_q$.
+\medskip
+
+Computing $x^l$ is straightforward and can be done efficiently.
+(If $n>1$, we first have to find the values $k_i$ needed to do the multiplication, but we can precompute them once and for all.)
+
+Determining whether $\log_x y$ is defined and computing its value is also straightforward: We can enumerate all powers $1,x,x^2,\ldots$ until we find $1$ or $y$.
+However, no efficient algorithm is known.

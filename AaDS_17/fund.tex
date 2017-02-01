@@ -1,0 +1,588 @@
+Data structures and algorithms are among the most fundamental concepts in computer science.
+
+A standard textbook is \cite{cormen}, but these notes are neither a subset not a superset of that book.
+
+\section{What are Data Structures and Algorithms?}\label{sec:ad:whatare}
+
+\subsection{Static vs. Dynamic}\label{sec:ad:static}
+
+In all areas of life and science, we often find a pair of concept such that one concept captures static and the other one dynamic aspects.
+This is best understood by example:
+
+\begin{center}
+\begin{tabular}{|l||l|l|}
+\hline
+area & static & dynamic \\
+\hline
+\hline
+\multicolumn{3}{|c|}{in life}\\
+\hline
+existence & be & become \\
+\hline
+events & situation & development \\
+\hline
+food & ingredients & cooking \\
+\hline
+\hline
+\multicolumn{3}{|c|}{in science}\\
+\hline
+mathematics & sets & functions \\
+\hline
+physics & space & time \\
+\hline
+chemistry & molecules & reactions \\
+\hline
+engineering & materials & construction \\
+\hline
+\hline
+\multicolumn{3}{|c|}{\textbf{in computer science}}\\
+\hline
+hardware & memory & processing \\
+\hline
+abstract machines & states & transitions \\
+\hline
+programming  & types & functions \\
+\hline
+\textbf{software design} & \textbf{data structures} & \textbf{algorithms} \\
+\hline
+\end{tabular}
+\end{center}
+
+The static aspects describes things as they are at one point in time.
+The dynamic aspects describes how they change over time.
+
+Data structures and algorithms have this role in software design.
+Data structures are sets of objects (the data) that describe the domain that our software is meant to be used for.
+Algorithms are operations that describe how the objects in that domain change.
+
+\subsection{Basic Definition and Examples}\label{sec:ad:basicdef}
+
+\begin{definition}[Data Structure]\label{def:ad:ds}
+Assume some set of effective objects.
+
+A data structure defines a subset of these objects by providing an effective method for determining whether an object is in the data structure or not.
+\medskip
+
+In practice, a data structure is often bundled with several algorithms for it.
+\end{definition}
+
+\begin{definition}[Algorithm]\label{def:ad:algo}
+An algorithm consists of
+\begin{compactitem}
+\item a data structure that defines the possible input objects
+\item a data structure that defines the possible output objects
+\item an effective method for transforming an input object into an output object
+\end{compactitem}
+\end{definition}
+
+These definitions are not very helpful---they define the words ``data structure'' and ''algorithm'' by using other not-defined words, namely ``effective object'' and ``effective method''.
+Let us look at some examples before discussing effective objects and methods in Sect.~\ref{sec:ad:effective}.
+
+\begin{example}[Natural Numbers]
+The most important data structure are the natural numbers.
+
+It is defined as follows:
+\begin{compactitem}
+ \item The string $0$ is a natural number.
+ \item If $n$ is a natural number, then the string $s(n)$ is a natural number.
+ \item All natural numbers are obtained by applying the previous step finitely many times.
+\end{compactitem}
+
+We immediately define the usual abbreviations $1,2,\ldots,$.
+It is also straightforward to define algorithms for the basic functions on natural numbers such as $m+n$, $m-n$, $m*n$, etc.
+\end{example}
+
+\begin{example}[Euclidean Algorithm]\label{ex:ad:euclid}
+One of the earliest and most famous (arguably \emph{the} earliest) algorithms is Euclid's algorithm for computing the greatest common divisor $\gcd(m,n)$ of two natural numbers $m,n\in\N$.
+
+It consists of the following components:
+\begin{compactitem}
+\item input: $\N\times\N$
+\item output: $\N$
+\item effective method:
+\begin{acode}
+\afun[\N]{gcd}{m:\N,n:\N}{
+x := m \acomment{introduce variables, initialize with input data}\\
+y := n \\
+%% loop invariant gcd(m,n)=gcd(x,y)
+\awhile[repeat as long as $\gcd(x,y)\neq x$]{x\neq y}{
+  \aifelse[subtract the smaller number from the bigger one, which does not affect $\gcd(x,y)$]{x<y}{y := y-x}{x := x-y}
+}\\
+\areturn[now trivially $\gcd(x,y)=x$]{x}
+}
+\end{acode}
+\end{compactitem}
+
+The algorithm starts by introducing variables $x$ and $y$ and initializes them with the input data $m$ and $n$.
+Then it repeatedly subtracts the smaller number from the greater one until both are equal.
+This works because $\gcd(x,y)=\gcd(x-y,y)$.
+If $x$ and $y$ are equal, we can return the output because $\gcd(x,x)=x$.
+\medskip
+
+This algorithm has a subtle bug (Can you see it?) that we will fix in Ex.~\ref{ex:ad:euclid:term}.
+\end{example}
+
+For a simpler example, consider the definition of the factorial $n!=1\cdot \ldots n$ for $n\in\N$.
+
+\begin{example}[Factorial]\label{ex:ad:factorial}
+The factorial can be defined as follows:
+\begin{compactitem}
+\item input: $\N$
+\item output: $\N$
+\item effective method:
+\begin{acode}
+\afun[\N]{fact}{n:\N}{
+product := 1\\
+factor  := 1 \\
+%% loop invariant n! = product * factor * ... * n
+\awhile{factor \leq n}{
+  product := product \cdot factor\\
+  factor := factor+1
+}\\
+\areturn{product}
+}
+\end{acode}
+
+Here the variable $factor$ runs through all values from $1$ to $n$ and the variable $product$ collects the product of those values.
+\end{compactitem}
+\end{example}
+
+\subsection{Effective Objects and Methods}\label{sec:ad:effective}
+
+It is now a central task in computer science to define data structures and algorithms that correspond to given sets and functions.
+This question that was first asked by David Hilbert in 1920, one of the most influential mathematicians at the same time.
+In modern terminology, he wanted to define data structures for all sets and algorithms for all functions and then machines to mechanize all mathematics.
+
+In the 1930s, several scientist worked on this problem and eventually realized that it cannot be done.
+These scientists included Alonzo Church, Kurt G\"odel, John von Neumann, and Alan Turing.
+Their work provided partial solutions and theoretical limits to the problem.
+In retrospect, this was the birth of computer science.
+
+Not every set and not every function can be represented by a data structure or an algorithm (see Sect.~\ref{sec:ad:computable} for the reason why not).
+That limitations bring us back to the question of effective objects and methods:
+
+\begin{definition}[Effective Object]
+An effective object is any object that can be stored, manipulated, and communicated by a physical machine.
+
+Here, \emph{physical} means any machine that we can build in the physical world.\footnote{Sometimes we use hypothetical machines. For example, quantum computers are physical machines that we think we can build but have not been able to build in practice yet (at least not at useful scales).}
+\end{definition}
+
+Thus, every physical machine defines its own kind of effective objects.
+All digital machines (which includes all modern computers) use the same effective objects: lists of bits.
+These are stored in memory or on hard drives, which provide essentially one very, very long list of bits.
+
+Data structures use fragments of these lists to represents sets.
+For example, the set $\Z_{2^32}$ of $32$-bit-integers is represented by a list of $32$ bits.
+
+\begin{definition}[Effective Method]
+An effective method consists of a sequence of instructions such that
+\begin{compactitem}
+ \item any reasonably intelligent human can carry out the instructions
+ \item and all such humans will carry out the instructions in exactly the same way (in particular reaching the same result).
+\end{compactitem}
+\end{definition}
+
+The first condition makes sure that any prior knowledge needed to understand the instructions is be explicitly stated or referenced.
+The second conditions makes sure that an effective method has a well-defined result: There may be no ambiguity, randomness, or unspecified choice.
+
+\begin{example}
+The third condition excludes for example the following instructions
+\begin{compactitem}
+ \item ``Let $x$ be the factorial of $5$.'': Different humans could compute the factorial differently because it is not clear which algorithm to use for the factorial.
+ \item ``Let $x$ be a random integer.'': Randomness is not allowed.
+ \item ``Let $x$ be an element of the list $l$.'': It is not specified which element should be chosen.
+\end{compactitem} 
+\end{example}
+
+\subsection{The Limits of Data Structures and Algorithms}\label{sec:ad:computable}
+
+\subsubsection{Countability of Data Structures and Algorithms}
+
+We can now see immediately why not all mathematical objects are effective in digital machines: There are only countably many lists of bits.
+Therefore, there can only be countably many effective objects.
+
+Similarly, any data structure we define must be defined as a list of characters in some language.
+But there are only countably many such lists.
+Therefore, there can only be countably many data structures.
+For the same reason, there can only be countably many algorithms.
+\medskip
+
+Inspecting the sizes of the constructed sets from Sect.~\ref{sec:math:sets}, we can observe that
+\begin{compactitem}
+\item If all arguments are finite, so is the constructed set---except for lists.
+\item If all arguments are at most countable, so is the constructed set---except for function and power sets.
+\end{compactitem}
+Because of these exception, we cannot restrict attention to finite or countable sets only---working with them invariably leads to uncountable sets.
+
+\subsubsection{Computability}
+
+At best, we can hope to give data structures for all countable sets.
+But not even that is possible.
+Because countable sets have uncountably many subsets, we cannot give data structures for every subset of every countable set.
+
+Therefore, we give the sets that have data structures a special name:
+
+\begin{definition}[Decidable]
+A set is called \textbf{decidable} if we can give a data structure for it.
+\end{definition}
+
+Similarly, at best we can hope to give algorithms for all functions between decidable sets.
+Again that is not possible.
+Because countable sets have uncountably many functions between them, we cannot give algorithms for all functions between decidable sets.
+
+Therefore, we give the sets that have data structures a special name:
+
+\begin{definition}[Computable]
+A function between decidable sets is called \textbf{computable} if we can give an algorithm for it.
+\end{definition}
+
+At Jacobs University, decidability and computability are discussed in detail in a special course in the $2nd$ year.
+
+\subsubsection{The Role of Programming Languages}
+
+\paragraph{Vagueness of the Definitions}
+It is not possible to precisely define effective objects and methods---every definition eventually uses not-defined concepts like ``machine'' or ``instruction''.
+Thus, it impossible to precisely define data structures and algorithms are.
+Instead, we must assume those concepts to exist a priori.
+
+That may seem flawed---but it is actually very normal.
+We can compare the situation to physics where there is also no precise definition of \emph{space} and \emph{time}.
+In fact, the question what space and time are is among the difficult of all of physics.\footnotemark
+\footnotetext{For example, even today physicists have no agreed-upon answer to the question why time moves forwards but not backwards.}
+
+Similarly, the question of what data structures and algorithms are is among the most fundamental of computer science.
+Every computer and evey programming language give their own answer to the question.
+
+\paragraph{Data Description and Programming Languages}
+To make the definitions of \emph{data structure} and \emph{algorithm} precise, we have to choose a concrete formal language.
+
+\begin{definition}[Languages]
+A \textbf{data description language} is a formal language for writing objects and data structures.
+
+A \textbf{programming language} is a formal language for writing algorithms.
+\end{definition}
+
+Because algorithms require data structures, every programming language includes a data description language.
+And because all data structures usually come with specific algorithms, we are usually mostly interested in programming languages.
+
+But there are some languages that are pure data description languages.
+These are useful when storing data on hard drives or when exchanging data between programs and computers (e.g., on the internet).
+Examples of pure data description languages are JSON, XML, and UML.
+
+\paragraph{Types of Programming Languages}
+Programming languages can vary widely in how they represent data structures.
+
+We can distinguish several groups:
+\begin{compactitem}
+\item Untyped languages avoid explicit definitions of data structures.
+Instead, they use algorithms such as $\mathit{isNat}$ to check, e.g., if an object is a natural number.\\
+Examples are Javascript and Python.
+\item Functional languages focus on using inductive data types.\\
+Examples are SML and Haskell.
+\item Object-oriented languages focus on using classes.\\
+Examples are Java and C++.
+\item Multi-paradigm languages combine functional and object-oriented features.\\
+Examples are Scala and F\#.
+\end{compactitem}
+
+
+\paragraph{Independence of the Choice of Language}
+Above we have seen that the concrete meaning of \emph{data structure} and \emph{algorithm} depends on the choice of programming language.
+Thus, it seems that whether a set is decidable or a function computable also depends on the choice of programming language.
+
+One of the most amazing and deepest results of theoretical computer science is that this is not the case.
+
+\begin{theorem}
+All known programming languages (including theoretical ones such as Turing machines)
+\begin{compactitem}
+\item can define data structures for exactly the same sets,
+\item can define algorithms for exactly the same sets.
+\end{compactitem}
+
+Thus, it does not depend on the chosen programming language
+\begin{compactitem}
+\item whether a set is decidable,
+\item whether a function is computable.
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+The proof is very complex.
+For every program of every language, we must provide an equivalent program in every other language.
+
+However, this can be done (and has been done) for all languages.
+\end{proof}
+
+A related (stronger) theorem is that every programming language $P$ allows defining for every programming language $Q$ an algorithm that interprets $Q$-programs.
+
+\section{Specification vs. Design vs. Implementation}
+
+Above we have seen sets and functions as well as data structures and algorithms.
+Moreover, we have already mentioned and programs.
+
+The following table gives a overview of the relation between these concepts:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+Specification & Design/Architecture & Implementation \\
+\hline
+\hline
+sets          & data structures & types    \\
+functions     & algorithms      & functions\\
+\hline
+\end{ctabular}
+
+Software development consists of $3$ steps:
+\begin{enumerate}
+\item The \textbf{specification} describes the intended behavior in terms of mathematical sets and functions.\\
+It does not prescribe in any way how these sets and functions are realized.
+The same specification can have multiple different correct realizations differing among others in size, maintainability, or efficiency.
+\item The \textbf{architecture} makes concrete choices for the data structures and algorithms that realize the needed sets and functions.\\
+It usually defines many auxiliary data structures and algorithms that are not part of the specification.\\
+The architecture does not prescribe a programming language. It can be correctly realized in any programming language.
+\item The \textbf{implementation} chooses a programming languages and then writes a \textbf{program} in it that realizes the architecture.
+The program includes concrete choices for the type and function definitions that realize the needed data structures and algorithms.\\
+It usually defines many auxiliary types and functions that are not part of the architecture.
+\end{enumerate}
+
+\begin{terminology}
+\emph{Design} and \emph{architecture} can usually be used synonymously.
+
+The words \emph{specification}, \emph{design}, and \emph{implementation} can refer to both the process and the result.
+For example, we can say that the result of implementation is one implementation.
+\end{terminology}
+
+It is critical to distinguish the three steps in software development:
+\begin{itemize}
+ \item Specification changes are much more expensive than design changes.
+ Changing the specification may completely change, which design is appropriate.
+ Therefore, every single design decision must be revisited and checked for appropriateness.
+ \item Design changes are much more expensive than implementation changes.
+ Changing the design may complete change which components of the implementation are needed and how they interact.\\
+ Therefore, every part of the program must potentially be revisited. \\
+ In particular, whenever the design of component $X$ is changed, we have to revisit every place of the program that uses $X$. 
+ This often introduces bugs.
+\end{itemize}
+
+An ideal programmers proceed in the order specification-design-implementation.
+However, it is often necessary to loop back: The design phase may reveal problems in the specification, and the implementation phase may reveal problems in the design.
+Therefore, we usually have to to work on all $3$ parts in parallel---but with a strong preference against changing specification and design.
+
+Many self-taught or not-well-taught programmer do not understand the difference between the $3$ steps or do not systematically apply it.
+Their programs are typically awful because:
+\begin{compactitem}
+ \item They begin programming without writing down the specification.
+ Consequently, they do not realize that they have not actually understood the specification.
+ This results in programs that do not meet the specification, which then leads to retroactive changes to the design.
+ Over time the program becomes (sometimes called ``spaghetti code'') that is unmaintainable and cannot be understood by other programmers, often not even by the programmer herself.
+ \item They begin programming without consciously choosing a design.
+ Consequently, they end up with a random design that may or may not be appropriate for the task.
+ Over time they change the design multiple times (without being aware that they are changing the design).
+ Each change introduces new bugs and more mess.
+\end{compactitem}
+
+\begin{example}[Greatest Common Divider]\label{ex:ad:euclid2}
+The specification of the greatest common divider function $\gcd$ is as follows:
+Given natural numbers $m$ and $n$, return a natural number $g$ such that
+\begin{compactitem}
+\item $g|m$ and $g|n$
+\item for every number $h$ such that $h|m$ and $h|n$ we have that $h|g$
+\end{compactitem}
+\medskip
+
+Before we design an algorithm, we should check whether $\gcd$ is indeed a function:
+\begin{compactitem}
+  \item Consistency: Does such a $g=\gcd(m,n)$ always exists?
+  \item Uniqueness: Could there be more than one such $g$?
+\end{compactitem}
+Using mathematics, we can prove that $g$ indeed exists uniquely.
+\medskip
+
+Now we design an algorithm.
+Let us assume that we have already designed data structures for the natural numbers with the usual operations.
+There are many reasonable algorithms, among them the one from Ex.~\ref{ex:ad:euclid}.
+For the sake of example, we use a different one here:
+\medskip
+
+\begin{acode}
+\afun[\N]{gcd}{m:\N, n:\N}{
+  \aifelse{n==0}{m}{\gcd(n,m\modop n)}
+}
+\end{acode}
+
+\medskip
+This is a recursive algorithm: The instructions may recursive call the algorithm itself with new input.
+\medskip
+
+Finally, we implement the algorithm.
+We choose SML as the programming language.
+First we implement the data structure for natural numbers and the function $mod:nat*nat \to nat$ that were assumed by the specification.
+Note that this requires some auxiliary functions that were not part of the algorithm:
+\begin{lstlisting}
+datatype nat = zero | succ of nat
+
+fun leq(m: nat, n: nat): bool = case (m,n) of
+  (zero,    zero)    => true
+| (zero,    succ(y)) => true
+| (succ(x), zero)    => false
+| (succ(x), succ(y)) => leq(x,y)
+
+fun minus(m: nat, n: nat): nat = case (m,n) of
+  (zero,    zero)    => zero
+| (zero,    succ(y)) => zero (* error case, should not happen *)
+| (succ(x), zero)    => succ(x)
+| (succ(x), succ(y)) => minus(x,y)
+  
+fun mod(m:nat, n:nat):nat =
+  if m = n then zero
+  else if leq(m,n) then m
+  else mod(minus(m,n), n)
+\end{lstlisting}
+ 
+Then we define
+\begin{lstlisting}
+fun gcd(m:nat, n: nat): nat = if n = zero then m else gcd(n,mod(m,n))
+\end{lstlisting}
+\end{example}
+
+\section{Stateful Aspects}
+
+\subsection{Immutable vs. Mutable Data Structures}
+
+Consider a data structure for the set $\N^*$ of lists of natural number and assume we have a variable $x:\N^*$.
+
+\subsubsection{Immutable Data Structures and Call-by-Value}
+
+We can always assign a new value to $x$ as a whole.
+For example, after executing $x:=[1,3,5]$, we have the following data stored in memory:
+\begin{amemory}
+\avar{x}{\N^*}{[1,3,5]}
+\alocations
+\aloc{P}{[1,3,5]}
+\end{amemory}
+Here the left part shows the variables as seen by the programmer.
+The right part shows the objects as they are maintained in memory by the programming language.
+$P$ is the name for the memory location holding the value of $x$.
+Importantly, the programmer is completely unaware of the organization of the data in memory and only sees the value of $x$.
+
+In particular, $x$ is just an abbreviation for the value $[1,3,5]$.
+If we pass $x$ to a function $f$, there is no difference between saying $f(x)$ and $f([1,3,5])$.
+That is called \textbf{call-by-value}.
+
+For example, if we execute the instruction $y = delete(x,2)$, we obtain:
+\begin{amemory}
+\avar{x}{\N^*}{[1,3,5]}
+\avar{y}{\N^*}{[1,3]}
+\alocations
+\aloc{P}{[1,3,5]}
+\aloc{Q}{[1,3]}
+\end{amemory}
+All old data is a before.
+For the new variable $m$, a new memory location $Q$ has been allocated and filled with the result of the operation.
+This has the drawback that the entire list was duplicated, and we now use twice as much memory as before.
+
+Immutable data structures and call-by-value are the usual way how functions work in mathematics.
+Such data structures are closely related their specification and makes writing, understanding, and analyzing algorithms very easy.
+
+\subsubsection{Mutable Data Structures and Call-by-Name}
+
+If our data structure is mutable, the value of a variable $x$ is just a reference to the memory location where the value is stored.
+
+For example, after executing $x:=[1,3,5]$, we have the following data stored in memory:
+\begin{amemory}
+\avar{x}{\N^*}{P}
+\alocations
+\aloc{P}{[1,3,5]}
+\end{amemory}
+The value of $x$ is now the reference to the memory location.
+The programmer still cannot see $P$ directly.%
+\footnote{Some programming languages allow explicitly creating and manipulating these references.
+The most notable example is $C$ (where the references are called \emph{pointers}).
+With very few caveats, that can be considered a design flaw in the programming language.}
+
+But there are two carefully-designed ways how $P$ can be accessed indirectly.
+Firstly, we can assign new values to each component of $x$.
+For example, after $x.1:=4$, the memory looks like
+\begin{amemory}
+\avar{x}{\N^*}{P}
+\alocations
+\aloc{P}{[1,4,5]}
+\end{amemory}
+The old value at location $P$ is gone and has been replaced by the new value.
+
+Secondly, when we pass $x$ to a function $f$, we pass the reference to the value, not the value itself.
+This is called \textbf{call-by-name} or \textbf{call-by-reference}.
+
+For example, after executing $delete(x,2)$, we have
+\begin{amemory}
+\avar{x}{\N^*}{P}
+\alocations
+\aloc{P}{[1,4]}
+\end{amemory}
+No additional memory location has been allocated for the result, and copying took place.
+That makes the operation much more time- and memory-efficient.
+But from a mathematical perspective, this is very odd: The function call $delete(x,2)$ \emph{changed} the value $x$ under the hood.
+\medskip
+
+In many programming languages (in particular object-oriented ones), mutable data structures are called \emph{classes}.
+Some of the related function will make use of mutability, some will not.
+This must be part of the specification of the function.
+
+\subsection{Environments and Side Effects}
+
+So far we have said that algorithms realize mathematical functions.
+That makes algorithms very close to the specification and makes writing, understanding, and analyzing them very easy.
+But it is not the whole picture in computer science---computer science needs a generalization:
+
+\begin{definition}[Stateful Functions]
+Let $E$ be the set of environments.
+An \textbf{effectful function} from $A$ to $B$ is a function $A\times E\to B\times E$.
+\end{definition}
+
+Again this is a vague definition because the word ``environment'' is not defined.
+That is normal---there is no universally recognized definition for it.
+Intuitively, an object $e\in E$ represents the state of the environment.
+$e$ contains all information that is visible from the outside of our algorithms and that can be acted on by the algorithm.
+These usually include the global variables, all kinds of input/output, and exceptions.
+
+An effectful function $f$ from $A$ to $B$ can do two things besides returning a result of type $B$:
+\begin{compactitem}
+ \item It can use the environment (because $E$ occurs in its input type).
+   Thus, calling $f$ twice on the same $a\in A$ may return different result if the environment has changed in between.\\
+   Formally, if $f(a,e_1)=(b_1,e_1')$ and $f(a,e_2)=(b_2,e_2')$ always implies $b_1=b_2$, we say that $f$ is \textbf{environment-independent}.
+ \item It can change the environment (because $E$ occurs in its output type).
+   Thus, programmers must be careful when to call $f$ and how often to call $f$ because every call may have an effect that can be observed by the user.\\
+   Formally, if $f(a,e)=(b,e')$ always implies $e=e'$, we say that $f$ is \textbf{side-effect-free}.
+\end{compactitem}
+If $f$ is both environment-independent and side-effect-free, $f$ is called \textbf{pure}.
+In that case, we always have $f(a,e)=(g(a),e)$ for some function $g:A\to B$, i.e., we can ignore environments entirely.
+Thus, pure functions are essentially the same as the usual mathematical functions.
+
+An environment $e\in E$ is usually a big tuple containing among others
+\begin{compactitem}
+ \item the current values of all accessible variables
+ \item console input/output:
+   \begin{compactitem}
+      \item the list of characters to be printed out to the user
+      \item the list of characters typed by the user that are available for reading
+   \end{compactitem}
+ \item file and peripheral network input/output: for every open file, network connection or similar
+   \begin{compactitem}
+      \item the list of data to be written to the connection
+      \item the list of data that is are available for reading
+   \end{compactitem}
+ \item information about exceptions
+   \begin{compactitem}
+      \item by depending on this aspect of the environment, effectful functions can handle exceptions
+      \item by effecting this aspect of the environment, effectful functions can raise exceptions
+   \end{compactitem}
+ \item additional components depending on the features of the respective programming language
+\end{compactitem}
+
+Environment-dependency and side effects are important.
+Without input/output side effect, the user could never provide input for algorithms and could never find out what the output is.
+Moreover, computer could not be used to read sensor data or control peripheral devices.
+
+But they also present major challenges to algorithm design.
+Because the precise definition of $E$ depends on the details of the programming language, it is very difficult to precisely specify effectful functions.
+And without a precise specification, the programmer never knows whether an algorithm is designed and implemented correctly.
+Therefore, some programming languages such as Haskell try to systematically restrict them as much as possible.
