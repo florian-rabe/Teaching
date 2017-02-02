@@ -135,9 +135,12 @@
 \chapter{Mathematical Preliminaries}\label{sec:math}
 \input{../math/all}
 
-%\input{\currfilename.bbl}
+% toc entry for bibliography
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{part}{Bibliography}
 
-\bibliographystyle{alpha}
-\bibliography{../../../../../homedir/Program_Data/Latex/bib/rabe}
-
+\input{\currfilebase.bbl}
+%\bibliographystyle{alpha}
+%\bibliography{../../../../../homedir/Program_Data/Latex/bib/rabe}
 \end{document}
