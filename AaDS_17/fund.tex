@@ -63,7 +63,11 @@ Algorithms are operations that describe how the objects in that domain change.
 \begin{definition}[Data Structure]\label{def:ad:ds}
 Assume some set of effective objects.
 
-A data structure defines a subset of these objects by providing an effective method for determining whether an object is in the data structure or not.
+A data structure defines a subset of these objects by providing effective methods for determining
+\begin{compactitem}
+ \item whether an object is in the data structure or not,
+ \item whether two objects are equal.
+\end{compactitem}
 \medskip
 
 In practice, a data structure is often bundled with several algorithms for it.
@@ -88,7 +92,7 @@ It is defined as follows:
 \begin{compactitem}
  \item The string $0$ is a natural number.
  \item If $n$ is a natural number, then the string $s(n)$ is a natural number.
- \item All natural numbers are obtained by applying the previous step finitely many times.
+ \item All natural numbers are obtained by applying the previous step finitely many times, and these are all different.
 \end{compactitem}
 
 We immediately define the usual abbreviations $1,2,\ldots,$.
