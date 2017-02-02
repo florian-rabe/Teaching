@@ -1,15 +1,19 @@
 A binary relation is on $A$ is a subset $\#\sq A\times A$.
 We usually write $(x,y)\in\#$ as $x\# y$.
 
+\subsection{Classification}
+
 \begin{definition}[Properties of Binary Relations]\label{def:math:binrel}
 We say that $\#$ is \ldots if the following holds:
  \begin{compactitem}
  \item reflexive:  for all $x$, $x\# x$
+ \item irreflexive:  for no $x$, $x\# x$
  \item transitive: for all $x,y,z$, if $x\# y$ and $y\# z$, then $x\# z$
+ \item a strict order: irreflexive and transitive
  \item a preorder: reflexive and transitive
  \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
  \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
- \item an order: preorder and anti-symmetric
+ \item an order\footnote{Orders are also called \emph{partial order}, \emph{poset} (for partially ordered set), or \emph{ordering}.}: preorder and anti-symmetric
  \item an equivalence: preorder and symmetric
  \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
  \end{compactitem}
@@ -23,7 +27,71 @@ An element $a\in A$ is called \ldots of $\#$ if the following holds:
  \end{compactitem}
 \end{definition}
 
-\begin{theorem}\label{thm:math:binrel}
-If $\#$ is an order, then least element, greatest element, least upper bound of $x,y$, and greatest lower bound of $x,y$ are unique whenever they exist.
+\begin{definition}[Dual Relation]
+For every relation $\#$, the relation $\#^{-1}$ is defined by $x\,\#^{-1}\, y$ iff $y\,\#\,x$.
+
+$\#^{-1}$ is called the \textbf{dual} of $\#$.
+\end{definition}
+
+\begin{theorem}[Dual Relation]
+If a relation is reflexive/irreflexive/transitive/symmetric/antisymmetric/total, then so is its dual.
 \end{theorem}
 
+\subsection{Equivalence Relations}
+
+Equivalence relations are usually written using infix symbols whose shape is reminiscent of horizontal lines, such as $=$, $\sim$, or $\Equiv$.
+Often vertically symmetric symbols are used to emphasize the symmetry property.
+
+\begin{definition}[Quotient]
+Consider a relation $\Equiv$ on $A$.
+Then
+\begin{compactitem}
+ \item For $x\in A$, the set $\{y\in A\,\|\,x\Equiv y\}$ is called the (equivalence) \textbf{class} of $x$.
+  It is often written as $[x]_\Equiv$.
+ \item $A/\Equiv$ is the set of all classes.
+  It is called the \textbf{quotient} of $A$ by $\Equiv$.
+\end{compactitem}
+\end{definition}
+
+\begin{theorem}
+For a relation $\Equiv$ on $A$, the following are equivalent\footnote{Logical equivalence is itself an equivalence relation.}:
+\begin{compactitem}
+ \item $\Equiv$ is an equivalence.
+ \item There is a set $B$ and a function $f:A\to B$ such that $x\Equiv y$ iff $f(x)=f(y)$.
+ \item Every element of $A$ is in exactly one class in $A/\Equiv$.
+\end{compactitem}
+
+In particular, the elements of $A/\Equiv$ 
+\begin{compactitem}
+ \item are pairwise disjoint,
+ \item have $A$ as their overall union.
+\end{compactitem}
+\end{theorem}
+
+\subsection{Orders}
+
+\begin{theorem}[Strict Order vs. Order]
+For every strict order $<$ on $A$, the relation ``$x<y$ or $x=y$'' is an order.
+
+For every order $\leq$ on $A$, the relation ``$x\leq y$ and $x\neq y$'' is a strict order.
+\end{theorem}
+
+Thus, strict orders and orders come in pairs that carry the same information.
+
+Strict orders are usually written using infix symbols whose shape is reminiscent of a semi-circle that is open to the right, such as $<$, $\subset$, or $\prec$.
+This emphasizes the anti-symmetry ($x< y$ is very different from $y<x$.) and the transitivity ($< \ldots <$ is still $<$.)
+The corresponding order is written with an additional horizontal bar at the bottom, i.e., $\leq$, $\sq$, or $\preceq$.
+In both case, the mirrored symbol is used for the dual relation, i.e., $>$, $\supset$, or $\succ$, and $\geq$, $\supseteq$, and $\succeq$. 
+
+\begin{theorem}\label{thm:math:binrel}
+If $\leq$ is an order, then least element, greatest element, least upper bound of $x,y$, and greatest lower bound of $x,y$ are unique whenever they exist.
+\end{theorem}
+
+\begin{theorem}[Preorder vs. Order]
+For every preorder $\leq$ on $A$, the relation ``$x\leq y$ or $y\leq x$'' is an equivalence.
+
+For equivalence classes $X$ and $Y$ of the resulting quotient, $x\leq y$ holds for either all pairs or no pair $(x,y)\in X\times Y$.
+If it holds for all pairs, we write $X\leq Y$ as well.
+
+The relation $\leq$ on the quotient is an order.
+\end{theorem}
