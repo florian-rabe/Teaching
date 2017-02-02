@@ -101,7 +101,7 @@ It is also straightforward to define algorithms for the basic functions on natur
 
 \begin{example}[Euclidean Algorithm]\label{ex:ad:euclid}
 One of the earliest and most famous (arguably \emph{the} earliest) algorithms is Euclid's algorithm for computing the greatest common divisor $\gcd(m,n)$ of two natural numbers $m,n\in\N$.
-It is given Euclid's Elements, maybe the most influential textbooks of all time \cite[Book VII, Proposition 2]{elements}.
+It is given in Euclid's Elements \cite[Book VII, Proposition 2]{elements}, maybe the most influential textbook of all time.
 
 It consists of the following components:
 \begin{compactitem}
@@ -155,6 +155,11 @@ Here the variable $factor$ runs through all values from $1$ to $n$ and the varia
 \end{compactitem}
 \end{example}
 
+\begin{notation}
+It is convenient to give the effective method of an algorithm as a function definition using pseudo-code.
+That way the input and output do not have to be spelled out separately because they are clear from the data structures used in the header of the function definition.
+\end{notation}
+
 \subsection{Effective Objects and Methods}\label{sec:ad:effective}
 
 It is now a central task in computer science to define data structures and algorithms that correspond to given sets and functions.
@@ -172,15 +177,16 @@ That limitations bring us back to the question of effective objects and methods:
 \begin{definition}[Effective Object]
 An effective object is any object that can be stored, manipulated, and communicated by a physical machine.
 
-Here, \emph{physical} means any machine that we can build in the physical world.\footnote{Sometimes we use hypothetical machines. For example, quantum computers are physical machines that we think we can build but have not been able to build in practice yet (at least not at useful scales).}
+Here, \emph{physical} means any machine that we can build in the physical world.\footnotemark
 \end{definition}
+\footnotetext{Sometimes we use hypothetical machines. For example, quantum computers are physical machines that we think we can build but have not been able to build in practice yet (at least not at useful scales).}
 
 Thus, every physical machine defines its own kind of effective objects.
 All digital machines (which includes all modern computers) use the same effective objects: lists of bits.
 These are stored in memory or on hard drives, which provide essentially one very, very long list of bits.
 
 Data structures use fragments of these lists to represents sets.
-For example, the set $\Z_{2^32}$ of $32$-bit-integers is represented by a list of $32$ bits.
+For example, the set $\Z_{2^{32}}$ of $32$-bit-integers is represented by a list of $32$ bits.
 
 \begin{definition}[Effective Method]
 An effective method consists of a sequence of instructions such that
@@ -275,7 +281,7 @@ And because all data structures usually come with specific algorithms, we are us
 
 But there are some languages that are pure data description languages.
 These are useful when storing data on hard drives or when exchanging data between programs and computers (e.g., on the internet).
-Examples of pure data description languages are JSON, XML, and UML.
+Examples of pure data description languages are JSON, XML, HTML, and UML.
 
 \paragraph{Types of Programming Languages}
 Programming languages can vary widely in how they represent data structures.
@@ -304,7 +310,7 @@ One of the most amazing and deepest results of theoretical computer science is t
 All known programming languages (including theoretical ones such as Turing machines)
 \begin{compactitem}
 \item can define data structures for exactly the same sets,
-\item can define algorithms for exactly the same sets.
+\item can define algorithms for exactly the same functions.
 \end{compactitem}
 
 Thus, it does not depend on the chosen programming language
