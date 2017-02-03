@@ -10,7 +10,7 @@
 %\usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
 %\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
 
-%\usepackage{algorithm}
+\usepackage{../macros/algorithm}
 %\usepackage{ded}
 \usepackage{../mylecturenotes}
 
@@ -41,9 +41,6 @@
 
   \chapter{Implementation}
     \input{process}
-     
-  \chapter{Specification}
-    \input{spec}
 
   \chapter{Testing}
     \input{test}
@@ -68,11 +65,13 @@
   \chapter{Model Checking} % two weeks
     \input{modelcheck}
 
-  \chapter{Program Verification} % two weeks
+  \chapter{Theorem Proving} % two weeks
    \input{verify}
 
 % guard against attack
 \part{Security}
+
+  \chapter{Common Critera}
 
   \chapter{Sytems and Institutions}
    % identity theft: phishing, social engineering, two-factor authentification
