@@ -175,6 +175,7 @@ The cause was a bug in the Heartbeat component, which allowed sending a message 
 The server code did not check whether the given message length $l$ was actually the length of the message $m$.
 Instead, it always returned $l$ bytes starting from the memory address of $m$ even if $l$ was larger than the length of $m$.
 This was possible because the used low-level programming language (C) let the programmers store $m$ in a memory buffer and then over-read from that buffer.
+Moreover, their C code is so hard to read that it is impossible to notice such minor errors on a cursory inspection.
 
 Details: \url{http://www.theregister.co.uk/2014/04/09/heartbleed_explained/}
 
