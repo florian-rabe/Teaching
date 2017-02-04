@@ -80,9 +80,9 @@ In addition to plain design or implementation errors, there may be failures in h
 
 Together with correctness, safety is the only property that is at least in principle accessible to a formal definition.
 But the resulting problem is undecidable.
-So in practice, we have to use extensive testing. 
+So in practice, we have to use extensive testing.  
 
-Security is very to prove because any proof must make assumptions about what kind of attacks there are.
+Security is very complex to prove because any proof must make assumptions about what kind of attacks there are.
 Attacking a system often requires intentionally violating the specification and supply unanticipated input.
 
 Perfect confidentiality is impossible to realize because all computation leaks some information other than the output: This reaches from runtime and resource use to obscure effects like the development of heat due to CPU activity.
@@ -123,7 +123,7 @@ An \textbf{error} is that part of the system state that may cause a subsequent f
 Fault prevention requires quality control techniques employed during the design and manufacturing of the system.
 That includes, e.g., structured programming, information hiding, or modularization.
 
-Shielding, radiation hardening, etc., are needed to to prevent physical faults.
+Shielding, radiation hardening, etc., are needed to prevent physical faults.
 Training and maintenance procedures aim at preventing interaction faults.
 Firewalls and similar defenses intend to prevent malicious faults.
 
@@ -151,7 +151,7 @@ Error handling eliminates errors from the system state by
 Fault handling prevents located faults from being activated again by
 \begin{compactitem}
   \item fault diagnosis: identify location and type of the cause of an error
-  \item fault isolation: exclude the fault form future service delivery, i.e., make the fault dormant
+  \item fault isolation: exclude the fault from future service delivery, i.e., make the fault dormant
   \item system reconfiguration: switch to non-failed components
   \item system reinitialization: update to a new configuration of the system
 \end{compactitem}
@@ -184,7 +184,7 @@ This can employ formal static verification or fault injection, i.e., testing whe
 \emph{Design for verifiability} means to design a system in such a way that verification becomes easy.
 
 \paragraph{Operation Phase}
-Fault removal during the life time of a systems employs two methods:
+Fault removal during the life time of a system employs two methods:
 \begin{compactitem}
 \item Corrective maintenance removes faults that have produced errors that were detected and reported.
 \item Preventive maintenance uncovers faults before they cause errors.

@@ -371,15 +371,24 @@ It is critical to distinguish the three steps in software development:
  Changing the specification may completely change, which design is appropriate.
  Therefore, every single design decision must be revisited and checked for appropriateness.
  \item Design changes are much more expensive than implementation changes.
- Changing the design may complete change which components of the implementation are needed and how they interact.\\
+ Changing the design may completely change which components of the implementation are needed and how they interact.\\
  Therefore, every part of the program must potentially be revisited. \\
  In particular, whenever the design of component $X$ is changed, we have to revisit every place of the program that uses $X$. 
  This often introduces bugs.
 \end{itemize}
+Typically any specification change entails bigger design changes, and any design change entails bigger implementation changes.
+Moreover, specification changes require
+\begin{compactitem}
+	\item re-verification (i.e., checking that the implementation still correctly implements the specification)
+	\item re-certification by regulatory agencies (if applicable to the specific software)
+	\item changes to documentation, manuals, and tutorials, re-training of users, etc.
+	\item distribution of software updates, which confuses and disrupts their workflows
+	\item need for other software projects to adapt to the updated software
+\end{compactitem}
 
-An ideal programmers proceed in the order specification-design-implementation.
+An ideal programmer proceeds in the order specification-design-implementation.
 However, it is often necessary to loop back: The design phase may reveal problems in the specification, and the implementation phase may reveal problems in the design.
-Therefore, we usually have to to work on all $3$ parts in parallel---but with a strong preference against changing specification and design.
+Therefore, we usually have to work on all $3$ parts in parallel---but with a strong preference against changing specification and design.
 
 Many self-taught or not-well-taught programmer do not understand the difference between the $3$ steps or do not systematically apply it.
 Their programs are typically awful because:
