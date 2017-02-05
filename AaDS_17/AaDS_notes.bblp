@@ -1,15 +1,20 @@
-\begin{thebibliography}{EucBC}
+\begin{thebibliography}{CLR10}
 
 \bibitem[CLR10]{cormen_algorithms}
 T.~Cormen, C.~Leiserson, and R.~Rivest.
 \newblock {\em {Introduction to Algorithms}}.
 \newblock MIT Press, 2010.
 
-\bibitem[EucBC]{elements}
-Euclid.
-\newblock {\em Elements}.
-\newblock around 300 BC.
-\newblock English translation by T. Heath (1956) available online.
+\bibitem[Hil00]{hilbertsproblems}
+D.~Hilbert.
+\newblock {Mathematische Probleme}.
+\newblock {\em {Nachrichten von der K{\"o}niglichen Gesellschaft der
+  Wissenschaften zu G{\"o}ttingen}}, pages 253--297, 1900.
+
+\bibitem[Hil26]{hilbertsprogram}
+D.~Hilbert.
+\newblock {{\"U}ber das Unendliche}.
+\newblock {\em {Mathematische Annalen}}, 95:161--90, 1926.
 
 \bibitem[Knu73]{knuth_art}
 D.~Knuth.
