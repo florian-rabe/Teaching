@@ -100,9 +100,7 @@ It is also straightforward to define algorithms for the basic functions on natur
 \end{example}
 
 \begin{example}[Euclidean Algorithm]\label{ex:ad:euclid}
-One of the earliest and most famous (arguably \emph{the} earliest) algorithms is Euclid's algorithm for computing the greatest common divisor $\gcd(m,n)$ of two natural numbers $m,n\in\N$.
-It is given in Euclid's Elements \cite[Book VII, Proposition 2]{elements}, maybe the most influential textbook of all time.
-
+The Euclidean algorithm (see also Sect.~\ref{sec:ad:history}) computes the greatest common divisor $\gcd(m,n)$ of two natural numbers $m,n\in\N$.
 It consists of the following components:
 \begin{compactitem}
 \item input: $\N\times\N$
@@ -208,6 +206,32 @@ The third condition excludes for example the following instructions
 \end{compactitem} 
 \end{example}
 
+\subsection{History}\label{sec:ad:history}
+
+One of the earliest and most famous (arguably \emph{the} earliest) algorithms is Euclid's algorithm for computing the greatest common divisor (see Ex.~\ref{ex:ad:euclid}).
+It is given around 300 BC in Euclid's Elements \cite[Book VII, Proposition 2]{elements}, maybe the most influential textbook of all time.
+\medskip
+
+The word \emph{algorithm} is much younger.
+It is derived from the name of the 9th century scientist al-Khwarizmi.
+He was one of the most important scientists of his millennium but is relatively unknown in the Western world because he was and wrote in Arabic.
+Translations of his work on arithmetic in the 12th century spread several new results to the Western world.
+
+This included the use of numbers as abstract objects as opposed to geometric distances that had dominated Europe since the work of the Greek mathematicians (such as Euclid).
+It also included the positional number systems that is still in use today.
+The corresponding arithmetical operations on numbers were named \emph{algorismus} after him in Latin, which developed into the modern word.
+He also worked on algorithms for solving linear and quadratic equations, and one of his basic operations called \emph{al-jabr} gave rise to the word \emph{algebra}.
+\medskip
+
+The modern \emph{meaning} of the word \emph{algorithm} is even younger: Its formalization was effected by a major development in the 1920s and 1930s that eventually gave to modern computer science itself.
+Hilbert was the most influential mathematician in the early 20th century.
+One of his legacies was to call for solutions to certain fundamental problems \cite{hilbertsproblems}.
+Another legacy was his program \cite{hilbertsprogram}, a call for the formalization of mathematics that (among other things) should yield an algorithm for determining whether any given formula is a theorem.
+
+Hilbert's program inspired seminal work by (among others) Alonzo Church, Kurt G\"odel, and Alan Turing.
+Their work led to several concrete definitions of \emph{algorithm}, including Turing-machines and the $\lambda$-calculus.
+It also led to an understanding of the limits of what algorithms can do (see Sect.~\ref{sec:ad:computable}).
+
 \subsection{The Limits of Data Structures and Algorithms}\label{sec:ad:computable}
 
 \subsubsection{Countability of Data Structures and Algorithms}
@@ -226,7 +250,7 @@ Inspecting the sizes of the constructed sets from Sect.~\ref{sec:math:sets}, we 
 \item If all arguments are finite, so is the constructed set---except for lists.
 \item If all arguments are at most countable, so is the constructed set---except for function and power sets.
 \end{compactitem}
-Because of these exception, we cannot restrict attention to finite or countable sets only---working with them invariably leads to uncountable sets.
+Because of these exceptions, we cannot restrict attention to finite or countable sets only---working with them invariably leads to uncountable sets.
 
 \subsubsection{Computability}
 
@@ -301,12 +325,12 @@ Examples are Scala and F\#.
 
 
 \paragraph{Independence of the Choice of Language}
-Above we have seen that the concrete meaning of \emph{data structure} and \emph{algorithm} depends on the choice of programming language.
+Above we have seen that the concrete meaning of \emph{data structure} and \emph{algorithm} seems to depend on the choice of programming language.
 Thus, it seems that whether a set is decidable or a function computable also depends on the choice of programming language.
 
-One of the most amazing and deepest results of theoretical computer science is that this is not the case.
+One of the most amazing and deepest results of theoretical computer science is that this is not the case:
 
-\begin{theorem}
+\begin{theorem}[Church-Turing Thesis]
 All known programming languages (including theoretical ones such as Turing machines)
 \begin{compactitem}
 \item can define data structures for exactly the same sets,
@@ -326,7 +350,9 @@ For every program of every language, we must provide an equivalent program in ev
 However, this can be done (and has been done) for all languages.
 \end{proof}
 
-A related (stronger) theorem is that every programming language $P$ allows defining for every programming language $Q$ an algorithm that interprets $Q$-programs.
+A related (stronger) theorem is that every programming language $P$ allows defining for every programming language $Q$ a program that executes $Q$-programs.
+
+It is generally believed but impossible to prove that there is no programming language that can define more data structures or algorithms than the known ones.
 
 \section{Specification vs. Design vs. Implementation}
 
