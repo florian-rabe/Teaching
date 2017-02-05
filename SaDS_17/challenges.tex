@@ -51,12 +51,12 @@ This spectrum is so extreme that
 Incidentally, this means that this course's subject matter is much less well-defined than that of other courses.%
 \footnote{For example, the other two courses in this module almost design themselves because the subject matter is very well understood and standardized.}
 That makes it particular difficult to design a syllabus for.
-It will give a overview of the most important state-of-the-art methods.
+It will give an overview of the most important state-of-the-art methods.
 
 \section{Major Disasters Caused by Programming Errors}
 
 \paragraph{Mariner 1}
-The 1962 rocket launch of Mariner 1 failed causing damage of around \$20 million.
+The 1962 rocket launch of Mariner 1 failed, causing damage of around \$20 million.
 
 The cause was a programming error, where a mathematical formula in the specification was misread.
 
@@ -66,7 +66,7 @@ Details: \url{https://en.wikipedia.org/wiki/Mariner_1}
 Between 1985 and 1987, the Therac-25 machine for medical radiation therapy caused death and/or serious injury in at least $6$ cases.
 Patients received a radiation overdose because the high intensity energy beam was administered while using the protection meant for the low intensity beam.
 
-The cause was that the hardware protection was discontinued relying exclusively on software to prevent a mismatch of beam and protection configuration.
+The cause was that the hardware protection was discontinued, relying exclusively on software to prevent a mismatch of beam and protection configuration.
 But the software had always been buggy due to a systemic failures in the software engineering process including complex systems (code written in assembly, machine had its own OS), lack of software review, insufficient testing (overall system could not be tested), bad documentation (error codes were not documented), and bad user interface (critical safety errors could be manually overridden, thus effectively being warnings).
 
 Details: \url{https://en.wikipedia.org/wiki/Therac-25}
@@ -86,7 +86,7 @@ In 1996, the first launch of an Ariane 5 rocket (overall development cost \$$7$ 
 Both the primary and the backup system had shut down, each trying to transfer control to the other, after encountering the same behavior, which they interpreted as a hardware error.
 
 The cause was an overflow exception in the alignment system caused by converting a $64$-bit float to a $16$-bit integer, which was not caught and resulted in the display of diagnostic data that the autopilot could not interpret.
-The programmers were away of the problem but had falsely concluded that no conversion check was needed (and therefore omitted the check to speed up processing).
+The programmers were aware of the problem but had falsely concluded that no conversion check was needed (and therefore omitted the check to speed up processing).
 Their conclusion had been made based on Ariane 4 flight data that turned out to be inappropriate for Ariane 5.
 
 The faulty component was not even needed for flight and was only kept active for a brief time after launch for convenience and in order to avoid changing a running system.
@@ -115,7 +115,7 @@ Detail: \url{http://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=2331&context
 In 1997, critical navigation and weapons hardware on the USS Yorktown was paralyzed at sea for $3$ hours while rebooting machines.
 
 The cause was a blank field in a database that was interpreted as $0$ leading to a division-by-zero.
-Special floating point values such as infinity or NaN were not used resulting in an exception.
+Special floating point values such as infinity or NaN were not used, thus resulting in an exception.
 The exception was handled by neither the software nor the operating systems (Windows NT) thus crashing both.
 
 Details: \url{http://www.cs.berkeley.edu/~wkahan/Boulder.pdf}
@@ -139,7 +139,7 @@ At that point the number of seconds since 1970-01-01, which is the dominant way 
 While application software is expected to be updated by then anyway, modern embedded systems may or may not still be in use.
 
 \paragraph{Los Angeles Airport Network Outage}
-In 2007, LA airport was partially blocked for $10$ due to a network outage that prevented passenger processing.
+In 2007, LA airport was partially blocked for $10$ hours due to a network outage that prevented passenger processing.
 About 17,000 passengers were affected.
 
 The cause was a single network card malfunction that flooded the network and propagated through the local area network.
