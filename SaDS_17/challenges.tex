@@ -179,7 +179,7 @@ Moreover, their C code is so hard to read that it is impossible to notice such m
 
 Details: \url{http://www.theregister.co.uk/2014/04/09/heartbleed_explained/}
 
-\paragraph{Shellshock (Bashdoor)}
+\paragraph{Shellshock}
 From 1998 to 2014, it was possible for any user to gain root access in the bash shell on Unix-based systems.
 The upgrade cost is unknown but was generally small because updates were rolled out within $1$ week of publication.
 Moreover, in certain server applications that passed data to bash this was possible for arbitrary clients as well.
@@ -370,7 +370,7 @@ This creates unprecented risks for privacy, with legal regulation mostly lagging
 (Most legislation were designed to limit the government from violating privacy.
 Corporations were barely restricted, in fact they used to have less power.)
 
-Because most users do not understand the technical issues, they blindly accept terms of service, thus generously granting access rights to applications, and ultimately creating more user data for the free market.
+Because most users do not understand the technical issues and blindly accept terms of service, thus generously granting access rights to applications, more and more user data becomes available to the free market.
 This is used for both legitimate (e.g., advertising-financed free services) or questionable purposes (e.g., manipulating voter preferences through personalized messages).
 
 In 2014, The Fappening was an attack that combined phishing and password-guessing to gain access to many user accounts on Apple's iCloud.
@@ -400,9 +400,9 @@ Many organizations holding user data employ insufficient security against digita
 They get hacked so routinely that a strong market for stolen identities has developed, often pricing bulk datasets at a few dollars per identity.
 An overview can be found at \url{https://haveibeenpwned.com/}.
 
-The effects are exacerbated by two symptoms:
+This development is exacerbated by two human problems:
 \begin{compactitem}
- \item System administrators are not sufficiently educated about password hashing, often false believing default hash configurations to be secure.
+ \item System administrators are not sufficiently educated about password hashing and often falsely believe default hash configurations to be secure.
  Thus, hacks often allow inverting the hash function thus exposing passwords in addition to the possibly sensitive user data.
  \item Users are not sufficiently educated about systematically using different passwords on every site.
  Thus, any breach also compromises accounts on any other sites that use the same user name or email address and password.
@@ -411,10 +411,22 @@ The effects are exacerbated by two symptoms:
 Many websites now offer and nudge users to use two-factor authentification to protect accounts from identity theft.
 A second factor (e.g., via email or text message) may be required for every login, for every login from a new location, or for every sensitive action like changing the password.
 Security questions, which are particularly vulnerable, are phased out by leading companies.
-But both websites and users are slow to get used to it.
+But both websites and users are slow to get used to this.
 \medskip
 
-The following describes a few high-profile cases.
+This problem is exacerbated by wide-ranging technically legal access by government agencies to private data.
+Companies usually comply with subpoenas by the country they operate in (both democracies and others) even if that compromises private user data.
+For example, in 2017, a US court decided that US companies (i.e., the majority of companies holding sensitive user data) must, if subpoenaed, hand over to US government also all user data stored on servers abroad.
+That makes it very difficult for other countries to enforce stricter data protection laws.
+
+These constraints interact with market forces and foreign and economic policy.
+For example, China uses a protectionist policy to strengthen Chinese alternatives to US web services like Google or Facebook.
+But they also allow foreign companies under the condition that they provide the Chinese government with strong access to private data.
+Complying with these rules opens Western web service providers up to accusations that they support human rights violations.
+But dismissing these market opportunities opens them up to competition and shareholder pressure.
+\medskip
+
+The following describes a few high-profile cases of stolen user data.
 
 In a (estimated) 2008 (only reported in 2016) of myspace, about $360$ million accounts were compromised.
 The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
