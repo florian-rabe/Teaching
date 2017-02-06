@@ -62,6 +62,16 @@ The cause was a programming error, where a mathematical formula in the specifica
 
 Details: \url{https://en.wikipedia.org/wiki/Mariner_1}
 
+% There have been a number of similar space exploration failures due to minor programming errors, e.g.,
+\begin{compactitem}
+ \item 1982, Viking I lost: software update written to wrong memory area overriding vital parameters for antenna
+ \item 1988, Phobos 1 lost: one character missing in software update led to accidentally executing a testing routing at the wrong time
+ \item 1996, Mars Global Surveyor lost: data written to wrong memory addresses
+ \item 1999, Mars Polar Lander lost: presumably software not accounting for false positive when detecting shutdown even though the possibility was known
+ \item 2004, Mars Rover Spirit, lost for 16 days: delay in deleting obsolete files led to lack of available flash memory, which triggered a reboot, which led to a reboot cycle
+\end{compactitem}
+% the story of a Fortran bug where . was accidentally written instead of a , appears to be exaaggerated; it did not lead to a crash
+
 \paragraph{Therac-25}
 Between 1985 and 1987, the Therac-25 machine for medical radiation therapy caused death and/or serious injury in at least $6$ cases.
 Patients received a radiation overdose because the high intensity energy beam was administered while using the protection meant for the low intensity beam.
@@ -82,7 +92,7 @@ The resulting time was off by $0.3$ seconds, which combined with the high speed 
 Details: \url{http://www-users.math.umn.edu/~arnold/disasters/patriot.html}
 
 \paragraph{Ariane 5}
-In 1996, the first launch of an Ariane 5 rocket (overall development cost \$$7$ billion) failed, and the rocket had to be destructed after launch.
+In 1996, the first launch of an Ariane 5 rocket (at a cost of over \$$300$ million for rocket and payload) failed, and the rocket had to be destructed after launch.
 Both the primary and the backup system had shut down, each trying to transfer control to the other, after encountering the same behavior, which they interpreted as a hardware error.
 
 The cause was an overflow exception in the alignment system caused by converting a $64$-bit float to a $16$-bit integer, which was not caught and resulted in the display of diagnostic data that the autopilot could not interpret.
@@ -295,6 +305,21 @@ The above had two negative effects on the code base
 \end{compactitem}
 which exacerbated the management and programming problems.
 
+\paragraph{Fooling Neural Networks}
+Deep learning neural networks have become very popular recently for pattern recognition (pictures and speech in particular).
+They are already used in, e.g., in self-driving cars or the AlphaGo system.
+Despite their economic importance, they can err spectacularly in ways that are entirely different from the ways human pattern recognition errs.
+This is unavoidable because it is a consequence of their mathematical foundations.
+
+Researchers were able to demonstrate that
+\begin{compactitem}
+ \item minor changes to an image that would be imperceptible to a human can make the network identity as something entirely different (e.g., a lion as a library)
+ \item images that are unrecognizable to humans can make the network see an object with absolute certainty (e.g., labeling white noise as a lion)
+\end{compactitem}
+This has major implications for the safety and security of systems based on these networks.
+
+Details: \url{http://www.evolvingai.org/fooling}
+
 \paragraph{Excel Gene Names}
 In 2016, researchers found that about 20\% of papers in genomics journals contain errors in supplementary spreadsheets.
 
@@ -390,15 +415,16 @@ Problems included
  \item weak IT and information security teams
 \end{compactitem}
 Stolen data included employee data (including financial data), internal emails, and movies.
+\medskip
 
-In 2016, the US democratic party's headquarters suffered a breakin (possibly by Russia to manipulate or discredit that year's presidential election).
+In 2016, the US democratic party's headquarters suffered a break-in (possibly by Russia to manipulate or discredit that year's presidential election).
 The stolen data included in particular internal emails and personal data of donors.
 Especially, the former hurt the public perception of the party's campaign to an unknown degree that may or may not have been decisive.
 
-\paragraph{Web Site Account Data}
+\paragraph{User Account Data}
 Many organizations holding user data employ insufficient security against digital break-ins and insufficient (if any) encryption of user data.
-They get hacked so routinely that a strong market for stolen identities has developed, often pricing bulk datasets at a few dollars per identity.
-An overview can be found at \url{https://haveibeenpwned.com/}.
+They get hacked or otherwise compromised so routinely that a strong market for stolen identities has developed, often pricing bulk datasets at a few dollars per identity.
+Overviews can be found at \url{https://haveibeenpwned.com/} or \url{https://en.wikipedia.org/wiki/SQL_injection}.
 
 This development is exacerbated by two human problems:
 \begin{compactitem}
@@ -408,7 +434,7 @@ This development is exacerbated by two human problems:
  Thus, any breach also compromises accounts on any other sites that use the same user name or email address and password.
 \end{compactitem}
 
-Many websites now offer and nudge users to use two-factor authentification to protect accounts from identity theft.
+Many websites now offer and nudge users to use two-factor authentication to protect accounts from identity theft.
 A second factor (e.g., via email or text message) may be required for every login, for every login from a new location, or for every sensitive action like changing the password.
 Security questions, which are particularly vulnerable, are phased out by leading companies.
 But both websites and users are slow to get used to this.
@@ -428,11 +454,24 @@ But dismissing these market opportunities opens them up to competition and share
 
 The following describes a few high-profile cases of stolen user data.
 
+In a 2005 hack of the US credit card payment processing company CardSystems, over $40$ million accounts were compromised.
+The stolen data included name and credit card number.
+The reason was an SQL injection attack.
+
+In a 2005/2006 hack (reported in 2007) of the US retailer TJX, about $45$ million accounts were compromised with an estimated damage of \$$1$ billion.
+The stolen data included name and credit card number.
+The cause was the use of the obsolete WEP security standard for communication between pricing devices in one store.
+This allowed hackers to access the central database, where data was stored unencrypted that should have been deleted.
+
 In a (estimated) 2008 (only reported in 2016) of myspace, about $360$ million accounts were compromised.
 The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
 
 In a 2012 hack of linkedin, $160$ million accounts were compromised.
 The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
+
+In 2014, data for over $1$ billion accounts from $420,000$ websites were discovered by the security company Hold Security.
+It is claimed that many of these break-ins stems from bot carrying out SQL injection attacks.
+The details are unclear as some claims by Hold Security are disputed.
 
 In a 2015 hack of Ashley Madison, about $30$ accounts were compromised.
 The stolen records included name, email address, hashed password, physical description, and sexual preferences.
