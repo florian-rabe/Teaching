@@ -1,9 +1,15 @@
-\begin{thebibliography}{CLR10}
+\begin{thebibliography}{EucBC}
 
 \bibitem[CLR10]{cormen_algorithms}
 T.~Cormen, C.~Leiserson, and R.~Rivest.
 \newblock {\em {Introduction to Algorithms}}.
 \newblock MIT Press, 2010.
+
+\bibitem[EucBC]{elements}
+Euclid.
+\newblock {\em Elements}.
+\newblock around 300 BC.
+\newblock English translation by T. Heath (1956) available online.
 
 \bibitem[Hil00]{hilbertsproblems}
 D.~Hilbert.
