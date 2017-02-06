@@ -55,20 +55,16 @@ It will give an overview of the most important state-of-the-art methods.
 
 \section{Major Disasters Caused by Programming Errors}
 
-\paragraph{Mariner 1}
-The 1962 rocket launch of Mariner 1 failed, causing damage of around \$20 million.
-
-The cause was a programming error, where a mathematical formula in the specification was misread.
-
-Details: \url{https://en.wikipedia.org/wiki/Mariner_1}
-
-% There have been a number of similar space exploration failures due to minor programming errors, e.g.,
+\paragraph{Space Exploration}
+There have been a number of failures in space exploration due to minor programming errors.
+These include
 \begin{compactitem}
+ \item 1962, Mariner 1 rocket lost: misread specification (overlooked bar over a variable) was implemented (damage around \$$20$ million)
  \item 1982, Viking I lost: software update written to wrong memory area overriding vital parameters for antenna
  \item 1988, Phobos 1 lost: one character missing in software update led to accidentally executing a testing routing at the wrong time
  \item 1996, Mars Global Surveyor lost: data written to wrong memory addresses
  \item 1999, Mars Polar Lander lost: presumably software not accounting for false positive when detecting shutdown even though the possibility was known
- \item 2004, Mars Rover Spirit, lost for 16 days: delay in deleting obsolete files led to lack of available flash memory, which triggered a reboot, which led to a reboot cycle
+ \item 2004, Mars Rover Spirit lost for 16 days: delay in deleting obsolete files led to lack of available flash memory, which triggered a reboot, which led to a reboot cycle
 \end{compactitem}
 % the story of a Fortran bug where . was accidentally written instead of a , appears to be exaaggerated; it did not lead to a crash
 
@@ -251,7 +247,7 @@ Details: \url{https://www.imperialviolet.org/2014/02/22/applebug.html}
 
 % see also https://www.dwheeler.com/essays/learning-from-disaster.html for heartbleed, shellshock, and goto fail
 
-\section{Major Failures Caused By System Updates}
+\section{Other Interesting Failures}
 
 \paragraph{Odyssey Court Software}
 In an ongoing crisis since 2016, US county court and California and other states have been having difficulties using the new Odyssey software for recording and disseminating court decisions.
@@ -264,7 +260,7 @@ This has led to the erroneous recording of decisions and a backlog of converting
 
 Details: \url{https://arstechnica.com/tech-policy/2016/12/court-software-glitches-result-in-erroneous-arrests-defense-lawyers-say/}
 
-\paragraph{Other Notable Cases}
+\paragraph{Other Failures Caused By System Updates}
 This is a selection of failures that did not cause direct damage but led to availability failures on important infrastructure.
 
 In 1990, all AT\&T phone switching centers shut down for 9 hours due to a bug in a software update.
@@ -282,8 +278,6 @@ In 2015, the New York Stock Exchange had to pause for $3$ hours for a reboot aft
 In 2015, hundreds of flights in the North Eastern US had to be canceled or delayed for several hours.
 The cause was a problem with new and behind-schedule computer system installed in air traffic control centers.
 % http://www.bbc.com/news/world-us-canada-33950381
-
-\section{Other Interesting Failures}
 
 \paragraph{FBI Virtual Case File Project}
 In 2005 the Virtual Case File project of the FBI, which had been developed since 2000, was scrapped.
@@ -452,39 +446,40 @@ Complying with these rules opens Western web service providers up to accusations
 But dismissing these market opportunities opens them up to competition and shareholder pressure.
 \medskip
 
-The following describes a few high-profile cases of stolen user data.
-
-In a 2005 hack of the US credit card payment processing company CardSystems, over $40$ million accounts were compromised.
+The following describes a few high-profile cases of stolen user data:
+\begin{compactitem}
+\item In a 2005 hack of the US credit card payment processing company CardSystems, over $40$ million accounts were compromised.
 The stolen data included name and credit card number.
 The reason was an SQL injection attack.
 
-In a 2005/2006 hack (reported in 2007) of the US retailer TJX, about $45$ million accounts were compromised with an estimated damage of \$$1$ billion.
+\item In a 2005/2006 hack (reported in 2007) of the US retailer TJX, about $45$ million accounts were compromised with an estimated damage of \$$1$ billion.
 The stolen data included name and credit card number.
 The cause was the use of the obsolete WEP security standard for communication between pricing devices in one store.
 This allowed hackers to access the central database, where data was stored unencrypted that should have been deleted.
 
-In a (estimated) 2008 (only reported in 2016) of myspace, about $360$ million accounts were compromised.
+\item In a (estimated) 2008 (only reported in 2016) of myspace, about $360$ million accounts were compromised.
 The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
 
-In a 2012 hack of linkedin, $160$ million accounts were compromised.
+\item In a 2012 hack of linkedin, $160$ million accounts were compromised.
 The stolen data included user name, email address, and badly hashed passwords (unsalted SHA1).
 
-In 2014, data for over $1$ billion accounts from $420,000$ websites were discovered by the security company Hold Security.
+\item In 2014, data for over $1$ billion accounts from $420,000$ websites were discovered by the security company Hold Security.
 It is claimed that many of these break-ins stems from bot carrying out SQL injection attacks.
 The details are unclear as some claims by Hold Security are disputed.
 
-In a 2015 hack of Ashley Madison, about $30$ accounts were compromised.
+\item In a 2015 hack of Ashley Madison, about $30$ accounts were compromised.
 The stolen records included name, email address, hashed password, physical description, and sexual preferences.
 Most passwords were hashed securely (using bcrypt for salting and stretching), but about $10$ million passwords were hashed insecurely (using a single MD5 application).
 This led to multiple extortion attempts and possibly suicides.
 % https://nakedsecurity.sophos.com/2015/09/10/11-million-ashley-madison-passwords-cracked-in-10-days/
 
-In a 2016 hack of the Friend Finder network, about $400$ million accounts were compromised.
+\item In a 2016 hack of the Friend Finder network, about $400$ million accounts were compromised.
 The stolen records included name, email address, registration date, and unhashed or badly hashed passwords.
 % https://www.leakedsource.com
 
-In two separate hacks in 2013 (only reported in 2016) and 2014 of Yahoo, over $1$ billion user accounts were compromised by presumably state-sponsored actors.
+\item In two separate hacks in 2013 (only reported in 2016) and 2014 of Yahoo, over $1$ billion user accounts were compromised by presumably state-sponsored actors.
 The stolen records included name, email address, phone number, date of birth, and hashed passwords, and in some cases security questions and answers.
+\end{compactitem}
 
 \subsection{Dedicated Systems}
 
