@@ -3,13 +3,22 @@
 \RequirePackage{currfile}
 \RequirePackage{amsmath,amssymb,amsthm}
 \RequirePackage{url,paralist}
+\RequirePackage{kvoptions}
 \usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% options using kvoptions
+
+\SetupKeyvalOptions{family=ln,prefix=ln@} % needed to override default values obtained from file name
+%% the root directory that contains the macros directory
+\DeclareStringOption[..]{root}
+\ProcessKeyvalOptions*
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%% my packages
 
-\usepackage{../macros/twelf-math}
-\usepackage[book,mark]{../macros/theorems}
-\usepackage{../macros/basics}
+\usepackage{\ln@root/macros/twelf-math}
+\usepackage[book,mark]{\ln@root/macros/theorems}
+\usepackage{\ln@root/macros/basics}
 
 \usepackage[hyperfootnotes=false,bookmarks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, colorlinks=true, breaklinks=true, bookmarksopen=true,bookmarksopenlevel=1,bookmarksnumbered]{hyperref} % this needs to go last
 
