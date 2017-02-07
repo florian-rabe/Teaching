@@ -1,0 +1,74 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Secure and Dependable Systems},number=2,date=2017-02-07,due=2017-03-02]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Shellshock}{10}
+Consider the shellshock example from the lecture notes.
+In this problem, we implement a minimal shell that can exhibit shellshock.
+
+You can use any programming language.
+However, because we want to be correct by design, it is best to use a good programming language such as SML or a very good programming language such as Scala.
+
+\renewcommand{\bnf}[1]{{\color{red}#1}}
+\begin{enumerate}
+\item Implement a data type for the following grammar, which represents the commands our shell can handle.
+\[\begin{array}{lcl}
+ COMM & \bbc & fun\;NAME(NAME) \{COMM\} \\
+      & \bnfalt & run\;NAME \rep{\bnfbracket{SPACE\; EXPR}} \\
+      & \bnfalt & NAME(EXPR) \\
+      & \bnfalt & COMM ; COMM \\
+ EXPR & \bbc & NAME \bnfalt "\; \rep{\bnfbracket{\backslash\backslash \bnfalt \backslash" \bnfalt \bnfnegchoice{\backslash"}}} \;" \\
+ NAME & \bbc & \text{alphanumeric string}
+\end{array}\]
+where red color indicates BNF meta-symbols.
+
+\item Implement a parser for your data type. It should be of the form
+\begin{acode}
+\afun[Comm]{parseCommand}{command : String}{\ldots}\\
+\afun[Expr]{parseExpr}{expr : String}{\ldots}
+\end{acode}
+
+\item Implement an interpreter for your data type. It should be of the form
+\begin{acode}
+\aclassA{Def}{}{}{}\\
+\aclass{ValDef}{name: String, value: String}{Def}{}\\
+\aclass{FunDef}{name: String, argName: String, body: Comm}{Def}{}\\\\
+\afun[{List[Def]}]{interpret}{context: List[Def], command: Comm}{\ldots} \\
+\afun[String]{evaluate}{context: List[Def], expr: Expr}{\ldots}
+\end{acode}
+and interpret commands as follows:
+\begin{compactitem}
+\item $fun\;f(x)\{C\}$: puts a $FunDef$ into the context
+\item $run\;n\,arg_1\,\ldots\,arg_n$ call the shell function $n$ with the listed arguments
+\item $f(e)$ evaluates $e$ to $v$, retrieves the $FunDef(f,x,b)$ from the context and executes $b$ with an additional $ValDef(x,v)$ in the context
+\item $c ; d$ executes $c$ first (which may return new definitions) and then executes $d$ with those new definitions added to the context
+\end{compactitem}
+and evaluate expressions as follows
+\begin{compactitem}
+\item $n$: retrieve $ValDef(n,s)$ from the context and return $s$
+\item $"s"$: return the string $s$ with the escapes removed
+\end{compactitem}
+
+\item Your final program arises by taking a string $s$, calling $c = parseComm(s)$, then calling $interpret(Nil,c)$.
+
+\item Now for the faulty functionality of bash, modify your program as follows:
+ \begin{compactitem}
+  \item At the beginning, try to parse every available environment variable that starts with $fun$ into a $Comm$.
+  \item Execute all commands that parse successfully to obtain a list $defs:List[Def]$.
+  \item Call interpret with $defs$ instead of $Nil$ as the initial context.
+ \end{compactitem}
+
+\item Fix your design so that function definitions in environment variables that are followed be commands cannot be executed.
+\item Improve security further by considering only environment variables whose name begins with a certain prefix $SHELL\_FUNC$.
+\end{enumerate}
+\end{problem}
+
+\end{document}
