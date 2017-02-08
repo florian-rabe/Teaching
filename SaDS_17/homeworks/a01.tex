@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=1,date=2017-02-07,due=2017-02-23]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=1,date=2017-02-08,due=2017-02-23]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -15,24 +15,41 @@ Consider the `goto fail' example from the lecture notes.
 
 \begin{enumerate}
 \item Transcribe the faulty function (including the fault) as closely as possible in some programming language.
-Because we will use testing and code analysis tools, it is good to use a language for which many tools exists, e.g., C or Java.
+Because we will use unit testing and code analysis tools, it is good to use a language for which good tool support exists, e.g., C(++) or Java.
 
-Replace all types, functions, and variables that are declared outside the code snippet with arbitrary implementations.
-The only thing you have to ensure is that all three function calls in the body can succeed or fail independently.
+Replace all types, functions, and variables that are declared outside the relevant code snippet with arbitrary implementations.
+The only thing you have to ensure is that all three function calls in the body can succeed or fail independently---i.e., it should be possible to achieve all eight combinations of which of these function calls succeed/fail by choosing appropriate inputs.
 
 \item Write a unit test for your function.
-The test cases should be such that running your tests executes every line of the tested unit at least once.
 
-\item Setup a code coverage library/tool and use it with your program.
-Run the tests and see if every line is executed.
+The test cases should be such that (if the function were implemented correctly) running your tests executes every line of the tested unit at least once.
+
+Thus, you need at least $4$ test cases to cover all $4$ possible paths the function can take.
+However, it is better to have $8$ test cases in order to cover all $8$ combinations of which function calls succeed/fail.
+
+\item Setup a code coverage library/tool to use with your program.
+
+Run your unit test and see if every line is executed.
+That should detect the fault (because the faulty implementation will not execute every line).
+
+\item Setup a static code analysis tool to use with your program.
+
+Run an unreachable-code-analysis.
 That should detect the fault.
 
-\item Setup a static code analysis tool and run it on your program.
-This should be such an unreachable-code-analysis detects the fault.
+\item Setup a code style checker (e.g., as part of your IDE) to use with your program.
 
-\item Setup a code style checker (e.g., as part of your IDE).
-Configure it such that irregular indentation is flagged and the fault is detected.
+Configure it such that irregular indentation is flagged.
+That should detect the fault.
 \end{enumerate}
+
+Regarding the last 3 questions:
+\begin{compactitem}
+ \item Depending on your chosen programming language, you may have to try multiple libraries/tools until you find one that works well.
+ \item You are allowed to help each other by circulating tips which libraries/tools work well for which programming language.
+ But everybody has to set them up and run them herself.
+ \item When submitting your homework, submit the log output, a screenshot, or something similar that shows how the fault is detected.
+\end{compactitem}
 \end{problem}
 
 \end{document}
