@@ -188,7 +188,7 @@ Details: \url{http://www.theregister.co.uk/2014/04/09/heartbleed_explained/}
 \paragraph{Shellshock}
 From 1998 to 2014, it was possible for any user to gain root access in the bash shell on Unix-based systems.
 The upgrade cost is unknown but was generally small because updates were rolled out within $1$ week of publication.
-Moreover, in certain server applications that passed data to bash this was possible for arbitrary clients as well.
+Moreover, in certain server applications that passed data to bash, clients could execute arbitrary code on the server.
 
 The cause was the use of unvalidated strings to represent complex data.
 Bash allowed storing function definitions as environment variables in order to share function definitions across multiple instances.

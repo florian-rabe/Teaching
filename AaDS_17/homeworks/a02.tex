@@ -1,0 +1,60 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=2,date=2017-02-14,due=2017-02-23,unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Fibonacci}{4+4+2}
+In the programming language of your choice:
+
+\begin{compactenum}
+ \item Implement the exponential, the linear, and the inexact algorithm given in the lecture notes for the function $fib(n)$.
+ Use arbitrary precision for the exponential and the linear one, and use floating point numbers for the inexact one.
+ \item Write a program to determine the largest $n$ for which $fib(n)$ returns a result in at most $10$ seconds.
+  Determine the value $n$ for the exponential and for the linear algorithm.
+  % for me in Python: around 35 for the exponential one, around 250000 for the linear one
+ \item Write a program to determine the smallest $n$ for which the inexact algorithm returns an incorrect result.
+  % for me in Python: 71
+\end{compactenum}
+
+(Of course, the answers to the last two questions will depend on your programming language and computer.)
+\end{problem}
+
+\begin{problem}{Asymptotic Notation}{3+3+1+1+1}
+For each of the following functions $f$ and $g$, determine whether $f\in O(g)$, $g\in O(f)$, neither, or both.
+
+\begin{compactenum}
+ \item
+ \item 
+ \item
+ \item
+ \item
+\end{compactenum}
+
+Show your work for the first two cases.
+\end{problem}
+
+\begin{problem}{Asymptotic Notation}{2+3}
+Prove that $\Oleq{}{}$ is
+\begin{compactenum}
+ \item reflexive
+ \item transitive
+\end{compactenum}
+
+\begin{hint}
+To prove $\Oleq{f}{g}$, you have to give $N$ and $k$ such that $f(n)\leq k\cdot g(n)$ for all $n>N$.
+
+For reflexivity, that is easy.
+
+For transitivity, assume $\Oleq{f}{g}$ and $\Oleq{g}{h}$ and show $\Oleq{f}{h}$.
+\end{hint}
+\end{problem}
+
+
+\end{document}

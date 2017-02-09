@@ -1,0 +1,106 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Secure and Dependable Systems},number=2,date=2017-02-08,due=2017-03-02]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Shellshock}{10}
+Consider the shellshock example from the lecture notes.
+In this problem, we implement a minimal shell that could exhibit the fault but will not because we design it well.
+
+You can use any programming language.
+However, it is best to use a programming language that supports good system design.
+SML will work well; Java or C++ are OK. I personally recommend Scala.
+
+\renewcommand{\bnf}[1]{{\color{red}#1}}
+\begin{enumerate}
+\item Implement datatypes for the following grammar, which represents the commands our shell can handle.
+\[\begin{array}{lcl@{\tb}l}
+ \text{commands} \\
+ COMM & \bbc & fun\;NAME(NAME) \{COMM\} & \text{function definition} \\
+      & \bnfalt & run\;NAME \rep{\bnfbracket{SPACE\; EXPR}} & \text{shell call}\\
+      & \bnfalt & NAME(EXPR) & \text{function call}\\
+      & \bnfalt & COMM ; COMM & \text{command sequence}\\
+ \text{expressions} \\
+ EXPR & \bbc & NAME & \text{variable} \\
+      & \bnfalt& "\; \rep{\bnfbracket{\backslash\backslash \bnfalt \backslash" \bnfalt \bnfnegchoice{\backslash"}}} \;" & \text{string} \\
+ \text{names} \\
+ NAME & \bbc & \text{alphanumeric string} &
+\end{array}\]
+where red color indicates BNF meta-symbols.
+
+You need one datatype per non-terminal with one constructor per production.
+Let $Comm$ and $Expr$ be the types for $COMM$ and $EXPR$.
+
+This language is pretty boring in order to be simple.
+Feel free to add, e.g., if commands, number expressions, functions with return values etc.
+However, watch out that writing the parser will become increasingly work-intensive.
+
+\item Implement a parser for your data type. It should be of the form
+\begin{acode}
+\afun[Comm]{parseCommand}{command : String}{\ldots}\\
+\afun[Expr]{parseExpr}{expr : String}{\ldots}
+\end{acode}
+
+\item Implement an interpreter for your data type. It should be of the form
+\begin{acode}
+\aclassA{Value}{}{}{}\\
+\aclass{StringValue}{value: String}{Value}{}\\
+\\
+\aclassA{Def}{}{}{}\\
+\aclass{ValDef}{name: String, value: Value}{Def}{}\\
+\aclass{FunDef}{name: String, argName: String, body: Comm}{Def}{}\\\\
+\afun[{List[Def]}]{interpret}{context: List[Def], command: Comm}{\ldots} \\
+\afun[Value]{evaluate}{context: List[Def], expr: Expr}{\ldots}
+\end{acode}
+and interpret commands as follows:
+\begin{compactitem}
+\item $fun\;f(x)\{C\}$: return $FunDef(f,x,C)$
+\item $run\;n\,arg_1\,\ldots\,arg_n$: call the shell function $n$ with the listed arguments
+\item $f(e)$: evaluate $e$ to $v$, retrieve $FunDef(f,x,C)$ from the context, interpret $C$ with an additional $ValDef(x,v)$ in the context
+\item $C ; D$: interpret $C$, then interpret $D$ with the $FunDef$s returned by $C$ added to the context
+\end{compactitem}
+and evaluate expressions as follows
+\begin{compactitem}
+\item $n$: retrieve $ValDef(n,v)$ from the context and return $v$
+\item $"s"$: return the string $s$ with the escapes removed
+\end{compactitem}
+
+\item Implement main function that takes a string $s$, calls $c = parseComm(s)$, then calls $interpret(Nil,c)$.
+
+Optionally, you can also
+\begin{compactitem}
+  \item read an entire file and parse+interpret every line in it
+  \item read commands from standard input, at which point you have an actual shell
+\end{compactitem}
+Those steps are not required but recommended because they help with testing.
+
+\item Now for the faulty functionality of bash, modify your program as follows:
+ \begin{compactitem}
+  \item At the beginning, try to parse every available environment variable that starts with $fun$ into a $Comm$.
+  \item Whenever that succeeds, interpret the resulting commands, which returns $defs:List[Def]$. (*)
+  \item Now call interpret on the input with $defs$ instead of $Nil$ as the initial context.
+ \end{compactitem}
+
+\item Activate the fault by showing that data in environment variables may lead to the execution of arbitrary shell commands.
+
+\item Isolate the fault (This is how it was ``fixed'' in bash.) by considering only environment variables whose name begins with a certain prefix, e.g., $SHELL\_FUNC$.
+
+\item Remove the fault by making sure that data is never executed.
+To do so, change (*) so that it never calls $interpret$.
+\end{enumerate}
+
+For questions 1-5, submit a single program.
+For questions 7-8, submit a single program.
+Use comments as needed to understand which part solves which question.
+
+For question 6, submit a screenshot from a normal shell session that demonstrates the failure of your shell.
+\end{problem}
+
+\end{document}

@@ -147,8 +147,6 @@ However, it is next to impossible verify the correctness of the algorithm.
 We know that the formula $fib(n)=round(\phi^n/\sqrt{5})$ is true, but that has no immediate to floating point arithmetic.
 Rounding errors will accumulate over time and may eventually lead to a false result.
 
-%% exercise: implement all of the above; find smallest n for which inexact algo wrong (for me in python: 71), highest computable with fibExp (for me: around 35)
-
 \subsection{Sublinear Algorithm}\label{sec:ad:fib:sublinear}
 
 Maybe surprisingly, we can still do better.
@@ -206,7 +204,7 @@ Then we have the straightforward algorithms
   \afor{i}{1}{x.rows}{
     \afor{j}{1}{y.columns}{
       \afor{k}{1}{x.columns}{
-        r.i.j := r.i.j + x.i.k+y.k.j
+        r.i.j := r.i.j + x.i.k\cdot y.k.j
       }
     }
   }\\

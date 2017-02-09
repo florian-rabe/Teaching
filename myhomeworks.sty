@@ -6,6 +6,7 @@
 \DeclareStringOption{number}
 \DeclareStringOption{date}
 \DeclareStringOption{due}
+\DeclareBoolOption{unpublished}
 \ProcessKeyvalOptions*
 
 %% standard packages
@@ -46,6 +47,14 @@ There will be no deadline extensions unless mentioned otherwise in the lecture.
 \vspace{.5cm}
 \hrule
 \vspace{.5cm}
+\ifhw@unpublished
+\begin{center}
+\textbf{This homework is not published yet. I may still change it before publishing it.}
+\end{center}
+\vspace{.5cm}
+\hrule
+\vspace{.5cm}
+\fi
 }
 
 \newenvironment{problem}[2]{

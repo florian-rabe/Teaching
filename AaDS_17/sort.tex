@@ -21,7 +21,7 @@ $length(x\in A^*)\in \N$ & $l$ & \\
 $get(x\in A^*, n\in\N)\in A^*$ & $a_n$ & $x_n$ or $x[n]$\\
 $append(x\in A^*, y\in A*)\in A^*$ & $[a_0,\ldots,a_{l-1},b_0,\ldots,b_{k-1}]$ if $y=[b_0,\ldots,b_{k-1}]$ &  $x+y$\\
 $map(x\in A^*, f\in A\to B)\in B^*$ & $[f(a_0),\ldots,f(a_{l-1})]$ & $l\;map\;f$\\
-$fold(x\in A^*, b\in B, f\in A*B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
+$fold(x\in A^*, b\in B, f\in A\times B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
 \hline
 $delete(x\in A^*, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a_{n+1},\ldots,a_{l-1}]$ & \\
 $insert(x\in A^*, a\in A, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a,a_n,a_{n+1},\ldots,a_{l-1}]$ & \\
@@ -740,6 +740,10 @@ For example, we can randomly pick $3$ elements of the sublist and use the middle
 With such optimizations, quick sort can become substantially faster than merge sort.
 
 %\subsection{Other Algorithms and Overview}
+% 
+%\subsubsection{Heapsort}
+%
+% See Sect.~\ref{sec:ad:heapsort}.
 %
 %\subsubsection{Counting Sort}
 %

@@ -1,0 +1,68 @@
+\section{Specification}
+
+\paragraph{Void}
+The set $\Void$ contains no elements.
+
+The set $\Void$ is rarely used.
+However, it is usually nice to have when dealing with operations that never return.
+For example, we can say that throwing an exception or terminating the program returns an element of $\Void$.
+
+\paragraph{Unit}
+The set $\Unit$ contains exactly one element, which we call $()$.
+
+The set $\Unit$ is rarely used.
+However, it is very nice to have when dealing with operations that do not have a particular return value: if an operation returns but returns no value, we say that it returns an element of $\Unit$.
+
+For example, we assume that assignments, loop, and print statements return $\Unit$.
+Many methods of mutable data structures also return $\Unit$.
+For example, using $\Unit$, we can specify $insert$ for a mutable list from Sect.~\ref{sec:ad:list:spec} as $insert(x\in A^*,a\in A,n\in\N)\in\Unit$.
+
+\paragraph{Booleans}
+The set $\Bool$ contains exactly two elements, which we call $\true$ and $\false$.
+
+\paragraph{Integers Modulo}
+For $m>0$, the set $\Z_m$ consists of the elements $\{0,\ldots,m-1\}$.
+
+\paragraph{Enumerations}
+For fresh names $l_1,\ldots,l_n$, the set $\Enum\{l_1,\ldots,l_n\}$ has $n$ elements, called $l_1,\ldots,l_n$.
+
+The names $l_i$ must be fresh.
+That means they may not have been defined previously.
+This is similar to how the name of a new function or class must be fresh.
+
+Defining enumeration set defines new values, namely the $l_i$.
+
+\section{Implementation}
+
+\paragraph{Void}
+Most programs do not need the type void.
+
+\paragraph{Unit}
+Some programming languages have a built-in type $\Unit$.
+If not, we can easily define it as an enumeration.
+
+\paragraph{Booleans}
+Most programming languages have a built-in type $\Bool$.
+If not, we can easily define it as an enumeration.
+
+\paragraph{Integers}
+Most programming languages do not offer $\Z_m$ for every $m$.
+
+However, the base type $\Int$ may be the special case for $m=2^{32}$ or $m=2^{64}$.
+
+If we need $\Z_m$ for a specific $m$, we usually work with $\Int$ and use the $\modop$ operation to ensure we remain inside $\Z_m$.
+
+\paragraph{Enumerations}
+Most programming languages allow defining enumeration types in some way.
+
+For example, in SML:
+
+\begin{lstlisting}
+datatype answer = yes | no | maybe
+\end{lstlisting}
+
+Or in C:
+
+\begin{lstlisting}
+enum {yes, no, maybe} answer;
+\end{lstlisting}

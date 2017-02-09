@@ -1,0 +1,139 @@
+\section{Specification}
+
+After lists, trees are the next most important data structure in computer science.
+They can be seen as a generalization of lists where the elements are not arranged in a row, but branching is allowed.
+
+There are many equivalent definitions.
+The easiest is by graphical example: A tree is something that looks like
+
+\tikzstyle{node}=[circle,draw]
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {a};
+\node[node] (00) at (-2,-1) {b};
+\node[node] (01) at (0,-1) {c};
+\node[node] (02) at (2,-1) {d};
+\node[node] (000) at (-2,-2) {e};
+\node[node] (010) at (-1,-2) {f};
+\node[node] (011) at (1,-2) {g};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (0) -- (02);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+\subsection{General Trees}
+
+A more formal definition is this:
+
+\begin{definition}[Tree]\label{def:ad:tree}
+A \textbf{tree} is a connected directed graph in which
+\begin{compactitem}
+ \item there is exactly one node (called the \textbf{root}) with in-degree $0$,
+ \item all other nodes have in-degree $1$.
+\end{compactitem}
+\end{definition}
+Here we already used the more general concept of graphs, which we define formally in Sect.~\ref{sec:ad:graph}.
+
+Talking about the shape and parts of a tree can be confusing.
+Therefore, we introduce some vocabulary that helps us:
+
+\begin{definition}[Parts of a Tree]\label{def:ad:treeaux}
+For every edge from $p$ to $c$, we call $p$ the \textbf{parent} of $c$ and $n$ a \textbf{child} of $p$.
+Thus, the root has no parent; every other node has exactly one parent.
+A node may have any number of children.
+A node with $0$ children is called a \textbf{leaf}.
+A node that is neither the root nor a child is called an \textbf{inner node}.
+
+For every path from $a$ to $d$, we call $a$ an \textbf{ancestor} of $d$ and $d$ a \textbf{descendant} of $a$.
+Thus, all nodes are descendants of the root; every node is an ancestor/descendant of itself.
+A \textbf{proper} ancestor/descendant of $n$ is an ancestor/descendant that is not $n$.
+
+The number of proper ancestors of $n$ is called the \textbf{depth} of $n$.
+Thus: The root has depth $0$.
+
+A path from the root to a leaf is called a \textbf{branch}.
+Thus, every leaf $l$ is part of exactly one branch, whose length is the depth of $l$.
+The length of the longest branch(es) is called the \textbf{height} of the tree.
+\end{definition}
+
+Def.~\ref{def:ad:tree} only defines the abstract shape of trees.
+But trees are only useful if we can store some data in each node.
+The following definition does that:
+
+\begin{definition}[Tree Over a Set]\label{def:ad:labeledtree}
+The set $Tree[A]$ of \textbf{trees over the set} $A$ contains pairs $(T,f)$ where $T$ is a tree $T$ and $f$ is a function from nodes of $T$ to $A$.
+
+If $f(n)=a$, we call $a$ the \textbf{label} of $n$.
+\end{definition}
+
+\begin{remark}[Leaf-Labeled Trees]
+Occassionally, we are also interested in trees where only the leafs are labeled with.
+And sometimes we need trees where inner nodes are labeled with elements of $A$ and leafs with elements of $B$.
+
+We ignore those tree here.
+But when working with someone else's tree data structures, it is important to check which nodes are labeled with what.
+\end{remark}
+
+\subsection{Binary Trees}
+
+Binary trees are an important special case:
+
+\begin{definition}[Binary Tree]\label{def:ad:bintree}
+A \textbf{binary tree} is a tree in which all non-leaf nodes have exactly $2$ children.
+
+Binary trees over a set are defined accordingly.
+
+A binary tree is called \textbf{balanced} if the lengths of all branches differ by at most $1$.
+Equivalently, the depth of all leafs differs by at most $1$.
+It is called \textbf{perfectly balanced} if the lengths of all branches are equal.
+\end{definition}
+
+It is important to know the number of nodes in a binary tree:
+
+\begin{theorem}\label{thm:ad:bintree}
+A binary tree has at most $2^n$ nodes at depth $n$.
+It has at most $2^{n+1}-1$ nodes in total.
+
+If the tree has height $h$ and is balanced, it has
+\begin{compactitem}
+  \item exactly $2^n$ nodes at depth $n<h$,
+  \item between $1$ and $2^h$ nodes at depth $h$,
+  \item between $2^h$ and $2^{h+1}-1$ nodes in total. 
+\end{compactitem}
+If it is perfectly balanced, it has exactly $2^n$ nodes at any depth $n$ and exactly $2^{h+1}-1$ nodes in total.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+In particular, the number of nodes grows exponentially with the depth.
+
+\section{Data Structures}
+% as inductive type, pointer tree
+
+\section{Important Algorithms}
+
+\subsection{Depth-First Search}
+
+\subsection{Breadth-Frist Search}
+
+\subsection{Min-Max Algorithm}
+
+\section{Heaps}\label{sec:ad:heaps}
+
+\subsection{Specification}
+% a binary tree is a heap if all branches are ordered
+
+\subsection{Data Structures}
+
+\subsection{Priority Queue}\label{sec:ad:heapqueue}
+
+\subsection{Heapsort Algorithm}\label{sec:ad:heapsort}
+
+\section{Search Trees}
+
+Binary search trees and red-black trees are discussed in Sect.~\ref{sec:ad:sets}.
