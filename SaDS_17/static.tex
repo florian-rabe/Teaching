@@ -1,0 +1,46 @@
+Static analysis is a collective term for methods that do not execute the program.
+It is performed by external tools that analyze the source code to detect faults.
+
+Usually static analysis works with the source code.
+But in principle it can work on the binary as well, e.g., some tools work on Java byte code.
+
+Due to undecidability, detecting faults requires insight and careful case-by-case analysis, which is expensive.
+Therefore, it has become very successful to focus on classes of faults and then to systematically find their occurrences.
+We can think of these as individual heuristics, each hunting for a specific common bug, e.g., the ones discussed in Setc.~\ref{sec:sd:commonbugs}).
+State-of-the-art tools check for hundreds of such fault classes.
+Depending on the fault class, the checks may exhibit false-negatives (not all instances are detected) or false-positives (correct code is falsely marked).
+
+The above definition includes compilers, and indeed compilation, in particular type-checking, can be seen as the most basic kind of static analysis.
+But, more narrowly, static analysis usually refers to additional checks that go beyond type-checking.
+
+Some compilers include some basic such checks.
+More checks are implemented by dedicated analysis tools that are employed when the compiler reports no more faults.
+Some of these tools can be integrated with the IDEs to report the results in the same way as compiler errors.
+
+An overview of static analysis tools for various programming languages can be found at \url{https://en.wikipedia.org/wiki/Static_code_analysis}
+For example, findbugs is a very popular tool working on Java byte code.
+It checks for over $400$ different faults.
+
+%\paragraph{Coding Style}
+%% (indentation, documentation)
+%
+%\paragraph{Array and List Bounds}
+%Often the length is statically (i.e., at compile-time, without executing) known.
+%For example, if an array is created via $x=Array[\Int](n)$, we expect for-loop that read or write to $x$ to run from $0$ to $n-1$.
+%
+%If the bounds are different, that can be used to generate a warning.
+%
+%This is only a heuristic, of course.
+%For the general case, we have to prove that the index $i$ in $x[i]$ is between $0$ and $n-1$.
+%There are tools that indeed try to prove that.
+%
+%\paragraph{Uninitialized Memory}
+%
+%\paragraph{Null Pointers}
+%Analysis tools can inspect every dereferencing of a pointer $x$ and check if there is a previous assignment that assigns a non-null value to $x$.
+%
+%\paragraph{Unreachable Code}
+%
+%\paragraph{Non-Exhaustive Match}
+%
+%\paragraph{Casting}
