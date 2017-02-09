@@ -11,7 +11,7 @@
  A function $f:\,\mathbb{N}\to\mathbb{R}$ is called negligible iff $$\forall k\in\mathbb{N}.\,\exists N_k\in\mathbb{N}.\,\forall n\geq N_k:\,n\left|f(n)\right|<1.$$
 \end{definition}
 \begin{definition}
- An encryption scheme is an ordered triple $(G, E, D)$, where $G$ and $E$ are PPt algorithms and $D$ is a polynomial time algorithm iff for any \emph{security parameter} $n\in\mathbb{N}$:
+ An encryption scheme is an ordered triple $(G, E, D)$, where $G$ and $E$ are PPT algorithms and $D$ is a polynomial time algorithm iff for any \emph{security parameter} $n\in\mathbb{N}$:
  \begin{itemize}
   \item The \emph{key generation algorithm} $G$, takes as input $1$ and uses randomness to chose a \emph{key $k$} from a set of possible keys $K_n$ (the key space)
   \item The \emph{encryption algorithm} $E$, takes as input a \emph{message} $m\in P_n$ ($P_n$ is called the \emph{plaintext space} for the security parameter $n$) and uses $k$ to compute an encrypted message $c\in C_n$ ($C_n$ is called the \emph{ciphertext space} for $n$). If $E$ uses the key $k$ on the message $m$ and outputs $s$, we write $E_k(m)=c$.
@@ -52,7 +52,8 @@ Given a PRG, we can iterate it on its own output to get an arbitrarily long pseu
 For this we can use a so called Feistel network.
 %Improving a comp. ind. encryption scheme to an ind. CPA secure scheme using a Feistel-network.
 \begin{definition}[A Feistel cipher]
- Let $k$ be any odd natural number (the number of \emph{rounds}). Let $f_{k_i}$ be a family of functions ($f$ is the so called \emph{round function}) of output length $n$ indexed by the sequence of \emph{round keys} $k_1, k_2, \ldots, k_n$. Then the following encryption algorithm $E_k$ is called Feistel cipher. %network with $k$ iterations (for some odd $k$) based on a pseudo random generator $f_{k_i}$ and round keys $k_1, k_2, \ldots, k_n$ is an encryption scheme $(G,E,D)$, defined by:
+ Let $k$ be any natural number (the number of \emph{rounds}). Let $f_{k_i}$ be a family of functions\protect\footnote{If possible pseudorandom functions and possibly one way functions.} ($f$ is the so called \emph{round function}) of output length $n$ indexed by the sequence of \emph{round keys} $k_1, k_2, \ldots, k_n$. 
+ Then the following encryption algorithm $E_k$ is called Feistel cipher. %network with $k$ iterations (for some odd $k$) based on a pseudo random generator $f_{k_i}$ and round keys $k_1, k_2, \ldots, k_n$ is an encryption scheme $(G,E,D)$, defined by:
  %For any odd $k\in\mathbb{N}$ we call an encryption scheme $(G, E, D)$ a Feistel network with $k$ iterations and $P$-Box $f$, iff for some \emph{round keys} $k_1, k_2, \ldots, k_n$ used as input for the pseudo random generator $f_{k_i}$. 
  \begin{itemize}
   \item Fix a message $m=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
@@ -64,11 +65,11 @@ For this we can use a so called Feistel network.
  	\item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_{k-n}}(R_n)$. Finally define $D_k:x_1\circ x_2\to L_k\circ R_k$. 
  \end{itemize}
 \end{definition}
-Feistel ciphers have been shown to fulfill several notions of security assuming that the round function is actually pseudo random. For instance Feistel networks with at least $3$ rounds are ind. CPA secure and for more rounds they fulfill even stronger notions of security. 
+Feistel ciphers have been shown to fulfill several notions of security assuming that the round function is actually pseudo random. For instance Feistel networks with at least $3$ rounds are ind. CPA secure and for more rounds they fulfill even stronger notions of security. %TODO: Check and clearify the exact model (3 seems sufficient under some assumptions, but 4 is better (and olready fulfills stronger notions)) and perhaps mention some other results. %see \url{https://link.springer.com/chapter/10.1007/978-3-540-45146-4\_30}
 \subsection{Realization in actually used encryption}
  In practice many symmetric encryption schemes are based either on Feistel networks or on substitution-permutation-networks. 
  \begin{definition}[Substitution-permutation-network]
   A substitution-permutation-networks is an series of linked substitutions (\emph{$S$-Boxes}) and permutations \emph{$P$-Boxes} of blocks in an encryption algorithm. The corresponding encryption algorithm splits the message into several boxes with are typically fed into the $S$-Boxes then the result is fed into the $P$-Box (and at some point the round key is used, for instance xored with the result as is AES). The later mentioned AES-encryption algorithm is one example of an encryption algorithm build around a substitution-permutation-network.
  \end{definition}
- Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar, but there are also a few differences. Ciphers based on substitution-permutation-network can be better parallelized, but Feistel ciphers can use any pseudo random function (for instance any one way function) and is not limited to invertible ($P$-Boxes). 
+ Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar, but there are also a few differences. Ciphers based on substitution-permutation-network can be better parallelized, but Feistel ciphers can use any pseudo random function (for instance any one way function) and is not limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
 %TODO:Insert some additional material about block modes.
