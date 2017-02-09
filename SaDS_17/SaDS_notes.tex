@@ -36,40 +36,39 @@
  \chapter{Challenges}
    \input{challenges}
 
-% guard against human stupid errors; during software development
+% guard against stupid errors; during software development
 \part{Systematic Software Development}
 
-  \chapter{Implementation}
+  \chapter{Implementation}\label{sec:sd:systimpl}
     \input{process}
 
-  \chapter{Dynamic Analysis (Testing)}
+  \chapter{Dynamic Analysis (Testing)}\label{sec:sd:dynamic}
     \input{test}
 
-  \chapter{Static Analysis}
+  \chapter{Static Analysis}\label{sec:sd:static}
     \input{analysis}
     
-   % goto fail exercise: write unit test that ensures every line is run, check using code coverage tool
-
 % guard against deep errors
 \part{Specification-Near Programming}
 
-   % shellshock exercise: build internal syntax, parser, printer for simple typed language with function definitions
-   % mimic and prevent shellshock-like exploit
-
-   % heartbleed exercise: reimplement in proper language with high-level data structures for messages
+   % maybe heartbleed exercise: reimplement in proper language with high-level data structures for messages
    
-  \chapter{Type Theory}
+  \chapter{Type Theory}\label{sec:sd:typetheory}
+  % judgements
+  % type constructors
+  % products, functions, records, datatypes
+  % polymorphism
 
   \chapter{Functional Programming}
+  % recursion
+  % statefulness: input/output, exceptions
+  % SML, (Haskell: laziness, monads), Scala
 
   \chapter{Combining Logic and Programming}
     % sat, hol, LTL, CTL
 
 \part{Formal Methods}
 
-%  \chapter{Logical Foundations}
-%    % sat, hol, LTL, CTL
-%
   \chapter{Program Synthesis} % two weeks
 
   \chapter{Model Checking} % two weeks
