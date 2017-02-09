@@ -5,9 +5,7 @@
 \usepackage{multirow}
 %\usepackage{bm} %% bold face math symbols
 \usepackage{listings}
-\usepackage{tikz}
-%\usetikzlibrary{shapes}
-\usetikzlibrary{arrows}
+\usepackage{mytikz}
 %\usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
 %\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
 
@@ -35,6 +33,7 @@
   \input{fund}
 
 \chapter{Design Goals}\label{sec:ad:goals}
+ % exercise: Ex.~\ref{ex:ad:quadraticstringprocessor}
   \input{goals}
 
 \chapter{Arithmetic Examples}\label{sec:ad:arithex}
@@ -43,51 +42,49 @@
 \chapter{Example: Lists and Sorting}\label{sec:ad:sort}
   \input{sort}
 
-\part{Important Data Structures}
+\part{Important Data Structures}\label{sec:ad:ds}
 
-\chapter{Finite Data Structures}
- \input{finite}
+\chapter{Finite Data Structures}\label{sec:ad:finiteds}
+% \input{finite}
 
 %char, string
 
-\chapter{Number-Based Data-Structures}
- \input{numbers}
+\chapter{Number-Based Data-Structures}\label{sec:ad:numberds}
+% \input{numbers}
 
-\chapter{List-Like Data Structures}
-% specification, inductive type, array, heap, stack, queue, linked list, doubly-linked list
-% infinite lists, iterator, iterable
+\chapter{List-Like Data Structures}\label{sec:ad:lists}
+% exercise: implement stack and queue using linked list
+ \input{list}
 
-\chapter{Tree-Like Data Structures}
-% specification (labeled nodes vs. labeled leafs), as inductive type, binary trees, heaps, red-black trees
-% bfs, dfs, minmax, heapsort
+\chapter{Tree-Like Data Structures}\label{sec:ad:trees}
+% exercise: proof Thm.~\ref{thm:ad:bintree}
+ \input{tree}
 
-% a binary tree is a heap if all branches are ordered
+\chapter{Set-Like Data Structures}\label{sec:ad:sets}
+% specification, list sets, binary search trees, red-black trees (BST with log n guarantee for insert/delete), hash sets
 
-\chapter{Set-Like Data Structures}
-% specification, list sets, binary search trees, hash sets
-
-\chapter{Function-Like Data Structures}
+\chapter{Function-Like Data Structures}\label{sec:ad:functions}
 % specification, list map, hash map
 
-\chapter{Product-Like Data Structures}
+\chapter{Product-Like Data Structures}\label{sec:ad:products}
 % specification, products, records, classes
 
-\chapter{Union-Like Data Structures}
+\chapter{Union-Like Data Structures}\label{sec:ad:unions}
 % disjoint union, Option/null, inductive types
  % exercise: 1567 -> 21
 
-\chapter{Graph-Like Data Structures} % 2-3 weeks
+\chapter{Graph-Like Data Structures}\label{sec:ad:graphs}
 % specification
 % algorithms for graphs: search, minimum spanning tree, shortest path, maximum flow
 
-\chapter{Algebraic Data Structures}
+\chapter{Algebraic Data Structures}\label{sec:ad:theories}
 % based on one operation, based on two operations, based on one relation
 
-\part{Important Families of Algorithms} % one week
+\part{Important Families of Algorithms}\label{sec:ad:algo}
 
 \chapter{Divide and Conquer}
 % binary search vs. linear search
-% multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication (taken from Beth Q2.2)
+% Karatsuba: multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication
  
 \chapter{Dynamic Programming}
 

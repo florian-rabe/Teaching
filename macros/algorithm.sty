@@ -43,10 +43,10 @@
 \newcommand{\aifelseI}[4][]{\aifI{#2}{#3}\;\akey{else}\ablockI{#4}\acomment{#1}}
 
 % declarations
-\newcommand{\aclassH}[5][class]{\akey{#1} #2(#3)\ifnonempty{#4}{\;\akey{extends}#4}}
-\newcommand{\aclass}[4]{\aclassH{#1}{#2}{#3}\ablockI{#4}}
-\newcommand{\aclassA}[4]{\aclassH[abstract class]{#1}{#2}{#3}\ablockI{#4}}
-\newcommand{\aclassI}[4]{\aclassH{#1}{#2}{#3}\ablock{#4}}
+\newcommand{\aclassH}[4][class]{\akey{#1} #2(#3)\ifnonempty{#4}{\;\akey{extends}#4}}
+\newcommand{\aclass}[4]{\aclassH{#1}{#2}{#3}\ablock{#4}}
+\newcommand{\aclassA}[4]{\aclassH[abstract class]{#1}{#2}{#3}\ablock{#4}}
+\newcommand{\aclassI}[4]{\aclassH{#1}{#2}{#3}\ablockI{#4}}
 
 \newcommand{\adata}[2]{\akey{data} #1 \, =\, \fold{\;|\;}{#2}}
 \newcommand{\atypedef}[2]{#1 = #2}
