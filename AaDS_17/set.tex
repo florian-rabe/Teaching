@@ -1,0 +1,78 @@
+\section{Specification}
+
+% (lattice operations) contains/insert/delete for mutable sets
+
+The set $Set(A)$ contains the finite subsets of $A$.
+It is countable if $A$.
+
+Sets can be mutable or immutable.
+The main operations for immutable sets are:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$contains(x\in Set[A], a\in A)\in \Bool$ & $\true$ iff $a\in x$ & none \\
+$insert(x\in Set[A], a\in A)\in Set[A]$ & $x\cup\{a\}$ & none \\
+$delete(x\in Set[A], a\in A)\in Set[A]$ & $x\sm\{a\}$ & none \\
+\hline
+\end{ctabular}
+
+The main operations for mutable sets are:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$contains(x\in Set[A], a\in A)\in \Bool$ & $\true$ iff $a\in x$ & none \\
+$insert(x\in Set[A], a\in A)\in\Unit$ & nothing & $x:=x\cup\{a\}$ \\
+$delete(x\in Set[A], a\in A)\in\Unit$ & nothing & $x:=x\sm\{a\}$ \\
+\hline
+\end{ctabular}
+
+\section{List-Based Sets}
+
+The easiest data structure for $Set[A]$ is $ListSet[A]$.
+It stores a set as a list without repetitions.
+
+The operations on $ListSet[A]$ are defined in the same way as for $List[A]$ with one exception: the $insert(x,a)$ operation does nothing if $x$ already contains $a$.
+\medskip
+
+If $n$ is the size of the $ListSet$, $contains$, $insert$, and $delete$ takes $\Theta(n)$ on average.
+That can quickly be a problem.
+For example, building a set with $n$ elements step-by-step requires $n$ insertion and thus costs $\Theta(n^2)$.
+
+The data structures below are more sophisticated in order to beat the complexity of $ListSet$.
+
+\section{Hash Sets}
+
+A hash function for the set $A$ is just a function $hash:A\to \Z_m$.
+A collision is a pair $x,y\in A$ such that $hash(x)=hash(y)$.
+
+A good hash function should be fast and rarely have collisions.
+An (unrealistically) ideal hash function runs in $O(1)$ and the probability of $hash(x)=hash(y)$ is $1/m$.
+Those two properties work against each other: For example, it is easy to be fast by always returning $0$, but that has maximally many collisions.
+Vice versa, it is easy to minimize collisions by choosing $h$ carefully, but then $hash$ may be very expensive to compute.
+Thus, hash functions must make a trade-off.
+
+For a fixed hash function $hash:A\to \Z_m$, the data structure $HashSet[A]$ is given by
+\begin{acode}
+\atypedef{HashSet[A]}{Array[ListSet[A]](m)}\\
+\afunI{insert}{h: HashSet[A], a:A}{insert(h[hash(a)],a)}\\
+\afunI{delete}{h: HashSet[A], a:A}{delete(h[hash(a)],a)}
+\end{acode}
+
+If $n$ is the size of the set, the sets $h[0]$, \ldots, $h[m-1]$ have average size $n/m$.
+Thus, $insert$ and $delete$ take $n/m$ on average.
+\medskip
+
+If $m$ is too big, most of the sets $h[i]$ will be empty, which wastes memory.
+Optimized data structures for hash sets can dynamically increase $m$ if $n$ increases to avoid waste.
+
+\section{Binary Search Trees}
+
+If we have a total order $\leq$ on $A$, we can use ordered trees to realize $Set[A]$.
+
+\section{Red-Black Trees}
+
+% red-black trees (BST with log n guarantee for insert/delete)

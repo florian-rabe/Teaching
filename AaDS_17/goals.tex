@@ -423,7 +423,7 @@ Therefore, we define classes of functions like linear, exponential, etc.:
 Let $\R^+$ be the set of positive-or-zero real numbers.
 
 We define a relation on functions $f,g:\N\to\R^+$ by
-\[\Oleq{f}{g} \tb\miff\tb \exists N\in\N.\exists k>0.  \forall n>N. f(n)\leq k\cdot g(n)\]
+\[\Oleq{f}{g} \tb\miff\tb \exists N\in\N.\;\exists k>0.\;  \forall n>N.\; f(n)\leq k\cdot g(n)\]
 If $\Oleq{f}{g}$, we say that $f$ is \textbf{asymptotically smaller} than $g$.
 
 We write $\Oeq{f}{g}$ if $\Oleq{f}{g}$ and $\Oleq{g}{f}$.
@@ -442,13 +442,13 @@ $\Theta(g)$ is the set of everything essentially as great as $g$ (i.e., both sma
 \begin{remark}[A Slightly Simpler Definition]
 The following statement is not true in general.
 However, it is easier to remember and true for all functions that come up when analyzing algorithms:
-$\Oleq{f}{g}$ iff $\exists a>0,b>0.\forall n. f(n)\leq a\cdot g(n)+b$.
+$\Oleq{f}{g}$ iff $\exists a>0.\exists b>0.\forall n. f(n)\leq a\cdot g(n)+b$.
 
 We can verbalize that condition as ``$f$ is smaller than $g$ except for a constant factor and a constant summand''.
 Those are the two aspects of run time that we can typically make up for by building faster machines.
 \end{remark}
 
-\begin{example}\label{ex:ad:onot}
+\begin{example}[Complexity Classes]\label{ex:ad:onot}
 Now we can easily define some important classes of functions grouped by their rough shape:
 \begin{compactitem}
 \item $\Theta(1)$ is the set of $(\ast)$ constant functions
@@ -466,7 +466,7 @@ For example, $O(n)$ includes the constant functions whereas $\Theta(n)$ does not
 Similarly, if we use $\Omega$ instead of $\Theta$, we obtain the sets of \emph{at least} constant/linear/quadratic/etc. functions.
 For example, $\Omega(n)$ includes the quadratic functions whereas $\Theta(n)$ does not.
 
-Of particular importance in complexity analysis is the set of polynomial functions: .
+Of particular importance in complexity analysis is the set of polynomial functions:
 It includes all all functions whose shape is similar to a polynomial.
 
 The following list introduces a few more classes and arranges them by increasing size:
@@ -488,12 +488,12 @@ $\bigcup_{f\in\Exp}O(c^{f(n)})$ & doubly exponential \\
 Here $c>1$ is arbitrary---all choices yield the same classes of functions.
 
 We also say sub-X for strictly lower and super-X for strictly greater complexity than $X$.
-For a $\log_c\,n$ is sub-linear, and $n^2$ is super-linear.
+For example $\log_cn$ is sub-linear, and $n^2$ is super-linear.
 \end{example}
 
-The following theorem collects the basic properties of these concepts:
+The following theorem collects the basic properties of asymptotic notation:
 
-\begin{theorem}[O-Notation]\label{thm:ad:onot}
+\begin{theorem}[Asymptotic Notation]\label{thm:ad:onot}
 We have the following properties for all $f,g,h,f',g'$:
 \begin{compactitem}
  \item $\Oleq{}{}$ is
@@ -564,15 +564,15 @@ Or we can write $6n^3+5n^2+\log n=O(n^3)$.
 \begin{remark}[Other Notations]
 There are a few more notations like $O$, $\Omega$, and $\Theta$.
 They include $o$ and $\omega$.
-They are less important and are omitted here to avoid confusing the reader.
+They are less important and are omitted here to avoid confusion.
 \end{remark}
 
 \subsection{Asymptotic Analysis}\label{sec:ad:asympana}
 
 Equipped with asymptotic notations, we can now compute the run time of algorithms in a way that is mostly independent of the implementation and the machine.
 
-\begin{example}\label{ex:ad:factorial:complex}.
-Consider the algorithm Ex.~\ref{ex:ad:factorial}.
+\begin{example}\label{ex:ad:factorial:complex}
+Consider the algorithm from Ex.~\ref{ex:ad:factorial}.
 Let $C(n)$ be the number of steps it takes with input $n$.
 
 Because we are only interested in the complexity class of $C$, this is quite simple:
@@ -587,7 +587,7 @@ Because $C(n)$ is at least linear, we can ignore them entirely.
 \end{compactenum}
 \end{example}
 
-Note how all the subtleties described in Sect.~\ref{sec:ad:complex:steps} are rounded away by looking at $\Theta$-classes.
+Note how all the subtleties described in Sect.~\ref{sec:ad:complex:general} are rounded away by looking at $\Theta$-classes.
 \medskip
 
 There are some subtle ambiguities when analyzing complexity:
@@ -603,21 +603,21 @@ There are some subtle ambiguities when analyzing complexity:
  For example, Ex.~\ref{ex:ad:euclid} happens to terminate immediately if $m=n$, no matter what the size is.\\
  Thus, we have to distinguish between:
   \begin{compactitem}
-  \item worst-case complexity: This is the maximal possible number of steps. If there is no information, this is usually what the author means.
-  \item average-case complexity: This may be more useful in practice. However, it is more difficult because we need a probabilistic analysis.
+  \item worst-case complexity: This is the maximal possible number of steps. If there is no additional information, this is usually what the author means.
+  \item average-case complexity: This may be more useful in practice. However, it is more difficult because we need a probabilistic analysis to compute the average.
   \item best-case complexity: This is rarely useful but occasionally helps put a lower bound on the complexity.
   \end{compactitem}
 \end{compactitem}
 There are no universal answers to these questions.
 Instead, we have to consider the context to understand what the author means.
 
-\begin{example}(Euclid's Algorithm]\label{ex:ad:euclid:complex}
+\begin{example}[Euclid's Algorithm]\label{ex:ad:euclid:complex}
 Consider the algorithm from Ex.~\ref{ex:ad:euclid}.
 Let $n=\max(a,b)$ and let $C(n)$ be the worst-case number of steps the algorithm takes for input $a,b$ (i.e., we use the maximum value of the inputs as the argument of the complexity function).
 
 It is not that easy to see what the worst case actually is.
 But we can immediately see that the loop is repeated at most $n$ times.
-Each iteration requires one comparison, one subtraction, and one assignment, which we can sum up to a constant factor.\footnote{Again we assume that all arithmetic operations take constant time.}
+Each iteration requires one comparison, one subtraction, and one assignment, which we can sum up to a constant factor.{\footnotemark}
 Thus, the critical question is how often the loop can be repeated.
 
 We can answer that question by going backwards.
@@ -630,32 +630,7 @@ Thus, if $n$ is a Fibonacci number, the number of repetitions of the loop is in 
 
 Thus, $C(n)\in \Theta(\log n)$.
 \end{example}
-
-The following is an (highly simplified variant of an) example from the author's research:
-
-\begin{example}[String Processing]\label{ex:ad:quadraticstringprocessor}
-Consider the following function in the Scala programming language
-\begin{lstlisting}
-def processString(s: String) {
-  var rest = s
-  while (s != "") {
-    if (rest.startsWith("foo")) {
-      // does not matter, assume this takes constant time
-    } else {
-      // also does not matter
-    }
-    rest = s.substring(1)
-  }
-}
-\end{lstlisting}
-Here \lstinline|startsWith| and \lstinline|substring| are methods on strings from the Java library (which Scala can call with only constant-time overhead).
-
-Let $C(n)$ be the run time of this function where $n$ is the length of the input string.
-What is the complexity class of $C(n)$?
-
-You can the program yourself on increasingly large input to find out.
-In the author's case, the surprising effect was noticeable when $n>10^7$, e.g., when reading $10$ MB text file.
-\end{example}
+\footnotetext{Again we assume that all arithmetic operations take constant time.}
 
 \subsection{Discussion}
 

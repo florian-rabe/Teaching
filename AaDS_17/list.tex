@@ -19,7 +19,7 @@ The functions for mutable stacks are:
 \hline
 function & returns & effect \\
 \hline
-$push(x\in A^*, a\in A)\in\Unit$ & nothing & prepend $x$ to $A$\\
+$push(x\in A^*, a\in A)\in\Unit$ & nothing & prepend $a$ to $x$\\
 $pop(x\in A^*)\in A^?$ & the first element of $x$ (if any) & remove the first element of $x$ \\
 $top(x\in A^*)\in A^?$ & the first element of $x$ (if any) & none \\
 \hline
@@ -193,7 +193,6 @@ $foreach(x\in D[A],f\in A\to \Unit)\in \Unit$ & nothing & apply $f$ to all $a$ i
 \hline
 \end{ctabular}
 
-
 \subsection{Making Data Structures Iterable}\label{sec:ad:iter:create}
 
 Many important data structures are naturally iterable.
@@ -236,3 +235,107 @@ For exapmle:
  The same caveat applies to $index$, $find$, $forall$, and $exists$.
  \item We can call $map$. But it must be a special variant of $map$ that returns a new iterator without actually applying the map-function.
 \end{compactitem}
+
+\section{Heaps}\label{sec:ad:heaplists}
+
+Heaps are formally defined in Sect.~\ref{sec:ad:heaps}.
+
+$Heap[A,O]$ is not a data structure for the set $A^*$.
+Instead, it is a data structure for the subset of $A^*$ containing only lists sorted according to $O$.
+Therefore, heaps are very useful for sorting and prioritizing.
+We discuss applications of heaps to lists in Sect.~\ref{sec:ad:heapqueue} and~\ref{sec:ad:heapsort}.
+
+First we introduce some basic operations on heaps in Sect.~\ref{sec:ad:heapops}.
+
+\subsection{Operations on Heaps}\label{sec:ad:heapops}
+
+Because heaps are mostly used for efficiency, they are usually mutable.
+The main operations on a heap are similar to those on a stack:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$insert(x\in Heap[A,O], a\in A)\in\Unit$ & nothing & add $a$ to $x$ in any position\\
+$extract(x\in Heap[A,O])\in A^?$ & the $O$-smallest element of $x$ (if any) & remove that element from $x$ \\
+$find(x\in Heap[A,O])\in A^?$ & the $O$-smallest element of $x$ (if any) & none \\
+\hline
+
+\end{ctabular}
+
+$insert$, $extract$, and $find$ for heaps correspond exactly to $push$, $pop$, and $top$ for stacks.
+The crucial different is that $insert(x,a)$ does not prepend $a$ to $x$---instead, it is unspecified where and how $x$ is added.
+$extract$ and $find$ do not return the most recently added element---instead, they return the smallest element with respect to $O$.
+
+It is unspecified what exactly a heap looks like and where and how $insert$ actually performs the insertion.
+That way heaps have a lot of freedom to organize the data in an efficient way.
+That freedom is exploited to make the operations $extract$ and $find$ fast.
+\medskip
+
+Because $Heap[A,O]$ is underspecified, there are many different options how to implement heaps.
+In practice, there are dozens of competing variants using different efficiency trade-offs.
+A critical property is that all operations take only $O(\log n)$ where $n$ is the number of elements in the heap.
+
+\subsection{A Heap Implementation}
+
+For a straightforward implementation of $Heap[A,O]$, we use a binary heap $H$, i.e., a binary tree over $A$ that is also a heap.
+
+Let $n$ be the number of nodes in $H$ and $h$ be the height of $h$.
+All operations are such that $H$ remains almost-perfect: for every depth $d<h$ there are maximally many nodes, i.e., $2^d$ nodes.
+(At depth $h$, we have to allow for fewer than $2^h$ nodes because not every $n$ there is a perfect heap.)
+That way, we always have $h\leq\log_2 n$, and all branches have length $h$ or $h-1$, i.e., $O(\log_2 n)$.
+
+$find$ is trivial: We return the root of $H$. That takes $O(1)$.
+
+$insert(H,x)$ inserts $x$ into one of the branches with minimal length.
+The insertion occurs at the position that keeps the branch sorted.
+Because it was sorted already, that requires $O(l)$ operations, where $l$ is the length of the branch, i.e., $O(\log_2 n)$.
+
+$extract$ removes the root of $H$ and returns it.
+That takes $O(1)$.
+Additionally, we have to repair the heap property.
+To do that, we take some leaf $l$ of $H$ and put it at the root.
+Now have a near-perfect binary tree again, but it is not a heap yet: $l$ is too big to be the root.
+Therefore, we push $l$ down by iteratively swapping it with its smallest child until we have a heap.
+Finding a leaf and pushing along some branch takes $O(\log_2 n)$.
+
+\subsection{Priority Queues}\label{sec:ad:heapqueue}
+
+A $PriorityQueue[A]$ behaves like a $Queue[A]$ except that dequeueing returns the element with the highest priority.
+
+This is achieved by using a data strucutre for $Heap[A,O]$ where $O$ orders elements by decreasing priority.
+Then $insert$ and $extract$ correspond to $enqueue$ and $dequeue$.
+
+\subsection{Heapsort Algorithm}\label{sec:ad:heapsort}
+
+Heapsort is a sorting algorithm that runs in $O(n\log n)$.
+
+If $\leq$ is the total order for sorting, a simple heapsort is given by
+\begin{acode}
+\afun[A^*]{heapsort}{x: A^*}{
+  h := \anew{Heap[A,\geq]}{}\\
+  \\
+  left := x\\
+  \afor{i}{0}{length(x)-1}{
+    next := left.head \\
+    insert(h,next)\\
+    left := left.tail\\
+  }\\
+  res := Nil\\
+  \afor{i}{0}{length(x)-1}{
+    next := extract(h)\\
+    res := prepend(next, res)
+  }
+}
+\end{acode}
+
+This uses two loops using $length(n)$ iterations each.
+The first loop throws all elements of $x$ into the heap; the second loop pulls them out again and builds the list $res$ to be returned.
+Because $extract$ always returns the greatest element, the result automatically sorted.
+
+If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $O(\log n)$.
+Thus, heapsort runs in $O(n\log n)$.
+\medskip
+
+There are much more optimized implementations of heapsort than the above example, possibly using optimized implementaitons of heaps.
+With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $O(n\log n)$).
