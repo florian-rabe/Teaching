@@ -1,17 +1,25 @@
-\section{Specification}
+\section{Countable Sets}
 
 The sets $\N$, $\Z$, and $\Q$ are well-known from mathematics.
 
-We cannot implement data structures for $\R$ and $\C$ because they are uncountable.
-We can at most work with $\Q+\Q i$, which is the set of complex numbers whose real and imaginary parts are rational.
-
-\section{Implementation}
-
-Working with $\Z$ as opposed to $\Z_m$ for some $m$ is called \emph{arbitrary precision arithmetic}.
-In some programming languages, $\Int$ is already $\Z$.
-In other language, $\Int$ is $\Z_m$ for some $m$---in those languages, there is usually a library that defines $\Z$.
+Working with $\Z$ (as opposed to $\Z_m$ for some $m$) is called \emph{arbitrary precision arithmetic}.
+$\Z$ may or may not be the built-in type $\Int$---that depends on the programming language.
+If not, $\Int$ is $\Z_m$ for some $m$---in those languages, there is usually a library that defines $\Z$.
 
 A data structure for $\Q$ can be defined by using pairs of integers.
 
 We usually do not use a special data structure for $\N$ and instead just use the positive values of $\Z$.
 Alternatively, we can give a (very inefficient) definition of $\N$ as an inductive type as in Ex.~\ref{ex:ad:euclid2}.
+
+\section{Uncountable Sets}
+
+We cannot implement data structures for $\R$ and $\C$ because they are uncountable.
+
+There are some approximate solutions to work with $\R$.
+For example, we can simply represent a real number $r$ as a function $\N\to\{0,\ldots,9\}$ that provides the infinite decimal expansion of $r$.
+Because we can only represent countably many functions as effective objects, not all real numbers can be represented like.
+However, all practically useful ones can.
+A major drawback of this representation is that we cannot give an algorithm for equality (because we would have to check that two functions are equal for infinitely many arguments), thus crippling the data structure.
+
+For the $\C$, it is often sufficient to work with the countable set $\Q+\Q i$, which is the set of complex numbers whose real and imaginary parts are rational.
+

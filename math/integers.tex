@@ -129,7 +129,7 @@ The cases $m=0$ and $m=1$ are trivial again:
 
 \begin{remark}[Possible Values]
 For $m\neq 0$, we have $x\modop m\in \{0,\ldots,m-1\}$.
-In particular, there are $m$ possible values $m\modop x$.
+In particular, there are $m$ possible values for $x\modop m$.
 
 For example, we have $x\modop 1\in \{0\}$.
 And we have $x\modop 2=0$ if $x$ is even and $x\modop 2=1$ if $x$ is odd.
@@ -151,13 +151,13 @@ For $x,y\in\Z$, $\mod$ commutes with arithmetic operations in the sense that
 
 Moreover, $x/_m y$ is defined iff $\gcd(y,m)=1$ and
  \[(x/y)\modop m=(x \modop m)/_m (y\modop m) \tb\mif\tb y|x\]
- \[x/_m y=x\cdot_m a \tb\mif ay+bm=1 \text{ as in see Thm.~\ref{thm:math:extendedeuclid}}\]
+ \[x/_m y=x\cdot_m a \tb\mif ay+bm=1 \text{ as in Thm.~\ref{thm:math:extendedeuclid}}\]
 \end{theorem}
 
 \begin{theorem}[Fermat's Little Theorem]\label{thm:math:fermatlittle}
 For all prime numbers $p$ and $x\in\Z$, we have that $x^p\Equiv_p x$.
 
-If $x$ and $p$ are coprime, that is equivalent to $x^{p-1}\Equiv 1$.
+If $x$ and $p$ are coprime, that is equivalent to $x^{p-1}\Equiv_p 1$.
 \end{theorem}
 
 \subsection{Digit-Base Representations}\label{sec:math:base}
