@@ -112,11 +112,11 @@ A formula $F(\vec{x})$ is a loop invariant if $F$ is preserved by the loop, i.e.
 
 If we have a loop-invariant, we can use a loop invariant as follows:
 \begin{theorem}\label{thm:ad:loopinv}
-Consider a while-loop $while\,(C(\vec{x}))\{code\}$ and a loop-invariant $F(\vec(x))$.\\
+Consider a while-loop $while\,(C(\vec{x}))\{code\}$ and a loop-invariant $F(\vec{x})$.\\
 Assume that $F(\vec{v})$ holds where $v_i$ is the value of $x_i$ before executing the while-loop.
 \medskip
 
-Then $!C(\vec({x})) \&\& F(\vec{x})$ holds if  the while-loop has been executed.
+Then $!C(\vec{x}) \&\& F(\vec{x})$ holds if  the while-loop has been executed.
 \end{theorem}
 \begin{proof}
 After the while-loop $C(\vec{x})$ cannot hold---otherwise, the while-loop would continue.
@@ -164,7 +164,7 @@ To work with the while-loop, we prove that $F$ is a loop invariant:
 
 Now we can continue.
 The next statement is $\areturn{x}$.
-Using Thm.~\ref{thm:ad:loopinv}, we obtain that $!C(m,n,x,y)\&\& F(m,n,x,y)$ holds, i.e., $!x\neq y \&\& \gcd(m,n)==\gcd(x,y)$.
+Using Thm.~\ref{thm:ad:loopinv}, we obtain that $!C(m,n,x,y)\,\&\&\, F(m,n,x,y)$ holds, i.e., $!x\neq y\, \&\&\, \gcd(m,n)==\gcd(x,y)$.
 That yields $x==y$ and therefore $\gcd(m,n)==\gcd(x,x)==x$.
 Thus, the returned value is indeed $\gcd(m,n)$.
 

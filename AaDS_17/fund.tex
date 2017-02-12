@@ -349,6 +349,7 @@ For every program of every language, we must provide an equivalent program in ev
 
 However, this can be done (and has been done) for all languages.
 \end{proof}
+%This should only hold for Turing complete languages (and some especially nice programming languages like e.g. Agda are not Turing complete). Non Turing complete languages can not nessecarily construct all the set a Turing complete language can. For instance in Agda (and some other total functional programming languages) you can only implement algorithms (including constructors of data types) for programs proven to be terminating. According to the halting problem this implies, that there are some algorithms that you can define on a Turing machine, but not in Agda. 
 
 A related (stronger) theorem is that every programming language $P$ allows defining for every programming language $Q$ a program that executes $Q$-programs.
 
