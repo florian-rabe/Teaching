@@ -1,7 +1,7 @@
-\section{Specification}
-
 After lists, trees are the next most important data structure in computer science.
 They can be seen as a generalization of lists where the elements are not arranged in a row, but branching is allowed.
+
+\section{Specification}
 
 \subsection{General Trees}
 
@@ -62,6 +62,10 @@ A path from the root to a leaf is called a \textbf{branch}.
 Thus, every leaf $l$ is part of exactly one branch, whose length is the depth of $l$.
 The length of the longest branch(es) is called the \textbf{height} of the tree.
 \end{definition}
+
+\begin{remark}
+Contrary to all these tree metaphors, computer scientists prefer drawing trees with the root at the top and the leafs at the bottom.
+\end{remark}
 
 Def.~\ref{def:ad:tree} only defines the abstract shape of trees.
 But trees are only useful if we can store some data in each node.
@@ -272,7 +276,7 @@ We consider two different data structures and use the following as an example tr
 \end{tikzpicture}
 \end{center}
 
-\subsection{Trees Using Lists}
+\subsection{Using Lists}\label{sec:ad:listtree}
 
 The simplest data structure for trees uses lists:
 
@@ -283,7 +287,7 @@ The simplest data structure for trees uses lists:
 The example tree is represented as
 \[\anew{Tree[\Z]}{5,\; \big[\anew{Tree[\Z]}{3,Nil},\;\anew{Tree[\Z]}{1, [\anew{Tree[\Z]}{6,Nil}]}\big]}\].
 
-\subsection{Trees Without Lists and With Null}
+\subsection{Using Sibling Pointers}\label{sec:ad:pointertrees}
 
 Some programmers or programming languages prefer a more awkward (but slightly less memory-intensive) data structure that does not use lists.
 
@@ -299,15 +303,175 @@ The example tree is represented as
 
 \section{Important Algorithms}
 
-\subsection{Depth-First Search}
+\subsection{Search}
 
-\subsection{Breadth-Frist Search}
+Trees are often used to represent a problem.
+
+\begin{example}
+Consider a labyrinth in which some treasure is hidden.
+We represent it as a tree.
+The entrance is the root.
+Every fork in the path is a node with multiple children---one child per direction we can go in.
+Every dead end is a leaf.
+One node in the tree is special because it has the treasure.
+
+To find the treasure, we have to explore the labyrinth.
+That means we have to visit every node of the tree until we find the treasure.
+\end{example}
+
+Many problems in real life can be seen as labyrinths in the sense that we have to make a series of decisions, each time choose between multiple options.
+
+Therefore, many problems can naturally be represented as trees.
+Moreover, if we do not have any special knowledge (e.g., a map leading to the treasure), the only thing we can do is systematically explore all nodes of the tree.
+
+That is straightforward in principle, but we have to decide in which order we explore the nodes.
+Two strategies are important:
+\begin{itemize}
+\item In Breadth-First Search (BFS), we explore nodes in increasing order of depth: first the root, then the children, then the grandchildren of the root, and so on.
+We can visualize this as searching top-to-bottom (if the tree is drawn in the usual way with the root at the top).
+Thus, we search the entire breadth before moving on to deeper nodes.
+\item In Depth-First Search (DFS), we first explore all descendants of a node $n$ before moving on the siblings of $n$.
+We can visualize this as searching left-to-right.
+Thus, we search as deep as we can before moving on to the siblings.
+\end{itemize}
+
+Consider the tree below.
+BFS yields abcdefg.
+DFS yields abecfgd.
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {a};
+\node[node] (00) at (-2,-1) {b};
+\node[node] (01) at (0,-1) {c};
+\node[node] (02) at (2,-1) {d};
+\node[node] (000) at (-2,-2) {e};
+\node[node] (010) at (-1,-2) {f};
+\node[node] (011) at (1,-2) {g};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (0) -- (02);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+BFS has the drawback of back-and-forth movement.
+For the tree above, we have to go from a to b, back up to a and down to c, back up and down to d, then all the way back to b, so that we can go e, back up all the way to a, down to c again, and so on.
+DFS is much simpler.
+
+However, it is much more common to have a very high tree (i.e., long branches) than a very wide tree (i.e., lots of branches).
+This is because we often have many decisions to make, but each decision only has a few options.
+For example, many games consist of an unlimited number of turns where at each turn we have to choose from a limited number of moves.
+In those situations, if DFS picks the wrong cild of the root early on, it may have to explore a huge subtree before coming back to pick the right child.
+
+BFS is more balanced and predictable.
+If we know the probability of finding a solution becomes smaller at greater depths, BFS makes sure that we explore the most promising nodes first.
+
+\subsubsection{Depth-First Search}
+
+DFS can be realized quite easily with a recursive function, especially if we use the data structure from Sect.~\ref{sec:ad:listtree}.
+We use an arbitrary function $f$ as the payload, i.e., a function that is to be called at every node $n$.
+For example, $f$ can check if $n$ is the needed solution or do some other work on $n$.
+
+\begin{acode}
+\afun{DFS[A]}{n: Tree[A], f:Tree[A]\to \Unit}{
+  f(n)\\
+  foreach(n.children, x \mapsto DFSAux[A](x,f))
+}
+\end{acode}
+
+In this variant of DFS, $f$ acts on every node $n$ before it recurses into the children.
+It is also possible to switch those two, i.e., first recurse into the children, then call $f(n)$.
+
+\subsubsection{Breadth-First Search}
+
+BFS is a bit more complicated.
+One way to do it is to use a queue that stores all nodes that we have already seen but not acted on yet.
+That way we can avoid the back-and-forth movement.
+
+\begin{acode}
+\afun{BFS[A]}{n: Tree[A], f:Tree[A]\to \Unit}{
+  needToVisit := \anew{Queue[Tree[A]]}{}\\
+  enqueue(needToVisit, n)\\
+  \awhile{!empty(needToVisit)}{
+    n := dequeue(needToVisit)\\
+    f(n) \\
+    foreach(n.children, x \mapsto enqueue(needToVisit, x))
+  }
+}
+\end{acode}
+
+Here in every iteration of the loop, we process the next node $n$ (dequeue) and then put its children at the end of the queue.
+That way all children of $n$ are guaranteed to be processed before any grandchildren of $n$.
+\medskip
+
+The above BFS-algorithm is interesting because we can easily turn it into a DFS-algorithm: all we have to do is use a stack instead of a queue.
+That way all descendants of $n$ are processed before anything else.
 
 \subsection{Min-Max Algorithm}
 
-\section{Data Structures and Algotithms for Heaps}
+Many games can be represented as trees.
+Consider a $2$-player game in which the players alternate taking turns.
+At every turn, a player has to choose among multple moves.
+We assume there is no luck (e.g., no dice-rolling) and no hidden information (e.g., no bluffing).
 
+We can represent all possible courses of the games in a single tree as follows:
+\begin{compactitem}
+ \item Every node represents a turn.
+  \begin{compactitem}
+    \item root: initial state
+    \item nodes of even depth (including root): turn of player 1
+    \item nodes of odd depth: turn of player 2
+    \item leafs: terminal states (when the game is over)
+  \end{compactitem}
+ \item For every node $n$, the children of $n$ are the possible moves in that turn.
+ \item Every branch represents a possible course of the game.
+\end{compactitem}
 
+For leafs $l$, let $score(l)\in\Z^\infty$ represent the outcome:
+\begin{compactitem}
+ \item $\infty$: player 1 wins
+ \item positive values: player 1 is ahead
+ \item $0$: draw
+ \item negative values: player 2 is ahead
+ \item $-\infty$: player 2 wins
+\end{compactitem}
+Thus, player 1 wants to maximize the result, player 2 wants to minimize it.
+
+The min-max algorithm builds the entire tree by exploring all possible courses of the game.
+Let $State$ be the type of game states.
+We assume some basic functions $isTerminal:State\to\Bool$ and (for terminal states) $result:State\to\Z^\infty$ that represent the rules of the game.
+
+Let us assume we have built the tree $game:Tree[State]$.
+Then we can call the minmax algorithm with $minxmax(game,0)$ to aggregate the results of the terminal states:
+
+\begin{acode}
+\afun[\Z^\infty]{minmax}{current: Tree[State], depth: \N}{
+  state := current.data \\
+  \aifelse{isTerminal(state)}{
+    result(state)
+  }{
+    childResults := map(current.children, n \mapsto minmax(n, depth+1))\\
+    \aifelse{even(depth)}{
+      \max(childResults)
+    }{
+      \min(childResults)
+    }
+  }
+}
+\end{acode}
+
+If $minxmax(game,0)=\infty$, then player 1 has a perfect strategy to win every game.
+Correspondingly for player 2.
+If $minxmax(game,0)=0$, then both players have a perfect strategies to hold a draw.
+
+In practice, the tree is usually far too big to build.
+Therefore, instead of obtaining the result at terminal states, we must estimate the result at cut-off.
+For example, at depth $6$, we estimate the current score using heuristic function $State\to\Z^\infty$.
+
+This is a basic design used in artificially intelligent computer players for many games.
+Many optimizations are needed to obtain strong players.
 
 \section{Search Trees}
 

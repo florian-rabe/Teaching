@@ -824,3 +824,14 @@ For example, when choosing a password, the output should only the cryptographic 
 
 Additionally, a system may behave according to its specification, but the user may be unaware of it.
 For example, a user may not be aware that her word document stored its previous revision, thus accidentally exposing an early draft.
+
+\paragraph{Maintainability}
+An often-underestimated goal being able to maintain a program.
+Software usually lives for years, often decades, and programmers will come and go during its life time.
+One of the biggest sources of problems can be unclear or undocumented code---even if it is well-designed, correct, and efficient.
+
+Simple data structures and elegant algorithms that are derived systematically from the specification helps here.
+It leads to implementations that easier to understand, which allows new programmers to take over seamlessly.
+
+Minor optimizations should generally be avoided because they make the implementation less maintainable.
+Even major optimizations (e.g., linear instead of quadratic) must be weighted against the danger of introducing bugs in the long run.
