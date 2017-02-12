@@ -17,7 +17,22 @@ An element $a\in A$ is called a \ldots element of $\circ$ if the following holds
   \item left-absorbing: for all $x$, $a\circ x=a$
   \item right-absorbing: for all $x$, $x\circ a=a$
   \item absorbing: left-absorbing and right-absorbing
+  \item if $e$ is a neutral element:
+   \begin{compactitem}
+     \item left-inverse of $x$: $a\circ x=e$
+     \item right-inverse of $x$: $x\circ a=e$
+     \item inverse of $x$: left-neutral and right-neutral of $x$
+   \end{compactitem}
  \end{compactitem}
+ 
+Moreover, we say that $\circ$ is a \ldots if it is/has:
+\begin{compactitem}
+ \item semigroup: associative
+ \item monoid: associative and neutral element
+ \item group: monoid and inverse elements for all $x$
+ \item semilattice: associative, commutative, and idempotent
+ \item bounded semilattice: semilattice and neutral element
+\end{compactitem}
 \end{definition}
 
 \begin{terminology}
@@ -27,5 +42,7 @@ The terminology for \emph{absorbing} is not well-standardized.
 
 \begin{theorem}\label{thm:math:binop}
 Neutral and absorbing element of $\circ$ are unique whenever they exist.
+
+If $\circ$ is a monoid, then the inverse of $x$ is unique whenever it exists.
 \end{theorem}
 

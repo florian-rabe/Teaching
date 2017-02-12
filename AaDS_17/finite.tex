@@ -42,6 +42,7 @@ Usually, they offer at most $\Z_{2^k}$ for $k=8$ (usally called \emph{byte}), $k
 Note that, depending on the programming language, the built-in type $\Int$ may refer to one of those (usually for $k=32$) or to $\Z$.
 
 If we need $\Z_m$ for a specific $m$, we usually work with $\Int$ and use the $\modop$ operation to ensure we remain inside $\Z_m$.
+\footnote{Note that some programming languages implement $\divop$ and $\modop$ in unexpected ways for negative arguments.}
 
 \section{Enumerations}
 

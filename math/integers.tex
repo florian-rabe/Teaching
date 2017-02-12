@@ -41,7 +41,7 @@ $\gcd$ has the following properties for all $x,y\in\N$:
 \begin{compactitem}
 \item associative: $\gcd(\gcd(x,y),z)=\gcd(x,\gcd(y,z))$
 \item commutative: $\gcd(x,y)=\gcd(y,x)$
-\item idempotence: $\gcd(x,x)=x$
+\item idempotent: $\gcd(x,x)=x$
 \item $0$ is a neutral element: $\gcd(0,x)=x$
 \item $1$ is an absorbing element: $\gcd(1,x)=1$
 \end{compactitem}
@@ -51,7 +51,7 @@ $\lcm$ has the same properties as $\gcd$ except that $1$ is neutral and $0$ is a
 \begin{theorem}\label{thm:math:extendedeuclid}
 For all $x,y\in\Z$, there are numbers $a,b\in\Z$ such that $ax+by=\gcd(x,y)$.
 
-$a$ and $b$ can be computed using the extended Euclidean algorithms.
+$a$ and $b$ can be computed using the extended Euclidean algorithm.
 \end{theorem}
 
 \begin{definition}
@@ -61,9 +61,11 @@ For $x\in\N$, the number of coprime $y\in\{0,\ldots,x-1\}$ is called $\phi(x)$.
 $\phi$ is called Euler's \textbf{totient function}.
 \end{definition}
 
+\begin{example}
 We have $\phi(0)=0$, $\phi(1)=\phi(2)=1$, $\phi(3)=2$, $\phi(4)=1$, and so on.
 Because $\gcd(x,0)=x$, we have $\phi(x)\leq x-1$.
 $x$ is prime iff $\phi(x)=x-1$.
+\end{example}
 
 \subsection{Equivalence Modulo}\label{sec:math:modulo}
 
@@ -95,7 +97,7 @@ The relation $\Equiv_m$ has the following properties
 \begin{compactitem}
 \item reflexive: $x\Equiv_m x$
 \item transitive: if $x\Equiv_m y$ and $y\Equiv_m z$ then $x\Equiv_m z$
-\item symmetric: if $x|y$ then $y|x$
+\item symmetric: if $x\Equiv_m y$ then $y\Equiv_m x$
 \end{compactitem}
 Thus, it is an equivalence relation.
 \medskip
@@ -104,8 +106,8 @@ It is also preserved by arithmetic operations: If $x\Equiv_m x'$ and $y\Equiv_m 
 \begin{compactitem}
 \item preserved by addition: $x+y\Equiv_m x'+y'$
 \item preserved by subtraction: $x-y\Equiv_m x'-y'$
-\item preserved by multiplication: $x*y\Equiv_m x'*y'$
-\item preserved by division if $x/y\in Z$ and $x'/y'\in \Z$: $x/y\Equiv_m x'/y'$
+\item preserved by multiplication: $x\cdot y\Equiv_m x'\cdot y'$
+\item preserved by division if $x/y\in \Z$ and $x'/y'\in \Z$: $x/y\Equiv_m x'/y'$
 \item preserved by negation of both arguments: $-x\Equiv_m -x'$
 \end{compactitem}
 \end{theorem}
@@ -175,7 +177,7 @@ We write $b\divop m$ for $a$.
 \begin{definition}[Base-$m$-Notation]\label{def:math:base}
 For $d_i\in\Z_m$, we define $(d_k\,\ldots\,d_0)_m =d_k\cdot m^k+\ldots+d_1\cdot k+d_0$.
 
-The $d_i$ are called digits.
+The $d_i$ are called \textbf{digits}.
 \end{definition}
 
 \begin{theorem}[Base-$m$ Representation]\label{thm:math:base}
@@ -195,29 +197,29 @@ In case $m=16$, we write the elements of $\Z_m$ as $\{0,1,2,3,4,5,6,7,8,9,a,b,c,
 In this section, let $m=p$ be prime.
 
 \paragraph{Construction}
-Then $x/_p y$ is defined for all $x,y\in\Z_p$ with $y\neq 0$.
-Consequently, $\Z_p$ is a field.
+Because $p$ is prime, $x/_p y$ is defined for all $x,y\in\Z_p$ with $y\neq 0$.
+Moreover, $\Z_p$ is a field.
 
-Up to isomorphism, all finite fields are obtained as an $n$-dimensional vector space $\Z_p^n$ for $n\geq 1$.
+Up to isomorphism, all finite fields are obtained as $n$-dimensional vector spaces $\Z_p^n$ for some prime $p$ and $n\geq 1$.
 This field is usually called $F_{p^n}$ because it has $p^n$ elements.
 From now on, let $q=p^n$.
 
-All elements of $F_q$ are vectors $(a_0,\ldots,a_{n-1})$ for $a_i\in\Z_p$.
+The elements of $F_q$ are vectors $(a_0,\ldots,a_{n-1})$ for $a_i\in\Z_p$.
 Addition and subtraction are component-wise, the $0$-element is $(0,\ldots,0)$, the $1$-elements is $(1,0,\ldots,0)$.
 
-However, multiplication in $F_q$ is tricky.
-To multiply two elements, we think of the vectors $(a_0,\ldots,a_{n-1})$ as polynomials $a_{n-1}X^{n-1}+\ldots+a_1X+a_0$, and multiply the polynomials.
-This can introduce powers $X^n$ and higher, which we eliminate using $X^n=k_{n-1}X^{n-1}+\ldots+k_1X+k_0$.
-The resulting polynomial has degree at most $n-1$, and its coefficient (modulo $p$) yield the result.
+However, multiplication in $F_q$ is tricky if $n>1$.
+To multiply two elements, we think of the vectors $(a_0,\ldots,a_{n-1})$ as polynomials $a_{n-1}X^{n-1}+\ldots+a_1X+a_0$ and multiply the polynomials.
+This can introduce powers $X^n$ and higher, which we eliminate using $X^n=k_{n-1}X^{n-1}+\ldots+k_1X+k_0$ for certain $k_i$.
+The resulting polynomial has degree at most $n-1$, and its coefficients (modulo $p$) yield the result.
 
 The values $k_i$ always exists but are non-trivial to find.
 They must be such that the polynomial $X^n-k_{n-1}X^{n-1}-\ldots-k_1X-k_0$ has no roots in $\Z_p$.
-There may be multiple polynomials, which may lead to different multiplication operations.
+There may be multiple such polynomials, which may lead to different multiplication operations.
 However, all of them yield isomorphic fields.
 
 \paragraph{Binary Fields}
 The operations become particularly easy if $p=2$.
-The elements of $F_{2^n}$ are just the bit strings of length $n$.
+The elements of $F_{2^n}$ are just the bit vectors of length $n$.
 Addition and subtraction are the same operation and can be computed by component-wise XOR.
 Multiplication is a bit more complex but can be obtained as a sequence of bit-shifts and XORs.
 
@@ -234,21 +236,65 @@ The powers $1,x,x^2,\ldots\in F_q$ of $x$ can take only $q-1$ different values b
 Therefore, they must be periodic:
 
 \begin{theorem}
-For every $x\in F_q$, we have $x^q=x$ or equivalently $x^{q-1}=1$ for $x\neq 0$.
+For every $x\in F_q$, we have $x^q=x$. If $x\neq 0$, that is equivalently to $x^{q-1}=1$.
 \end{theorem}
 
-For some $x$, the period is indeed $q-1$, i.e., we have $\{1,x,x^2,\ldots,x^{q-1}=F_q\sm\{0\}$.
-Those $x$ are called primitive elements of $F_q$.
+For some $x$, the period is indeed $q-1$, i.e., we have $\{1,x,x^2,\ldots,x^{q-1}\}=F_q\sm\{0\}$.
+Such an $x$ is called a \textbf{primitive element} of $F_q$.
 But the period may be smaller.
 For example, the powers of $1$ are $1,\ldots,1$, i.e., $1$ has period $1$.
 For a non-trivial example consider $p=5$, $n=1$, (i.e., $q=5$): The powers of $4$ are $4^0=1$, $4^1=4$, $4^2=16\modop 5=1$, and $4^3=4$.
 
-If the period is smaller, $x^l$ does not take all possible values in $F_q$.
-Therefore, $\log_x y$ is not defined for all $y\in F_q$.
+If the period is smaller than $q-1$, $x^l$ does not take all possible values in $F_q$.
+In that case $\log_x y$ is not defined for all $y\in F_q$.
 \medskip
 
 Computing $x^l$ is straightforward and can be done efficiently.
 (If $n>1$, we first have to find the values $k_i$ needed to do the multiplication, but we can precompute them once and for all.)
 
-Determining whether $\log_x y$ is defined and computing its value is also straightforward: We can enumerate all powers $1,x,x^2,\ldots$ until we find $1$ or $y$.
+Determining whether $\log_x y$ is defined and computing its value is also straightforward: We can enumerate all powers $x,x^2,\ldots$ until $x^l=1$ (in which case the logarithm is undefined) or $x^l=y$ (in which case the logarithm is $l$).
 However, no efficient algorithm is known.
+
+\subsection{Infinity}\label{sec:math:infty}
+
+Occasionally, it is useful to compute also with infinity $\infty$ or $-\infty$.
+When adding infinity, some but not all arithmetic operations still behave nicely.
+
+\paragraph{Positive Infinity}
+We write $\N^\infty=\N\cup\{\infty\}$.
+
+The order $\leq$ works as usual.
+$\infty$ is the greatest element.
+
+Addition works as usual.
+$\infty$ is an attractive element.
+
+Subtraction is introduced as usual, i.e., $a-b=x$ whenever $x$ is the unique value such that $a=x+b$.
+Thus, $\infty-n=\infty$ for $n\in N$.
+$x-\infty$ is undefined.
+The law $x-x=0$ does not hold anymore.
+
+Multiplication becomes partial because $\infty\cdot 0$ is undefined.
+For $x\neq 0$, we put $\infty\cdot x=\infty$.
+
+Divisibility $|$ is defined as usual.
+Thus, we have $x|\infty$ for all $x\neq 0$, and $\infty|x$ iff $x=\infty$.
+There is no greatest element anymore because: $0$ and $\infty$ are both greater than every other element except for each other.
+
+\paragraph{Negative Infinity}
+We write $\Z^\infty=\Z\cup\{\infty,-\infty\}$.
+
+The order $\leq$ works as usual.
+$-\infty$ is the least and $\infty$ the greatest element.
+
+Addition becomes partial because $-\infty+\infty$ is undefined.
+We put $-\infty+z=-\infty$ for $z\neq\infty$.
+
+Subtraction is introduced as usual.
+Thus, $z-\infty=-\infty-z=-\infty$ for $z\in \Z$.
+$\infty-\infty$ is undefined.
+
+Multiplication works similarly to $\N^\infty$.
+$-\infty\cdot 0$ is undefined.
+And for $x\neq 0$, we define $\infty\cdot x$ and $-\infty\cdot x$ as $\infty$ or $-\infty$ depending on the signs.
+
