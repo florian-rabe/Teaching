@@ -1,4 +1,4 @@
-A binary relation is on $A$ is a subset $\#\sq A\times A$.
+A binary relation on a set $A$ is a subset $\#\sq A\times A$.
 We usually write $(x,y)\in\#$ as $x\# y$.
 
 \subsection{Classification}
@@ -13,7 +13,7 @@ We say that $\#$ is \ldots if the following holds:
  \item a preorder: reflexive and transitive
  \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
  \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
- \item an order\footnote{Orders are also called \emph{partial order}, \emph{poset} (for partially ordered set), or \emph{ordering}.}: preorder and anti-symmetric
+ \item an order\footnotemark: preorder and anti-symmetric
  \item an equivalence: preorder and symmetric
  \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
  \end{compactitem}
@@ -26,6 +26,7 @@ An element $a\in A$ is called \ldots of $\#$ if the following holds:
   \item greatest lower bound for $x,y$: $a\# x$ and $a\# y$ and for all $z$, if $z\# x$ and $z\# y$, then $z\# a$
  \end{compactitem}
 \end{definition}
+\footnotetext{Orders are also called \emph{partial order}, \emph{poset} (for partially ordered set), or \emph{ordering}.}
 
 \begin{definition}[Dual Relation]
 For every relation $\#$, the relation $\#^{-1}$ is defined by $x\,\#^{-1}\, y$ iff $y\,\#\,x$.
