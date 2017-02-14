@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=2,date=2017-02-14,due=2017-02-23,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=2,date=2017-02-14,due=2017-02-23]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -15,32 +15,36 @@ In the programming language of your choice:
 
 \begin{compactenum}
  \item Implement the exponential, the linear, and the inexact algorithm given in the lecture notes for the function $fib(n)$.
- Use arbitrary precision for the exponential and the linear one, and use floating point numbers for the inexact one.
+ Use arbitrary precision integer arithmetic for the exponential and the linear algorithm, and use floating point numbers for the inexact one.
  \item Write a program to determine the largest $n$ for which $fib(n)$ returns a result in at most $10$ seconds.
   Determine the value $n$ for the exponential and for the linear algorithm.
   % for me in Python: around 35 for the exponential one, around 250000 for the linear one
  \item Write a program to determine the smallest $n$ for which the inexact algorithm returns an incorrect result.
+  Run your program to find that value.
   % for me in Python: 71
 \end{compactenum}
 
 (Of course, the answers to the last two questions will depend on your programming language and computer.)
 \end{problem}
 
-\begin{problem}{Asymptotic Notation}{3+3+1+1+1}
+\begin{problem}{Asymptotic Notation: Examples}{(2+1+1)+2+2+2}
 For each of the following functions $f$ and $g$, determine whether $f\in O(g)$, $g\in O(f)$, neither, or both.
 
 \begin{compactenum}
- \item
- \item 
- \item
- \item
- \item
+ \item $f(n)=7n$ and $g(n)=n^7$
+ \item $f(n)=n^2/\log_2 n$ and $g(n)=n$
+ \item $f(n)=27\log_2 n$ and $g(n)=(\log_2(4n))^2$
+ \item $f(n)=\sqrt{n}$ and $g(n)=5n^{0.5}+7n^{0.3}+11\log_2 n$
 \end{compactenum}
 
-Show your work for the first two cases.
+Show your work for the first problem, i.e.,
+\begin{compactitem}
+ \item give $k$ and $N$ such that the property in the definition of $\Oleq{}$ holds, or
+ \item show that no such $k$ and $N$ exist.
+\end{compactitem}
 \end{problem}
 
-\begin{problem}{Asymptotic Notation}{2+3}
+\begin{problem}{Asymptotic Notation: Theory}{2+3}
 Prove that $\Oleq{}{}$ is
 \begin{compactenum}
  \item reflexive
@@ -52,7 +56,7 @@ To prove $\Oleq{f}{g}$, you have to give $N$ and $k$ such that $f(n)\leq k\cdot 
 
 For reflexivity, that is easy.
 
-For transitivity, assume $\Oleq{f}{g}$ and $\Oleq{g}{h}$ and show $\Oleq{f}{h}$.
+For transitivity, assume $k_1$ and $N_1$ exist for $\Oleq{f}{g}$ and $k_2$ and $N_2$ exist for $\Oleq{g}{h}$, then give $k$ and $N$ for $\Oleq{f}{h}$.
 \end{hint}
 \end{problem}
 
