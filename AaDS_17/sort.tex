@@ -7,6 +7,7 @@ Lists are the most important non-primitive data structure in computer science.
 For a set $A$, the set $A^*$ contains all lists $[a_0,\ldots,a_{l-1}]$ with elements $a_i\in A$ for some $l\in\N$.
 $l$ is called the length of the list.
 
+\paragraph{Immutable Lists}
 The following table specifies the most important functions involving lists:
 
 \begin{ctabular}{|l|l|l|}
@@ -36,10 +37,11 @@ These are split into three groups:
 \item The third group also takes a list $l\in A^*$ but also returns an element of $A^*$.
  This distinction is irrelevant in mathematics but critical in computer science: These functions may be implemented using in-place-updates.
  With in-place update, the list $l$ is changed to become the intended result. The original value of $l$ is lost in the process.
- If this is the case, we speak of \emph{mutable} lists.
+ If this is the case, we speak of \textbf{mutable} lists.
 \end{compactitem}
 
-The following table specifies the most important functions on mutable lists.
+\paragraph{Mutable Lists}
+The following table specifies the most important functions on mutable lists that differ from immutable lists.
 Instead of returning a new list, they have the effect of assigning a new value to the first argument.
 
 \begin{ctabular}{|l|l|l|l|}
@@ -52,6 +54,8 @@ $insert(x\in A^*, a\in A, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a,a_n,a_{
 $update(x\in A^*, a\in A, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a,a_{n+1},\ldots,a_{l-1}]$ & $x_n := a$ or $x[n]:= a$\\ % $insert(delete(l,n),a,n)
 \hline
 \end{ctabular}
+
+The other functions such as $length$ and $get$ are not affected.
 
 
 \subsection{Sorting}\label{sec:ad:sort:spec}
