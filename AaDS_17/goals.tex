@@ -4,7 +4,7 @@
 
 The most important goal of design is \emph{correctness}:
 
-\begin{definition}
+\begin{definition}\label{def:ad:correct}
 We say that:
 \begin{compactitem}
  \item A data structure $D$ is correct for a set $S$ if the objects of $D$ correspond exactly to the elements of $S$.
@@ -77,19 +77,59 @@ That makes it easier to verify the design.
 
 Verification often splits the correctness of an algorithm into two parts as follows:
 
-\begin{definition}
-An algorithm \textbf{terminates} for inputs $I$ if the execution of its instructions takes only finite time.\\
-An algorithm is \textbf{partially correct} if it is correct for all inputs for which it terminates.
+\begin{definition}\label{def:ad:correct2}
+Consider an algorithm $A$ for a function $f(x_1\in I_1,\ldots,x_n\in I_n)\in O$.
+
+We define:
+\begin{compactitem}
+\item A \textbf{precondition} for $A$ is a formula $Pre(x_1,\ldots,x_n)$ about the inputs.
+\item A \textbf{postcondition} for $A$ is a formula $Post(x_1,\ldots,x_n,r)$ about the inputs and the output.
+\item $A$ \textbf{terminates for} $v_1,\ldots,v_n$ if running $A$ with these inputs finishes in finitely many steps.
+\item $A$ \textbf{terminates} if it terminates whenever $Pre(v_1,\ldots,v_n)$.
+\item $A$ is \textbf{partially correct} if for all $v_1,\ldots,v_n$
+\begin{compactitem}
+ \item if $Pre(v_1,\ldots,v_n)$ and
+ \item $A$ terminates for $v_1,\ldots,v_n$ with return value $r$, then
+ \item $Post(v_1,\ldots,v_n,r)$
+\end{compactitem}
+\item $A$ is \textbf{totally correct} it is partially correct and terminates.
+\end{compactitem}
+
+Finally we can recover Def.~\ref{def:ad:correct} by saying that $A$ is a correct algorithm for a function $f$ it is totally correct with 
+\begin{compactitem}
+ \item precondition: nothing (always true)
+ \item postcondition: $r==f(x_1,\ldots,x_n)$
+\end{compactitem}
 \end{definition}
 
-\begin{theorem}
-An algorithm is correct iff it is partially correct and terminates for all inputs.
-\end{theorem}
+The reason for splitting correctness up is that partial correctness and termination are often proved separately in very different ways.
+ So it is good to have separate definitions for them.
+ Sect.~\ref{sec:ad:loopinv} and~\ref{sec:ad:termord} describe the most important techniques.
 
-Partial correctness and termination are often proved separately.
-Sect.~\ref{sec:ad:loopinv} and~\ref{sec:ad:termord} describe the most important techniques.
+The point of pre- and postcondition is to make fine-granular statements about what input an algorithm expects and what output it provides.
+In particular, programmers are allowed to assume that the input satisfies the precondition---they do not have to check it.
+Instead, whoever calls the algorithm has to make sure that the input satisfies the precondition.
+Vice versa, whoever calls the algorithm is allowed to assume that the postcondition holds afterwards.
 
-\subsection{Loop Invariant}\label{sec:ad:loopinv}
+\begin{example}[Pre/Postcondition]
+Consider a variant $A(x:\Int,y:\Int):\Int$ of the Euclidean algorithm that uses $32$-bit integers.
+This can never be correct because it cannot handle arbitrarily large natural numbers.
+Moreover, the input and output type now allow negative values, which we want to exclude.
+ 
+So we could use the following:
+\begin{compactitem}
+\item precondition: $Pre(x,y)\;=\;0\leq x \leq MaxInt \;\wedge\; 0\leq y \leq MaxInt$
+\item postcondition: $Post(x,y,r)\;=\;0\leq r\leq MaxInt\;\wedge\; r==\gcd(x,y)$
+\end{compactitem}
+where $MaxInt$ is the maximal value of the type $\Int$.
+
+Note that this specification makes the strong requirement that there will be no overflows.
+That works out for the Euclidean algorithm because all its intermediate results are smaller than the input.
+\end{example}
+
+\subsection{Partial Correctness}\label{sec:ad:loopinv}
+
+\subsubsection{Loop Invariants for while-Loops}
 
 Many algorithms use while-loops.
 Verifying the correctness of while-loops is notoriously difficult.
@@ -98,37 +138,39 @@ Therefore, many good programmers try to avoid while-loops altogether.
 Instead, they prefer operations on lists (like $map$, $fold$, and $foreach$) or recursive algorithms.
 \medskip
 
-The central method for verifying the correctness of a while-loop is the \emph{loop invariant}:
+The central method for verifying the partial correctness of a while-loop is the \emph{loop invariant}:
 
 \begin{definition}[Loop Invariant]\label{def:ad:loopinv}
-Consider a loop of the form $while\,(C(\vec{x}))\{code\}$.
+Consider a loop of the form $\awhileI{C(\vec{x})}{code}$.
 Here $\vec{x}=(x_1,\ldots,x_n)$ are the names that are in scope before entering the loop (i.e., excluding any names declared only in $code$).
 
-A formula $F(\vec{x})$ is a loop invariant if $F$ is preserved by the loop, i.e., if it holds before an iteration of the loop, it also afterwards.
+A formula $F(\vec{x})$ is a \textbf{loop invariant} for this loop if $F$ is preserved by the loop: if $F$ holds before executing $code$, it also holds afterwards.
  Specifically, for all $\vec{v}$, the following must hold
    \[C(\vec{v}) \mand F(\vec{v}) \tb \mimplies\tb F(code(\vec{v}))\]
    where $code(v)=(v'_1,\ldots,v'_n)$ contains the values of the $x_i$ after executing $x_1:=v_1; \ldots; x_n:=v_n; code$.
 \end{definition}
 
-If we have a loop-invariant, we can use a loop invariant as follows:
+If we have a loop invariant, we can use it as follows:
 \begin{theorem}\label{thm:ad:loopinv}
-Consider a while-loop $while\,(C(\vec{x}))\{code\}$ and a loop-invariant $F(\vec(x))$.\\
+Consider a loop $\awhileI{C(\vec{x})}{code}$ with a loop invariant $F(\vec{x})$.\\
 Assume that $F(\vec{v})$ holds where $v_i$ is the value of $x_i$ before executing the while-loop.
 \medskip
 
-Then $!C(\vec({x})) \&\& F(\vec{x})$ holds if  the while-loop has been executed.
+Then $\neg C(\vec{x}) \wedge F(\vec{x})$ holds if and when the while-loop has been executed.\footnotemark
 \end{theorem}
 \begin{proof}
 After the while-loop $C(\vec{x})$ cannot hold---otherwise, the while-loop would continue.
-Because $F(\vec{x})$ held before executing the loop and is preserved by $code$, it also holds after executing the loop.
+Because $F(\vec{x})$ held before executing the loop and is preserved by every iteration of $code$, it also holds after executing the loop.
 \end{proof}
+\footnotetext{We assume here that the evaluation of $C(\vec{x})$ has no side-effects and thus may not change the values of the $x_i$.
+In most programming languages, that would be allowed, but is a very bad practice precisely because it makes loop-invariant arguments more complicated.}
 
-Note that Thm.~\ref{thm:ad:loopinv} talks about \emph{if} and not \emph{when} the while-loop has been executed.
-That is because it is not guaranteed that a while-loop after terminates.
-We still have to prove that separately.
+Note that Thm.~\ref{thm:ad:loopinv} says \emph{if and when} the while-loop has been executed.
+That is because it is not guaranteed that the while-loop terminates.
+We still have to prove termination separately.
 
-\begin{example}[Euclid's Algorithm]\label{ex:ad:euclid:loopinv}
-Consider the algorithm from Ex.~\ref{ex:ad:euclid}.
+\begin{example}[Euclidean Algorithm]\label{ex:ad:euclid:partcorr}
+We prove partial correctness of the algorithm from Ex.~\ref{ex:ad:euclid}.
 We proceed statement-by-statement.
 \medskip
 
@@ -143,8 +185,8 @@ The intuition of this loop-invariant is that we only apply operations to $x$ and
 
 To work with the while-loop, we prove that $F$ is a loop invariant:
 \begin{compactitem}
- \item Before execution of the loop, we have $x==m$ and $y==n$. Thus, immediately $gcd(m,n)==gcd(x,y)$.
- \item Let us assume that $C(m,n,x,y)$ holds, i.e., $x\neq y$ (i).\\
+ \item We show that $F$ holds before the loop. \\ Before reaching the loop, we have $x==m$ and $y==n$. Thus, immediately $gcd(m,n)==gcd(x,y)$.
+ \item We show that $F$ is preserved by the loop. \\ Let us assume that $C(m,n,x,y)$ holds, i.e., $x\neq y$ (i).\\
   Moreover, let us assume that $F(m,n,x,y)$ holds, i.e., $\gcd(m,n)==\gcd(x,y)$ (ii).\\
   Let $code(m,n,x,y)=(m',n',x',y')$.\\
   We have to prove $F(m',n',x',y')$, i.e., $\gcd(m,n)=\gcd(x',y')$.\\
@@ -157,47 +199,72 @@ To work with the while-loop, we prove that $F$ is a loop invariant:
    \item $y<x$: Then $(m',n',x',y') = (m,n,x-y,y)$.
    We have to prove that $\gcd(m,n)=\gcd(x-y,x)$.\\
    That follows in the same way as in the first case.
-   \item We do not need a case for $x==y$ because that is excluded by the condition of the loop.
+   \item We do not need a case for $x==y$ because that is excluded by (i).
   \end{compactitem}
 \end{compactitem}
 \medskip
 
 Now we can continue.
 The next statement is $\areturn{x}$.
-Using Thm.~\ref{thm:ad:loopinv}, we obtain that $!C(m,n,x,y)\&\& F(m,n,x,y)$ holds, i.e., $!x\neq y \&\& \gcd(m,n)==\gcd(x,y)$.
+Using Thm.~\ref{thm:ad:loopinv}, we obtain that $\neg C(m,n,x,y)\wedge F(m,n,x,y)$ holds, i.e., $\neg x\neq y \wedge \gcd(m,n)==\gcd(x,y)$.
 That yields $x==y$ and therefore $\gcd(m,n)==\gcd(x,x)==x$.
 Thus, the returned value is indeed $\gcd(m,n)$.
 
-To complete the correctness proof, we still have to show that the while-loop terminates, which we do in Ex.~\ref{ex:ad:euclid:term}
+To prove total correctness, we still have to show that the while-loop terminates, which we do in Ex.~\ref{ex:ad:euclid:term}
+\end{example}
+
+\subsubsection{Induction for Recursive Functions}
+
+Proving partial correctness of recursive functions is very easy because we can simply use the postcondition about the recursive call.
+Formally, this means we do an induction proof on the number of recursive calls.
+
+\begin{example}[Recursive Euclidean Algorithm]\label{ex:ad:euclid2:partcorr}
+We prove partial correctness for the algorithm $gcdRec(m:\N,n:\N)$ from Ex.~\ref{ex:ad:euclid2}.
+
+We have to prove the postcondition $gcdRec(m,n)==\gcd(m,n)$ where $r$ is the return value.
+We proceed by induction, i.e., we assume that the property holds for all recursive calls.
+Then we have to handle two cases for the two branches of the if-statement:
+\begin{compactitem}
+ \item $n==0$: Then $gcdRec(m,n)=m$, and the postcondition follows from $\gcd(m,0)==m$.
+ \item $n\neq 0$: Then, by using the induction hypothesis, $gcdRec(n, m\modop n)==\gcd(n, m\modop n)$.
+   Then the postcondition follows from $\gcd(m,n)==\gcd(n,m\modop n)$.
+\end{compactitem}
+
+To prove total correctness, we still have to show that the recursion terminates which we in Ex.~\ref{ex:ad:euclid2:term}.
 \end{example}
 
 \subsection{Termination Orderings}\label{sec:ad:termord}
 
 Verifying the termination of an algorithm is also very hard.
 The halting function is the function that takes as input an algorithm $A$ and an object $I$ and returns as output the following boolean: $\true$ if $A$ terminates with input $I$ and $\false$ otherwise.
-The halting function is not computable.
+One of the most important results of theoretical computer science is that the halting function is not computable, i.e., there is no algorithm for it.
 
-Thus, even if do not care what our algorithm actually does and only want to know if it terminates, all we can do is prove it manually for each input.
+Thus, even if do not care what our algorithm actually does and only want to know if it terminates at all, all we can do is prove it manually for each input.
 
-Termination is trivial for assignment, if-statement, and the return-statement.
+Termination is trivial for assignment, for-loop\footnote{In some programming languages, it is possible to write non-terminating for-loops by explicitly assigning to the counter variable in the body of the loop. That is a very bad practice precisely because it endangers termination.}, if-statement, and the return-statement.
 Only while-loops and recursion are tricky.
 The most important technique to prove termination is to use a termination ordering.
 
 \subsubsection{While-Loops}
 
 \begin{definition}[Termination Ordering]\label{sec:def:termord}
-Consider a while-loop of the form $while\,(C(\vec{x}))\{code\}$.
+Consider a while-loop of the form $\awhileI{C(\vec{x})}{code}$.
 
-A termination ordering is a function $T(\vec{x})\in\N$ such that for all $\vec{v}$ we have that $C(\vec{v})$ implies $T(\vec{v})>T(code(\vec{v}))$.
+A \textbf{termination ordering} for it is a function $T(\vec{x})\in\N$ such that for all $\vec{v}$ we have that
+\[C(\vec{v}) \tb\mimplies\tb T(\vec{v})>T(code(\vec{v})).\]
 \end{definition}
 
+The intuition behind a termination ordering is that $T(\vec{x})$ strictly decreases in every iteration of the loop.
+Because it cannot decrease indefinitely, there can only be finitely many iterations, i.e., the loop must terminate.
+The following theorem makes that precise:
+
 \begin{theorem}[Termination Ordering]\label{sec:thm:termord}
-Consider a while-loop $while\,(C(\vec{x}))\{code\}$ and a termination ordering $T(\vec{x})$.
+Consider a the loop $\awhileI{C(\vec{x})}{code}$ and a termination ordering $T(\vec{x})$ for it.
 
 Then the while-loop terminates for all initial values $\vec{v}$ of $\vec{x}$.
 \end{theorem}
 \begin{proof}
-We define a sequence $\vec{v}^0, \vec{v}^1, \ldots$ such that $\vec{v}^i$ contains the values of $\vec{x}$ after executing $code$ $i$ times:
+We define a sequence $\vec{v}^0, \vec{v}^1, \ldots$ such that $\vec{v}^i$ contains the values of $\vec{x}$ after $i$ iterations of executing $code$:
 \[\vec{v}^0=\vec{v}\]
 \[\vec{v}^{i+1}=code(\vec{v}^i) \tb \mfor i>0\]
 \medskip
@@ -210,13 +277,13 @@ But such a sequence cannot exist, which yields the needed contradiction.
 \end{proof}
 
 
-\begin{example}[Euclid's Algorithm]\label{ex:ad:euclid:term}
+\begin{example}[Euclidean Algorithm]\label{ex:ad:euclid:term}
 We prove that the algorithm from Ex.~\ref{ex:ad:euclid} terminates for all inputs.
 Only the while-loop presents a problem.
 
 A termination ordering for the while-loop is given by $T(m,n,x,y)=x+y$.
-The intuition of this termination ordering is that the loop makes $x$ or $y$ smaller.
-Therefore, it makes their sum smaller.
+The intuition of this termination ordering is that the loop makes either $x$ or $y$ smaller.
+Therefore, it must make their sum smaller.
 \medskip
 
 We show that $T$ is indeed a termination ordering.\\
@@ -255,13 +322,15 @@ But the precise definition is a little bit trickier.
 \begin{definition}[Termination Ordering for Recursion]\label{sec:def:termord:rec}
 Consider a recursive function $f(\vec{x})$.
 
-A termination ordering for $f$ is a function $T(\vec{x})\in\N$ such that: whenever $f$ is called on arguments $\vec{v}$ and recursively calls itself with arguments $\vec{v'}$, then $T(\vec{v})>T(\vec{v'})$.
+A \textbf{termination ordering} for $f$ is a function $T(\vec{x})\in\N$ such that: whenever $f$ is called with arguments $\vec{v}$ and recursively calls itself with arguments $\vec{v'}$, then $T(\vec{v})>T(\vec{v'})$.
 \end{definition}
+
+Then we can prove the corresponding theorem:
 
 \begin{definition}[Relative Termination]\label{sec:def:termord:relterm}
 Consider a recursive function $f(\vec{x})$.
 
-We say that $f$ terminates relatively if the following holds: $f$ terminates for all arguments under the assumption that all recursive calls return.
+We say that $f$ \textbf{terminates relatively} if the following holds: $f$ terminates for all arguments under the assumption that all recursive calls terminate.
 \end{definition}
 
 \begin{theorem}[Termination Ordering for Recursion]\label{sec:thm:termord:rec}
@@ -273,7 +342,7 @@ If $f$ terminates relatively, then it terminates for all arguments.
 This is proved in the same way as for while-loops.
 \end{proof}
 
-\begin{example}[Recursive Euclidean Algorithm]
+\begin{example}[Recursive Euclidean Algorithm]\label{ex:ad:euclid2:term}
 Consider the recursive algorithm from Ex.~\ref{ex:ad:euclid2}.
 
 It is easy to see that the arguments never get bigger during the recursion.
@@ -291,7 +360,7 @@ That yields the equivalent function:
 }
 \end{acode}
 
-Relative termination trivial either way: Under the assumption that the recursive call returns, the function consists only of if-statements and terminates immediately.
+Relative termination is trivial either way: Under the assumption that the recursive call returns, the function consists only of if-statements and therefore terminates.
 
 And for the expanded function, $T(m,n)=m+n$ is a termination ordering.
 We have to prove $m+n>(m\modop n)+(n\modop(m\modop n))$, which is easy to see.
@@ -299,21 +368,25 @@ We have to prove $m+n>(m\modop n)+(n\modop(m\modop n))$, which is easy to see.
 
 \section{Efficiency}\label{sec:ad:complex}
 
+An algorithm is efficient if it can be run with low cost.
+\emph{Complexity} measures that cost.\footnote{At Jacobs University, complexity is discussed in detail in a special course in the $2nd$ year.}
+Thus, an efficient algorithm has low complexity and vice versa.
+
+There are two kinds of complexity: \emph{time} and \emph{space} complexity.
+Time complexity measures how long it takes for an algorithm to terminate.
+Space complexity measures how much temporary memory is needed along the way.
+Without qualification, the word \emph{complexity} usually but not always means \emph{time complexity}
+
+In this section, we focus on time complexity.
+While termination describes whether an algorithm $A$ terminates at all, its time complexity describes how long it takes to terminate.
+The time complexity of $A$ is a function $C:\N\to\N$ such that $C(n)$ is the number of steps needed until $A$ terminates for input of size $n$.
+
 \subsection{Exact Complexity}\label{sec:ad:complex:general}
 
-While termination describes whether an algorithm $A$ terminates at all, the complexity describes how long it takes to terminate.
-The complexity of $A$ is a function $C:\N\to\N$ such that $C(n)$ is the number of steps needed until $A$ terminates for input of size $n$.
-\medskip
+Exact complexity is tricky because the number of steps and the sizes of inputs depend on the programming language and the physical machine that is used.
+For example, we might try to use the following definitions for a simple programming language:
 
-An algorithm is efficient if its complexity is low and vice versa.
-\medskip
-
-The definition of the number of steps and the sizes of inputs depend on the programming language and the physical machine that is used.
-Below we give a typical definition as an example.
-
-At Jacobs University, decidability and computability are discussed in detail in a special course in the $2nd$ year.
-
-\begin{example}[Computing Exact Complexity]\label{ex:ad:complex:steps}
+\begin{example}[Counting Steps Exactly]\label{ex:ad:complex:steps}
 For a typical programming language implemented on a digital machine, the following definition is roughly right:\\
 
 For the execution of a statement:
@@ -335,7 +408,7 @@ For the execution of a statement:
      \item $1$ step to branch
      \item $\compl(T)$ or $\compl(E)$ steps depending on the branch
    \end{compactitem}
- \item $\compl(\awhileI{C}{B})=(n+1)*\compl(C)+n*\compl(B)$ where $n$ is the number of times that the loop is repeated
+ \item $\compl(\awhileI{C}{B})=(n+1)\cdot\compl(C)+n\cdot\compl(B)$ where $n$ is the number of times that the loop is repeated
    \begin{compactitem}
      \item $\compl(C)$ steps to evaluate the condition $n+1$ times
      \item $1$ step to branch after each evaluation of the condition
@@ -346,8 +419,8 @@ For the execution of a statement:
 
 For the evaluation of an expression:
 \begin{compactitem}
- \item Retrieving a variable: $\compl{x}=1$
- \item Applying built-in operators $O$ such as $+$ or $\&\&$: $\compl{O(E_1,\ldots, E_n}=\compl{E_1}+\ldots+\compl{E_n}+1$
+ \item Retrieving a variable: $\compl(x)=1$
+ \item Applying built-in operators $O$ such as $+$ or $\&\&$: $\compl(O(E_1,\ldots, E_n)=\compl(E_1)+\ldots+\compl(E_n)+1$
   \begin{compactitem}
     \item $\compl(E_i)$ steps to evaluate the arguments
     \item $1$ step to apply the operator
@@ -369,7 +442,6 @@ The size of an object depends on the data structure:
 \end{compactitem}
 \end{example}
 
-\paragraph{Problems with Exact Complexity}
 In actuality however, a number of subtleties about the implementation of the programming language, its compiler, and the physical machine can affect the run-time of a program.
 For example:
 \begin{compactitem}
@@ -405,13 +477,13 @@ Therefore, it is common to work with asymptotic complexity instead.
 The ideas is these dependencies are usually harmless in the sense that they can be ``rounded away''.
 For example, it does not matter much whether $\compl(x:=E)=\compl(E)+1$ or $\compl(x:=E)=\compl(E)+2$.
 It just means that every program takes a little longer.
-It would matter more if $\compl(x:=E)=2*\compl(E)+1$, which is unlikely.
+It would matter more if $\compl(x:=E)=2\cdot\compl(E)+1$, which is unlikely.
 
 We introduce the formal definitions in Sect.~\ref{sec:ad:onot} and apply them in Sect.~\ref{sec:ad:asympana}.
 
 \subsection{Asymptotic Notation}\label{sec:ad:onot}
 
-The field of complexity theory usually works with with Bachmann–Landau notations.%
+The field of complexity theory usually works with with Bachmann-Landau notations.%
 \footnote{In the definition below, only $O$, $\Omega$, and $\Theta$ are the standard Bachmann–Landau notations. The symbols $\Oleq{}{}$ and $\Oeq{}{}$ are specific to these lecture notes.}
 The basic idea is to focus on the rough shape of the function $C(n)$ instead of its details.
 For example, $C(n)=an+b$ is linear, and $C(n)=2^{an+b}$ is exponential.
@@ -457,7 +529,7 @@ Now we can easily define some important classes of functions grouped by their ro
 \item and so on
 \end{compactitem}
 Technically, we should always insert ``asymptotically'' at $(\ast)$.
-For example, $\Theta(n)$ contains not only the linear functions but also all functions whose shape is similar to linear.
+For example, $\Theta(n)$ contains not only the linear functions but also all functions whose shape is similar to linear when we go to infinity.
 But that word is often omitted for brevity.
 
 If we use $O$ instead of $\Theta$, we obtain the sets of \emph{at most} constant/linear/quadratic/etc. functions.
@@ -469,7 +541,7 @@ For example, $\Omega(n)$ includes the quadratic functions whereas $\Theta(n)$ do
 Of particular importance in complexity analysis is the set of polynomial functions:
 It includes all all functions whose shape is similar to a polynomial.
 
-The following list introduces a few more classes and arranges them by increasing size:
+The following table introduces a few more classes and arranges them by increasing size:
 \begin{ctabular}{|c|l|}
 \hline
 $O(1)$ & constant\\
@@ -567,7 +639,7 @@ They include $o$ and $\omega$.
 They are less important and are omitted here to avoid confusion.
 \end{remark}
 
-\subsection{Asymptotic Analysis}\label{sec:ad:asympana}
+\subsection{Asymptotic Complexity}\label{sec:ad:asympana}
 
 Equipped with asymptotic notations, we can now compute the run time of algorithms in a way that is mostly independent of the implementation and the machine.
 
@@ -611,7 +683,7 @@ There are some subtle ambiguities when analyzing complexity:
 There are no universal answers to these questions.
 Instead, we have to consider the context to understand what the author means.
 
-\begin{example}[Euclid's Algorithm]\label{ex:ad:euclid:complex}
+\begin{example}[Euclidean Algorithm]\label{ex:ad:euclid:complex}
 Consider the algorithm from Ex.~\ref{ex:ad:euclid}.
 Let $n=\max(a,b)$ and let $C(n)$ be the worst-case number of steps the algorithm takes for input $a,b$ (i.e., we use the maximum value of the inputs as the argument of the complexity function).
 
@@ -658,7 +730,7 @@ $\Theta$-classes for complexity are usually a very reliable indicator of the per
 If two algorithms were designed naturally without extreme focus on complexity, we can usually assume that:
 \begin{compactitem}
  \item For small inputs, they are both fast, and it does not matter which one we use.
- \item For large inputs, the one in the smaller complexity class will heavily outperform the other.
+ \item For large inputs, the one in the smaller complexity class will outperform the other.
 \end{compactitem}
 
 Note that large inputs are usually not encountered by the programmer: the programmer often only tests his programs with small test cases and examples.
@@ -666,7 +738,7 @@ Instead, large input is encountered by users.
 Therefore, complexity analysis is an important tool for the programmer to judge algorithms.
 Most of the time this boils down to relatively simple rules of thumb:
 \begin{compactitem} 
- \item Avoid doing something linearly if you do it logarithmically or in constant time.
+ \item Avoid doing something linearly if you can do it logarithmically or in constant time.
  \item Avoid doing something quadratically if you do it quasi-linearly or linearly.
  \item Avoid doing something exponentially if you can do it polynomially.
 \end{compactitem}
@@ -681,7 +753,7 @@ So increasing the length and variety of characters from time to time is enough t
 
 Note that we have only considered the complexity of \emph{algorithms} here.
 
-We can also define the complexity of a specification: Given a mathematical function $f$, its complexity is that of the most efficient correct algorithm $A$ for it.
+We can also define the \textbf{complexity of a specification}: Given a mathematical function $f$, its complexity is that of the most efficient correct algorithm $A$ for it.
 In this context, $f$ is usually called the problem and $A$ a solution.
 
 It is generally much harder to analyze the complexity of a problem than that of an algorithm.
@@ -690,21 +762,23 @@ But to give a lower bound, we have to prove that there is no better algorithm fo
 Proving the absence of something is generally quite difficult.
 
 An example is the $P\neq NP$ conjecture, which is the most famous open question in computer science.
-To prove it, one has to show that there is no polynomial algorithm for any one of a certain large class of problems.
+$P$ is the class of all problems that have polynomial complexity, and $NP$ is a related class that contains $P$.
+It is generally assumed that $NP$ is strictly larger than $P$.
+But to prove that, one has to show that there is no polynomial algorithm for some problem in $NP$.
 
 \subsubsection{Algorithm Complexity vs. Implementation Complexity}
 
-The complexity of an implementation is its actual run-time.
+The \textbf{complexity of an implementation} is its actual run-time.
 It is usually assumed that this corresponds to the complexity of an algorithm.
 
-But occasionally, the subtleties discussed in see Ex.~\ref{ex:ad:complex:steps} have to be considered because they do not get rounded away.
-This subtleties can usually not make the implementation less complex than the algorithm, but they may it more complex.
+But occasionally, the subtleties discussed in see Sect.~\ref{sec:ad:complex:general} have to be considered because they do not get rounded away.
+These subtleties can usually not make the implementation less complex than the algorithm, but they may make it more complex.
 Most importantly, when analyzing the complexity of algorithms, we often assume that arithmetic operations can be performed in $O(1)$.
-In practice, that is only true for numbers within the limits of the type $\Int$.
-If we implement the data structures for numbers correctly, the complexity of the implementation will increase.
+In practice, that is only true for numbers within the limits of underlying CPU, e.g., $64$-bit numbers.
+If we implement the data structures for numbers correctly (i.e., for arbitrarily large numbers), the complexity of the arithmetic operations will be greater.
 
 More generally, when analyzing algorithm complexity, we must make assumptions about the complexity of the primitive operations used in the algorithm.
-Then the complexity of the implementation is equal to complexity of the algorithm if the implementation of the primitive operations satisfies these assumptions.
+Then the complexity of the implementation is equal to complexity of the algorithm only if the implementation of the primitive operations satisfies these assumptions.
 
 \begin{example}[Euclidean Algorithm]\label{ex:ad:euclid3}
 The implementation in Ex.~\ref{ex:ad:euclid2} uses a very inefficient implementation for the data structure $\N$.
@@ -717,10 +791,10 @@ But there are efficient correct implementations of $\N$, which we could use inst
 For example, if we use base-$2$ representation, we can implement natural numbers as lists of bits.
 Because the number of bits of $n$ is $\Theta(\log_2 n)$, most arithmetic operations end up being $O(p(\log_2 n))$ for a polynomial $p$.
 For example, addition and subtraction take time linear in the number of bits.
-Multiplication and related operations such as $\modop$ take a bit more than linear.
+Multiplication and related operations such as $\modop$ are super-linear.
 That is more than $O(1)$ but still small enough to often be inessential.
 
-Then the implementation of $\gcd$, which uses $\Theta(\log_2 n)$ steps and a $\modop$ at every step, has a complexity somewhat bigger than $O((\log_2 n)^2)$.
+With an efficient implementation of $\N$ and its arithmetic operations, the implementation of $\gcd$, which uses $\Theta(\log_2 n)$ steps and applies $\modop$ at every step, has a complexity somewhat bigger than $O((\log_2 n)^2)$.
 The details depend on how we implement $\modop$.
 \end{example}
 
@@ -742,10 +816,10 @@ A frequent problem is to read a bunch of values and store them in a list.
 This usually requires appending every value to the end of the list as in:
 
 \begin{acode}
-data = []\\
+data := []\\
 \awhile{moreData}{
-  d = getData\\
-  data = append(data, d)
+  d := getData\\
+  data := append(data, d)
 }\\
 \areturn{data}
 \end{acode}
@@ -760,23 +834,23 @@ Thus, we implement a linear problem with a quadratic algorithm.
 A common solution is the following:
 
 \begin{acode}
-data = []\\
+data := []\\
 \awhile{moreData}{
-  d = getData\\
-  data = prepend(d, data)
+  d := getData\\
+  data := prepend(d, data)
 }\\
 \areturn{reverse(data)}
 \end{acode}
 
 This \emph{prepends} all elements to the list.
-Because no traversal is required, each prepend operation takes constant time.
-So the whole loop takes $O(n)$ steps.
+Because no traversal is required, each prepend operation takes $O(1)$.
+So the whole loop takes $\Theta(n)$ steps.
 
 But we build the list in the wrong order.
 Therefore, we revert it before returning it.
 Reversal must traverse and copy the entire list once, which takes linear time again.
 
-Thus, the second algorithm runs in $O(n)$ overall.
+Thus, the second algorithm runs in $\Theta(n)$ overall.
 
 But it requires an additional function call, i.e., it is less simple.
 In a very large program, it is possible that the calls to $prepend$ and $reverse$ occur in two different program locations that are far away from each other.
@@ -786,7 +860,7 @@ A programmer who joins the project may not realize that these two calls are rela
 It is non-obvious which algorithm should be preferred.
 The decision has to be made on a case-by-case basis keeping all goals in mind.
 For example, if the data is ultimately read from or written to a hard drive, that will be linear.
-But it will be much slower than building the list in memory, no matter if the list is built in linear or quadratic time.
+But it will usually be much slower than building the list in memory, no matter whether the list is built in linear or quadratic time.
 \end{example}
 
 \section{Advanced Goals}
@@ -813,7 +887,7 @@ This includes all defenses against hacking.
 Security is often not part of the specification.
 In fact, attacking a system often requires intentionally violating the specification in order to call algorithms with input that the programmer did not anticipate.
 
-Secure algorithms must catch all such invalid data.
+Secure algorithms must catch all such invalid input.
 
 \paragraph{Privacy}
 Privacy is the requirement that only the output of an algorithm is visible to the user.
@@ -830,8 +904,8 @@ An often-underestimated goal being able to maintain a program.
 Software usually lives for years, often decades, and programmers will come and go during its life time.
 One of the biggest sources of problems can be unclear or undocumented code---even if it is well-designed, correct, and efficient.
 
-Simple data structures and elegant algorithms that are derived systematically from the specification helps here.
-It leads to implementations that easier to understand, which allows new programmers to take over seamlessly.
+Simple data structures and elegant algorithms that are derived systematically from the specification help here.
+It leads to implementations that are easier to understand, which allows new programmers to take over seamlessly.
 
 Minor optimizations should generally be avoided because they make the implementation less maintainable.
-Even major optimizations (e.g., linear instead of quadratic) must be weighted against the danger of introducing bugs in the long run.
+Even major optimizations (e.g., linear instead of quadratic) must be weighed against the danger of introducing bugs in the long run.

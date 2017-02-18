@@ -159,7 +159,7 @@ There are many different data structures for lists that differ subtly in how sim
 \subsection{Immutable Lists}
 
 For immutable lists, functions like $delete$, $insert$, and $update$ (see Sect.~\ref{sec:math:sets:derivfun}) always return new lists.
-That may require copying, which takes more time and memory.
+That requires copying (parts of) the old list, which takes more time and memory.
 
 \subsubsection{Functional Style: Lists as an Inductive Type}
 
