@@ -2,7 +2,7 @@
 
 \subsection{Specification}\label{sec:ad:exp:spec}
 
-The function $exp(x\in\Z,n\in\N)\in\N$ returns the $n$-the power of $x$ defined by
+The function $power(x\in\Z,n\in\N)\in\N$ (also written as $x^n$) returns the $n$-the power of $x$ defined by
 \[x^0=1\]
 \[x^{n}=x\cdot x^{n-1} \tb\mif n > 0\]
 
@@ -268,12 +268,12 @@ The complexity depends on the details of the implementation.
 Naively, computing $p,q,r,s$ requires $8$ recursive calls to multiplications and $4$ additions of $2^{k-1}$-matrices.
 That yields
  \[C(n)=8\cdot C(n/2) + \Theta(n^2) = \ldots = 8^k\cdot C(1)+\Theta(n^2)\]
-Because $k=\log_2 n$ and $C(1)\in O(1)$, that yields $C(n)\in\Theta(n^{\log_2 8}=\Theta(n^3)$.
+Because $k=\log_2 n$ and $C(1)\in O(1)$, that yields $C(n)\in\Theta(n^{\log_2 8})=\Theta(n^3)$.
 
 However, Strassen observed that we can do better.
 With some fiddling around, we can replace the $8$ multiplications and $4$ additions with $7$ multiplications and $18$ additions.
 The extra additions do not harm because they are $\Theta(n^2)$.
-But turning the $8$ into a $7$ yields $C(n)=\Theta(n^{\log_2 7}$.
+But turning the $8$ into a $7$ yields $C(n)=\Theta(n^{\log_2 7})$.
 Thus, Strassen's algorithm reduces $n^3$ to $n^{2.81\ldots}$, which can yield practically relevant improvements for relatively small $n$, e.g., $n\approx 30$.
 \medskip
 
