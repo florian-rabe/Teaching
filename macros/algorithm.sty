@@ -4,7 +4,7 @@
 \definecolor{shadecolor}{RGB}{245,245,245}
 \newenvironment{acode}{\setcounter{aindent}{0}\let\@anewline=\\\renewcommand{\\}{\anewline}\noindent\begin{snugshade}$}{$\end{snugshade}}
 
-\newcommand{\akey}[1]{\textbf{#1}\;}
+\newcommand{\akey}[1]{{\rm \bf #1}\;}
 
 \newcounter{aindent}
 \newcommand{\anewline}{\@anewline\ntimes{\theaindent}{\tb}}
@@ -45,7 +45,7 @@
 % declarations
 \newcommand{\aclassH}[4][class]{\akey{#1} #2(#3)\ifnonempty{#4}{\;\akey{extends}#4}}
 \newcommand{\aclass}[4]{\aclassH{#1}{#2}{#3}\ablock{#4}}
-\newcommand{\aclassA}[4]{\aclassH[abstract class]{#1}{#2}{#3}\ablock{#4}}
+\newcommand{\aclassA}[4]{\aclassH[abstract\; class]{#1}{#2}{#3}\ablock{#4}}
 \newcommand{\aclassI}[4]{\aclassH{#1}{#2}{#3}\ablockI{#4}}
 
 \newcommand{\adata}[2]{\akey{data} #1 \, =\, \fold{\;|\;}{#2}}

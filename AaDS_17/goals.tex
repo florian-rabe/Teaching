@@ -48,7 +48,7 @@ For example, there is no guarantee that $1.0/2.0$ returns $0.5$ and not $0.49999
 
 \begin{example}
 Object-oriented languages use class types.
-Because of the $null$ pointer, a class $A$ that implements a set $S$ actually implements the set $S^?$: A value of type $A$ can be $null$ or an instance of $A$.
+Because of the $null$ pointer, a class $A$ that implements a set $S$ actually implements the set $S^?$---a value of type $A$ can be $null$ or an instance of $A$.
 
 Therefore, many good programmers systematically avoid ever using $null$.
 Still, the use of $null$ is wide-spread in practice.
@@ -58,12 +58,14 @@ Still, the use of $null$ is wide-spread in practice.
 Assume we have a correct data structure for $A$.
 \medskip
 
-Then we can give a correct data structure for $\{x\in A|P(x)\}$ if $P\in\B^A$ is computable.
-However, because the set of computable functions is itself not decidable, programming languages usually do not allow defining data structures for $\{x\in A|P(x)\}$.
-\medskip
+Then we can give a correct data structure for $\{x\in A|P(x)\}$ if $P\in A \to \B$ is computable.
+However, because the set of computable functions is itself not decidable, programming languages usually do not allow defining correct data structures for $\{x\in A|P(x)\}$.
 
-We cannot in general give a correct data structure for $\{F(x):x\in A\}$ even if $F$ is computable.
-Similarly, we cannot in general give a correct data structure for $A/r$ even if $r\in \B^{A\times A}$ is computable.
+More severely, we cannot in general give a correct data structure for $\{F(x):x\in A\}$ at all.
+Even if $F$ is computable, we cannot give an algorithm that determines whether a given object is in that set.
+
+Neither can we give a correct data structure for $A/r$ for $r\in A\times A\to \B$.
+Even if $r$ is computable, we cannot give an algorithm for equality of elements of $A/r$.
 \end{example}
 
 \paragraph{Verification}
@@ -233,7 +235,7 @@ Then we have to handle two cases for the two branches of the if-statement:
 To prove total correctness, we still have to show that the recursion terminates which we in Ex.~\ref{ex:ad:euclid2:term}.
 \end{example}
 
-\subsection{Termination Orderings}\label{sec:ad:termord}
+\subsection{Termination}\label{sec:ad:termord}
 
 Verifying the termination of an algorithm is also very hard.
 The halting function is the function that takes as input an algorithm $A$ and an object $I$ and returns as output the following boolean: $\true$ if $A$ terminates with input $I$ and $\false$ otherwise.
@@ -245,7 +247,7 @@ Termination is trivial for assignment, for-loop\footnote{In some programming lan
 Only while-loops and recursion are tricky.
 The most important technique to prove termination is to use a termination ordering.
 
-\subsubsection{While-Loops}
+\subsubsection{Termination Orderings for While-Loops}
 
 \begin{definition}[Termination Ordering]\label{sec:def:termord}
 Consider a while-loop of the form $\awhileI{C(\vec{x})}{code}$.
@@ -314,7 +316,7 @@ We can fix the algorithm in two ways:
 \end{compactitem}
 \end{example}
 
-\subsubsection{Recursion}
+\subsubsection{Termination Orderings for Recursion}
 
 Termination orderings for recursion work in essentially the same way.
 But the precise definition is a little bit trickier.
