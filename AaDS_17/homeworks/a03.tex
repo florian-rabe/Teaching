@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=2,date=2017-02-14,due=2017-02-23,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,due=2017-03-02,unpublished]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,18 +10,33 @@
 
 \header
 
-The following is an (highly simplified variant of an) example from the author's research:
+\begin{problem}{Problem Complexity}{6+6}
+What is the complexity class of the worst-case time complexity $C(n)$ of the following \emph{problems}:
+\begin{enumerate}
+\item Find the smallest element in a list of length $n$ of integers.
+\item Find an unknown $x\in \N$ between $0$ and $n$ by repeatedly asking yes/no questions about $x$.\\
+(Any question is allowed that has a well-defined answer. For example, you may ask ``Is $x$ prime?'' or ``Is $x==5$?'' A solution must determine $x$ with perfect certainty in all cases.)
+\end{enumerate}
 
-\begin{example}[String Processing]\label{ex:ad:quadraticstringprocessor}
-Consider the following function in the Scala programming language
+In each case, answer the question in two parts:
+\begin{compactitem}
+\item Give an algorithm (in pseudo-code or a programming language) that is in the given complexity class. (3 points each)
+\item Argue informally (but convincingly) why there can be no better algorithm. (3 points each)
+\end{compactitem}
+\end{problem}
+
+\begin{problem}{Complexity Analysis}{5}
+The following is a (highly simplified variant of an) example that came up last year in the author's research:
+Consider the following function in the Scala programming language:
+
 \begin{lstlisting}
 def processString(s: String) {
-  var rest = s
+  var rest: String = s
   while (s != "") {
     if (rest.startsWith("foo")) {
-      // does not matter, assume this takes constant time
+      // does not matter, assume this takes O(1)
     } else {
-      // also does not matter
+      // does not matter, assume this takes O(1)
     }
     rest = s.substring(1)
   }
@@ -30,11 +45,22 @@ def processString(s: String) {
 Here \lstinline|startsWith| and \lstinline|substring| are methods on strings from the Java library (which Scala can call with only constant-time overhead).
 
 Let $C(n)$ be the run time of this function where $n$ is the length of the input string.
-What is the complexity class of $C(n)$?
+What is the complexity class of $C(n)$ and why?
 
-You can run the program yourself on increasingly large inputs to find out.
-In the author's case, the surprising effect was noticeable when $n>10^7$, e.g., when reading a $10$ MB text file.
-\end{example}
+You can try the program yourself on increasingly large input to find out. (If you prefer, you can use Java instead of Scala---the effect is the same.)
+In the author's case, the surprising effect was noticed by a student trying to process a $100$ MB text file, e.g., when $n>10^8$. The problem is already noticeable for smaller values of $n$.
+\end{problem}
 
+\begin{problem}{Polynomial Algorithms}{$\infty$}
+Consider the following problem: Given a natural number that uses $n$ bits, find a non-trivial factor of $n$.
+
+Here ``non-trivial factor'' means a number $p|n$ such that $1<p<n$.
+
+Give an algorithm with polynomial run-time complexity $C(n)$ or show that no such algorithm exists.
+
+\begin{hint}
+There is no typo in this problem.
+\end{hint}
+\end{problem}
 
 \end{document}

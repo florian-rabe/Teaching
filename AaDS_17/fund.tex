@@ -455,7 +455,7 @@ For the sake of example, we use a different one here:
 \medskip
 
 \begin{acode}
-\afun[\N]{gcd}{m:\N, n:\N}{
+\afun[\N]{gcdRec}{m:\N, n:\N}{
   \aifelse{n==0}{m}{\gcd(n,m\modop n)}
 }
 \end{acode}
@@ -491,7 +491,7 @@ fun mod(m:nat, n:nat):nat =
  
 Then we define
 \begin{lstlisting}
-fun gcd(m:nat, n: nat): nat = if n = zero then m else gcd(n,mod(m,n))
+fun gcdRec(m:nat, n: nat): nat = if n = zero then m else gcdRec(n,mod(m,n))
 \end{lstlisting}
 \end{example}
 
@@ -512,7 +512,7 @@ For example, after executing $x:=[1,3,5]$, we have the following data stored in 
 \end{amemory}
 Here the left part shows the variables as seen by the programmer.
 The right part shows the objects as they are maintained in memory by the programming language.
-$P$ is the name for the memory location holding the value of $x$.
+$P$ is some name for the memory location holding the value of $x$.
 Importantly, the programmer is completely unaware of the organization of the data in memory and only sees the value of $x$.
 
 In particular, $x$ is just an abbreviation for the value $[1,3,5]$.
@@ -527,12 +527,12 @@ For example, if we execute the instruction $y = delete(x,2)$, we obtain:
 \aloc{P}{[1,3,5]}
 \aloc{Q}{[1,3]}
 \end{amemory}
-All old data is a before.
-For the new variable $m$, a new memory location $Q$ has been allocated and filled with the result of the operation.
+All old data is as before.
+For the new variable $y$, a new memory location $Q$ has been allocated and filled with the result of the operation.
 This has the drawback that the entire list was duplicated, and we now use twice as much memory as before.
 
 Immutable data structures and call-by-value are the usual way how functions work in mathematics.
-Such data structures are closely related their specification and makes writing, understanding, and analyzing algorithms very easy.
+Such data structures are closely related to their specification and make writing, understanding, and analyzing algorithms very easy.
 
 \subsubsection{Mutable Data Structures and Call-by-Name}
 
@@ -548,7 +548,7 @@ The value of $x$ is now the reference to the memory location.
 The programmer still cannot see $P$ directly.%
 \footnote{Some programming languages allow explicitly creating and manipulating these references.
 The most notable example is $C$ (where the references are called \emph{pointers}).
-With very few caveats, that can be considered a design flaw in the programming language.}
+With a few caveats (most importantly that it can allow for maximal optimization), that can be considered a design flaw in the programming language.}
 
 But there are two carefully-designed ways how $P$ can be accessed indirectly.
 Firstly, we can assign new values to each component of $x$.
@@ -569,14 +569,14 @@ For example, after executing $delete(x,2)$, we have
 \alocations
 \aloc{P}{[1,4]}
 \end{amemory}
-No additional memory location has been allocated for the result, and copying took place.
+No additional memory location has been allocated for the result, and no copying took place.
 That makes the operation much more time- and memory-efficient.
-But from a mathematical perspective, this is very odd: The function call $delete(x,2)$ \emph{changed} the value $x$ under the hood.
+But from a mathematical perspective, this is very odd: The function call $delete(x,2)$ \emph{changed} the value of $x$ under the hood.
 \medskip
 
 In many programming languages (in particular object-oriented ones), mutable data structures are called \emph{classes}.
-Some of the related function will make use of mutability, some will not.
-This must be part of the specification of the function.
+Some functions involving a mutable data structure will make use of mutability, some will not.
+This must be part of the specification of each function.
 
 \subsection{Environments and Side Effects}
 
@@ -593,12 +593,12 @@ Again this is a vague definition because the word ``environment'' is not defined
 That is normal---there is no universally recognized definition for it.
 Intuitively, an object $e\in E$ represents the state of the environment.
 $e$ contains all information that is visible from the outside of our algorithms and that can be acted on by the algorithm.
-These usually include the global variables, all kinds of input/output, and exceptions.
+These usually include the global variables, all kinds of input/output, threads, and exceptions.
 
 An effectful function $f$ from $A$ to $B$ can do two things besides returning a result of type $B$:
 \begin{compactitem}
  \item It can use the environment (because $E$ occurs in its input type).
-   Thus, calling $f$ twice on the same $a\in A$ may return different result if the environment has changed in between.\\
+   Thus, calling $f$ twice on the same $a\in A$ may return different results if the environment has changed in between.\\
    Formally, if $f(a,e_1)=(b_1,e_1')$ and $f(a,e_2)=(b_2,e_2')$ always implies $b_1=b_2$, we say that $f$ is \textbf{environment-independent}.
  \item It can change the environment (because $E$ occurs in its output type).
    Thus, programmers must be careful when to call $f$ and how often to call $f$ because every call may have an effect that can be observed by the user.\\
@@ -610,7 +610,7 @@ Thus, pure functions are essentially the same as the usual mathematical function
 
 An environment $e\in E$ is usually a big tuple containing among others
 \begin{compactitem}
- \item the current values of all accessible variables
+ \item the current values of all accessible mutable variables
  \item console input/output:
    \begin{compactitem}
       \item the list of characters to be printed out to the user
@@ -626,14 +626,176 @@ An environment $e\in E$ is usually a big tuple containing among others
       \item by depending on this aspect of the environment, effectful functions can handle exceptions
       \item by effecting this aspect of the environment, effectful functions can raise exceptions
    \end{compactitem}
+ \item the set of currently active threads
  \item additional components depending on the features of the respective programming language
 \end{compactitem}
 
 Environment-dependency and side effects are important.
 Without input/output side effect, the user could never provide input for algorithms and could never find out what the output is.
-Moreover, computer could not be used to read sensor data or control peripheral devices.
+Moreover, computers could not be used to read sensor data or control peripheral devices.
 
 But they also present major challenges to algorithm design.
 Because the precise definition of $E$ depends on the details of the programming language, it is very difficult to precisely specify effectful functions.
 And without a precise specification, the programmer never knows whether an algorithm is designed and implemented correctly.
-Therefore, some programming languages such as Haskell try to systematically restrict them as much as possible.
+Therefore, some programming languages such as Haskell try to systematically restrict environment-dependency and side-effects as much as possible.
+
+\section{Parametric Polymorphism}
+
+Many important data structures and algorithms are polymorphic in the following sense:
+
+\begin{definition}[Polymorphism]
+A \textbf{polymorphic data structure} $D$ is an operator that maps data structures $D_1,\ldots,D_n$ to a data structure $D[D_1,\ldots,D_n]$.
+
+A \textbf{polymorphic algorithm} $F$ is an operator that maps data structures $D_1,\ldots,D_n$ to an algorithm $F[D_1,\ldots,D_n]$.
+
+The $D_i$ are called the \textbf{type parameters} or \textbf{type arguments} of the data structure/algorithm.
+\end{definition}
+
+This is best understood by example:
+
+\begin{example}[Lists]
+Lists are a polymorphic data structure: $List[A]$ is the data structure of lists whose elements have type $A$, e.g., it is a data structure for the set $A^*$.
+For example, $List[\Int]$ contains the lists of integers.
+
+Most algorithms about lists are polymorphic as well.
+For example, reversing a list can be realized using an algorithm
+\begin{acode}
+\afun[{List[A]}]{reverse[A]}{x: List[A]}{
+  \ldots
+}
+\end{acode}
+\end{example}
+
+\begin{terminology}
+There are many different concepts of polymorphism that are (correctly, confusingly, or even wrongly) called \emph{polymorphism}.
+The special kind described here is usually called \emph{parametric polymorphism}.
+
+Both terminology and notations vary across programming languages, communities, and textbooks.
+\end{terminology}
+
+A more difficult example arises if we want to sort a list: To sort a list over $A$, we need a comparison function $\leq(x:A,y:A):\Bool$.
+Moreover, $\leq$ has to be a total order.
+We can handle that using abstract classes:
+
+\begin{example}
+Consider the following polymorphic abstract class for total orders:
+\begin{acode}
+\aclassA{TotOrd[A]}{}{}{}{
+  \afun[\Bool]{lessOrEqual}{x:A,y:A}{}
+}
+\end{acode}
+It requires a function $lessOrEqual$ that provides the comparison $\leq$.
+The axioms for being a total order can usually not be programmed---they can only be added as part of the documentation.
+
+Then a polymorphic sorting algorithm could look like
+\begin{acode}
+\afun[{List[A]}]{sort[A]}{ord: TotOrd[A], x:List[A]}{
+\ldots
+}
+\end{acode}
+\end{example}
+
+\subsubsection{In Programming Languages}
+
+Even though polymorphism is relatively simple mathematically, not all programming languages do a good job of implementing it.
+Therefore, we will often gloss over issues of polymorphism when giving algorithms.
+
+But we give a few examples of polymorphism in a few typed programming languages.
+
+\paragraph{Scala}
+Scala's syntax is very similar to te pseudo-code used in these notes:
+
+\begin{lstlisting}
+abstract class TotOrd[A] {
+  def lessOrEqual(x:A, y:A): Boolean
+}
+
+object IntSmaller extends TotOrd[Int] {
+  def lessOrEqual(x:A, y:A): Boolean = x <= y
+}
+
+object Sort {
+  def sort[A](ord: TotOrd[A], x: List[A]): List[A] = {
+    ...
+  }
+}
+
+object Test {
+  def main(args: Array[String]) {
+    sort[Int](IntSmaller, List(4,3,5))
+  }
+}
+\end{lstlisting}
+
+\paragraph{Java}
+In Java, polymorphic data structures are called generics.
+It uses angular instead of square brackets and puts the parameter types of a polymorphic algorithm before the return type instead of after the name:
+
+\begin{lstlisting}
+interface TotOrd<A> {
+  public Boolean lessOrEqual(A x, A y);
+}
+
+class Sort {
+  static <A> List<A> sort(TotOrd<A> ord, List<A> x) {
+    ...
+  }
+}
+
+class IntSmaller implements TotOrd<Integer> {
+  public Boolean lessOrEqual(Integer x, Integer y) {
+    return x <= y;
+  }
+  public static IntSmaller it = new IntSmaller();
+}
+
+class Test {
+  public static void main (String[] args) {
+    Sort.sort(IntSmaller.it, Arrays.asList(3,5,4));
+  }
+}
+\end{lstlisting}
+
+\paragraph{C++}
+In C++, we can use templates to implement polymorphism.
+C++ also uses angular brackets, and the parameter types of classes and functions must be declared using the \lstinline|template| keyword.
+
+\begin{lstlisting}
+using namespace std;
+#include <list>
+
+template <class A>
+class TotOrd {
+  bool lessOrEqual(A x, A y);
+};
+
+class IntSmaller: public TotOrd<int> {
+  bool lessOrEqual(int x, int y) {return x <= y;}
+};
+IntSmaller* is = new IntSmaller();
+  
+template <class A>
+list<A> sort(TotOrd<A> ord, list<A> x) {
+  ...
+};
+
+int test() {
+    sort<int>(*is, {3,5,4});  
+}
+\end{lstlisting}
+
+\paragraph{SML}
+In SML, we do not have abstract classes, but we can use a datatype instead.
+The type parameters of polymorphic types and functions are not declared explicitly.
+Instead, they are implicit given as variables like \lstinline|'a|.
+
+\begin{lstlisting}
+datatype 'a TotOrder = TotOrder of 'a * 'a -> bool
+fun lessOrEqual(ord: 'a TotOrder): 'a * 'a -> bool = case ord of TotOrder(f) => f
+
+val IntSmaller: int TotOrder = TotOrder(fn (x,y) => x <= y)
+
+fun sort(ord: 'a TotOrder, x: 'a list) = x
+
+fun test() = sort(IntSmaller, [3,5,4])
+\end{lstlisting}

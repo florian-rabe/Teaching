@@ -20,6 +20,7 @@ For example,
 
 \paragraph{Correctness}
 The correctness of this algorithm is immediate because it follows the specification literally.
+For example, $T(x,n)=n$ is already a termination ordering.
 
 \paragraph{Complexity}
 Assuming that all multiplications take $O(1)$ no matter how big $x$ is, the complexity of this algorithm is $\Theta(n)$ because we need $n$ multiplications and recursive calls.
@@ -90,12 +91,13 @@ It is straightforward to give an algorithm for computing Fibonacci numbers.
 For example:
 \begin{acode}
 \afun[\N]{fib}{n:\N}{
-  \aifelse{x\leq 1}{x}{fib(n-1)+fib(n-2)}
+  \aifelse{n\leq 1}{n}{fib(n-1)+fib(n-2)}
 }
 \end{acode}
 
 \paragraph{Correctness}
 The correctness of this algorithm is immediate because it follows the specification literally.
+For example, $T(n)=n$ is a termination ordering.
 
 \paragraph{Complexity}
 We obtain the recurrence relation $C(n)=C(n-1)+C(n-2)+c$ where $c\in O(1)$ is the constant-time effort of the recursion.
@@ -110,7 +112,7 @@ It is straightforward to improve on the naive algorithm turning an exponential i
 For example:
 \begin{acode}
 \afun[\N]{fib}{n:\N}{
-  \aifelse{x\leq 1}{x}{
+  \aifelse{n\leq 1}{n}{
     prev := 0\\
     current := 1 \\
     i = 1 \\
@@ -126,12 +128,12 @@ For example:
 \end{acode}
 
 \paragraph{Correctness}
-As a loop invariant, we use
-\[F(prev,current,i) = prev==fib(i-1)\aand current==fib(i)\]
+As a loop invariant, we can use
+\[F(n,prev,current,i) = prev==fib(i-1)\wedge current==fib(i)\]
 which is straightforward to verify.
 After the loop, we have $i==n$ and thus $current=fib(n)$, which yields partial correctness.
 
-As a termination ordering, we use $T(prev,current,i)=n-i$.
+As a termination ordering, we can use $T(n,prev,current,i)=n-i$.
 Again this is straightforward to verify.
 
 \paragraph{Complexity}
@@ -144,7 +146,8 @@ It is tempting to compute $fib(n)$ directly using $fib(n)=round(\phi^n/\sqrt{5})
 Because we can precompute $1/\sqrt{5}$, that requires $n+1$ floating point multiplications, i.e., also $O(n)$.
 
 However, it is next to impossible verify the correctness of the algorithm.
-We know that the formula $fib(n)=round(\phi^n/\sqrt{5})$ is true, but that has no immediate to floating point arithmetic.
+While termination is trivial, partial correctness does not hold.
+We know that the formula $fib(n)=round(\phi^n/\sqrt{5})$ is true, but that has no immediate use for floating point arithmetic.
 Rounding errors will accumulate over time and may eventually lead to a false result.
 
 \subsection{Sublinear Algorithm}\label{sec:ad:fib:sublinear}
@@ -158,7 +161,13 @@ which we can write in matrix form as
 Thus, we obtain
 \[(fib(n),fib(n-1))= (1,0)\cdot\begin{pmatrix}1&1\\1&0\end{pmatrix}^n \tb\mfor n>0\]
 
-The $n$-th power of a matrix can be computed in $O(\log n)$ in the same way as in Sect.~\ref{sec:ad:exp:sqmult}.
+We can now pick any algorithm for computing the $n$-power of a matrix, e.g., by using square-and-multiply from Sect.~\ref{sec:ad:exp:sqmult} for matrices.
+
+\paragraph{Correctness}
+Correctness follows from the correctness of square-and-multiply.
+
+\paragraph{Complexity}
+Square-and-multiply has complexity $O(\log n)$.
 Thus, we can compute $fib(n)$ with logarithmic complexity.
 
 \section{Matrices}
@@ -243,7 +252,7 @@ This is not obvious for multiplication.
 Using the same argument, we can say that the complexity of multiplication is $\Omega(ln)$.
 But there cannot be an $\Theta(ln)$-algorithm because $m$ must matter---if $m$ increases, it must take longer.
 
-\subsection{Strassen's Algorithm}
+\subsection{Strassen's Multiplication Algorithm}
 
 Inspecting the definition of matrix multiplication, we see that we can split up matrices into rectangular areas of submatrices, for example, like so:
 \[\begin{pmatrix}x_{11} & x_{12} & x_{13} & x_{14} \\ x_{21} & x_{22} & x_{23} & x_{24} \\ x_{31} & x_{32} & x_{33} & x_{34} \\ x_{41} & x_{42} & x_{43} & x_{44}\end{pmatrix}
