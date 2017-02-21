@@ -385,7 +385,7 @@ For example:
 
 Growable arrays are a compromise between arrays and linked lists.
 Initially, they behave like an array with a fixed length $l$.
-However, we insert an element such that the length become $>l$, we create a second array of length $l$ (elsewhere in memory) and connect the two.
+However, to insert an element such that the length becomes $>l$, we create a second array of length $l$ (elsewhere in memory) and connect the two.
 
 Retrieval and update technically are linear now.
 To access the element in position $n$, we have to make $n/l$ retrievals to jump to the needed array.
