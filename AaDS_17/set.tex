@@ -1,0 +1,137 @@
+\section{Specification}
+
+The set $Set[A]$ contains the finite subsets of $A$.
+It is countable if $A$.
+
+Sets can be mutable or immutable.
+The main operations for immutable sets are:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$contains(x\in Set[A], a\in A)\in \Bool$ & $\true$ iff $a\in x$ & none \\
+$insert(x\in Set[A], a\in A)\in Set[A]$ & $x\cup\{a\}$ & none \\
+$delete(x\in Set[A], a\in A)\in Set[A]$ & $x\sm\{a\}$ & none \\
+\hline
+\end{ctabular}
+
+% lattice operations
+
+The main operations for mutable sets are:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$contains(x\in Set[A], a\in A)\in \Bool$ & $\true$ iff $a\in x$ & none \\
+$insert(x\in Set[A], a\in A)\in\Unit$ & nothing & $x:=x\cup\{a\}$ \\
+$delete(x\in Set[A], a\in A)\in\Unit$ & nothing & $x:=x\sm\{a\}$ \\
+\hline
+\end{ctabular}
+
+In both cases, we often need operations for combining and comparing sets:
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$equal(x\in Set[A], y\in Set[A])\in \Bool$ & $\true$ iff $x=y$ & none \\
+$union(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\cup y$ & none \\
+$inter(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\cap y$ & none \\
+$diff(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\sm y$ & none \\
+\hline
+\end{ctabular}
+
+Equality is listed explicitly here because it can be very complex.
+For most data structures such as the ones for lists and trees, equality is straightforward.
+This may or may not be the case for data structures for sets.
+
+\section{Data Structures}
+
+\subsection{Using Bit Vectors}\label{sec:ad:vectorset}
+
+If $A$ is finite with $|A|=m$, an easy data structure for $Set[A]$ are bit vectors of length $m$ such as $Array[\Bool](m)$.
+Given such a vector $a$, we put $a[i]=\true$ to represent that $i$ is in the set.
+
+Then we can implement $insert$ and $delete$ easily in $\Theta(1)$.
+We can also implement $equal$, $union$, $inter$, and $diff$ easily in $\Theta(m)$.
+
+A major drawback is the memory requirement: We need $\Theta(m)$ for each $x:Set[A]$, which is only feasible for small $m$.
+
+\subsection{Using Lists}\label{sec:ad:listset}
+
+For large or infinite $A$, a better data structure for $Set[A]$ is $ListSet[A]$.
+It represents the set $\{a_1,\ldots,a_n\}$ as the list $[a_1,\ldots,a_n]$.
+Thus, it represent sets as lists without repetition.
+
+The operations on $ListSet[A]$ are defined in the same way as for $List[A]$ with one exception: the $insert(x,a)$ operation does nothing if $x$ already contains $a$.
+\medskip
+
+If $n$ is the size of the $ListSet$, the operations $contains$, $insert$, and $delete$ takes $\Theta(n)$.
+However, higher-level operations like building a set with $n$ elements  step-by-step by calling $insert$ $n$ times requires $n$ insertions and thus costs $\Theta(n^2)$.
+
+Moreover, these operations require calls to the equality on $A$.
+For example, to implement $contains(x,a)$, we have to compare $a$ to every element of $x$.
+That may be easy, e.g., if $A=\Int$.
+But it can be arbitrarily costly if $A$ is more complex data structure itself.
+
+For equality, union, intersection, and difference of $x$ and $y$, we may have to compare every element of $x$ with every element of $y$.
+So it may take $O(|x|\cdot|y|)$.
+
+These operations quickly become too costly for large subsets of $A$.
+
+\subsection{Hash Sets}\label{sec:ad:hashset}
+
+Hash sets try to comine the advantages of bit vector and list sets.
+The key parameter is a function $hash:A\to \Z_m$.
+This is called the hash function.
+
+$hash$ has two purposes:
+\begin{compactitem}
+ \item The set $A$ is supported by a finite, managably small set $\Z_m$.
+   That makes if feasible to use arrays of length $m$.
+ \item The equality operation on $A$ is supported by the $O(1)$ equality on $\Z_m$.
+   To check $a=a'$, we first check $hash(a)=hash(a')$.
+   If false, we know $a\neq a'$; otherwise, we call the usual equality on $A$.
+   That minimizes the number of equality on $A$ is called.
+\end{compactitem}
+
+Of course, the function $hash$ will usually not be injective.
+A \textbf{collision} is a pair $x,y\in A$ such that $hash(x)=hash(y)$.
+
+A good hash function should be fast and rarely have collisions.
+An (unrealistically) ideal hash function runs in $O(1)$ and the probability of $hash(x)=hash(y)$ is $1/m$.
+Those two properties work against each other: For example, it is easy to be fast by always returning $0$, but that has maximally many collisions.
+Vice versa, it is easy to minimize collisions by choosing $hash$ carefully, but then $hash$ may be very expensive to compute.
+Thus, hash functions must make a trade-off.
+
+For a fixed hash function $hash:A\to \Z_m$, the data structure $HashSet[A]$ is given by
+\begin{acode}
+\atypedef{HashSet[A]}{Array[ListSet[A]](m)}\\
+\afunI{insert}{h: HashSet[A], a:A}{insert(h[hash(a)],a)}\\
+\afunI{delete}{h: HashSet[A], a:A}{delete(h[hash(a)],a)}
+\end{acode}
+\medskip
+
+If $n$ is the size of the subset of $A$, the sets $h[0]$, \ldots, $h[m-1]$ have average size $n/m$.
+Thus, $contains$, $insert$ and $delete$ take $n/m$ on average.
+$equal$, $union$, $inter$, and $diff$ are similarly sped up.
+\medskip
+
+Asymptotically, hash sets do not beat list sets because they only spped up by a constant factor.
+But that constant factor is a critical improvement.
+
+The speed up is bigger if $m$ is bigger.
+However, the memory requirement increases linearly with $m$: Even the empty subset requires $\Theta(m)$ space and $\Theta(m)$ time to initialize that space.
+
+Optimized data structures for hash sets can dynamically choose $m$ in order to find a good trade-off.
+Often users of the $HashSet$ data structure can choose the value of $m$.
+That can help if they know in advance how big the subset is going to get and what kind of operations will be called.
+
+\subsection{Red-Black Trees}\label{sec:ad:redblacktree}
+
+% red-black trees (BST with log n guarantee for insert/delete)
+
+\subsection{Binary Search Trees}\label{sec:ad:bst}
+
+% If we have a total order $\leq$ on $A$, we can use ordered trees to realize $Set[A]$.

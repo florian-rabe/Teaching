@@ -5,10 +5,8 @@
 \usepackage{multirow}
 %\usepackage{bm} %% bold face math symbols
 \usepackage{listings}
-\usepackage{tikz}
-%\usetikzlibrary{shapes}
-\usetikzlibrary{arrows}
-%\usepackage{stmaryrd}%\new2command{\contra}{\lightning}
+\usepackage{../macros/mytikz}
+%\usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
 %\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
 
 \usepackage{../macros/algorithm}
@@ -37,76 +35,79 @@
 \chapter{Design Goals}\label{sec:ad:goals}
   \input{goals}
 
-\chapter{Arithmetic Examples}
+\chapter{Arithmetic Examples}\label{sec:ad:arithex}
   \input{arith}
   
 \chapter{Example: Lists and Sorting}\label{sec:ad:sort}
   \input{sort}
 
-\part{Important Data Structures}
+\part{Important Data Structures}\label{sec:ad:ds}
 
-\chapter{Finite Data Structures}
-% empty (for jumps), unit (for delaying and procedures), boolean, zmodn
-% enumerations
+\chapter{Finite Data Structures}\label{sec:ad:finiteds}
+ \input{finite}
 
-%char, string, pointer
+%char, string
 
-\chapter{Number-Based Data-Structures}
-% nat, int, rat, real, comp
+\chapter{Number-Based Data-Structures}\label{sec:ad:numberds}
+ \input{numbers}
 
-\chapter{List-Like Data Structures}
-% specification, inductive type, array, heap, stack, queue, linked list, doubly-linked list
-% infinite lists, iterator, iterable
+\chapter{Option-Like Data Structures}\label{sec:ad:option}
+ \input{option}
 
-\chapter{Tree-Like Data Structures}
-% specification (labeled nodes vs. labeled leafs), as inductive type, binary trees, heaps, red-black trees
-% bfs, dfs, minmax, heapsort
+\chapter{List-Like Data Structures}\label{sec:ad:lists}
+% exercise: implement stack and queue using linked list
+ \input{list}
 
-% a binary tree is a heap if all branches are ordered
+\chapter{Set-Like Data Structures}\label{sec:ad:sets}
+ \input{set}
 
-\chapter{Set-Like Data Structures}
-% specification, list sets, binary search trees, hash sets
+\chapter{Tree-Like Data Structures}\label{sec:ad:trees}
+% exercise: proof Thm.~\ref{thm:ad:bintree}
+% exercise: fold and sqmult for any monoid; +, *, min, max, concat,
+% exercise: labyrinth, minmax for tictactoe
+ \input{tree}
 
-\chapter{Function-Like Data Structures}
-% specification, list map, hash map
+\chapter{Graph-Like Data Structures}\label{sec:ad:graphs}
+ \input{graph}
 
-\chapter{Product-Like Data Structures}
+\chapter{Function-Like Data Structures}\label{sec:ad:functions}
+% merge into sets?
+% specification (isdefined, update, apply), list map, hash map
+% includes list
+
+\chapter{Product-Like Data Structures}\label{sec:ad:products}
 % specification, products, records, classes
 
-\chapter{Union-Like Data Structures}
-% disjoint union, Option/null, inductive types
- % exercise: 1567 -> 21
+\chapter{Union-Like Data Structures}\label{sec:ad:unions}
+% disjoint union, labeled unions, inductive types
+% exercise: 1567 -> 21
 
-\chapter{Graph-Like Data Structures} % 2-3 weeks
-% specification
-% algorithms for graphs: search, minimum spanning tree, shortest path, maximum flow
-
-\chapter{Algebraic Data Structures}
+\chapter{Algebraic Data Structures}\label{sec:ad:theories}
 % based on one operation, based on two operations, based on one relation
+% matrix multiplication for any semi-ring? use for flow?
 
-\part{Important Families of Algorithms} % one week
+
+\part{Important Families of Algorithms}\label{sec:ad:algo}
 
 \chapter{Divide and Conquer}
 % binary search vs. linear search
-% multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication (taken from Beth Q2.2)
+% Karatsuba: multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication
  
-\chapter{Dynamic Programming}
-
 \chapter{Greedy Algorithms}
 
-% what else?
 \chapter{Recursion}
 
 \chapter{Backtracking}
+
+\chapter{Dynamic Programming}
 
 \chapter{Randomization}
 
 \chapter{Parallelization and Distribution}
 
+\chapter{Quantum Algorithms}
+
 \chapter{Protocols}
-
-% one week of geometry
-
 
 \part{Concrete Languages}
 
@@ -139,4 +140,6 @@
 \input{\currfilebase.bblp}
 %\bibliographystyle{alpha}
 %\bibliography{../../../../../frabe/Program_Data/Latex/bib/rabe,../../../../../frabe/Program_Data/Latex/bib/historical}
+%\bibliography{../../../../../homedir/Program_Data/Latex/bib/rabe,../../../../../homedir/Program_Data/Latex/bib/historical}
+
 \end{document}

@@ -36,57 +36,63 @@
  \chapter{Challenges}
    \input{challenges}
 
-% guard against human stupid errors; during software development
+% guard against stupid errors; during software development
 \part{Systematic Software Development}
 
-  \chapter{Implementation}
+  \chapter{Implementation}\label{sec:sd:systimpl}
     \input{process}
 
-  \chapter{Testing}
-    \input{test}
+  \chapter{Dynamic Analysis}\label{sec:sd:dynamic}
+    \input{dynamic}
 
-  \chapter{Code Analysis}
-    \input{analysis}
+  \chapter{Static Analysis}\label{sec:sd:static}
+    \input{static}
     
-   % goto fail exercise: write unit test that ensures every line is run, check using code coverage tool
+\part{Formal Systems}
 
-% guard against deep errors
-\part{High-Level Data Structures}
-
-   % shellshock exercise: build internal syntax, parser, printer for simple typed language with function definitions
-   % mimic and prevent shellshock-like exploit
-
-   % heartbleed exercise: reimplement in proper language with high-level data structures for messages
+   % maybe heartbleed exercise: reimplement in proper language with high-level data structures for messages
    
-  \chapter{Types}
+  \chapter{Type Theory}\label{sec:sd:typetheory}
+  \input{type_theory}
 
-  \chapter{Functional Programing}
+  \chapter{Programming}
+  % recursion
+  % statefulness: input/output, exceptions
+  %  SML, (Haskell: laziness, monads), Scala
 
-\part{Formal Methods}
 
-  \chapter{Logical Foundations}
+  \chapter{Logic}
     % sat, hol, LTL, CTL
 
-  \chapter{Model Checking} % two weeks
+% guard against deep errors
+\part{Formal Methods}
+% https://www.lri.fr/~marche/MPRI-2-36-1/
+
+  \chapter{Program Synthesis} 
+
+  \chapter{Model Checking} 
     \input{modelcheck}
 
-  \chapter{Theorem Proving} % two weeks
+  \chapter{Theorem Proving} 
    \input{verify}
 
 % guard against attack
 \part{Security}
 
-  \chapter{Common Critera}
-
-  \chapter{Sytems and Institutions}
+  \chapter{Social Engineering}
    % identity theft: phishing, social engineering, two-factor authentification
    % software ware: antivirus etc.
 
-  \chapter{Data Security}
+  \chapter{Common Criteria}
+
+  \chapter{Cryptography}
     \input{secure}
 
    % database security -> peter
    % network security: see also Jürgen Schönwälder, slides 269-324
+   % security protocol correctness, such as key management protocol correctness,
+   % e.g., going back to the work by Burrows, Abadi, and Needham on a logic of authentication (https://doi.org/10.1145/77648.77649)
+   % Its an application of logic to a concrete problem space where errors are obviously bad.
 
   \chapter{Privacy}
    % differential privacy: see also wikipedia or http://www.cis.upenn.edu/~aaroth/courses/privacyF11.html
@@ -105,8 +111,8 @@
 
 \tocentryBib
 
-\input{\currfilebase.bblp}
-%\bibliographystyle{alpha}
-%\bibliography{../../../../../Program_Data/Latex/bib/rabe}
+%\input{\currfilebase.bblp}
+\bibliographystyle{alpha}
+\bibliography{../../../../../Program_Data/Latex/bib/rabe}
 
 \end{document}

@@ -28,6 +28,7 @@ $\R$ & real numbers & $U$\\
 \hline
 \multicolumn{3}{|c|}{additional or alternative base sets used in computer science} \\
 \hline
+$\Void$ & alternative name for $\es$ & $0$\\
 $\Unit$     & unit type, $\{()\}$, equivalent to $\Z_1$ & $1$ \\
 $\B$  & booleans, $\{\false,\true\}$, equivalent to $\Z_2$ & $2$ \\
 $\Int $ & primitive integers, $-2^{n-1},\ldots,2^{n-1}-1$ for machine-dependent $n$, equivalent to $\Z_{2^n}$\footnotemark & $2^n$ \\
@@ -42,7 +43,8 @@ $\String$ & lists of characters & $C$ \\
 \footnotetext{Primitive integers are the $2^n$ possible values for a sequence of $n$ bits.
 Old machines used $n=8$ (and the integers were called ``bytes''), later machines used $n=16$ (called ``words'').
 Modern machines typically use $32$-bit or $64$-bit integers.
-Modern programmers usually---but dangerously---assume that $2^n$ is much bigger than any number that comes up in practice so that essentially $\Int =\Z$.}
+Modern programmers usually---but dangerously---assume that $2^n$ is much bigger than any number that comes up in practice so that essentially $\Int =\Z$.
+Some programming languages (e.g., Python) correctly implement $\Int=\Z$.}
 \footnotetext{The ASCII standard defined $2^7$ or $2^8$ characters. Nowadays, we use Unicode characters, which is a constantly growing set containing the characters of virtually any writing system, many scientific symbols, emojis, etc.
 Many programming languages assume that there is one character for every primitive integers, e.g., typically $2^{32}$ characters.}
 \end{multfootnotetext}
@@ -65,13 +67,14 @@ Moreover, division by $0$ is always forbidden.
 The function $\modulus_m$ (see Sect.~\ref{sec:math:moduloarith}) for $m\in \N$ maps $x\in\Z$ to $x\modop m\in\Z_m$.
 
 In programming languages, the set $\Z_m$ is usually not provided.
-Instead, $x\modop y$ is built-in as a functions on $\Int$.
+Instead, $x\modop y$ is built-in as a function on $\Int$.
+\footnote{Some care must be taken if $x$ is negative because not all programming languages agree.}
 
 \subsubsection{Booleans}
 On booleans, we can define the usual boolean operations conjunction (usually written $\&$ or $\&\&$), disjunction (usually written $|$ or $||$), and negation (usually written $!$).
 
 Moreover, we have the equality and inequality functions, which take two objects $x,y$ and return a boolean.
-These are usually written $x==y$ and $x!=y$ in text files languages and $x=y$ and $x\neq y$ on paper.
+These are usually written $x==y$ and $x!=y$ in text files and $x=y$ and $x\neq y$ on paper.
 
 \subsection{Set Constructors}\label{sec:math:sets:deriv}
 
@@ -99,7 +102,7 @@ $A/r$& quotient set for an equivalence relation $r$ on $A$ & $\leq|A|$ \\
 \hline
 \multicolumn{3}{|c|}{selected additional constructors often used in computer science} \\
 \hline
-$A^*$       & lists over $A$ & $\cas{1 \mifc A=\es\\ U \mifc |A|=U \\ C \mothw}$ \\
+$A^*$       & lists over $A$ & $\cas{1 \mifc |A|=0\\ U \mifc |A|=U \\ C \mothw}$ \\
 $A^?$       & optional element{\footnotemark} of $A$ & $1 + |A|$ \\
 \hline
 \multicolumn{3}{|c|}{for new names $l_1,\ldots,l_n$} \\

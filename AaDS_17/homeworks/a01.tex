@@ -1,0 +1,61 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=1,date=2017-02-07,due=2017-02-16]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+% exercise: rational numbers, multiplication, division, normalization through gcd
+
+\begin{problem}{Euclidean Algorithm}{4+4+4}
+Implement the Euclidean algorithm in multiple programming languages.
+
+Specifically, pick one language from \textbf{each} of the following groups:
+\begin{compactitem}
+ \item untyped languages: Python, Javascript, PHP
+ \item typed languages favoring imperative programming: Java, C++
+ \item typed languages favoring functional programming: SML, Scala, Haskell
+\end{compactitem}
+
+Your implementations should work with \emph{arbitrary} natural numbers, i.e., numbers of unlimited size.
+The technical term for that is \emph{arbitrary precision arithmetic}.
+All programming languages provide that in one way or another.
+But the built-in type $\Int$ may or may not offer arbitrary precision---if it does not, large numbers such as $35!$ will cause overflow errors.
+See \url{https://en.wikipedia.org/wiki/List_of_arbitrary-precision_arithmetic_software} for an overview of how to do arbitrary precision arithmetic in different languages.
+
+\begin{hint}
+If you do not want to install multiple programming languages, you can use a number of websites to program online.
+Just google \verb|online ide| to find several good sites.
+\end{hint}
+\end{problem}
+
+\begin{problem}{Rational Numbers}{5+5+5}
+The data structure of rational numbers consists of the following:
+\begin{compactitem}
+  \item a rational number is a pair of an integer $d$ and a positive natural number $e$ (both using arbitrary precision)
+  \item two rational numbers $(d,e)$ and $(d',e')$ are equal iff $d\cdot e'=e\cdot d'$
+  \item the normal form of a rational number $(d,e)$ is $(d/g, e/g)$ where $g=\gcd(d,e)$ \\
+\end{compactitem}
+
+For two rational numbers, we can define several operations
+\begin{compactitem}
+ \item addition: $(d,e)+(d',e'):=(d\cdot e'+e\cdot d', e\cdot e')$
+ \item additive inverse (negative): $-(d,e):=(-d,e)$
+ \item multiplication: $(d,e)+(d',e'):=(d\cdot d', e\cdot e')$
+ \item multiplicative inverse: $1/(d,e):=(e,d)$
+\end{compactitem}
+
+Implement this data structure and all mentioned operations in \textbf{the same three} programming languages as above.
+Use the Euclidean algorithm to compute the normal form.
+
+\begin{hint}
+If you do not understand the definitions, work out some examples. It should become clear quickly.
+\end{hint}
+\end{problem}
+
+\end{document}

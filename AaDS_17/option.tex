@@ -1,0 +1,41 @@
+\section{Specification}
+
+$A^?$ is a set containing all the elements of $A$ and one additional element $\bot$.
+
+$A^?$ is used to represent an optional value of $A$.
+The element $\bot$ is used to represent an undefined/absent value.
+
+Options are usually immutable.
+The main operations on $A^?$ are
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$getOrElse(x\in A^?, default: A)\in A$ & get the optional value or a default value & none\\
+$get(x\in A^?)\in A$ & get the optional value & error if absent \\
+$map(x\in A^?, f\in A\to B)\in B^?$ & apply $f$ to the optional value & none\\
+\hline
+\end{ctabular}
+
+\section{Data Structures}
+
+\subsection{Using Inductive Types}
+
+In functional programming languages, a data structure for optional values can be as an inductive type:
+
+\begin{acode}
+\adata{Option[A]}{Some(value:A),None}
+\end{acode}
+
+Such a definition (except for possibly using different names) is usually part of the standard library of the language.
+
+\subsection{Using Pointers}
+
+In languages that use pointers, we can represent $Option[A]$ as the type $*A$ of pointers to elements of $A$.
+In that case, the $null$ pointer represents $\bot$.
+
+In object-oriented languages do not necessarily use pointers (e.g., C++ does, but Java does not).
+However, even if they do not offer pointer, still any class-type implicitly provides the value $null$.
+In this situation it is impossible to represent the set $A$ correctly---any class for $A$ is automatically a data structure for $A^?$.
+This often causes confusion and errors.
+Therefore, it is good practice to never use $null$ even when possible.

@@ -3,13 +3,22 @@
 \RequirePackage{currfile}
 \RequirePackage{amsmath,amssymb,amsthm}
 \RequirePackage{url,paralist}
+\RequirePackage{kvoptions}
 \usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% options using kvoptions
+
+\SetupKeyvalOptions{family=ln,prefix=ln@} % needed to override default values obtained from file name
+%% the root directory that contains the macros directory
+\DeclareStringOption[..]{root}
+\ProcessKeyvalOptions*
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%% my packages
 
-\usepackage{../macros/twelf-math}
-\usepackage[book,mark]{../macros/theorems}
-\usepackage{../macros/basics}
+\usepackage{\ln@root/macros/twelf-math}
+\usepackage[book,mark]{\ln@root/macros/theorems}
+\usepackage{\ln@root/macros/basics}
 
 \usepackage[hyperfootnotes=false,bookmarks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, colorlinks=true, breaklinks=true, bookmarksopen=true,bookmarksopenlevel=1,bookmarksnumbered]{hyperref} % this needs to go last
 
@@ -43,7 +52,6 @@
 \newcommand{\VAR}{\mathtt{var}}
 \newcommand{\false}{\op{false}}
 \newcommand{\true}{\op{true}}
-\renewcommand{\impl}{\arr}
 \let\Equiv=\equiv
 \renewcommand{\equiv}{\darr}
 \newcommand{\arit}{\op{ar}}
@@ -76,6 +84,8 @@
 \newcommand{\issubs}[5][]{\der^{#1}_{#2}#5:#3\arr #4}
 \newcommand{\istype}[3][]{\der^{#1}_{#2}#3:\TYPE}
 \newcommand{\oftype}[5][]{#3\der^{#1}_{#2}#4\;:\;#5}
+\newcommand{\istrue}[3][]{\der^{#1}_{#2}#3}
+\newcommand{\isdecl}[4][]{#3\der^{#1}_{#2}#4}
 \newcommand{\lam}[2]{\lambda #1:#2.}
 \newcommand{\Boole}{\mathbb{B}}
 
@@ -131,7 +141,7 @@
 
 \newcommand{\Clause}{\op{Clauses}}
 
-\renewcommand{\rul}[3]{\ianc{#2}{#1}{#3}} %% rul[#3]{#1}{#2} otherwise
+%\renewcommand{\rul}[3]{\ianc{#2}{#1}{#3}} %% only legacy for old logic notes
 
 \newcommand{\inlineremark}[1]{{\hbox{}\hfill #1}}
 \newcommand{\advanced}[1]{{\color{gray}#1}}
@@ -141,6 +151,8 @@
 \newcommand{\Char}{\mathit{char}}
 \newcommand{\String}{\mathit{string}}
 \newcommand{\Unit}{\mathit{unit}}
+\newcommand{\Void}{\mathit{void}}
+\newcommand{\Bool}{\mathit{bool}}
 \newcommand{\Enum}{\mathit{enum}}
 \newcommand{\Float}{\mathit{float}}
 
@@ -169,3 +181,7 @@
 \newcommand{\modop}{\mathop{\mod}}
 \newcommand{\divop}{\mathop{\mathrm{div}}}
 \newcommand{\lcm}{\mathrm{lcm}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% type theory
+
+\newcommand{\form}{\mathtt{form}}

@@ -1,0 +1,215 @@
+After lists, and trees, graphs are the most important data structure in computer science.
+In fact, just like lists are a special of trees, trees are a special of graphs.
+
+Data structures for lists and trees are of course used to represent lists and trees.
+But they are also used to represent other data.
+For example, we can represent a set as a list (Sect.~\ref{sec:ad:listset}) or as a tree (Sect.~\ref{sec:ad:redblacktree}) or a list as a tree (Sect.~\ref{sec:ad:heaplists}).
+That is because choosing the more complex data structure (i.e., a tree instead of a list) can allow for more efficient algorithms.
+
+Data structures for graphs on the other hand are almost exclusively used to represent graphs.
+That is because they are rather difficult to work with.
+But they are needed because graph-like data occurs very frequently.
+
+\section{Specification}
+
+\begin{definition}[Graph]
+A \textbf{graph} consists is a pair $G=(N,E)$ such that $E$ is a binary relation on $N$.
+
+If $E$ is symmetric, $G$ is called \textbf{undirected}, otherwise \textbf{directed}.
+\end{definition}
+
+The set $N$ is usually but not necessarily finite.
+
+Like for trees, there are many definitions to talk about the parts of a graph:
+
+\begin{definition}[Parts of a Graph]
+Consider a graph $G=(N,E)$.
+
+An element $n\in N$ is called a \textbf{node} or a \textbf{vertex}.
+An element $(m,n)\in E$ is called an \textbf{edge} from $m$ to $n$.
+It is also called an \textbf{incoming edge} of $n$ and an \textbf{outgoing edge} of $m$.
+
+For every node $n$, the number of incoming edges is called the \textbf{in-degree} of $n$, and the number of outgoing edges is called the \textbf{out-degree} of $n$.
+If $G$ is undirected graph, incoming and outgoing edges are the same, and we simply speak of the \textbf{degree} of $n$.
+
+A \textbf{path} from $a_0$ to $a_n$ is a list $[a_0,\ldots,a_n]\in N^*$ such that there is an edge from $a_{i-1}$ to $a_i$ for $i=1\,ldots,n$.
+
+$n$ is called the \textbf{length} of the path.
+If $n=0$ (and thus $a_0=a_n$), the path is called \textbf{empty}.
+If there is a path from $a_0$ to $a_n$, then $a_n$ is called \textbf{reachable} from $a_0$.
+
+A \textbf{cycle} is a non-empty path from $a$ to itself.
+If $G$ has (no) cycles, it is called \textbf{(a)cyclic}.
+
+Let us write $\ov{G}$ for the undirected graph $(N, E\cup E^{-1})$ in which all edges go both ways.
+Then $G$ is called \textbf{connected} if all nodes in $\ov{G}$ are reachable from each other.
+
+A \textbf{clique} is a subset $C$ of $N$ such that there is an edge from every $a\in C$ to every other $b\in C$.
+$G$ is called \textbf{complete} if $N$ is a clique.
+\end{definition}
+
+
+\paragraph{Visualization}
+A good intuition to think of graph is to imagine the nodes as places and the edges as streets between them.
+In a directed graph, all edges are one-way streets.
+
+All concepts about graphs also have very intuitive visual aspects:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+& \multicolumn{2}{c|}{Visual Intuition}\\
+Concept & undirected &  directed \\
+\hline
+node & \multicolumn{2}{c|}{point}  \\
+edge from $a$ to $b$ & line from $a$ to $b$ & arrow from $a$ to $b$\\
+incoming edge of $a$ & &  arrow pointing at $a$ \\
+outgoing edge of $a$ & &  arrow pointing away from $a$ \\
+$b$ reachable from $a$ & we can walk from $a$ to $b$ along edges & \ldots in arrow direction \\
+path from $a$ to $b$ of length $n$ & a walk from $a$ to $b$ in $n$ steps & \ldots in arrow direction \\
+weight\footnotemark of an edge & \multicolumn{2}{c|}{cost intuition: length of the line}\\ 
+                               & \multicolumn{2}{c|}{capacity intuition: width of the line}\\ 
+complete & we can walk everywhere in $1$ step &  \ldots in arrow direction \\
+cycle & we can walk in a circle & \ldots in arrow direction \\
+connected & \multicolumn{2}{c|}{graph can be drawn in one stroke} \\
+\hline
+\end{ctabular}
+\footnotetext{See below for weighted graphs.}
+
+\paragraph{Reachability Relation}
+Many graph properties are just rephrasings of or closely related to relation properties.
+Most importantly:
+
+\begin{theorem}[Reachability]
+For every graph $G$, the relation ``$b$ is reachable from $a$'' is
+\begin{compactitem}
+ \item reflexive and transitive
+ \item symmetric iff $G$ is undirected
+ \item anti-symmetric iff $G$ is acyclic
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\paragraph{Labeled Graphs}
+Like for trees, graphs are only useful for compuation, if we can store data in them.
+Contrary to trees, we often need to store data in the nodes \emph{and} the edges.
+
+\begin{definition}[Labeled Graph]
+A $A$-$B$-\textbf{labeled} graph is a triple of
+\begin{compactitem}
+ \item a graph $G=(N,E)$
+ \item a function $nodeLabel:N\to A$
+ \item a function $edgeLabel:E\to B$
+\end{compactitem}
+$Graph[A,B]$ is the set of $A$-$B$-labeled graphs.
+\end{definition}
+
+The most important special case arises when the nodes are not labeled (i.e., we put $A=\Unit$) and the edges are labeled with numbers, i.e., $B=\Z$:
+
+\begin{definition}
+A \textbf{weighted} graph is a $\Unit$-$\N$-labeled graph.
+The label of an edge from is called its \textbf{weight}.
+\end{definition}
+
+There are two important applications of weigthed graphs that use different interpreations of the weights:
+\begin{itemize}
+ \item Cost intuition: The weight of an edge is the cost of moving along the edge.
+ For example, if the nodes represent cities and the edges flight routes, the weight can be the distance.
+ \item Capacity intuition: The weight of an edge is the capacity for moving objects along the edge.
+ For example, if the nodes represent cities and the edges flight routes, the weight can be the number of flights per day.
+\end{itemize}
+
+Correspondingly, we define:
+\begin{definition}
+Consider a weighted graph.
+We write $weight(i,j)$ for the weight of the edge from $i$ to $j$.
+
+We make $weight:N\times N\to \N^\infty$ a total function by using a default value whenever there is no edge from $i$ to $j$:
+\begin{compactitem}
+ \item A \textbf{cost-weighted} graph uses the default $weight(i,j)=\infty$.
+ \item A \textbf{capacity-weighted} graph uses the default $weight(i,j)=0$.
+\end{compactitem}
+
+In a cost-weighted graph, the \textbf{cost of a path} is the sum of the weights of all edges.
+
+In a capacity-weighted graph, the \textbf{capacity of a path} is the minimal weight of any edge in it.
+\end{definition}
+
+\section{Data Structures}
+
+Graphs $G=(N,E)$ are among the trickiest data structures to design.
+It is straightforward to represent $N$ as a set, e.g., the set $\Z_m$ if there are $m$ nodes.
+
+But there are many options to represent $E$, all with different advantages:
+For example,
+\begin{compactitem}
+ \item a function $N\times N\to Bool$\\
+ This makes it easy to check whether an edge exists but very hard to enumerate all edges.
+ \item a set $e$ with functions $from: e\to N$ and $out:e\to N$\\
+ This makes it easy to enumerate all edges but hard to navigate in the graph.
+ \item a function $outgoing:N\to Set[N]$ or $incoming:N\to Set[N]$\\
+ The former makes it easy to navigate forwards (in arrow direction) but hard to navigate backwards.
+ The latter has the dual problem.\\
+ \item two functions $outgoing:N\to Set[N]$ and $incoming:N\to Set[N]$ \\
+ This makes navigation easy in both directions. But the representation is redundant: Every time we add/remove an edge, we have to update both $outgoing$ and $incoming$.
+\end{compactitem}
+
+\subsection{Adjacency Matrix}
+
+An often useful representation is via a matrix, called the \textbf{adjacency matrix} of $G$.
+
+\begin{definition}[Adjacency Matrix]
+Given a graph $G=(N,E)$ with $|N|=m$.
+The adjacency matrix of $G$ is the matrix $A\in \Bool^{mm}$ where $A_{ij}==\true$ iff there is an edge from $i$ to $j$ in $G$.
+\end{definition}
+
+Adjacency matrices have the nice property that we can multiply them.
+Here matrix multiplication is computed using conjunction and disjunction instead of multiplication and addition:
+\begin{definition}
+$A,B\in \Bool^{mm}$, we define $(A\cdot B)_{ik}:= \bigvee_{j=0,\ldots,m-1}A_{ij}\wedge B_{jk}$.
+\end{definition}
+This is useful because:
+\begin{theorem}
+If $A$ is the adjacency matrix of $G$, then $(A^n){ij}$ iff there is a path of length $n$ from $i$ to $j$ in $G$.
+\end{theorem}
+
+This is advantageous because it lets us compute all paths of a given length efficiently $A^n$ using square-and-multiply (Sect.~\ref{sec:ad:exp:sqmult}).
+
+Moreover, in acyclic graph, there are only finitely many paths.
+Thus, we eventually have $A^n=A^{n+1}=\ldots$, at which point we have computed all paths.
+
+A drawback of the adjacency matrix is that its size $m^2$.
+In particular, for a undirected graph, half the space is wasted because we always have $A_{ij}=A_{ji})$.
+
+\subsection{Adjacency Lists}
+
+For graphs with many nodes and few edges, it is better to store adjacency lists:
+
+\begin{definition}[Adjacency List]
+Given a graph $G=(N,E)$ with $|N|=m$.
+The adjacency list of a node $i$ is the sorted list $A_i$ of all $j$ such that there is an edge from $i$ to $j$ in $G$.
+
+The adjacency list--representation of $G$ consists of an list $[(0,A_0),\ldots,(m-1,A_{m-1})]$ pairing every node with its adjacency list.
+\end{definition}
+
+The size of the adjacency list--representation is $|N|+|E|$, which is usually much smaller than $|N|^2$.
+
+%\subsection{Adjacency Matrix for Weighted Graphs}
+%
+%For a weighted graph, the adjacency matrix $W\in (\N^\infty)^{mm}$ of a weighted graph is the matrix such that $W_{ij}=weight(i,j)$.
+%
+%By picking appropriate operations for matrix multiplication, we can use $W^n$ to compute the capacity between two nodes.
+%We use minimum instead of addition, and addition instead of multiplication.
+%% semi-ring on \N
+
+\section{Important Algorithms}
+
+\subsection{Search}
+
+\subsection{Minimal Spanning Tree}
+
+\subsection{Shortest Path}
+
+\subsection{Maximal Flow}
+

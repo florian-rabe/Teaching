@@ -1,0 +1,341 @@
+The specification and several data structures for mutable and immutable lists are already discussed in Sect.~\ref{sec:ad:listsort:spec}.
+
+Here we only discuss some additional data structures for the set $A^*$.
+
+\section{Stacks}\label{sec:ad:stack}
+
+$Stack[A]$ is a data structure for the set $A^*$.
+
+$Stack[A]$ is very similar to $List[A]$.
+The difference is that $Stack[A]$ provides \emph{less} functionality.
+While $List[A]$ is a general-purpose list, $Stack[A]$ is custom-fitted to one specific, very common use case.
+By requiring fewer operations, they allow more optimized implementations.
+
+Stacks can be mutable or (less commonly) immutable.
+Here we will use the mutable variant.
+The functions for mutable stacks are:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$push(x\in A^*, a\in A)\in\Unit$ & nothing & prepend $a$ to $x$\\
+$pop(x\in A^*)\in A^?$ & the first element of $x$ (if any) & remove the first element of $x$ \\
+$top(x\in A^*)\in A^?$ & the first element of $x$ (if any) & none \\
+\hline
+\end{ctabular}
+
+The intuition behind stacks is that they provide a LIFO store of data.
+LIFO means last-in-first-out because every $pop$ returns the most recently pushed value.
+This is exactly the behavior of a literal stack of items: We can put an item on top of a stack ($push$), remove an item from the stack ($pop$), or check what item is on top ($top$).
+We cannot easily see or remove the other items.
+
+Very often, the LIFO behavior is exactly what is needed.
+For example, when we solve a maze, we can push every decision we make.
+When we hit a dead end, we trace back our steps---for that, we have to pop the most recent decision, and so on.
+
+\section{Queues}\label{sec:ad:queue}
+
+Queues are very similar to stacks.
+Everything about stacks also applies to queues except for the following.
+
+The functions for mutable queues are:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$enqueue(x\in A^*, a\in A)\in\Unit$ & nothing & append $x$ to $A$\\
+$dequeue(x\in A^*)\in A^?$ & the first element of $x$ & remove the first element of $x$ \\
+$empty(x\in A^*)\in\Bool$ & true if $x$ is empty & none \\
+\hline
+\end{ctabular}
+
+The intuition behind queues is that they provide a FIFO store of data.
+FIFO means first-in-first-out because every $dequeue$ returns the least recently enqueued value.
+This is exactly the behavior of a literal queue of people: Every newcomer has to queue up at the end of the queue ($enqueue$), and every time a server is ready the first in line gets served ($dequeue$).
+Newcomers cannot cut in line, and the server cannot easily see who else is waiting.
+
+Very often, the FIFO behavior is exactly what is needed.
+For example, when we have a list of tasks that need to be done.
+Every time we create a new task, we enqueue it, and whenever we have time we dequeue the next task.
+
+Queues are often used when components exchange messages or commands.
+In that case, some components---called the producers---only call enqueue, and other components---called the consumers---only call dequeue.
+For example, the producers can be different programs, $A$ is the type of print jobs, and the consumers are different printers.
+
+More complex queue data structures may also for dequeueing based on priority (see also Sect.~\ref{sec:ad:heapqueue}).
+
+\section{Buffers}\label{sec:ad:buffer}
+
+Buffers are very similar to queues.
+$Buffer[A]$ is usually optimized for enqueueing and dequeueing many elements of $A$ at once.
+While stacks and queues can be easily implemented using linked lists, buffers usually use array to be faster.
+
+For example, buffers are used when a program is writing to a file.
+In that case, a $Buffer[\Char]$ is used holding the characters that are written to the file.
+The write command does not actually write strings to the file---it only enqueues them in the buffer.
+That is advantageous because enqueueing to a buffer in memory is much faster than writing to the hard drive.
+While the program is already moving on, the hard drive is still busy dequeueing as fast as it can and writing all characters to the file.
+
+\section{Iterators}\label{sec:ad:iter}
+
+\subsection{Specification}
+
+$Iterator[A]$ is a data structure for the set $A^*$.
+
+Iterators are usually mutable.
+Their functionality is even more restricted than the one of stacks and queues:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$getNext(x\in A^*)\in A$ & the first element of $x$ & remove the first element of $x$ \\
+$hasNext(x\in A^*)\in\Bool$ & $\true$ if $x$ is not empty & none \\
+\hline
+\end{ctabular}
+
+The typical way to use an iterator $i\in Iterator[A]$ is the following:
+\begin{acode}
+\awhile{hasNext(i)}{
+  a := getNext(i)\\
+  \text{do something with $a$ here}\\
+}
+\end{acode}
+This is called \textbf{traversing} the iterator.
+Afterwards the iterator is traversed and cannot be used again.
+
+$Iterator[A]$ may look somewhat boring.
+In order to understand the value of iterator, we have to make one definition:
+A data structure $D[A]$ is called \textbf{iterable} if there is a function
+ \[iterator(x\in D[A])\in Iterator[A]\]
+
+Now the imoprtance of iterators follows from two facts:
+\begin{compactitem}
+ \item Many data structures $D$ are iterable (see Sect.~\ref{sec:ad:iter:create}).
+ \item Many important operations for $D$ can be realized using only the functionality of iterators (see Sect.~\ref{sec:ad:iter:use}).
+\end{compactitem}
+Thus, iterators provide a sweet-spot in the trade-off between simplicity and expressivity---they are very simple,  but we can do a lot with them.
+
+\begin{remark}[Simplicity vs. Expressivity]
+The trade-offs between simplicity and expressivity comes up again and again in computer science.
+The best data structures combine both properties, but usually they are mutually exclusive.
+
+All the important data structures presented in Part~\ref{sec:ad:ds} have become important because they do well in this way.
+\end{remark}
+
+An important function on iterators is $map$:
+\begin{ctabular}{|l|l|}
+\hline
+function & returns \\
+\hline
+$foreach(x\in Iterator[A],f\in A\to B)\in Iterator[B]$ & an iterator for $[f(a_1),\ldots,f(a_n)]$ where $X=[a_1,\ldots,a_n]$ \\
+\hline
+\end{ctabular}
+
+The trick behind $map$ is that $x$ is not traversed right away.
+Instead, we create a new iterator that, when traversed, applies $f$.
+That way we ensure that $f$ is applied only as often as necessary.
+
+\subsection{Data Structure}
+
+We can give a data structure for iterators as an abstract class:
+\begin{acode}
+\aclassA{Iterator[A]}{}{}{
+ \afun[\Bool]{hasNext}{}{}
+ \acomment{precondition for $getNext$ is $hasNext==\true$}\\
+ \afun[A]{getNext}{}{}
+}
+\end{acode}
+
+Then we can give an algorithm for $map$ as follows:
+\begin{acode}
+\aclass{Map[A,B]}{x:Iterator[A], f:A\to B}{Iterator[B]}{
+  \afunI[\Bool]{hasNext}{}{x.hasNext}\\
+  \afunI[B]{getNext}{}{f(x.getNext)}
+}\\
+\\
+\afunI{map}{x:Iterator[A], f:A\to B}{\anew{Map[A,B]}{x,f}}
+\end{acode}
+
+\subsection{Working with Iterable Data Structures}\label{sec:ad:iter:use}
+
+Let us assume an iterable data structure $D[A]$.
+Our goal is to define functions on $x\in D[A]$ that use only $iterator(x)$.
+There are indeed many of those.
+Some important ones are:
+\begin{ctabular}{|l@{}l@{}l|l|}
+\hline
+function &&& returns \\
+\hline
+\multicolumn{4}{|c|}{below, let $X=iterator(x)$}\\
+$length$&$(x\in D[A])$&$\in \N$ & numbers of elements in $X$ \\
+$contains$&$(x\in D[A],\; a\in A)$&$\in \Bool$ & $\true$ if $a$ occurs in $X$ \\
+$index$&$(x\in D[A],\; a\in A)$&$\in \N^?$ & the position of the first occurrence of $a$ in $X$ (if any)\\
+$find$&$(x\in D[A],\; p\in A\to\Bool)$&$\in A^?$ & the first element $a$ in $X$ (if any) such that $p(a)$ is $\true$ \\
+$count$&$(x\in D[A],\; p\in A\to\Bool)$&$\in\N$ & the number of elements $a$ in $X$ for which $p(a)$ is $\true$ \\
+$forall$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for every element $a$ in $X$ \\
+$exists$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for some element $a$ in $X$ \\
+$results$&$(x\in D[A],\;f\in A\to B)$&$\in List[B]$ & the list of results from applying $f$ to all $a$ in $X$ \\
+$fold$&$(x\in D[A],\; b\in B, f\in A\times B\to B)$&$\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ with $X=[a_1,\ldots,a_n]$\\
+\hline
+\end{ctabular}
+All of the above functions should not have a side-effect.
+However, some of them take other functions as arguments.
+It is usually a bad to do so, but it is technically possible that these functions have side-effects.
+There is only one exception where we explicitly allow $f$ to have a side-effect:
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$foreach(x\in D[A],f\in A\to \Unit)\in \Unit$ & nothing & apply $f$ to all $a$ in $X$ \\
+\hline
+\end{ctabular}
+
+\subsection{Making Data Structures Iterable}\label{sec:ad:iter:create}
+
+Many important data structures are naturally iterable.
+
+That includes in particular all data structures for lists:
+\begin{acode}
+\aclass{ListIterator[A]}{l: List[A]}{Iterator[A]}{
+  index := 0\\
+  \afunI[\Bool]{hasNext}{}{index < length(l)} \\
+  \afun[A]{getNext}{}{
+    a := get(l, index) \\
+    index := index + 1 \\
+    a
+  }
+}\\
+\\
+\afunI[{Iterator[A]}]{iterator}{l:List[A]}{\anew{ListIterator}{l}}
+\end{acode}
+
+
+\section{Streams}
+
+$Stream[A]$ is not a data structure for the set $A^*$.
+Instead, it is a data structure for the set $A^\N$.
+
+The set $A^\N$ contains functions $f:\to A$, which we can think of as inifite lists $[f(0),f(1),\ldots]$.
+Because they are so similar to lists, they are usually treated together with lists, even they do not realize the same set.
+
+The set $A^\N$ is uncountable.
+Therefore, not all possible streams are effective objects that can be represented in a physical machine.
+However, for many practical purposes, it is fine to treat $Stream[A]$ as if it were the type of all possible streams.
+
+$Stream[A]$ is usually implemented in the same way as $Iterator[A]$ with the understanding that $hasNext$ is always $\true$, i.e., the stream is never over.
+
+Consequently, the functions on $Iterator[A]$ behave slightly differently when used for $Stream[A]$.
+For exapmle:
+\begin{compactitem}
+ \item We cannot call $length$, $count$, $results$, $fold$, and $foreach$ on streams.
+ \item We can call $contains$ on a stream. However, the function may run forever if the searched-for element is not in the stream.
+ The same caveat applies to $index$, $find$, $forall$, and $exists$.
+ \item We can call $map$. But it must be a special variant of $map$ that returns a new iterator without actually applying the map-function.
+\end{compactitem}
+
+\section{Heaps}\label{sec:ad:heaplists}
+
+Heaps are formally defined in Sect.~\ref{sec:ad:heaps}.
+
+$Heap[A,O]$ is not a data structure for the set $A^*$.
+Instead, it is a data structure for the subset of $A^*$ containing only lists sorted according to $O$.
+Therefore, heaps are very useful for sorting and prioritizing.
+We discuss applications of heaps to lists in Sect.~\ref{sec:ad:heapqueue} and~\ref{sec:ad:heapsort}.
+
+First we introduce some basic operations on heaps in Sect.~\ref{sec:ad:heapops}.
+
+\subsection{Operations on Heaps}\label{sec:ad:heapops}
+
+Because heaps are mostly used for efficiency, they are usually mutable.
+The main operations on a heap are similar to those on a stack:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$insert(x\in Heap[A,O], a\in A)\in\Unit$ & nothing & add $a$ to $x$ in any position\\
+$extract(x\in Heap[A,O])\in A^?$ & the $O$-smallest element of $x$ (if any) & remove that element from $x$ \\
+$find(x\in Heap[A,O])\in A^?$ & the $O$-smallest element of $x$ (if any) & none \\
+\hline
+
+\end{ctabular}
+
+$insert$, $extract$, and $find$ for heaps correspond exactly to $push$, $pop$, and $top$ for stacks.
+The crucial different is that $insert(x,a)$ does not prepend $a$ to $x$---instead, it is unspecified where and how $x$ is added.
+$extract$ and $find$ do not return the most recently added element---instead, they return the smallest element with respect to $O$.
+
+It is unspecified what exactly a heap looks like and where and how $insert$ actually performs the insertion.
+That way heaps have a lot of freedom to organize the data in an efficient way.
+That freedom is exploited to make the operations $extract$ and $find$ fast.
+\medskip
+
+Because $Heap[A,O]$ is underspecified, there are many different options how to implement heaps.
+In practice, there are dozens of competing variants using different efficiency trade-offs.
+A critical property is that all operations take only $O(\log n)$ where $n$ is the number of elements in the heap.
+
+\subsection{A Heap Implementation}
+
+For a straightforward implementation of $Heap[A,O]$, we use a binary heap $H$, i.e., a binary tree over $A$ that is also a heap.
+
+Let $n$ be the number of nodes in $H$ and $h$ be the height of $h$.
+All operations are such that $H$ remains almost-perfect: for every depth $d<h$ there are maximally many nodes, i.e., $2^d$ nodes.
+(At depth $h$, we have to allow for fewer than $2^h$ nodes because not every $n$ there is a perfect heap.)
+That way, we always have $h\leq\log_2 n$, and all branches have length $h$ or $h-1$, i.e., $O(\log_2 n)$.
+
+$find$ is trivial: We return the root of $H$. That takes $O(1)$.
+
+$insert(H,x)$ inserts $x$ into one of the branches with minimal length.
+The insertion occurs at the position that keeps the branch sorted.
+Because it was sorted already, that requires $O(l)$ operations, where $l$ is the length of the branch, i.e., $O(\log_2 n)$.
+
+$extract$ removes the root of $H$ and returns it.
+That takes $O(1)$.
+Additionally, we have to repair the heap property.
+To do that, we take some leaf $l$ of $H$ and put it at the root.
+Now have a near-perfect binary tree again, but it is not a heap yet: $l$ is too big to be the root.
+Therefore, we push $l$ down by iteratively swapping it with its smallest child until we have a heap.
+Finding a leaf and pushing along some branch takes $O(\log_2 n)$.
+
+\subsection{Priority Queues}\label{sec:ad:heapqueue}
+
+A $PriorityQueue[A]$ behaves like a $Queue[A]$ except that dequeueing returns the element with the highest priority.
+
+This is achieved by using a data strucutre for $Heap[A,O]$ where $O$ orders elements by decreasing priority.
+Then $insert$ and $extract$ correspond to $enqueue$ and $dequeue$.
+
+\subsection{Heapsort Algorithm}\label{sec:ad:heapsort}
+
+Heapsort is a sorting algorithm that runs in $O(n\log n)$.
+
+If $\leq$ is the total order for sorting, a simple heapsort is given by
+\begin{acode}
+\afun[A^*]{heapsort}{x: A^*}{
+  h := \anew{Heap[A,\geq]}{}\\
+  \\
+  left := x\\
+  \afor{i}{0}{length(x)-1}{
+    next := left.head \\
+    insert(h,next)\\
+    left := left.tail\\
+  }\\
+  res := Nil\\
+  \afor{i}{0}{length(x)-1}{
+    next := extract(h)\\
+    res := prepend(next, res)
+  }
+}
+\end{acode}
+
+This uses two loops using $length(n)$ iterations each.
+The first loop throws all elements of $x$ into the heap; the second loop pulls them out again and builds the list $res$ to be returned.
+Because $extract$ always returns the greatest element, the result automatically sorted.
+
+If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $O(\log n)$.
+Thus, heapsort runs in $O(n\log n)$.
+\medskip
+
+There are much more optimized implementations of heapsort than the above example, possibly using optimized implementaitons of heaps.
+With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $O(n\log n)$).

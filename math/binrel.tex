@@ -1,4 +1,4 @@
-A binary relation is on $A$ is a subset $\#\sq A\times A$.
+A binary relation on a set $A$ is a subset $\#\sq A\times A$.
 We usually write $(x,y)\in\#$ as $x\# y$.
 
 \subsection{Classification}
@@ -13,7 +13,7 @@ We say that $\#$ is \ldots if the following holds:
  \item a preorder: reflexive and transitive
  \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
  \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
- \item an order\footnote{Orders are also called \emph{partial order}, \emph{poset} (for partially ordered set), or \emph{ordering}.}: preorder and anti-symmetric
+ \item an order\footnotemark: preorder and anti-symmetric
  \item an equivalence: preorder and symmetric
  \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
  \end{compactitem}
@@ -26,6 +26,7 @@ An element $a\in A$ is called \ldots of $\#$ if the following holds:
   \item greatest lower bound for $x,y$: $a\# x$ and $a\# y$ and for all $z$, if $z\# x$ and $z\# y$, then $z\# a$
  \end{compactitem}
 \end{definition}
+\footnotetext{Orders are also called \emph{partial order}, \emph{poset} (for partially ordered set), or \emph{ordering}.}
 
 \begin{definition}[Dual Relation]
 For every relation $\#$, the relation $\#^{-1}$ is defined by $x\,\#^{-1}\, y$ iff $y\,\#\,x$.
@@ -81,17 +82,17 @@ Thus, strict orders and orders come in pairs that carry the same information.
 Strict orders are usually written using infix symbols whose shape is reminiscent of a semi-circle that is open to the right, such as $<$, $\subset$, or $\prec$.
 This emphasizes the anti-symmetry ($x< y$ is very different from $y<x$.) and the transitivity ($< \ldots <$ is still $<$.)
 The corresponding order is written with an additional horizontal bar at the bottom, i.e., $\leq$, $\sq$, or $\preceq$.
-In both case, the mirrored symbol is used for the dual relation, i.e., $>$, $\supset$, or $\succ$, and $\geq$, $\supseteq$, and $\succeq$. 
+In both cases, the mirrored symbol is used for the dual relation, i.e., $>$, $\supset$, or $\succ$, and $\geq$, $\supseteq$, and $\succeq$. 
 
 \begin{theorem}\label{thm:math:binrel}
 If $\leq$ is an order, then least element, greatest element, least upper bound of $x,y$, and greatest lower bound of $x,y$ are unique whenever they exist.
 \end{theorem}
 
 \begin{theorem}[Preorder vs. Order]
-For every preorder $\leq$ on $A$, the relation ``$x\leq y$ or $y\leq x$'' is an equivalence.
+For every preorder $\leq$ on $A$, the relation ``$x\leq y$ and $y\leq x$'' is an equivalence.
 
-For equivalence classes $X$ and $Y$ of the resulting quotient, $x\leq y$ holds for either all pairs or no pair $(x,y)\in X\times Y$.
-If it holds for all pairs, we write $X\leq Y$ as well.
+For equivalence classes $X$ and $Y$ of the resulting quotient, $x\leq y$ holds for either all pairs or no pairs $(x,y)\in X\times Y$.
+If it holds for all pairs, we write $X\leq Y$.
 
 The relation $\leq$ on the quotient is an order.
 \end{theorem}

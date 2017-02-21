@@ -7,6 +7,7 @@ Lists are the most important non-primitive data structure in computer science.
 For a set $A$, the set $A^*$ contains all lists $[a_0,\ldots,a_{l-1}]$ with elements $a_i\in A$ for some $l\in\N$.
 $l$ is called the length of the list.
 
+\paragraph{Immutable Lists}
 The following table specifies the most important functions involving lists:
 
 \begin{ctabular}{|l|l|l|}
@@ -21,7 +22,7 @@ $length(x\in A^*)\in \N$ & $l$ & \\
 $get(x\in A^*, n\in\N)\in A^*$ & $a_n$ & $x_n$ or $x[n]$\\
 $append(x\in A^*, y\in A*)\in A^*$ & $[a_0,\ldots,a_{l-1},b_0,\ldots,b_{k-1}]$ if $y=[b_0,\ldots,b_{k-1}]$ &  $x+y$\\
 $map(x\in A^*, f\in A\to B)\in B^*$ & $[f(a_0),\ldots,f(a_{l-1})]$ & $l\;map\;f$\\
-$fold(x\in A^*, b\in B, f\in A*B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
+$fold(x\in A^*, b\in B, f\in A\times B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
 \hline
 $delete(x\in A^*, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a_{n+1},\ldots,a_{l-1}]$ & \\
 $insert(x\in A^*, a\in A, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a,a_n,a_{n+1},\ldots,a_{l-1}]$ & \\
@@ -36,10 +37,11 @@ These are split into three groups:
 \item The third group also takes a list $l\in A^*$ but also returns an element of $A^*$.
  This distinction is irrelevant in mathematics but critical in computer science: These functions may be implemented using in-place-updates.
  With in-place update, the list $l$ is changed to become the intended result. The original value of $l$ is lost in the process.
- If this is the case, we speak of \emph{mutable} lists.
+ If this is the case, we speak of \textbf{mutable} lists.
 \end{compactitem}
 
-The following table specifies the most important functions on mutable lists.
+\paragraph{Mutable Lists}
+The following table specifies the most important functions on mutable lists that differ from immutable lists.
 Instead of returning a new list, they have the effect of assigning a new value to the first argument.
 
 \begin{ctabular}{|l|l|l|l|}
@@ -52,6 +54,8 @@ $insert(x\in A^*, a\in A, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a,a_n,a_{
 $update(x\in A^*, a\in A, n\in\N)$ & nothing & $x:=[a_0,\ldots,a_{n-1},a,a_{n+1},\ldots,a_{l-1}]$ & $x_n := a$ or $x[n]:= a$\\ % $insert(delete(l,n),a,n)
 \hline
 \end{ctabular}
+
+The other functions such as $length$ and $get$ are not affected.
 
 
 \subsection{Sorting}\label{sec:ad:sort:spec}
@@ -70,7 +74,7 @@ Then $sort(x)$ should return $[6,5,5,4,3,0]$.
 Thus, sorting always depends on the chosen order.
 \end{example}
 
-\begin{definition}[Sorting]
+\begin{definition}[Sorting]\label{def:ad:sort:spec}
 Fix a set $A$ and a total order $\leq$ on $A$.
 
 A list $x=[a_0,\ldots,a_l]\in A^*$ is called $\leq$-\textbf{sorted} if $a_0\leq a_1 \leq \ldots \leq a_{l-1}\leq a_l$.
@@ -155,7 +159,7 @@ There are many different data structures for lists that differ subtly in how sim
 \subsection{Immutable Lists}
 
 For immutable lists, functions like $delete$, $insert$, and $update$ (see Sect.~\ref{sec:math:sets:derivfun}) always return new lists.
-That may require copying, which takes more time and memory.
+That requires copying (parts of) the old list, which takes more time and memory.
 
 \subsubsection{Functional Style: Lists as an Inductive Type}
 
@@ -740,6 +744,10 @@ For example, we can randomly pick $3$ elements of the sublist and use the middle
 With such optimizations, quick sort can become substantially faster than merge sort.
 
 %\subsection{Other Algorithms and Overview}
+% 
+%\subsubsection{Heapsort}
+%
+% See Sect.~\ref{sec:ad:heapsort}.
 %
 %\subsubsection{Counting Sort}
 %

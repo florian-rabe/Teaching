@@ -1,0 +1,67 @@
+\section{Void}
+
+The set $\Void$ contains no elements.
+
+Not surprisingly, it is rarely used.
+However, it is nice to have when dealing with operations that do not return.
+For example, we say that throwing an exception or terminating the program returns an element of $\Void$.
+
+Most programs do not need the type void.
+And most programming language either do not have it or only have it under the hood.
+
+\section{Unit}
+
+The set $\Unit$ contains exactly one element, which we write $()$.
+
+It is $\Unit$ is rarely used because if we know that $x\in\Unit$, we already know the value of $x$.
+Thus, having a value of type $\Unit$ gives us no information.
+
+However, $\Unit$ is nice to have when dealing with operations that do return, but do not return a value.
+In that case, we say that the operation returns type $\Unit$.
+
+For example, assignments, loops, and print statements return $\Unit$.
+Many methods of mutable data structures also return $\Unit$.
+For example, using $\Unit$, we can specify $insert$ for a mutable list from Sect.~\ref{sec:ad:list:spec} as $insert(x\in A^*,a\in A,n\in\N)\in\Unit$.
+
+Functional programming languages usually have a built-in type $\Unit$.
+That way, in a functional programming langauge, every operation has a return type.
+
+\section{Booleans}
+
+The set $\Bool$ contains exactly two elements, which we call $\true$ and $\false$.
+
+Most programming languages have a built-in type $\Bool$, which is the result type of the equality operator.
+
+\section{Integers Modulo}
+
+For $m>0$, the set $\Z_m$ consists of the elements $\{0,\ldots,m-1\}$.
+
+Most programming languages do not offer $\Z_m$ for every $m$.
+Usually, they offer at most $\Z_{2^k}$ for $k=8$ (usally called \emph{byte}), $k=16$ (\emph{word}), $k=32$ (\emph{integer}), and/or $k=64$ (\emph{long}).
+
+Note that, depending on the programming language, the built-in type $\Int$ may refer to one of those (usually for $k=32$) or to $\Z$.
+
+If we need $\Z_m$ for a specific $m$, we usually work with $\Int$ and use the $\modop$ operation to ensure we remain inside $\Z_m$.
+\footnote{Note that some programming languages implement $\divop$ and $\modop$ in unexpected ways for negative arguments.}
+
+\section{Enumerations}
+
+For fresh names $l_1,\ldots,l_n$, the set $\Enum\{l_1,\ldots,l_n\}$ has exactly $n$ elements, which are called $l_1,\ldots,l_n$.
+
+The names $l_i$ must be fresh.
+That means they may not have been defined previously.
+This is similar to how the name of a new function or class must be fresh.
+This is because defining an enumeration set introduces new values, namely the $l_i$.
+
+Most programming languages allow defining enumeration types in some way.
+For example, in SML:
+
+\begin{lstlisting}
+datatype answer = yes | no | maybe
+\end{lstlisting}
+
+Or in C:
+
+\begin{lstlisting}
+enum {yes, no, maybe} answer;
+\end{lstlisting}

@@ -1,0 +1,75 @@
+%% package arguments
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=hw,prefix=hw@} % needed to override default values obtained from file name
+\DeclareStringOption{course}
+\DeclareStringOption{number}
+\DeclareStringOption{date}
+\DeclareStringOption{due}
+\DeclareBoolOption{unpublished}
+\ProcessKeyvalOptions*
+
+%% standard packages
+
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{url}
+\RequirePackage{paralist}
+\RequirePackage{listings}
+\lstset{basicstyle=\ttfamily}
+
+% counters
+\newcounter{assignmentno}
+\setcounter{assignmentno}{\hw@number}
+\newcounter{problemno}
+\setcounter{problemno}{1}
+\newcommand{\assignment}{\arabic{assignmentno}}
+
+%% formatting
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\pagestyle{empty}
+
+%% main commands
+
+%% \header
+\newcommand{\header}{
+\hw@course  \hfill  Homework \assignment\\
+Jacobs University Bremen \hfill given: \hw@date\\
+Dr. Florian Rabe \hfill %due: \hw@due
+\begin{center}
+{\Large Homework \assignment\hspace{0.3cm}\\}
+\vspace{.5cm}
+You have to submit your solutions as announced in the lecture.\\ 
+\textbf{Unless mentioned otherwise, all problems are due \hw@due}\\
+There will be no deadline extensions unless mentioned otherwise in the lecture.
+\end{center}
+\vspace{.5cm}
+\hrule
+\vspace{.5cm}
+\ifhw@unpublished
+\begin{center}
+\textbf{This homework is not published yet. I may still change it before publishing it.}
+\end{center}
+\vspace{.5cm}
+\hrule
+\vspace{.5cm}
+\fi
+}
+
+\newenvironment{problem}[2]{
+  \pagebreak[2]
+  ~\\
+  {\large \textbf{Problem \arabic{assignmentno}.\arabic{problemno}} \hspace{0.2cm}\textit{#1}} \hfill Points: #2\refstepcounter{problemno}\vspace{2pt}\\}
+  {\bigskip}
+%%  {\bf Problem F.\arabic{problem}:} \textit{#1} \hfill (#2 point\ifthenelse{#2=1}{}{s})\refstepcounter{problem}}\\
+
+\newcommand{\bonus}[2]{
+  \pagebreak[2]
+  ~\\
+  {\large \textbf{Bonus Problem \arabic{assignmentno}.\arabic{problemno}} \hspace{0.2cm}\textit{#1}} \hfill (#2 bonus point\ifthenelse{#2=1}{}{s})\refstepcounter{problemno}\vspace{2pt}\\}
+%%  {\bf Problem F.\arabic{problem}:} \textit{#1} \hfill (#2 point\ifthenelse{#2=1}{}{s})\refstepcounter{problem}}\\ 
+
+\newcommand{\solution}{\pagebreak[2]{\bf Solution:}}
+
+\newenvironment{hint}{\vspace{.5cm}\hrule \textbf{Hint:}}{\hrule\medskip}

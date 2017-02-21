@@ -1,0 +1,479 @@
+After lists, trees are the next most important data structure in computer science.
+They can be seen as a generalization of lists where the elements are not arranged in a row, but branching is allowed.
+
+\section{Specification}
+
+\subsection{General Trees}
+
+There are many equivalent definitions.
+The easiest is by graphical example: A tree is something that looks like
+
+\tikzstyle{node}=[circle,draw]
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {};
+\node[node] (00) at (-2,-1) {};
+\node[node] (01) at (0,-1) {};
+\node[node] (02) at (2,-1) {};
+\node[node] (000) at (-2,-2) {};
+\node[node] (010) at (-1,-2) {};
+\node[node] (011) at (1,-2) {};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (0) -- (02);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+A more formal definition is this:
+
+\begin{definition}[Tree]\label{def:ad:tree}
+A \textbf{tree} is a connected directed graph in which
+\begin{compactitem}
+ \item there is exactly one node (called the \textbf{root}) with in-degree $0$,
+ \item all other nodes have in-degree $1$.
+\end{compactitem}
+\end{definition}
+Here we already used the more general concept of graphs, which we define formally in Sect.~\ref{sec:ad:graphs}.
+
+Talking about the shape and parts of a tree can be confusing.
+Therefore, we introduce some vocabulary that helps us:
+
+\begin{definition}[Parts of a Tree]\label{def:ad:treeaux}
+For every edge from $p$ to $c$, we call $p$ the \textbf{parent} of $c$ and $n$ a \textbf{child} of $p$.
+Thus, the root has no parent; every non-root node has exactly one parent.
+A node may have any number of children.
+A node with $0$ children is called a \textbf{leaf}.
+A node that is neither the root nor a child is called an \textbf{inner node}.
+
+For every path from $a$ to $d$, we call $a$ an \textbf{ancestor} of $d$ and $d$ a \textbf{descendant} of $a$.
+Thus, all nodes are descendants of the root
+Every node is an ancestor/descendant of itself; a \textbf{proper} ancestor/descendant of $n$ is an ancestor/descendant that is not $n$.
+
+The number of proper ancestors of $n$ is called the \textbf{depth} of $n$.
+Thus, the root has depth $0$.
+
+For a node $n$, the descendants of $n$ form a tree again, which has root $n$.
+It is called the \textbf{subtree} at $n$.
+
+A path from the root to a leaf is called a \textbf{branch}.
+Thus, every leaf $l$ is part of exactly one branch, whose length is the depth of $l$.
+The length of the longest branch(es) is called the \textbf{height} of the tree.
+\end{definition}
+
+\begin{remark}
+Contrary to all these tree metaphors, computer scientists prefer drawing trees with the root at the top and the leafs at the bottom.
+\end{remark}
+
+Def.~\ref{def:ad:tree} only defines the abstract shape of trees.
+But trees are only useful if we can store some data in each node.
+For example, the following is a tree of integers:
+
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {3};
+\node[node] (01) at (0,-1) {6};
+\node[node] (02) at (2,-1) {1};
+\node[node] (000) at (-2,-2) {0};
+\node[node] (010) at (-1,-2) {6};
+\node[node] (011) at (1,-2) {5};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (0) -- (02);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+Once we store data in a tree, we have be a bit more careful: the order of children matters now.
+For example, the above tree of integers is different from the tree of integers below even both are based on the same tree.
+
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {3};
+\node[node] (01) at (0,-1) {6};
+\node[node] (02) at (2,-1) {1};
+\node[node] (000) at (-2,-2) {0};
+\node[node] (010) at (-1,-2) {5};
+\node[node] (011) at (1,-2) {6};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (0) -- (02);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+Keeping track of the order makes the definition more complicated.
+The following definition is one way possibility to define it formally:
+
+\begin{definition}[Trees over a Set]\label{def:ad:labeledtree}
+The set $Tree[A]$ contains the \textbf{trees over the set} $A$.
+Such a tree over $A$ consists of
+\begin{compactitem}
+ \item a set $N$ (whose elements we call the nodes),
+ \item a function $label:N\to A$ that maps nodes to elements of $A$ ($label(n)$ is called the label of $n$, it is the data stored in each node),
+ \item a function $children:N\to N^*$ that maps every node to its list of children,
+\end{compactitem}
+such that $N$ and $children$ define a tree.
+\end{definition}
+
+\begin{remark}[Leaf-Labeled Trees]
+$Tree[A]$ contains trees in which \emph{every} node stores data from $A$.
+Occassionally, we are also interested in trees where only the \emph{leafs} are labeled.
+And sometimes we need trees where inner nodes are labeled with elements of $A$ and leafs with elements of $B$.
+
+We ignore those trees here.
+But when working with someone else's tree data structures, it is important to check which nodes are labeled with what.
+\end{remark}
+
+\subsection{Binary Trees}
+
+Binary trees are an important special case:
+
+\begin{definition}[Binary Tree]\label{def:ad:bintree}
+A \textbf{binary tree} is a tree in which all nodes have at most $2$ children.
+If a node has $2$ children, they are called the \textbf{left} and \textbf{right} child.
+
+Binary trees over a set are defined accordingly.
+
+A binary tree is called \textbf{full} if all non-leaf nodes have exactly two children.
+A full binary tree is called \textbf{complete} all all leafs have the same depth.
+\end{definition}
+
+For example, the following are, from left to right, a non-full, a full but not perfect, and a perfect binary tree of integers:
+\begin{center}
+\begin{tikzpicture}[scale=.7]
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {3};
+\node[node] (01) at (2,-1) {1};
+\node[node] (010) at (1,-2) {6};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (01) -- (010);
+\end{tikzpicture}
+\tb\tb
+\begin{tikzpicture}[scale=.7]
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {3};
+\node[node] (01) at (2,-1) {1};
+\node[node] (010) at (1,-2) {6};
+\node[node] (011) at (3,-2) {5};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\tb\tb
+\begin{tikzpicture}[scale=.7]
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {3};
+\node[node] (01) at (2,-1) {1};
+\node[node] (000) at (-3,-2) {0};
+\node[node] (001) at (-1,-2) {2};
+\node[node] (010) at (1,-2) {6};
+\node[node] (011) at (3,-2) {5};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (00) -- (001);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+
+It is important to know the number of nodes in a binary tree:
+
+\begin{theorem}\label{thm:ad:bintree}
+A binary tree of height $h$ has at most $2^n$ nodes at depth $n$.
+It has at most $2^{h+1}-1$ nodes in total.
+
+If it is perfect, it has exactly $2^n$ nodes at depth $n$ and exactly $2^{h+1}-1$ nodes in total.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+In particular, the number of nodes grows exponentially with the depth.
+Vice versa, we can organize $n$ nodes as a binary tree of height $\log_2 n$.
+The latter property is often useful to obtain logarithmic implementations: if we organize $n$ elements in a (nearly) perfect binary tree, we can reach any element in $\log_2 n$ steps.
+
+\subsection{Trees for Ordered Data}
+
+\subsubsection{Binary Search Trees}
+
+%\begin{definition}[Binary Search Trees]
+%If $O$ is a total order on $A$, then $BST[A,O]$ is the subset of $Tree[A]$ containing only full binary trees in which ??? %needs optional left and optional right child
+%\end{definition}
+
+
+
+\subsubsection{Heaps}\label{sec:ad:heaps}
+
+\begin{definition}[Heap]
+If $O$ is a total order on $A$, then $Heap[A,O]$ is the subset of $Tree[A]$ containing only trees in which all branches are sorted with respect to $O$.
+\end{definition}
+
+The elements of $Heap[\Z,\leq]$ are also called \textbf{min-heaps}.
+The elements of $Heap[\Z,\geq]$ are also called \textbf{max-heaps}.
+
+The left tree below is a (binary) min-heap, the right one is neither a min-heap nor a max-heap:
+
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {12};
+\node[node] (01) at (2,-1) {7};
+\node[node] (010) at (1,-2) {12};
+\node[node] (011) at (3,-2) {9};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\tb\tb
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {12};
+\node[node] (01) at (2,-1) {3};
+\node[node] (010) at (1,-2) {12};
+\node[node] (011) at (3,-2) {4};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+In a heap, the every node is smaller than all its descendants.
+The root is always the smallest element in the heap.
+That makes heaps practical for sorting.
+Applications are presented in Sect.~\ref{sec:ad:heaplists}.
+
+\section{Data Structures}
+
+Trees can be mutable or immutable.
+However, trees are mostly used to store data.
+Many algorithms work with a single mutable tree and insert data into it or delete data from it over time.
+
+We consider two different data structures and use the following as an example tree
+\begin{center}
+\begin{tikzpicture}[scale=.7]
+\node[node] (0) at (0,0) {5};
+\node[node] (00) at (-2,-1) {3};
+\node[node] (01) at (2,-1) {1};
+\node[node] (010) at (1,-2) {6};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (01) -- (010);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Using Lists}\label{sec:ad:listtree}
+
+The simplest data structure for trees uses lists:
+
+\begin{acode}
+\aclassI{Tree[A]}{data: A,\; children: List[Tree[A]]}{}{}
+\end{acode}
+
+The example tree is represented as
+\[\anew{Tree[\Z]}{5,\; \big[\anew{Tree[\Z]}{3,Nil},\;\anew{Tree[\Z]}{1, [\anew{Tree[\Z]}{6,Nil}]}\big]}\].
+
+\subsection{Using Sibling Pointers}\label{sec:ad:pointertrees}
+
+Some programmers or programming languages prefer a more awkward (but slightly less memory-intensive) data structure that does not use lists.
+
+Here every node has two pointers: one to its first child and one to its next sibling:
+\begin{acode}
+\aclassI{Node[A]}{data: A,\; firstChild: Node[A], nextSibling: Node[A]}{}{}
+\end{acode}
+For leafs, the field $firstChild$ is $null$; for the last child of a node, the field $nextSibling$ is $null$.
+It would be better not to use $null$. But programmers who use this data structure usually do not mind.
+
+The example tree is represented as
+\[\anew{Node[\Z]}{5,\; \anew{Tree[\Z]}{3,null, \;\anew{Tree[A]}{1, \anew{Tree[\Z]}{6,null,null}}, null}, null}\]
+
+\section{Important Algorithms}
+
+\subsection{Search}
+
+Trees are often used to represent a problem.
+
+\begin{example}
+Consider a labyrinth in which some treasure is hidden.
+We represent it as a tree.
+The entrance is the root.
+Every fork in the path is a node with multiple children---one child per direction we can go in.
+Every dead end is a leaf.
+One node in the tree is special because it has the treasure.
+
+To find the treasure, we have to explore the labyrinth.
+That means we have to visit every node of the tree until we find the treasure.
+\end{example}
+
+Many problems in real life can be seen as labyrinths in the sense that we have to make a series of decisions, each time choose between multiple options.
+
+Therefore, many problems can naturally be represented as trees.
+Moreover, if we do not have any special knowledge (e.g., a map leading to the treasure), the only thing we can do is systematically explore all nodes of the tree.
+
+That is straightforward in principle, but we have to decide in which order we explore the nodes.
+Two strategies are important:
+\begin{itemize}
+\item In Breadth-First Search (BFS), we explore nodes in increasing order of depth: first the root, then the children, then the grandchildren of the root, and so on.
+We can visualize this as searching top-to-bottom (if the tree is drawn in the usual way with the root at the top).
+Thus, we search the entire breadth before moving on to deeper nodes.
+\item In Depth-First Search (DFS), we first explore all descendants of a node $n$ before moving on the siblings of $n$.
+We can visualize this as searching left-to-right.
+Thus, we search as deep as we can before moving on to the siblings.
+\end{itemize}
+
+Consider the tree below.
+BFS yields abcdefg.
+DFS yields abecfgd.
+\begin{center}
+\begin{tikzpicture}
+\node[node] (0) at (0,0) {a};
+\node[node] (00) at (-2,-1) {b};
+\node[node] (01) at (0,-1) {c};
+\node[node] (02) at (2,-1) {d};
+\node[node] (000) at (-2,-2) {e};
+\node[node] (010) at (-1,-2) {f};
+\node[node] (011) at (1,-2) {g};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (0) -- (02);
+\draw[arrow] (00) -- (000);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\end{tikzpicture}
+\end{center}
+
+BFS has the drawback of back-and-forth movement.
+For the tree above, we have to go from a to b, back up to a and down to c, back up and down to d, then all the way back to b, so that we can go e, back up all the way to a, down to c again, and so on.
+DFS is much simpler.
+
+However, it is much more common to have a very high tree (i.e., long branches) than a very wide tree (i.e., lots of branches).
+This is because we often have many decisions to make, but each decision only has a few options.
+For example, many games consist of an unlimited number of turns where at each turn we have to choose from a limited number of moves.
+In those situations, if DFS picks the wrong cild of the root early on, it may have to explore a huge subtree before coming back to pick the right child.
+
+BFS is more balanced and predictable.
+If we know the probability of finding a solution becomes smaller at greater depths, BFS makes sure that we explore the most promising nodes first.
+
+\subsubsection{Depth-First Search}
+
+DFS can be realized quite easily with a recursive function, especially if we use the data structure from Sect.~\ref{sec:ad:listtree}.
+We use an arbitrary function $f$ as the payload, i.e., a function that is to be called at every node $n$.
+For example, $f$ can check if $n$ is the needed solution or do some other work on $n$.
+
+\begin{acode}
+\afun{DFS[A]}{n: Tree[A], f:Tree[A]\to \Unit}{
+  f(n)\\
+  foreach(n.children, x \mapsto DFSAux[A](x,f))
+}
+\end{acode}
+
+In this variant of DFS, $f$ acts on every node $n$ before it recurses into the children.
+It is also possible to switch those two, i.e., first recurse into the children, then call $f(n)$.
+
+\subsubsection{Breadth-First Search}
+
+BFS is a bit more complicated.
+One way to do it is to use a queue that stores all nodes that we have already seen but not acted on yet.
+That way we can avoid the back-and-forth movement.
+
+\begin{acode}
+\afun{BFS[A]}{n: Tree[A], f:Tree[A]\to \Unit}{
+  needToVisit := \anew{Queue[Tree[A]]}{}\\
+  enqueue(needToVisit, n)\\
+  \awhile{!empty(needToVisit)}{
+    n := dequeue(needToVisit)\\
+    f(n) \\
+    foreach(n.children, x \mapsto enqueue(needToVisit, x))
+  }
+}
+\end{acode}
+
+Here in every iteration of the loop, we process the next node $n$ (dequeue) and then put its children at the end of the queue.
+That way all children of $n$ are guaranteed to be processed before any grandchildren of $n$.
+\medskip
+
+The above BFS-algorithm is interesting because we can easily turn it into a DFS-algorithm: all we have to do is use a stack instead of a queue.
+That way all descendants of $n$ are processed before anything else.
+
+\subsection{Min-Max Algorithm}
+
+Many games can be represented as trees.
+Consider a $2$-player game in which the players alternate taking turns.
+At every turn, a player has to choose among multple moves.
+We assume there is no luck (e.g., no dice-rolling) and no hidden information (e.g., no bluffing).
+
+We can represent all possible courses of the games in a single tree as follows:
+\begin{compactitem}
+ \item Every node represents a turn.
+  \begin{compactitem}
+    \item root: initial state
+    \item nodes of even depth (including root): turn of player 1
+    \item nodes of odd depth: turn of player 2
+    \item leafs: terminal states (when the game is over)
+  \end{compactitem}
+ \item For every node $n$, the children of $n$ are the possible moves in that turn.
+ \item Every branch represents a possible course of the game.
+\end{compactitem}
+
+For leafs $l$, let $score(l)\in\Z^\infty$ represent the outcome:
+\begin{compactitem}
+ \item $\infty$: player 1 wins
+ \item positive values: player 1 is ahead
+ \item $0$: draw
+ \item negative values: player 2 is ahead
+ \item $-\infty$: player 2 wins
+\end{compactitem}
+Thus, player 1 wants to maximize the result, player 2 wants to minimize it.
+
+The min-max algorithm builds the entire tree by exploring all possible courses of the game.
+Let $State$ be the type of game states.
+We assume some basic functions $isTerminal:State\to\Bool$ and (for terminal states) $result:State\to\Z^\infty$ that represent the rules of the game.
+
+Let us assume we have built the tree $game:Tree[State]$.
+Then we can call the minmax algorithm with $minxmax(game,0)$ to aggregate the results of the terminal states:
+
+\begin{acode}
+\afun[\Z^\infty]{minmax}{current: Tree[State], depth: \N}{
+  state := current.data \\
+  \aifelse{isTerminal(state)}{
+    result(state)
+  }{
+    childResults := map(current.children, n \mapsto minmax(n, depth+1))\\
+    \aifelse{even(depth)}{
+      \max(childResults)
+    }{
+      \min(childResults)
+    }
+  }
+}
+\end{acode}
+
+If $minxmax(game,0)=\infty$, then player 1 has a perfect strategy to win every game.
+Correspondingly for player 2.
+If $minxmax(game,0)=0$, then both players have a perfect strategies to hold a draw.
+
+In practice, the tree is usually far too big to build.
+Therefore, instead of obtaining the result at terminal states, we must estimate the result at cut-off.
+For example, at depth $6$, we estimate the current score using heuristic function $State\to\Z^\infty$.
+
+This is a basic design used in artificially intelligent computer players for many games.
+Many optimizations are needed to obtain strong players.
+
+\section{Search Trees}
+
+Binary search trees and red-black trees are discussed in Sect.~\ref{sec:ad:sets}.
+
