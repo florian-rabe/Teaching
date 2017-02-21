@@ -168,6 +168,12 @@
 \newcommand{\bnfchoice}[1]{\bnf{[}#1\bnf{]}}
 \newcommand{\bnfnegchoice}[1]{\bnf{[\caret}#1\bnf{]}}
 
+\newenvironment{commgrammar}{\[\begin{array}{l@{\;}c@{\;}l@{\tb}l}}{\end{array}\]}
+\newcommand{\gcomment}[1]{\multicolumn{4}{l}{\text{#1}}}
+\newcommand{\gprod}[3]{#1 & \bbc & #2 & \text{#3}}
+\newcommand{\galtprod}[2]{ & \bnf{|} & #1 & \text{#2}}
+
+
 \RequirePackage{xspace}
 \newcommand{\mmt}{\texorpdfstring{{\normalfont\scshape{Mmt}}\xspace}{MMT\ }}
 \newcommand{\omdoc}{{\scshape{OMDoc}}\xspace}

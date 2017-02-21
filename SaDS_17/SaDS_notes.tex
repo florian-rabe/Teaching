@@ -48,33 +48,32 @@
   \chapter{Static Analysis}\label{sec:sd:static}
     \input{static}
     
-% guard against deep errors
-\part{Specification-Near Programming}
+\part{Formal Systems}
 
    % maybe heartbleed exercise: reimplement in proper language with high-level data structures for messages
    
   \chapter{Type Theory}\label{sec:sd:typetheory}
-  % judgements
-  % type constructors
-  % products, functions, records, datatypes
-  % polymorphism
+  \input{type_theory}
 
-  \chapter{Functional Programming}
+  \chapter{Programming}
   % recursion
   % statefulness: input/output, exceptions
-  % SML, (Haskell: laziness, monads), Scala
+  %  SML, (Haskell: laziness, monads), Scala
 
-  \chapter{Combining Logic and Programming}
+
+  \chapter{Logic}
     % sat, hol, LTL, CTL
 
+% guard against deep errors
 \part{Formal Methods}
+% https://www.lri.fr/~marche/MPRI-2-36-1/
 
-  \chapter{Program Synthesis} % two weeks
+  \chapter{Program Synthesis} 
 
-  \chapter{Model Checking} % two weeks
+  \chapter{Model Checking} 
     \input{modelcheck}
 
-  \chapter{Theorem Proving} % two weeks
+  \chapter{Theorem Proving} 
    \input{verify}
 
 % guard against attack
@@ -112,8 +111,8 @@
 
 \tocentryBib
 
-\input{\currfilebase.bblp}
-%\bibliographystyle{alpha}
-%\bibliography{../../../../../Program_Data/Latex/bib/rabe}
+%\input{\currfilebase.bblp}
+\bibliographystyle{alpha}
+\bibliography{../../../../../Program_Data/Latex/bib/rabe}
 
 \end{document}

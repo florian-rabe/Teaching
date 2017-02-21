@@ -1,8 +1,51 @@
 Dynamic analysis is a collective term for methods that evaluate code by executing it.
-Testing, debugging, memory debugging, and profiling are important classes of dynamic analysis.
 
-% overview, unit testing framework, code coverage framework, based on Java libraries
+There is a variety of different dynamic methods, which should be discussed in a software engineering course.
+A good overview is given in the corresponding chapters in the Software Engineering Body of Knowledge (SWEBOK) \cite{swebok}\footnote{Or the respective wikipedia pages, which are often summaries of the SWEBOK or similar sources.}.
+
+The methods can be roughly classified into detection and diagnosis of faults.
+
+\section{Detect Faults}
+
+\textbf{Testing} is the most important dynamic analysis.
+Testing can be classified using a number of different properties.
+For achieving dependability, the following combination is most important:
+\begin{compactitem}
+ \item Unit testing: The tested component is small software unit like a class or a function.
+ \item Conformance testing: The tested component is tested against its specification.
+ This usually involves a set of test cases that are executed:
+  \begin{compactitem}
+   \item A test case for an implementation $f$ of a function specification $F$ is a pair $(x,F(x))$.
+   The test case runs $f(x)$ and compares the result to $F(x)$.
+   \item When testing a class $C$, a simple test case consists of constructor arguments $x$ and a sequence of test cases for methods of $C$.
+   The test case runs $c:=\anew{C}{x}$ and then runs each test case on $c$.
+   Additionally, the test may evaluate a class invariant after each step.
+  \end{compactitem}
+ \item Automated testing: The test cases are programmed in parallel to the implementation.
+ Thus, they can be build and run automatically.
+ \item Whitebox or blackbox testing: In the simplest case, testing is black-box, i.e., the test does not need to access the source code.
+ However, whitebox testing can be valuable, especially if combined with a coverage check.
+ For example, the test cases can be designed to execute every line of the source code, which can be checked with a coverage analysis tool.
+\end{compactitem}
+\medskip
+
+\textbf{Coverage} checking traces program execution to determine which lines of the source code were entered.
+In combination with an appropriately large set of test cases, this has a good chance of detecting control flow errors. 
+\medskip
+
+\textbf{Memory debugging} monitors memory (de)allocation and other dynamic memory operations.
+This can help detect buffer overflows or memory leaks.
+
+\section{Diagnose Faults}
+
+If errors are confusing, it may be necessary to trace the program behavior step-by-step to locate the fault.
+
+\textbf{Logging} is the simplest diagnostic technique. It prints of variables in specific places to detect exactly which commands computes a faulty value.
+
+\textbf{Debugging} is a free form of logging. The program is executed step by step interactively, and the programmer can inspect variable values after every step.
+
+\textbf{Profiling} watches the execution of all steps and accumulates which program unit uses how much time and/or memory.
+ This can be used to find efficiency problems caused by design or implementation faults.
+
 
 % https://en.wikipedia.org/wiki/Memory_debugger Valgrind, Purify
-
-% ideal: for every unit: specification/documentation, plus a set of examples, one test for every example

@@ -6,41 +6,128 @@ But in principle it can work on the binary as well, e.g., some tools work on Jav
 
 Due to undecidability, detecting faults requires insight and careful case-by-case analysis, which is expensive.
 Therefore, it has become very successful to focus on classes of faults and then to systematically find their occurrences.
-We can think of these as individual heuristics, each hunting for a specific common bug, e.g., the ones discussed in Setc.~\ref{sec:sd:commonbugs}).
+We can think of these as individual heuristics, each hunting for a specific common bug, e.g., the ones discussed in Sect.~\ref{sec:sd:commonbugs}).
 State-of-the-art tools check for hundreds of such fault classes.
 Depending on the fault class, the checks may exhibit false-negatives (not all instances are detected) or false-positives (correct code is falsely marked).
 
-The above definition includes compilers, and indeed compilation, in particular type-checking, can be seen as the most basic kind of static analysis.
-But, more narrowly, static analysis usually refers to additional checks that go beyond type-checking.
+\section{Work Flow}
 
-Some compilers include some basic such checks.
-More checks are implemented by dedicated analysis tools that are employed when the compiler reports no more faults.
+\subsection{Compilation}
+
+The first line of defense against faults is compilation, which is the simplest form of static analysis.
+
+The primary goal of compilation is to translate the source code into another language, usually a binary file in a machine-near language such as assembly or byte code.
+However, like all good algorithm operating on user input, compilers usually consist of three steps:
+\begin{compactenum}
+ \item parse the source files into a value $p$ of an abstract data type $L$ representing the context-free grammar of the source language
+ \item check $p$ in order to verify the context-sensitive constraints of the source language
+ \item process $p$ to obtain the compiled program, usually consisting of
+   \begin{compactitem}
+    \item optimization that transforms $p:L$ to $p':L$
+    \item printing $p'$ in the target language
+   \end{compactitem}
+\end{compactenum}
+
+Here the middle step is a static analysis.
+It usually consists of at least
+\begin{compactitem}
+ \item scope-checking: ensure that only global or local identifiers are used that
+  \begin{compactitem}
+   \item have been declared
+   \item are in scope
+   \item are accessible (e.g., not private to a class)
+  \end{compactitem}
+ \item type-checking: ensure that only expressions are formed that are well-typed, i.e., check that
+ \begin{compactitem}
+  \item arguments of class constructors
+  \item arguments of function and method invocations
+  \item assignments to variables
+  \item parameters of built-in language constructs (e.g., the condition of an if-statement)
+  \end{compactitem}
+  have the expected type
+\end{compactitem}
+
+Compilers in particular focus on checks that are necessary to ensure that printing out the compiled program succeeds at all.
+For example, printing an ill-scoped program might cause a run-time error of the compiler. 
+
+But compilers may carry out arbitrarily many additional static analysis checks.
+
+\subsection{Additional Analysis}
+
+Typically scope and type-checking (if successful) are followed by additional static analysis.
+This can be done by
+\begin{compactitem}
+ \item the compiler itself
+ \item compiler plugins
+ \item separate tools that use the compiler for parsing and checking and then perform other analysis
+ \item separate tools that use their own parser
+\end{compactitem}
 Some of these tools can be integrated with the IDEs to report the results in the same way as compiler errors.
 
-An overview of static analysis tools for various programming languages can be found at \url{https://en.wikipedia.org/wiki/Static_code_analysis}
-For example, findbugs is a very popular tool working on Java byte code.
-It checks for over $400$ different faults.
+\section{Individual Checks}
 
-%\paragraph{Coding Style}
-%% (indentation, documentation)
-%
-%\paragraph{Array and List Bounds}
-%Often the length is statically (i.e., at compile-time, without executing) known.
-%For example, if an array is created via $x=Array[\Int](n)$, we expect for-loop that read or write to $x$ to run from $0$ to $n-1$.
-%
-%If the bounds are different, that can be used to generate a warning.
-%
-%This is only a heuristic, of course.
-%For the general case, we have to prove that the index $i$ in $x[i]$ is between $0$ and $n-1$.
-%There are tools that indeed try to prove that.
-%
-%\paragraph{Uninitialized Memory}
-%
-%\paragraph{Null Pointers}
-%Analysis tools can inspect every dereferencing of a pointer $x$ and check if there is a previous assignment that assigns a non-null value to $x$.
-%
-%\paragraph{Unreachable Code}
-%
-%\paragraph{Non-Exhaustive Match}
-%
-%\paragraph{Casting}
+There is a wide variety of possible checks that can be implemented by static analysis tools.
+An overview of tools for various programming languages can be found at \url{https://en.wikipedia.org/wiki/Static_code_analysis}
+For example, findbugs is a popular tool working on Java byte code; it checks for over $400$ different faults.
+
+In the following, we list some of the most important checks.
+
+\paragraph{Coding Style}
+The simplest static analysis is to check for coding style.
+This is trivial but technically a special case of static analysis.
+
+It often requires a separate parser because the compiler's parser may ignore the details of whitespace.
+
+\paragraph{Common Error Patterns}
+Many errors are made so often that it is worth performing a static analysis for them.
+
+For example, in some programming languages $m\modop 2$ (arguably falsely) evaluates to $-1$ instead of $1$ for odd negative numbers.
+Therefore, a static analysis tool may flag $m\modop 2==1$ as a likely error (because the expressions behaves unexpectedly for negative $m$).
+
+\paragraph{Non-Exhaustive Match}
+Languages with inductive data types allow performing exhaustiveness checks.
+This checks whether there is a case for any possible value of the matched expression.
+However, because the programmer might know from invariants that certain values are impossible, compilers languages often allow not giving cases for all values.
+
+An exhaustiveness check flags these as likely errors.
+
+\paragraph{Uninitialized Variables and Memory}
+Some languages allow declaring variables without assigning an initial value or allocating memory without initializing it.
+(Especially the latter is often important for efficiency.)
+
+But any use of uninitialized variables or memory is almost certainly an error.
+(The only flimsy exception arises when random behavior is intended, e.g., in a random number generator, and even then it is bad practice.)
+
+\paragraph{Probable Typing Errors}
+Sometimes the specification of a language makes certain expressions technically well-typed even though they are likely to be errors.
+
+In languages with a universal type $U$, any equality $a==b$ is well-typed because $a:U$ and $b:U$.
+However, $a==b$ is usually an error if the smallest common type of $a$ and $b$ is $U$.
+For example, if $a:\Int$ and $b:List[\Int]$, then $a==b$ is a likely error (because it always returns $\false$).
+
+In language with explicit type checks $\aisinst{a}{T}$ and type casts $\aasinst{a}{T}$, any such check or cast may be well-typed.
+For example, if the language has $null$, indeed both must be well-typed because they succeed if $a==null$ independent of $T$.
+But given $a:A$, such checks and casts are likely errors if $T$ is not a subtype of $A$.
+For example, casting $a:List[\Int]$ into $Option[\Int]$ is a likely error (because it succeeds only when $a==null$, in which case it is a useless cast).
+
+\paragraph{Null Checks}
+In languages with $null$ pointers, it is often possible to analyze whether a pointer is dereferenced that may be null.
+
+Given a value $a:A$, special cases include
+\begin{compactitem}
+ \item dereferencing $a$ if $a$ is known to be null
+ \item dereferencing $a$ without checking $a==null$
+ \item checking $a==null$ when $a$ has been previously dereferenced
+\end{compactitem}
+
+\paragraph{Unreachable Code}
+If no execution can ever execute a certain command, we speack of unreachable code.
+It is always a bug.
+
+Many instances of unreachable code can be detected by systematic analysis.
+This includes
+\begin{compactitem}
+  \item code in a branch of an if-else whose condition always has the same value
+  \item code in a case distinction (switch) statement that come after a default case
+  \item code after a return statement
+\end{compactitem}
