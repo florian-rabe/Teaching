@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,due=2017-03-02,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,due=2017-03-02]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,12 +10,13 @@
 
 \header
 
-\begin{problem}{Problem Complexity}{6+6}
+\begin{problem}{Problem Complexity}{6+6+6}
 What is the complexity class of the worst-case time complexity $C(n)$ of the following \emph{problems}:
 \begin{enumerate}
 \item Find the smallest element in a list of length $n$ of integers.
 \item Find an unknown $x\in \N$ between $0$ and $n$ by repeatedly asking yes/no questions about $x$.\\
 (Any question is allowed that has a well-defined answer. For example, you may ask ``Is $x$ prime?'' or ``Is $x==5$?'' A solution must determine $x$ with perfect certainty in all cases.)
+\item Crack an unknown password if the only prior knowledge you have is that it contains $n$ characters.
 \end{enumerate}
 
 In each case, answer the question in two parts:
@@ -26,7 +27,7 @@ In each case, answer the question in two parts:
 \end{problem}
 
 \begin{problem}{Complexity Analysis}{5}
-The following is a (highly simplified variant of an) example that came up last year in the author's research:
+The following is a (highly simplified variant of an) example that came up last year in the instructor's research:
 Consider the following function in the Scala programming language:
 
 \begin{lstlisting}
