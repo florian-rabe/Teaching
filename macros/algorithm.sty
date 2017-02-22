@@ -1,5 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% pseudo code
 \RequirePackage{xcolor}                                           
+\RequirePackage{framed}
 
 \definecolor{shadecolor}{RGB}{245,245,245}
 \newenvironment{acode}{\setcounter{aindent}{0}\let\@anewline=\\\renewcommand{\\}{\anewline}\noindent\begin{snugshade}$}{$\end{snugshade}}
@@ -16,7 +17,7 @@
 \newcommand{\amatchI}[2]{\akey{match}#1\;\ablockI{\fold{|}{#2}}}
 \newcommand{\acase}[2]{#1 \mapsto #2}
 \newcommand{\anew}[2]{\akey{new} #1(#2)}
-\newcommand{\anewA}[3]{\akey{new} #1(#2)\ablockI{\fold{|}{#3}}}
+\newcommand{\anewA}[3]{\akey{new} #1(#2)\ablockI{\fold{,\,}{#3}}}
 
 \newcommand{\aisinst}[2]{#1 \,\akey{isInstanceOf} #2}
 \newcommand{\aasinst}[2]{#1 \,\akey{asInstanceOf} #2}

@@ -75,19 +75,28 @@ This sublanguage consists of all objects of the context-free language for which 
 While objects are always anonymous, the declarations of a formal system introduce \textbf{names} for objects.
 Like objects, the declarations are defined by a grammar and inference system.
 
-Typically, there is a fixed non-terminal $Decl$ and a fixed judgment $\isdecl{}{D}$ for declarations $D$.
+Typically, there is a fixed non-terminal $Decl$ and a fixed judgment $\isdecl{}{}{D}$ for declarations $D$.
 The each declaration-kind is defined by one production and one rule.
 
 Examples are
 \begin{compactitem}
- \item Variable definitions are the declarations that introduce a name for a term. They consist of the production
+ \item Term definitions are the declarations that introduce a name for a term.
+ Those are the variable definitions known from most programming languages.
+ They consist of the production
   \[Decl ::= \aval{x}{A}{t}\]
-  for a new variable $n$ of type $A$ with initial value $t$
+  for a new variable $x$ of type $A$ with initial value $t$
   and the rule
-  \[\rul{\oftype{}{}{t}{A}}{\isdecl{}{}{\aval{n}{A}{t}}}\]
+  \[\rul{\oftype{}{}{t}{A}}{\isdecl{}{}{\aval{x}{A}{t}}}\]
+  that checks that the initial value has the expected type.
+ \item Type definitions similarly introduce a name for a type.
+ They consist of the production
+  \[Decl ::= \atypedef{a}{A}\]
+  for a new type variable $a$ with value $A$
+  and the rule
+  \[\rul{\oftype{}{}{A}{\type}}{\isdecl{}{}{\atypedef{a}{A}}}\]
   that checks that the initial value has the expected type.
 \end{compactitem}
-To make parsing easier, many languages (e.g., SML or Scala) require each declaration-kind to start with a special keyword (like $\akey{val}$ above).
+To make parsing easier, many languages (e.g., SML or Scala) require each declaration-kind to start with a special keyword (like $\akey{val}$ and $\akey{typedef}$ above).
 
 We need to be able to use the names as objects later on.
 Therefore, every concept comes with a built-in production for names.
@@ -98,17 +107,18 @@ That shows us that we cannot simply use the judgment $\oftype{}{}{x}{A}$---there
 Therefore, we have to collect all declarations that are in scope and carry them around.
 That is the purpose of signatures and contexts.
 
-
 \subsubsection{Collecting Declarations}
 
 A \textbf{context} $\Gamma$ is a list of declarations.
 
-Often we distinguish two kinds of declarations:
+Often we distinguish different kinds of declarations:
 \begin{compactitem}
  \item The \textbf{global} declarations are the entire input (source file, program, etc.) that we are checking.
- It is fixed during checking.
+ These are fixed during checking.
  \item The \textbf{local} declarations are introduced temporarily while checking certain declarations.
- Examples are the parameters of a functions or variables declared inside a function.
+ Examples are the variables declared inside a function.
+ \item The local \textbf{assumptions} are special local declarations that introduce a name without giving it a definition.\\
+ Examples are the parameters of a function.
 \end{compactitem}
 
 Usually all judgments for objects take a context as an additional argument.
@@ -119,7 +129,8 @@ For example, we have $\oftype{}{\Gamma}{t}{A}$ or $\oftype{}{\Gamma}{F}{\form}$.
 Now the simplest form of scope-checking uses the rule
 \[\rul{\aval{x}{A}{\_}\in \Gamma}{\oftype{}{\Gamma}{x}{A}}\]
 
-And when checking input consisting of global declarations $D_1,\ldots,D_n$, we check for each $i=1,\ldots,n$ that $\isdecl{}{D_1,\ldots,D_{i-1}}{D_i}$.
+And when checking input consisting of global declarations $D_1,\ldots,D_n$, we check for each $i=1,\ldots,n$ that
+ \[\isdecl{}{D_1,\ldots,D_{i-1}}{D_i}\]
 Thus, each declaration is checked in the context of the previous ones.
 \medskip
 
@@ -133,6 +144,25 @@ Examples are
  \item Some declarations may only be allowed globally (e.g., class definitions in some programming languages) or only locally (e.g., undefined variables to represent the parameters of a function).
 \end{compactitem}
 
+\subsubsection{Polymorphic Declarations}
+
+Very often it is convenient to introduce a new name that takes type parameters.
+For example, the type $List[A]$ of lists over $A$ should take a parameter for the type $A$ of the elements.
+Similarly, the function $revert[A]:List[A]\to List[A]$ takes a type parameter.
+
+That can be accomplished by allowing for type assumptions in all declarations that we allow to be parametric.
+Examples are:
+\begin{compactitem}
+ \item For parametric type definitions (also called \textbf{type operators}), we use
+  \[Decl ::= \atypedef{a[a^*]}{A}\]
+  \[a ::= a[A^*]\]
+  where $a[A_1,\ldots,A_n]$ is the type that arises by applying $a$ to the parameters $A_1,\ldots,A_n$.
+ \item For parametric constants (also called \textbf{polymorphic constants}), we use
+  \[Decl ::= \aval{x[a^*]}{A}{t}\]
+  \[t ::= t[A^*]\]
+\end{compactitem}
+
+
 \subsection{A Basic Type Theory}
 
 We now introduce a comprehensive example that we will build on later.
@@ -142,28 +172,61 @@ We can then extend it with specific types and terms in Sect.~\ref{sec:sd:typethe
 The concepts and constructors are given by the following context-free grammar:
 
 \begin{commgrammar}
+\gcomment{contexts}\\
+\gprod{\Gamma}{(Decl \bnfalt Assume)^*}{}\\
 \gcomment{declarations}\\
 \gprod{Decl}{\atypedef{a}{A}}{type definition}\\
 \galtprod{\aval{x}{A}{t}}{term definition}\\
+\gcomment{local assumptions}\\
+\gprod{Assume}{a:\type}{type assumption}\\
+\galtprod{x:A}{term assumption}\\
 \gcomment{types}\\
 \gprod{A}{a}{type names}\\
+\galtprod{\ablockI{Decl; A}}{local declaration}\\
 \gcomment{terms}\\
-\gprod{t}{x}{term names}
+\gprod{t}{x}{term names}\\
+\galtprod{\ablockI{Decl; x}}{local declaration}
 \end{commgrammar}
 
 The judgments are:
 \begin{center}
 	\begin{tabular}{|l|l|}
 	  \hline
+		$\isdecl{}{\Gamma}{D}$        & declaration $D$ can be appended to $\Gamma$ \\\hline
 		$\oftype{}{\Gamma}{A}{\type}$ & $A$ is a well-formed type in context $\Gamma$ \\
 		$\oftype{}{\Gamma}{t}{A}$     & $t$ is a well-formed term of type $A$ type in context $\Gamma$ \\
 		\hline
 	\end{tabular}
 \end{center}
 
-We only need the simple rules for scope-checking:
-\[\rul{\atypedef{a}{A}\in \Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
-\[\rul{\aval{x}{A}{\_}\in \Gamma}{\oftype{}{\Gamma}{x}{A}}\]
+The rules for this empty type type mostly take care of scope-checking:
+\begin{compactitem}
+\item Types and terms can be declared with type parameters
+\[
+\rul{\oftype{}{\Gamma,a_1:\type,\ldots,a_n:\type}{A}{\type}}{\isdecl{}{\Gamma}{\atypedef{a[a_1,\ldots,a_n]}{A}}}
+\tb\tb
+\rul{\oftype{}{\Gamma,a_1:\type,\ldots,a_n:\type}{t}{A}}{\isdecl{}{\Gamma}{\aval{x[a_1,\ldots,a_n]}{A}{t}}}
+\]
+\item Declared names can be used later on with the right number of type parameters
+\[\rul{\begin{array}{c}
+         \atypedef{a[a_1,\ldots,a_n}{A}\in \Gamma \\
+         \oftype{}{\Gamma}{A_1}{\type}\tb\ldots\tb \oftype{}{\Gamma}{A_n}{\type}
+      \end{array}}
+      {\oftype{}{\Gamma}{a[A_1,\ldots,A_n]}{\type}} \tb\tb
+\rul{\begin{array}{c}
+       \aval{x[a_1,\ldots,a_n]}{A}{\_}\in \Gamma \\
+       \oftype{}{\Gamma}{A_1}{\type}\tb\ldots\tb \oftype{}{\Gamma}{A_n}{\type}
+    \end{array}}
+    {\oftype{}{\Gamma}{x[A_1,\ldots,A_n]}{A}}\]
+\item Assumed names can be used later on
+\[\rul{a:\type\in \Gamma}{\oftype{}{\Gamma}{a}{\type}} \tb\tb
+\rul{x:A\in \Gamma}{\oftype{}{\Gamma}{x}{A}}\]
+\item Local declarations can be used later on
+\[\rul{\oftype{}{\Gamma,D}{A}{\type}}{\oftype{}{\Gamma}{\ablockI{D; A}}{\type}}
+\tb\tb
+\rul{\oftype{}{\Gamma,D}{t}{A}}{\oftype{}{\Gamma}{\ablockI{D; t}}{A}}\]
+\end{compactitem}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Concrete Objects}\label{sec:sd:typetheory:objects}
@@ -276,8 +339,11 @@ Terms of function type are the $\lambda$-abstractions $\lambda x:A.t$.
 In programming languages we usually write something like $\alam[A]{x}{t}$ instead.
 The meaning is the same.
 
+Our grammar and rule use the special case where all functions take exactly $1$ argument.
+The general case can be defined accordingly (or can be obtained by using unit and product types).
+
 $\lambda$-abstractions are more difficult than most other terms because they introduce a local variable.
-This is no problem at all if we have understood type theory properly: we can simply add the local variable to the context while checking the term $t$.
+This is no problem at all if we have understood type theory properly: we can simply add the variable to the context as a local assumption while checking the term $t$.
 \medskip
 
 However, many programming languages and programmers are confused or overwhelmed by this.
@@ -287,9 +353,9 @@ Instead, they introduce a special declaration for named functions:
 \[Decl \bbc \afunI[B]{f}{x:A}{t}\]
 
 Using anonymous functions, that is just a special case of a definition:
-\[\afunI[B]{f}{x:A}{t} \tb\text{is}\tb \aval{f}{A\to B}{\alam[A]{x}{t}}\]
+\[\afunI[B]{f}{x:A}{t} \tb\text{is the same as}\tb \aval{f}{A\to B}{\alam[A]{x}{t}}\]
 
-However, named functions come up so often and are so convenient that most languages allow them even if they are redundant.
+However, named functions come up so often and are so convenient that most languages allow function declarations even if they are redundant.
 
 \subsubsection{Terms Formed From Functions: Function Applications}
 
@@ -305,19 +371,20 @@ The third part introduces terms formed from a term $t:A\to B$ of the new type:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Types}
 
-Software is most dependable if programs mimic the domain knowledge as closely as possible.
+Software is most dependable if programs represent the domain knowledge as closely as possible.
 That requires being able to define new types capturing exactly the concepts of the domain.
 The terms of these new types should capture exactly the needed domain data.
 
-Data types are always named, i.e., they are introduced by declarations not by objects.
-Like base, product, and function types, \emph{each} inductive data type declaration introduces $3$ kinds of objects.
-
-Most programming languages allow defining data types.
+Data types are the most important way to do that.
+Most typed programming languages allow defining data types.
 But they may differ substantially in how they do it.
+
+Data types are always named, i.e., they are introduced by declarations not by objects.
+Like base, product, and function types, \emph{each} data type declaration introduces $3$ kinds of objects.
 
 \subsection{Inductive Data Types}
 
-An inductive data type is defined by a context-free grammar with a single non-terminal symbol.
+An inductive data type represents a context-free grammar with a single non-terminal symbol.
 It uses one term constructor for every production of the grammar such that its terms capture exactly the words of the grammar.
 The operation on its terms is pattern-matching.
 
@@ -332,10 +399,12 @@ The declaration of an inductive data type looks as follows:
 \[Con \bbc c(A,\ldots,A)\]
 \[a,c \bbc \text{name} \]
 
-\[\rul{\adata{a}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
-
 Given $\adata{a}{Con_1,\ldots,Con_n}$, $a$ is the \textbf{name} of the data type and each $Con_i$ is a \textbf{constructor}.
 For a constructor $c(A_1,\ldots,A_n)$, $c$ is the name of the constructor and the $A_i$ are its \textbf{argument types}.
+We omit the rule for checking $\isdecl{}{\Gamma}{\adata{a}{Con_1,\ldots,Con_2}}$.
+
+Once declared, the name of the data type is a well-formed type:
+\[\rul{\adata{a}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
 
 %In some programming language, each argument is of the form $s_i:A_i$ for a name $s_i$.
 %The $s_i$ are called \textbf{selectors}.
@@ -359,10 +428,10 @@ terminal symbols $T_i$ in production & ignored \\
 The constructors form elements of the type $a$:
 
 \[t \bbc c(t,\ldots,t)\]
-\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\tb\in\tb\Gamma \tb \oftype{}{\Gamma}{t}{A_i}}{\oftype{}{\Gamma}{c_i(t)}{a}}\]
+\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{A_i}}{\oftype{}{\Gamma}{c_i(t)}{a}}\]
 
 Here, for simplicity, the typing rule only covers the case where every constructor takes exactly $1$ argument.
-The general case works accordingly (or can be obtained by using a product type as the single argument type).
+The general case works accordingly (or can be obtained by using the unit type or a product type as the argument type).
 
 \subsubsection{Terms Formed From Terms of Inductive Data Type}
 
@@ -375,9 +444,9 @@ In $\amatchI{t}{Cas_1,\ldots,Cas_n}$, $t$ is the matched term and the $Cas_i$ ar
 In a case $\acase{c(x_1,\ldots,x_n)}{t}$, we call $c(x_1,\ldots,x_n)$ the \textbf{pattern} where $c$ is a constructor name and the $x_i$ are variables.
 $t$ is called the \textbf{body} of the case.
 
-Finally, the typing rule is: 
+Finally, the typing rule is (again assuming all constructors take exactly $1$ argument): 
 
-\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\tb\in\tb\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb\oftype{}{\Gamma,x:A_1}{t_1}{B}\tb\ldots\tb\oftype{}{\Gamma,x:A_n}{t_n}{B}}
+\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb\oftype{}{\Gamma,x:A_1}{t_1}{B}\tb\ldots\tb\oftype{}{\Gamma,x:A_n}{t_n}{B}}
       {\oftype{}{\Gamma}{\amatchI{t}{\acase{c_1(x)}{t_1},\ldots,\acase{c_n(x)}{t_n}}}{B}}\]
 
 
@@ -385,27 +454,30 @@ Finally, the typing rule is:
 
 Inductive and abstract data types are dual to each other.
 
-An inductive data type is defined bottom-up: the terms are exactly the words over some context-free grammar.
-Thus, we know the terms exactly.
-When we operate on a term on the other hand, we have to inspect all possible cases.
+An inductive data type is defined bottom-up: the terms are exactly the \emph{syntax trees} of the words over some context-free grammar.
+That makes it easy to build terms---we just apply one of the constructor.
+But it makes it difficult to operate on a term---we have to pattern-match for all possible cases.
 
 An abstract data type is defined top-down by its \emph{behavior}: any object that exhibits the required behavior is a term of the type.
-Thus, we do not know what the terms are---instead, we have to implement the behavior in each case.
-When we operate on a term on the other hand, we know exactly what we can do because each term has the same behavior.
+That makes it easy to operate on a term---we just apply one of the required behaviors.
+But it makes it difficult to build terms---we have to implement all required behaviors.
 
 \subsubsection{Type Declaration}
 
 The declaration of an abstract data type looks as follows:
 
-\[Decl \bbc \aclassAI{a}{s:A,\ldots,s:A}{}{Field,\ldots,Field}\]
+\[Decl \bbc \aclassAI{a}{x:A,\ldots,x:A}{}{Field,\ldots,Field}\]
 \[Field \bbc f:A\]
-\[a,f,s,x \bbc \text{name} \]
-
-\[\rul{\aclassAI{a}{\ldots}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
+\[a,f,x \bbc \text{name} \]
 
 Given $\aclassAI{a}{x_1:A_1,\ldots,x_n:A_m}{}{Field_1,\ldots,Field_n}$, $a$ is the \textbf{name} of the data type and each $Field_i$ is a \textbf{field}.
 The $x_i:A_i$ are called the \textbf{constructor arguments}.
 For a field $f:A$, $f$ is the name of the field and $A$ its type.
+
+Again we omit the rule for checking $\isdecl{}{\Gamma}{\aclassAI{a}{x_1:A_1,\ldots,x_m:A_m}{}{Field_1,\ldots,Field_n}}$.
+
+Like for inductive data types, once declared, the name is a new type:
+\[\rul{\aclassAI{a}{\ldots}{}{\ldots}\;\;\in\;\;\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
 
 \begin{remark}[Relation to Object-Orientation]
 Object-oriented programming languages provide a very rich formalism for defining abstract data types.
@@ -418,6 +490,8 @@ Our variant here is a special case that arises if we make the following restrict
  \item All methods are public and abstract.
  \item When creating a new instance, all methods must be implemented.
 \end{compactitem}
+This is obviously too restrictive for programming.
+But it is enough to explain the theory systematically.
 It is straightforward to relax these restrictions when defining practical languages.
 \end{remark}
 
@@ -429,8 +503,8 @@ Machine & Abstract Data Type \\
 \hline
 set of possible states & product $A_1\times \ldots \times A_n$ of constructor argument types\\
 initial state & constructor arguments $(s_1,\ldots,s_n)$ \\
-current state & current value of tuple $(s_1,\ldots,s_n)$ \\
-$f$-transition (push button labeled $f$) & field $f$ of function type\\
+current state & current tuple of private variables $(x_1,\ldots,x_n)$ \\
+$f$-transition (push button labeled $f$) & apply field $f$ of function type\\
 possible inputs for transition $f$ & argument types of $f$\\
 possible outputs of transition $f$ & return type of $f$\\
 \hline
@@ -442,14 +516,14 @@ Terms of an abstract data type $a$ are created using the \textbf{new} operator.
 They are also called \textbf{instances} of $a$.
 
 \[t \bbc \anewA{a}{t,\ldots,t}{Def,\ldots,Def}\]
-\[Def \bbc x=t\]
+\[Def \bbc f=t\]
 
 In $\anewA{a}{t_1,\ldots,t_n}{Def_1,\ldots,Def_n}$, the $t_i$ are the \textbf{constructor arguments}, and the $Def_i$ are the \textbf{field definitions}.
 
 Again, we state the typing rule only for a special case: we assume that the constructor takes exactly $1$ argument.
 The general case works accordingly.
 
-\[\rul{\aclassAI{a}{x:A}{}{f_1:A_1,\ldots,f_n:A_n}\tb\in\tb\Gamma\tb
+\[\rul{\aclassAI{a}{x:A}{}{f_1:A_1,\ldots,f_n:A_n}\;\;\in\;\;\Gamma\tb
        \oftype{}{\Gamma}{t}{A} \tb
        \oftype{}{\Gamma}{t_1}{A_1}\tb\ldots\tb\oftype{}{\Gamma}{t_n}{A_n}}
       {\oftype{}{\Gamma}{\anewA{a}{s}{f_1=t_1,\ldots,f_n=t_n}}{a}}\]
@@ -461,21 +535,53 @@ To operate on a term of an abstract data type, we access its fields:
 
 \[t \bbc t.f\]
 
-\[\rul{\aclassAI{a}{\ldots}{}{f_1:A_1,\ldots,f_n:A_n}\tb\in\tb\Gamma\tb
+\[\rul{\aclassAI{a}{\ldots}{}{f_1:A_1,\ldots,f_n:A_n}\;\;\in\;\;\Gamma\tb
        \oftype{}{\Gamma}{t}{a}}
       {\oftype{}{\Gamma}{t.f_i}{A_i}}\]
+
+\subsection{Polymorphic Data Types}
+
+Data types are usually allowed to be polymorphic.
+
+Therefore, the grammar must actually allow all declarations and all references to constructors and fields to take type parameters.
+
+We omit the rules and only list the resulting productions:
+
+\begin{commgrammar}
+\gcomment{data type declarations}\\
+\gprod{Decl}{\adata{a[a^*]}{Con^*}}{IDT}\\
+\galtprod{\aclassAI{a[a^*]}{(x:A)^*}{}{Field^*}}{ADT}\\
+\gcomment{types (same productions as before)}\\
+\gprod{A}{a[A^*]}{data type applied to type parameters}\\
+\gcomment{building and using terms}\\
+\gprod{t}{c[A^*](t^*)}{constructor application}\\
+\galtprod{\amatchI{t}{Cas^*}}{pattern-match}\\
+\galtprod{\anewA{a}{t^*}{Def^*}}{new instance}\\
+\galtprod{t.f[A^*]}{field access}\\
+\gcomment{auxiliary non-terminals}\\
+\gprod{Con}{c(A^*)}{constructor in IDT declaration}\\
+\gprod{Cas}{\acase{c(x^*)}{t}}{case in pattern-match}\\
+\gprod{Field}{f:A}{field in ADT declaration}\\
+\gprod{Def}{f=t}{field definition in new instance}\\
+\end{commgrammar}
+
 
 \subsection{Inheritance}
 
 Inheritance generalizes abstract data types in two ways:
 \begin{compactitem}
- \item fields may have a definition; such fields are skipped when creating a new instance
- \item we can form a new data type by extending an existing one, which has the effect of copying over all its fields
+ \item Fields may already have a definition. Such fields are not implemented anymore when creating a new instance.
+ \item We can form a new data type by extending an existing one, which has the effect of copying over all its fields.
 \end{compactitem}
 
 Both generalizations can be seen as a matter of convenience.
-However, by fixing certain definitions in the extended class, we gain enormous power to fine-tune the desirable behavior of the instances.
+However, by fixing certain definitions in an class, we gain enormous power to fine-tune the desirable behavior of the instances.
 
+\begin{remark}[Inheritance for Inductive Data Types]
+Inheritance works exactly the same way for inductive data types: fields with definition are skipped when pattern-matching, and new types can reuse the set of constructors of an existing type.
+
+However, this is not used in practice.\footnote{Possibly because no one has understood it clearly so far.}
+\end{remark}
 
 \subsubsection{Inductive Data Types Via Classes}
 
@@ -508,10 +614,41 @@ as
 
 Constructing a term $c_i(t_1,\ldots,t_n)$ corresponds to $\anew{c_i}{t_1,\ldots,t_n}$.
 Equality at $a$ must be implemented such that $x==y$ iff $x$ and $y$ are instances of the same class $c_i$ and created with equal constructor arguments.
-Pattern-matching can be implemented as well.
 
-\begin{remark}[Inheritance for Inductive Data Types]
-Inheritance works exactly the same way for inductive data types: fields with definition are skipped when pattern-matching, and new types can reuse the set of constructors of an existing type.
+Pattern-matching must be implemented manually.
 
-However, this is not used in practice.\footnote{Possibly because no one has understood it clearly so far.}
-\end{remark}
+\section{Implementation}
+
+Formal systems can be implemented very systematically in any programming language that supports inductive data types.
+
+The design is as follows:
+\begin{compactenum}
+ \item Define inductive types $DT$ that represents the context-free grammar.
+ \item Define parsing and printing functions that translate between $\String$ and $DT$.
+ \item Define checking functions that check whether $DT$-objects are well-formed.
+ \item Define processing functions that take $DT$-objects. In particular,
+  \begin{compactitem}
+   \item interpreters or evaluators turn objects into their values,
+   \item static analysis tool perform additional checks or statistics,
+   \item compilers transform objects into equivalent objects in a different formal system.
+  \end{compactitem}
+\end{compactenum}
+
+\begin{ctabular}{|l|l|}
+\hline
+Component & contains for each concept $N$ one\\
+\hline
+data type & inductive data type $N$ \\
+printer  & function $printN(o: N): \String$ \\
+parser   & function $parseN(input: \String, position: \Int): (N, \Int)$ \\
+checker  & function $checkN(o: N, \text{possibly other arguments}): \Bool$\\
+interpreter & function $interpretN(o: N): \Unit$ \\
+compiler  & function $compileN(o: N):N'$ where $N'$ is target type \\
+\hline
+\end{ctabular}
+
+The meaning of the parsing functions is as follows:
+\begin{compactitem}
+ \item $parseN(input, pos)$ parses an object of type $N$ that starts at position $pos$ in the input string.
+ \item It returns a pair $(o,pos')$ of the parsed object $o$ and the position $pos'$ in $input$ after $o$, where parsing has to continue.
+\end{compactitem}

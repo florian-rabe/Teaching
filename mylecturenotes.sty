@@ -19,6 +19,7 @@
 \usepackage{\ln@root/macros/twelf-math}
 \usepackage[book,mark]{\ln@root/macros/theorems}
 \usepackage{\ln@root/macros/basics}
+%\usepackage{basics}
 
 \usepackage[hyperfootnotes=false,bookmarks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, colorlinks=true, breaklinks=true, bookmarksopen=true,bookmarksopenlevel=1,bookmarksnumbered]{hyperref} % this needs to go last
 
@@ -85,7 +86,7 @@
 \newcommand{\istype}[3][]{\der^{#1}_{#2}#3:\TYPE}
 \newcommand{\oftype}[5][]{#3\der^{#1}_{#2}#4\;:\;#5}
 \newcommand{\istrue}[3][]{\der^{#1}_{#2}#3}
-\newcommand{\isdecl}[4][]{#3\der^{#1}_{#2}#4}
+\newcommand{\isdecl}[4][]{#3\der^{#1}_{#2}#4\;\checkmark}
 \newcommand{\lam}[2]{\lambda #1:#2.}
 \newcommand{\Boole}{\mathbb{B}}
 
