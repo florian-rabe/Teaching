@@ -654,8 +654,11 @@ The $D_i$ are called the \textbf{type parameters} or \textbf{type arguments} of 
 This is best understood by example:
 
 \begin{example}[Lists]
-Lists are a polymorphic data structure: $List[A]$ is the data structure of lists whose elements have type $A$, e.g., it is a data structure for the set $A^*$.
-For example, $List[\Int]$ contains the lists of integers.
+Lists are a polymorphic data structure.
+$A^*$ is the set of lists whose elements have type $A$.
+Any data structure for $A^*$ should take $A$ as a type parameter.
+
+For example, $List[A]$ may be a data structure such that $List[\Int]$ is the type of lists of integers.
 
 Most algorithms about lists are polymorphic as well.
 For example, reversing a list can be realized using an algorithm
@@ -694,6 +697,14 @@ Then a polymorphic sorting algorithm could look like
 }
 \end{acode}
 \end{example}
+
+\begin{notation}[Omitting Type Parameters]
+Most of the time it is possible to omit the type parameters when calling a polymorphic function without ambiguity.
+For example, if $l: List[\Int]$, we can simply say $revert(l)$ instead of $revert[\Int](l)$---both human readers and compiler can infer the type argument.
+
+Most programming languages that allow polymorphism also allow omitting parameters if they can be inferred uniquely.
+It is also allowed to do so in examples and pseudo-code.
+\end{notation}
 
 \subsubsection{In Programming Languages}
 

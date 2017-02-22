@@ -1,0 +1,77 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=4,date=2017-02-28,due={2017-03-09, 11:00},unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Correctness}{2+2+2}
+Consider the following algorithm for reverting a list:
+\begin{acode}
+\afun[{List[A]}]{revertFun[A]}{x:List[A]}{
+  rest := x\\
+  rev := []\\
+  \awhile{rest \neq []}{
+    rev := cons(rest.head, rev)\\
+    rest := rest.tail
+  }
+}
+\end{acode}
+
+Its specification is
+\begin{compactitem}
+ \item precondition: nothing
+ \item postcondition: $revertFun(x)==reverse(x)$
+\end{compactitem}
+
+Prove correctness by doing the following:
+\begin{compactenum}
+ \item Give a loop invariant $F(x,rest,rev)$ for the while-loop.
+ \item Argue informally why it implies partial correctness. 
+ \item Give a termination ordering $T(x,rest,rev)$ for the while-loop.
+\end{compactenum}
+\end{problem}
+
+\begin{problem}{Lists}{6+6}
+Implement a data structures for polymorphic lists twice: once using an inductive data type in a functional language, and once using classes/structs or comparable for singly-linked lists in an imperative or object-oriented language.
+
+Specifically, the implementation should have
+\begin{compactitem}
+ \item the data type definition itself (2 points)
+ \item polymorphic functions for $append$ and $reverse$ (2 points each)
+\end{compactitem}
+
+Remarks:
+\begin{compactitem}
+\item Most programming languages have libraries for lists.
+Naturally you are not allowed to use those libraries.
+\item If you use a multi-paradigm programming language that supports both data type and classes, both implementations can use the same programming language.
+Otherwise, use two different languages.
+\item Because you have to be polymorphic, you have to use a typed programming language supporting it.
+This can be tricky. So the lecture notes contain some examples (Sect.~2.4) to get you started.
+If you are completely stuck, drop the polymorphism and implement it only for lists of integers.
+That costs half the points.
+\end{compactitem}
+\end{problem}
+
+
+\begin{problem}{Sorted List}{2+2+(2+2+2)}
+In any programming language and possibly extending one of your implementations from above, implement the following:
+\begin{enumerate}
+ \item An abstract data structure $Ord[A]$ for orders. You may reuse/adapt the examples given in Sect.~2.4.
+ \item A function $sorted[A](x: List[A], ord: Ord[A]): \Bool$ that checks if a list is sorted.\footnote{Checking whether a list is sorted works for any order. A \emph{total} order would be needed to ensure any list \emph{can} be sorted.}
+ \item $3$ concrete instances of $Ord[A]$:
+  \begin{itemize}
+   \item $IntSmaller:Ord[\Int]$ for the order  $\leq$
+   \item $Divisible:Ord[\Int]$ for the order $|$
+   \item $Lexicographic:Ord[\String]$ for the order in which words are listed in a dictionary
+  \end{itemize}
+\end{enumerate}
+\end{problem}
+
+\end{document}
