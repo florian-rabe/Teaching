@@ -12,6 +12,8 @@ We say that:
 \end{compactitem}
 \end{definition}
 
+\subsubsection{Data Structures}
+
 Obviously, an incorrect algorithm is simply a bug.%
 \footnote{However, there are advanced areas of computer science that study approximation algorithms.
 For example, we may want to use a fast algorithm that is almost correct for a function for which no fast algorithm exists.}
@@ -68,7 +70,8 @@ Neither can we give a correct data structure for $A/r$ for $r\in A\times A\to \B
 Even if $r$ is computable, we cannot give an algorithm for equality of elements of $A/r$.
 \end{example}
 
-\paragraph{Verification}
+\subsubsection{Algorithms}
+
 The process of making sure that an algorithm is correct is called \emph{verification}.
 Verification is very difficult.
 In particular, the function that determines whether a data structure or algorithm is correct is itself not computable.
@@ -77,7 +80,9 @@ Therefore, we have to prove the correctness of each data structure or algorithm 
 Good programmers design algorithms that are close to the specification.
 That makes it easier to verify the design.
 
-Verification often splits the correctness of an algorithm into two parts as follows:
+To make verification more systematic, we usually split the specification into two parts: precondition and postcondition.
+Independently, we split the verification arguments into two independent steps: termination and partial correctness.
+The definitions are as follows:
 
 \begin{definition}\label{def:ad:correct2}
 Consider an algorithm $A$ for a function $f(x_1\in I_1,\ldots,x_n\in I_n)\in O$.
@@ -108,13 +113,17 @@ The reason for splitting correctness up is that partial correctness and terminat
  So it is good to have separate definitions for them.
  Sect.~\ref{sec:ad:loopinv} and~\ref{sec:ad:termord} describe the most important techniques.
 
-The point of pre- and postcondition is to make fine-granular statements about what input an algorithm expects and what output it provides.
-In particular, programmers are allowed to assume that the input satisfies the precondition---they do not have to check it.
-Instead, whoever calls the algorithm has to make sure that the input satisfies the precondition.
-Vice versa, whoever calls the algorithm is allowed to assume that the postcondition holds afterwards.
+The reason for splitting the specification into pre- and postcondition is to make fine-granular statements about what input an algorithm expects and what output it provides.
+They can be seen as a trade between the programmer W who writes function F and the programmer C who calls F.
+The precondition is the price that C has to pay (by making sure the precondition holds before calling F).
+And the postcondition in the service that W provides in exchange (by returning a value that satisfies the postcondition).
+
+In particular, W may assume that the precondition holds---she does not have to check it.
+Instead, C has to check it.
+Vice versa, C may assume that the postcondition holds afterwards.
 
 \begin{example}[Pre/Postcondition]
-Consider a variant $A(x:\Int,y:\Int):\Int$ of the Euclidean algorithm that uses $32$-bit integers.
+Consider a variant $gcd32(x:\Int,y:\Int):\Int$ of the Euclidean algorithm that uses $32$-bit integers.
 This can never be correct because it cannot handle arbitrarily large natural numbers.
 Moreover, the input and output type now allow negative values, which we want to exclude.
  
@@ -127,6 +136,13 @@ where $MaxInt$ is the maximal value of the type $\Int$.
 
 Note that this specification makes the strong requirement that there will be no overflows.
 That works out for the Euclidean algorithm because all its intermediate results are smaller than the input.
+
+For other algorithms, like a 32-bit algorithm $fib32(n:\Int):\Int$ for Fibonacci numbers, the input has to be much smaller than $MaxInt$ to make sure the output fits into a $32$-bit integer.
+So we might use:
+\begin{compactitem}
+\item precondition: $Pre(n)\;=\;0\leq x \leq 46$
+\item postcondition: $Post(n,r)\;=\;r==fib(n)$
+\end{compactitem}
 \end{example}
 
 \subsection{Partial Correctness}\label{sec:ad:loopinv}
