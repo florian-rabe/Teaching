@@ -107,19 +107,23 @@ That shows us that we cannot simply use the judgment $\oftype{}{}{x}{A}$---there
 Therefore, we have to collect all declarations that are in scope and carry them around.
 That is the purpose of signatures and contexts.
 
+\subsubsection{Assumptions}
+
+Often we distinguish two kinds of declarations:
+\begin{compactitem}
+% \item \textbf{Global} declarations are the entire input (source file, program, etc.) that we are checking.
+% These are fixed during checking.
+% \item \textbf{Local} declarations are introduced temporarily while checking certain declarations.
+% Examples are the variables declared inside a function.
+ \item \textbf{Definitions} are declarations a definiens (i.e., an assignment to the new name). Most declarations in user input are of this form.
+ \item \textbf{Assumptions} are declarations without a definiens.
+ This should only be allowed in specific circumstances.\\
+ Examples are the parameters of a function or a constructor.
+\end{compactitem}
+
 \subsubsection{Collecting Declarations}
 
 A \textbf{context} $\Gamma$ is a list of declarations.
-
-Often we distinguish different kinds of declarations:
-\begin{compactitem}
- \item The \textbf{global} declarations are the entire input (source file, program, etc.) that we are checking.
- These are fixed during checking.
- \item The \textbf{local} declarations are introduced temporarily while checking certain declarations.
- Examples are the variables declared inside a function.
- \item The local \textbf{assumptions} are special local declarations that introduce a name without giving it a definition.\\
- Examples are the parameters of a function.
-\end{compactitem}
 
 Usually all judgments for objects take a context as an additional argument.
 It is usually placed to the left of the $\der$ symbol.
@@ -150,11 +154,11 @@ Very often it is convenient to introduce a new name that takes type parameters.
 For example, the type $List[A]$ of lists over $A$ should take a parameter for the type $A$ of the elements.
 Similarly, the function $revert[A]:List[A]\to List[A]$ takes a type parameter.
 
-That can be accomplished by allowing for type assumptions in all declarations that we allow to be parametric.
+That can be accomplished by allowing for type assumptions in all declarations that we allow to be polymorphic.
 Examples are:
 \begin{compactitem}
  \item For parametric type definitions (also called \textbf{type operators}), we use
-  \[Decl ::= \atypedef{a[a^*]}{A}\]
+  \[Decl ::= \atypedef{a[(\atypedef{a}{})^*]}{A}\]
   \[a ::= a[A^*]\]
   where $a[A_1,\ldots,A_n]$ is the type that arises by applying $a$ to the parameters $A_1,\ldots,A_n$.
  \item For parametric constants (also called \textbf{polymorphic constants}), we use
@@ -173,26 +177,22 @@ The concepts and constructors are given by the following context-free grammar:
 
 \begin{commgrammar}
 \gcomment{contexts}\\
-\gprod{\Gamma}{(Decl \bnfalt Assume)^*}{}\\
+\gprod{\Gamma}{Decl^*}{}\\
 \gcomment{declarations}\\
-\gprod{Decl}{\atypedef{a}{A}}{type definition}\\
-\galtprod{\aval{x}{A}{t}}{term definition}\\
-\gcomment{local assumptions}\\
-\gprod{Assume}{a:\type}{type assumption}\\
-\galtprod{x:A}{term assumption}\\
+\gprod{Decl}{\atypedef{a}{A^?}}{type declaration (with optional definiens)}\\
+\galtprod{\aval{x}{A}{t^?}}{term declaration (with optional definiens)}\\
 \gcomment{types}\\
 \gprod{A}{a}{type names}\\
-\galtprod{\ablockI{Decl; A}}{local declaration}\\
 \gcomment{terms}\\
 \gprod{t}{x}{term names}\\
-\galtprod{\ablockI{Decl; x}}{local declaration}
 \end{commgrammar}
 
 The judgments are:
 \begin{center}
 	\begin{tabular}{|l|l|}
 	  \hline
-		$\isdecl{}{\Gamma}{D}$        & declaration $D$ can be appended to $\Gamma$ \\\hline
+		$\;\;\;\iscont{}{\Gamma}$           & $\Gamma$ is well-formed\\
+		$\isdecl{}{\Gamma}{D}$        & declaration $D$ is well-formed in context $\Gamma$ \\\hline
 		$\oftype{}{\Gamma}{A}{\type}$ & $A$ is a well-formed type in context $\Gamma$ \\
 		$\oftype{}{\Gamma}{t}{A}$     & $t$ is a well-formed term of type $A$ type in context $\Gamma$ \\
 		\hline
@@ -201,32 +201,30 @@ The judgments are:
 
 The rules for this empty type type mostly take care of scope-checking:
 \begin{compactitem}
-\item Types and terms can be declared with type parameters
-\[
-\rul{\oftype{}{\Gamma,a_1:\type,\ldots,a_n:\type}{A}{\type}}{\isdecl{}{\Gamma}{\atypedef{a[a_1,\ldots,a_n]}{A}}}
+\item Every declaration can use the previous ones (where $\epsilon$ is the empty context):
+\[\rul{}{\iscont{}{\epsilon}}
 \tb\tb
-\rul{\oftype{}{\Gamma,a_1:\type,\ldots,a_n:\type}{t}{A}}{\isdecl{}{\Gamma}{\aval{x[a_1,\ldots,a_n]}{A}{t}}}
+\rul{\iscont{}{\Gamma} \tb \isdecl{}{\Gamma}{D}}{\iscont{}{\Gamma,D}}
 \]
-\item Declared names can be used later on with the right number of type parameters
+
+\item Types and terms can be declared with type parameters and definiens:
+\[
+\rul{\oftype{}{\Gamma,\atypedef{a_1}{},\ldots,\atypedef{a_n}{}}{A}{\type}}{\isdecl{}{\Gamma}{\atypedef{a[a_1,\ldots,a_n]}{A}}}
+\tb\tb
+\rul{\oftype{}{\Gamma,\atypedef{a_1}{},\ldots,\atypedef{a_n}{}}{t}{A}}{\isdecl{}{\Gamma}{\aval{x[a_1,\ldots,a_n]}{A}{t}}}
+\]
+\item Declared names can be used later on with the right number of type parameters:
 \[\rul{\begin{array}{c}
-         \atypedef{a[a_1,\ldots,a_n}{A}\in \Gamma \\
+         \atypedef{a[a_1,\ldots,a_n]}{A}\;\in\; \Gamma \\
          \oftype{}{\Gamma}{A_1}{\type}\tb\ldots\tb \oftype{}{\Gamma}{A_n}{\type}
       \end{array}}
       {\oftype{}{\Gamma}{a[A_1,\ldots,A_n]}{\type}} \tb\tb
 \rul{\begin{array}{c}
-       \aval{x[a_1,\ldots,a_n]}{A}{\_}\in \Gamma \\
+       \aval{x[a_1,\ldots,a_n]}{A}{\_}\;\in\; \Gamma \\
        \oftype{}{\Gamma}{A_1}{\type}\tb\ldots\tb \oftype{}{\Gamma}{A_n}{\type}
     \end{array}}
     {\oftype{}{\Gamma}{x[A_1,\ldots,A_n]}{A}}\]
-\item Assumed names can be used later on
-\[\rul{a:\type\in \Gamma}{\oftype{}{\Gamma}{a}{\type}} \tb\tb
-\rul{x:A\in \Gamma}{\oftype{}{\Gamma}{x}{A}}\]
-\item Local declarations can be used later on
-\[\rul{\oftype{}{\Gamma,D}{A}{\type}}{\oftype{}{\Gamma}{\ablockI{D; A}}{\type}}
-\tb\tb
-\rul{\oftype{}{\Gamma,D}{t}{A}}{\oftype{}{\Gamma}{\ablockI{D; t}}{A}}\]
 \end{compactitem}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Concrete Objects}\label{sec:sd:typetheory:objects}
@@ -333,7 +331,7 @@ The first part introduces the new type:
 The second part introduces terms of the new type:
 
 \[t \bbc \alam[A]{x}{t}\]
-\[\rul{\oftype{}{\Gamma,x:A}{t}{A}}{\oftype{}{\Gamma}{\alam[A]{x}{t}}{A\to B}}\]
+\[\rul{\oftype{}{\Gamma}{A}{\type}\tb\oftype{}{\Gamma,\aval{x}{A}{}}{t}{A}}{\oftype{}{\Gamma}{\alam[A]{x}{t}}{A\to B}}\]
 
 Terms of function type are the $\lambda$-abstractions $\lambda x:A.t$.
 In programming languages we usually write something like $\alam[A]{x}{t}$ instead.
@@ -365,9 +363,25 @@ The third part introduces terms formed from a term $t:A\to B$ of the new type:
 
 \[\rul{\oftype{}{\Gamma}{s}{A\to B}\tb \oftype{}{\Gamma}{t}{A}}{\oftype{}{\Gamma}{s(t)}{B}}\]
 
-
-  %records
+%records
   
+\subsection{Objects with Local Definitions}
+
+Local definitions introduce an abbreviation to be used in subsequent expressions.
+
+Depending on the language, they are usually written as $\akey{let}\aval{x}{A}{s}\;\akey{in}t(x)$ or simply $\aval{x}{A}{s};t(x)$.
+The latter tends to be nicer because it can be chained more easily.
+
+Languages differ in what kind of definitions may be used locally in what kind of concepts.
+For example, the above expressions use a local definitions of a \emph{term} inside a \emph{term}.
+
+The following production and rule can be used to allow \emph{any} local definitions in a \emph{term}.
+\[t \bbc Decl; t\]
+
+\[\rul{\isdecl{}{\Gamma}{D}\tb\oftype{}{\Gamma,D}{t}{A}}{\oftype{}{\Gamma}{D; t}{A}}\]
+
+Many programming language write these terms as $\{D;t\}$ with the understanding that chained local definitions can be grouped in a single pair of brackets as in $\{D_1;\ldots;D_n;t\}$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Types}
 
@@ -446,7 +460,7 @@ $t$ is called the \textbf{body} of the case.
 
 Finally, the typing rule is (again assuming all constructors take exactly $1$ argument): 
 
-\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb\oftype{}{\Gamma,x:A_1}{t_1}{B}\tb\ldots\tb\oftype{}{\Gamma,x:A_n}{t_n}{B}}
+\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb\oftype{}{\Gamma,\aval{x}{A_1}{}}{t_1}{B}\tb\ldots\tb\oftype{}{\Gamma,\aval{x}{A_n}{}}{t_n}{B}}
       {\oftype{}{\Gamma}{\amatchI{t}{\acase{c_1(x)}{t_1},\ldots,\acase{c_n(x)}{t_n}}}{B}}\]
 
 
@@ -549,8 +563,8 @@ We omit the rules and only list the resulting productions:
 
 \begin{commgrammar}
 \gcomment{data type declarations}\\
-\gprod{Decl}{\adata{a[a^*]}{Con^*}}{IDT}\\
-\galtprod{\aclassAI{a[a^*]}{(x:A)^*}{}{Field^*}}{ADT}\\
+\gprod{Decl}{\adata{a[a^*]}{Con^*}}{inductive}\\
+\galtprod{\aclassAI{a[a^*]}{(x:A)^*}{}{Field^*}}{abstract}\\
 \gcomment{types (same productions as before)}\\
 \gprod{A}{a[A^*]}{data type applied to type parameters}\\
 \gcomment{building and using terms}\\
@@ -559,9 +573,9 @@ We omit the rules and only list the resulting productions:
 \galtprod{\anewA{a}{t^*}{Def^*}}{new instance}\\
 \galtprod{t.f[A^*]}{field access}\\
 \gcomment{auxiliary non-terminals}\\
-\gprod{Con}{c(A^*)}{constructor in IDT declaration}\\
+\gprod{Con}{c(A^*)}{constructor declaration}\\
 \gprod{Cas}{\acase{c(x^*)}{t}}{case in pattern-match}\\
-\gprod{Field}{f:A}{field in ADT declaration}\\
+\gprod{Field}{f:A}{field declaration}\\
 \gprod{Def}{f=t}{field definition in new instance}\\
 \end{commgrammar}
 
@@ -634,21 +648,34 @@ The design is as follows:
   \end{compactitem}
 \end{compactenum}
 
+The following table gives an overview:
+
 \begin{ctabular}{|l|l|}
 \hline
-Component & contains for each concept $N$ one\\
+Component \ldots & contains for each concept/non-terminal $N$ one \ldots\\
 \hline
 data type & inductive data type $N$ \\
 printer  & function $printN(o: N): \String$ \\
-parser   & function $parseN(input: \String, position: \Int): (N, \Int)$ \\
-checker  & function $checkN(o: N, \text{possibly other arguments}): \Bool$\\
-interpreter & function $interpretN(o: N): \Unit$ \\
-compiler  & function $compileN(o: N):N'$ where $N'$ is target type \\
+parser   & function $parseN(input: \String): N$ \\
+checker  & function $checkN(o: N):\Bool$\\
 \hline
+%interpreter & function $interpret(t: term): \Unit$ \\
+%compiler    & function $compile(t: term):T$ where $T$ is target type \\
+%\hline
 \end{ctabular}
+In each component, the respective functions are usually mutually recursive.
 
-The meaning of the parsing functions is as follows:
-\begin{compactitem}
- \item $parseN(input, pos)$ parses an object of type $N$ that starts at position $pos$ in the input string.
- \item It returns a pair $(o,pos')$ of the parsed object $o$ and the position $pos'$ in $input$ after $o$, where parsing has to continue.
-\end{compactitem}
+The processing pipeline is always
+\begin{center}
+\begin{tikzpicture}
+\node[ellipse,draw] (S) at (0,0) {source};
+\node[ellipse,draw] (D) at (0,2) {DT};
+\node[ellipse,draw] (C) at (0,4) {DT, checked};
+\node[ellipse,draw] (T) at (6,4) {target type};
+\node[ellipse,draw] (O) at (6,0) {output};
+\draw[arrow] (S) --node[left] {parser} (D);
+\draw[arrow] (D) --node[left] {checker} (C);
+\draw[arrow] (C) --node[above] {processor} (T);
+\draw[arrow] (T) --node[right] {printer} (O);
+\end{tikzpicture}
+\end{center}

@@ -29,7 +29,6 @@
 \newcommand{\aneq}{\neq}
 
 % statements
-\newcommand{\aval}[4][]{\akey{val}#2:#3=#4\acomment{#1}}
 \newcommand{\aseq}[2][]{\fold{;}{#2} \acomment{#1}}
 \newcommand{\awhile}[3][]{\akey{while} #2 \acomment{#1} \ablock{#3}}
 % for{i}{m}{n}{code(i)} = code(m) ; ... ; code(n)
@@ -54,7 +53,8 @@
 \newcommand{\aclassAI}[4]{\aclassH[abstract\; class]{#1}{#2}{#3}\ablockI{#4}}
 
 \newcommand{\adata}[2]{\akey{data} #1 \, =\, \fold{\;|\;}{#2}}
-\newcommand{\atypedef}[2]{\akey{typedef} #1 = #2}
+\newcommand{\aval}[3]{\akey{val} #1:#2\ifnonempty{#3}{=#3}}
+\newcommand{\atypedef}[2]{\akey{type} #1\ifnonempty{#2}{= #2}}
 
 \newcommand{\afunH}[3]{\akey{fun} #1(\fold{,\,}{#2})\ifnonempty{#3}{:#3} \, =}
 \newcommand{\afun}[4][]{\afunH{#2}{#3}{#1} \ablock{#4}}
