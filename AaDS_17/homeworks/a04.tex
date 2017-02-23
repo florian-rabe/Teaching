@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=4,date=2017-02-28,due={2017-03-09, 11:00},unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=4,date=2017-02-28,due={2017-03-09, 11:00}]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -38,7 +38,7 @@ Prove correctness by doing the following:
 \end{problem}
 
 \begin{problem}{Lists}{6+6}
-Implement a data structures for polymorphic lists twice: once using an inductive data type in a functional language, and once using classes/structs or comparable for singly-linked lists in an imperative or object-oriented language.
+Implement a data structure for polymorphic lists twice: once using an inductive data type in a functional language, and once using classes/structs or comparable primitives for (mutable or immutable) singly-linked lists in an imperative or object-oriented language.
 
 Specifically, the implementation should have
 \begin{compactitem}
@@ -52,8 +52,8 @@ Remarks:
 Naturally you are not allowed to use those libraries.
 \item If you use a multi-paradigm programming language that supports both data type and classes, both implementations can use the same programming language.
 Otherwise, use two different languages.
-\item Because you have to be polymorphic, you have to use a typed programming language supporting it.
-This can be tricky. So the lecture notes contain some examples (Sect.~2.4) to get you started.
+\item Because you have to be polymorphic, you have to use a typed programming language that supports polymorphism.
+That can be tricky, and the lecture notes contain some examples (Sect.~2.4) to get you started.
 If you are completely stuck, drop the polymorphism and implement it only for lists of integers.
 That costs half the points.
 \end{compactitem}
