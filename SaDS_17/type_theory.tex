@@ -331,7 +331,7 @@ The first part introduces the new type:
 The second part introduces terms of the new type:
 
 \[t \bbc \alam[A]{x}{t}\]
-\[\rul{\oftype{}{\Gamma}{A}{\type}\tb\oftype{}{\Gamma,\aval{x}{A}{}}{t}{A}}{\oftype{}{\Gamma}{\alam[A]{x}{t}}{A\to B}}\]
+\[\rul{\oftype{}{\Gamma}{A}{\type}\tb\oftype{}{\Gamma,\aval{x}{A}{}}{t}{B}}{\oftype{}{\Gamma}{\alam[A]{x}{t}}{A\to B}}\]
 
 Terms of function type are the $\lambda$-abstractions $\lambda x:A.t$.
 In programming languages we usually write something like $\alam[A]{x}{t}$ instead.
@@ -415,7 +415,25 @@ The declaration of an inductive data type looks as follows:
 
 Given $\adata{a}{Con_1,\ldots,Con_n}$, $a$ is the \textbf{name} of the data type and each $Con_i$ is a \textbf{constructor}.
 For a constructor $c(A_1,\ldots,A_n)$, $c$ is the name of the constructor and the $A_i$ are its \textbf{argument types}.
-We omit the rule for checking $\isdecl{}{\Gamma}{\adata{a}{Con_1,\ldots,Con_2}}$.
+
+The rule for checking a data type declaration looks as follows:
+\[
+\rul{\overbrace{\oftype{}{\Gamma,\atypedef{a}{}}{A_i}{\type}}^{\mfor i =1,\ldots,n}}
+    {\isdecl{}{\Gamma}{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}}}
+\]
+Here, for simplicity, the typing rule only covers the case where every constructor takes exactly $1$ argument.
+The general case works accordingly (or can be obtained by using the unit type or a product type as the argument type).
+
+Note that the data type $a$ is already assumed to exists when checking the types of the constructors.
+That is critical to allow writing recursive data types such as:
+
+\begin{example}
+The standard example of an inductive data type are the natural numbers.
+We obtain them as
+\[\adata{nat}{zero(),succ(nat)}\]
+\end{example}
+
+\subsubsection{The Type Provided by an Inductive Data Type}
 
 Once declared, the name of the data type is a well-formed type:
 \[\rul{\adata{a}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
@@ -444,8 +462,7 @@ The constructors form elements of the type $a$:
 \[t \bbc c(t,\ldots,t)\]
 \[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{A_i}}{\oftype{}{\Gamma}{c_i(t)}{a}}\]
 
-Here, for simplicity, the typing rule only covers the case where every constructor takes exactly $1$ argument.
-The general case works accordingly (or can be obtained by using the unit type or a product type as the argument type).
+Again we only use constructors with exactly $1$ argument.
 
 \subsubsection{Terms Formed From Terms of Inductive Data Type}
 
@@ -460,7 +477,8 @@ $t$ is called the \textbf{body} of the case.
 
 Finally, the typing rule is (again assuming all constructors take exactly $1$ argument): 
 
-\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb\oftype{}{\Gamma,\aval{x}{A_1}{}}{t_1}{B}\tb\ldots\tb\oftype{}{\Gamma,\aval{x}{A_n}{}}{t_n}{B}}
+\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb
+       \overbrace{\oftype{}{\Gamma,\aval{x}{A_i}{}}{t_i}{B}}^{\mfor i=1,\ldots,n}}
       {\oftype{}{\Gamma}{\amatchI{t}{\acase{c_1(x)}{t_1},\ldots,\acase{c_n(x)}{t_n}}}{B}}\]
 
 
@@ -488,7 +506,37 @@ Given $\aclassAI{a}{x_1:A_1,\ldots,x_n:A_m}{}{Field_1,\ldots,Field_n}$, $a$ is t
 The $x_i:A_i$ are called the \textbf{constructor arguments}.
 For a field $f:A$, $f$ is the name of the field and $A$ its type.
 
-Again we omit the rule for checking $\isdecl{}{\Gamma}{\aclassAI{a}{x_1:A_1,\ldots,x_m:A_m}{}{Field_1,\ldots,Field_n}}$.
+The rule for checking the declarations is as follows:
+
+\[\rul{\overbrace{\oftype{}{\Gamma,\atypedef{a}{}}{A_i}{\type}}^{\mfor i=1,\ldots,m} \tb 
+       \overbrace{\oftype{}{\Gamma,\atypedef{a}{}}{B_i}{\type}}^{\mfor i=1,\ldots,n}}
+      {\isdecl{}{\Gamma}{\aclassAI{a}{x_1:A_1,\ldots,x_m:A_m}{}{f_1:B_1,\ldots,f_n:B_n}}}
+\]
+
+Like for inductive data types, the new type $a$ is already assumed when checking the types of the constructor arguemtns and the fields.
+That is critical to describe many practical examples:
+
+\begin{example}
+Standard examples of abstract data types tend to be polymorphic.
+
+One of the standard examples of abstract data types is an automaton.
+In this example, we use numbered states and strings as the input and output of a transition:
+
+\[\aclassAI{automaton}{state:\Int}{}{inFinalState: \Bool,\; transition: \String\to \String}\]
+
+The constructor argument $state$ provides the initial state as well as the private variable that tracks the current state.
+In concrete implementations\footnotemark, the values of $inFinalState$ and $transition$ may depend on and change the value of $state$.
+
+Such an automaton may or may not be finite---that depends on which states are reachable from the initial state by applying transitions.
+\end{example}
+\footnotetext{Note that the language of this section does not actually allow for making assignments to variables.
+Thus, we cannot give interesting automata in it.
+But that is not a flaw---it shows the abstraction at work: How the behavior is implemented is completely open.
+The objects of an abstract data type are anything that shows the behavior.
+More expressive languages can define more such more objects.}
+
+
+\subsubsection{The Type Provided by an Abstract Data Type}
 
 Like for inductive data types, once declared, the name is a new type:
 \[\rul{\aclassAI{a}{\ldots}{}{\ldots}\;\;\in\;\;\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
@@ -518,6 +566,7 @@ Machine & Abstract Data Type \\
 set of possible states & product $A_1\times \ldots \times A_n$ of constructor argument types\\
 initial state & constructor arguments $(s_1,\ldots,s_n)$ \\
 current state & current tuple of private variables $(x_1,\ldots,x_n)$ \\
+query about current state (e.g., being final) & apply field of non--function type \\
 $f$-transition (push button labeled $f$) & apply field $f$ of function type\\
 possible inputs for transition $f$ & argument types of $f$\\
 possible outputs of transition $f$ & return type of $f$\\
@@ -539,7 +588,7 @@ The general case works accordingly.
 
 \[\rul{\aclassAI{a}{x:A}{}{f_1:A_1,\ldots,f_n:A_n}\;\;\in\;\;\Gamma\tb
        \oftype{}{\Gamma}{t}{A} \tb
-       \oftype{}{\Gamma}{t_1}{A_1}\tb\ldots\tb\oftype{}{\Gamma}{t_n}{A_n}}
+       \overbrace{\oftype{}{\Gamma}{t_i}{A_i}}^{\mfor i=1,\ldots,n}}
       {\oftype{}{\Gamma}{\anewA{a}{s}{f_1=t_1,\ldots,f_n=t_n}}{a}}\]
 
 
@@ -579,6 +628,25 @@ We omit the rules and only list the resulting productions:
 \gprod{Def}{f=t}{field definition in new instance}\\
 \end{commgrammar}
 
+\begin{example}[Lists and Trees]
+The standard example of a polymorphic inductive data type are lists over a type $a$:
+\[\adata{List[a]}{nil,{cons(a,List[a])}}\]
+
+Trees are only slightly more complex, e.g., for complete binary trees whose leafs are labeled with elements of $a$:
+\[\adata{Tree[a]}{leaf(a),{node(Tree[a],Tree[a])}}\]
+\end{example}
+
+\begin{example}[Iterators and Streams]
+The standard example of a polymorphic abstract data type are iterators (also called streams) over a type $a$:
+\[\aclassAI{Iterator[a]}{}{}{hasNext:\Bool,\;next:a}\]
+Technically, the return type of $a$ should $a^?$ (i.e., options of $a$), but it is commonly agreed that the behavior of $next$ is unspecified if no next element is left.
+
+If next always returns another element, we obtain streams, i.e., infinite sequences:
+\[\aclassAI{Stream[a]}{}{}{next:a}\]
+
+Like for automata, we have to generalize the language to allow for defining more interesting objects.
+In particular, new instances should be allowed to have additional private variables, e.g., to track the current position in the iterator/stream.
+\end{example}
 
 \subsection{Inheritance}
 
