@@ -433,6 +433,11 @@ We obtain them as
 \[\adata{nat}{zero(),succ(nat)}\]
 \end{example}
 
+%%% Positional arguments: also possible for IDT: For example, data nat(zero) = succ(nat), and eval(n:nat) = match n(0){succ(x) => x+1}
+%%% better syntax for full symmetry: data nat(zero: nat){such: nat -> nat}
+%%% constructor arguments of ADT should not be private - better allow every new instance to have arbitrary extra declarations; analogue for pattern matching are auxiliary definitions
+%%% then main difference left: ADT's allow for infinite trees and possibly mutable fields - if mutable fields are allowed multiple instances must be distinguished!, otherwise, compiler is allowed to marge multiple instances with same arguments, i.e., only one start object needed for final coalgebra construction
+
 \subsubsection{The Type Provided by an Inductive Data Type}
 
 Once declared, the name of the data type is a well-formed type:
@@ -516,7 +521,7 @@ The rule for checking the declarations is as follows:
 Like for inductive data types, the new type $a$ is already assumed when checking the types of the constructor arguemtns and the fields.
 That is critical to describe many practical examples:
 
-\begin{example}
+\begin{example}\label{ex:ad:datatype:automata}
 Standard examples of abstract data types tend to be polymorphic.
 
 One of the standard examples of abstract data types is an automaton.
@@ -525,16 +530,40 @@ In this example, we use numbered states and strings as the input and output of a
 \[\aclassAI{automaton}{state:\Int}{}{inFinalState: \Bool,\; transition: \String\to \String}\]
 
 The constructor argument $state$ provides the initial state as well as the private variable that tracks the current state.
-In concrete implementations\footnotemark, the values of $inFinalState$ and $transition$ may depend on and change the value of $state$.
+In concrete implementations (see also Rem.~\ref{rem:ad:datatype:dual}), the values of $inFinalState$ and $transition$ may depend on and change the value of $state$.
 
 Such an automaton may or may not be finite---that depends on which states are reachable from the initial state by applying transitions.
 \end{example}
-\footnotetext{Note that the language of this section does not actually allow for making assignments to variables.
-Thus, we cannot give interesting automata in it.
-But that is not a flaw---it shows the abstraction at work: How the behavior is implemented is completely open.
-The objects of an abstract data type are anything that shows the behavior.
-More expressive languages can define more such more objects.}
 
+\begin{remark}[Duality]\label{rem:ad:datatype:dual}
+Intuitively, inductive data types start with nothing and build all objects inductively by applying constructors.
+(We do not even need a base case---instead, we use constructors that take $0$ arguments.)
+Therefore, there is wide agreement on their intuition, syntax, and semantics (because it is easy to agree on what \emph{nothing} means).
+In other words, by default we assume objects are not members of an inductive data type; only those whose membership can be proved by applying constructors to build them are allowed.
+
+Abstract data types are dual in the sense that they start with \emph{everything} and discard all objects that show the wrong behavior.
+In other words, by default we assume all objects are members of an inductive data type; but we only disallow those membership can be disproved by applying fields to obtain an illegal behavior.
+
+But it is much harder to agree on what \emph{everything} is.
+Therefore, intuition, syntax, and semantics of abstract data types can vary widely across languages.
+Particular incarnations include coalgebras, coinductive data types, and object-orientation-like classes.
+\medskip
+
+This has an important consequence on the relation between specification and implementation.
+If a specification includes an inductive data type, every implementation must include the same data type with the same meaning.
+(If the specification and the implementation are written in the same language, e.g., by using SML signatures and SML structures, respectively, this can even get awkward because the exact declaration must be repeated twice.)
+
+But if a specification includes an abstract data type, the choice of implementation language can substantially affect what objects can be built.
+We often write the specification in a logic and the implementation in a programming language.
+Then it is possible that the abstract data type is very weak in the logic: the logic might be able to define no or only trivial behavior.
+For example, the type theory of this section cannot define many objects of the abstract data type of automate from Ex.~\ref{ex:ad:datatype:automata}.
+The same abstract data type in the programming language may be much larger because the programming can express so much more behavior.
+
+That is not a defect.
+It shows the abstraction at work: objects of an abstract data type are black boxes that we can never inspect, and how the behavior is defined is completely open and irrelevant.
+No language ever knows what kind of objects an abstract data type has.
+So even if a logic cannot define any object of an abstract data type, neither can it prove that the type is empty.
+\end{remark}
 
 \subsubsection{The Type Provided by an Abstract Data Type}
 
