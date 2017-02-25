@@ -166,7 +166,7 @@ object Closer {
     case TermRef(n) =>
       context.get(n) match {
         case Some(d) => d match {
-          case Val(_,_,Some(v)) => v
+          case Val(_,_,Some(v)) => closeTerm(context, v) // recursion needed in case v is a function
           case _ => tm
         }
         case None => tm // impossible for well-formed terms

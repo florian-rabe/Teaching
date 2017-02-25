@@ -59,6 +59,7 @@ object Checker {
 
     //********************
     case LocationType(a) =>
+      println("Warning: location types should not occur statically")
       checkType(context, a)
   }}
   
@@ -148,8 +149,8 @@ object Checker {
       
       //********************
       case loc: Location =>
-        // should be impossible while statically checking
-        throw Error("unexpected location")
+        println("Warning: locations should not occur statically")
+        LocationType(loc.tp)
       case Assignment(x, v) => x match {
         case TermRef(n) => context.get(n) match {
           case Some(Var(_,a,_)) =>

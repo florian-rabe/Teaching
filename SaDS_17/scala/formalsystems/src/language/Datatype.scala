@@ -96,9 +96,6 @@ case class Apply(fun: Term, args: Term) extends Term
 
 //TODO pairs and projections for product types
 
-//TODO (later): statements for programming
-
-
 
 object Operator {
   /** the list of infix operators */
@@ -112,13 +109,17 @@ case class Command(term: Term) extends Decl {
   def name = Name("") // commands are anonymous
 }
 
-case class Print(term: Term) extends Term
-case class While(cond: Term, body: Term) extends Term
-
 /** variable declarations */
 case class Var(name: Name, tp: Type, initalvalue: Term) extends Decl
 
-
+/** mutable variables */
 case class LocationType(tp: Type) extends Type
 class Location(val name: Name, val tp: Type, var value: Term) extends Term
 case class Assignment(loc: Term, value: Term) extends Term
+
+/** observable side effects */
+case class Print(term: Term) extends Term
+
+/** possible non-termination */
+case class While(cond: Term, body: Term) extends Term
+
