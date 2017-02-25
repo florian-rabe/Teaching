@@ -1,10 +1,15 @@
 package language
 
+/**
+ * function checkN checks syntax trees of non-terminal N
+ * 
+ * every checking method succeeds without output or throws an exception with an error message
+ */
 object Checker {
+  /** checking errors */
   case class Error(msg: String) extends java.lang.Exception(msg)
-  
-  // every checking method succeeds or throws an exception with an error message
-  
+
+  // |- context
   def checkContext(context: Context, c: Context) {
     c.decls match {
       case Nil =>
@@ -23,8 +28,14 @@ object Checker {
           // not allowed in user input, may only come up locally
           throw Error("uninitialized variable")
         case Some(v) =>
-          checkTerm(context, v, t)
+          checkTermAgainstType(context, v, t)
       }
+
+    //********************
+    case Command(t) =>
+      checkTerm(context, t)
+    case Var(x,a,v) =>
+      checkTermAgainstType(context, v, a)
   }}
   
   // context |- tp : type
@@ -40,71 +51,126 @@ object Checker {
         case None =>
           throw Error("not defined: " + n.name)
       }
-    case Int() | Bool() =>
+    case Int() | Bool() | Unit() =>
       // nothing to do
     case FunType(f,t) =>
       checkType(context, f)
       checkType(context, t)
+
+    //********************
+    case LocationType(a) =>
+      println("Warning: location types should not occur statically")
+      checkType(context, a)
   }}
   
+  // tm is well-formed if we can infer tp such that context |- tm : tp
+  def checkTerm(context: Context, tm: Term) {
+    inferType(context, tm)
+  }
+  
   // context |- tm : tp
-  def checkTerm(context: Context, tm: Term, tp: Type) {
-    val tmInfer = inferTypeOfTerm(context, tm)
+  def checkTermAgainstType(context: Context, tm: Term, tp: Type) {
+    val tmInfer = inferType(context, tm)
     if (tmInfer != tp)
       throw Error("type mismatch: expected " + Printer.printType(tp) + "; " + "found: " + Printer.printType(tmInfer))
   }
   
-  // check well-formedness of of tm by finding tp such that context |- tm : tp
-  def inferTypeOfTerm(context: Context, tm: Term): Type = {
+  // infers the type tp such that context |- tm : tp
+  def inferType(context: Context, tm: Term): Type = {
     tm match {
+      // names
       case TermRef(n) =>
         context.get(n) match {
           case Some(d) => d match {
             // check that n declares a term
             case Val(_, tp, _) => tp
+            // ***********************
+            case Var(_, tp, _) => tp
             case _ => throw Error("not a term: " + n.name)
           }
           case None =>
             throw Error("undeclared name: " + n.name)
         }
+      
+      // base types
+      case UnitLit() =>
+        Unit()
       case IntLit(_) =>
         Int()
-      case LocalDecl(d, t) =>
-        inferTypeOfTerm(context.and(d), t)
-      case Lambda(x,tp,bd) =>
-        val bdType = inferTypeOfTerm(context.and(Val(x, tp, None)), bd)
-        FunType(tp, bdType)
-      case Apply(fun,arg) =>
-        val funType = inferTypeOfTerm(context, fun)
-        funType match {
-          case FunType(from,to) =>
-            checkTerm(context, arg, from)
-            to
-          case _ =>
-            throw Error("non-function applied to argument")
-        }
+      case BoolLit(_) =>
+        Bool()
       case Operator(op, args) =>
-        val argTypes = args.map(a => inferTypeOfTerm(context, a))
-        if (Operator.builtInInfixOperators.contains(op) && args.length == 2) {
+        // operator applications behave differently based on the operator
+        val argTypes = args.map(a => inferType(context, a))
+        if (! Operator.builtInInfixOperators.contains(op))
+          throw Error("unknown operator")
+        if (args.length == 2) {
+          // (in)equality of terms of equal type
           if (argTypes(0) == argTypes(1) && (op == "==" || op == "!=")) {
             Bool()
           } else {
             (argTypes(0),argTypes(1)) match {
+              // operators on integers
               case (Int(),Int()) => op match {
                 case "+" | "-" | "*" | "mod" | "div" => Int()
-                case "<=" | ">=" => ??? // Bool
+                case "<=" | ">=" => Bool()
                 case _ => throw Error("ill-typed operator application")
               }
+              // operators on booleans
               case (Bool(),Bool()) => op match {
                 case "&&" | "||" => Bool()
                 case _ => throw Error("ill-typed operator application")
               }
+              // other cases
               case _ => throw Error("ill-typed operator application")
             }
           }
         } else {
-          throw Error("unknown operator or wrong number of arguments")
+          throw Error("wrong number of arguments for operator " + op)
         }
+      
+      // local declarations
+      case LocalDecl(d, t) =>
+        inferType(context.and(d), t)
+
+      // function types
+      case Lambda(x,tp,bd) =>
+        val bdType = inferType(context.and(Val(x, tp, None)), bd)
+        FunType(tp, bdType)
+      case Apply(fun,arg) =>
+        val funType = inferType(context, fun)
+        funType match {
+          case FunType(from,to) =>
+            checkTermAgainstType(context, arg, from)
+            to
+          case _ =>
+            throw Error("non-function applied to argument")
+        }
+      
+      //********************
+      case loc: Location =>
+        println("Warning: locations should not occur statically")
+        LocationType(loc.tp)
+      case Assignment(x, v) => x match {
+        case TermRef(n) => context.get(n) match {
+          case Some(Var(_,a,_)) =>
+            checkTermAgainstType(context,v,a)
+            Unit()
+          case Some(_) =>
+            throw Error("assignment to non-variable")
+          case None =>
+            throw Error("unknown assignment target: " + n)
+        }
+        case _ =>
+          throw Error("assignment to non-name")
+      }
+      case While(cond, body) =>
+        checkTermAgainstType(context, cond,Bool())
+        inferType(context, body)
+        Unit()
+      case Print(tm) =>
+        inferType(context, tm)
+        Unit()
     }
   }
 }

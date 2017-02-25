@@ -5,7 +5,8 @@
 \DeclareStringOption{course}
 \DeclareStringOption{number}
 \DeclareStringOption{date}
-\DeclareStringOption{due}
+\DeclareStringOption{duedate}
+\DeclareStringOption[before the lecture]{duetime}
 \DeclareBoolOption{unpublished}
 \ProcessKeyvalOptions*
 
@@ -41,7 +42,7 @@ Dr. Florian Rabe \hfill %due: \hw@due
 {\Large Homework \assignment\hspace{0.3cm}\\}
 \vspace{.5cm}
 You have to submit your solutions as announced in the lecture.\\ 
-\textbf{Unless mentioned otherwise, all problems are due \hw@due}\\
+\textbf{Unless mentioned otherwise, all problems are due \hw@duedate, \hw@duetime.}\\
 There will be no deadline extensions unless mentioned otherwise in the lecture.
 \end{center}
 \vspace{.5cm}
