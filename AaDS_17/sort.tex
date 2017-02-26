@@ -446,9 +446,9 @@ For arrays, the time complexity of $swap$ is $\Theta(1)$.
 For linked lists, it is $\Theta(n)$.
 
 
-\subsection{Bubble Sort}
+\subsection{Bubblesort}
 
-Bubble sort is a stable in-place sorting algorithm that closely follows the natural way how a human would sort.
+Bubblesort is a stable in-place sorting algorithm that closely follows the natural way how a human would sort.
 The idea is to find two elements that are not in order and swap them.
 If no such elements exist, the list is sorted.
 
@@ -486,7 +486,7 @@ Thus, the complexity is $\Theta(n^2)$.
 In the best-case, when $x$ is already sorted initially, the complexity is $\Theta(n)$.
 That is already optimal because it requires $n-1$ comparisons to determine that a list is sorted.
 
-\subsection{Insertion Sort}
+\subsection{Insertionsort}
 
 Insertion is also a stable in-place algorithm.
 
@@ -525,9 +525,9 @@ Thus, the worst-case complexity is $\Theta(n^2)$.
 
 In the best-case, if $x$ is already sorted, the while-loop never runs, and the complexity is $\Theta(n)$.
 
-\subsection{Merge Sort}
+\subsection{Mergesort}
 
-Merge sort is based on the observation that
+Mergesort is based on the observation that
 \begin{compactitem}
   \item sorting smaller lists is much easier than sorting larger lists (because the number of pairs that have to be compared in $\Theta(n^2)$,
   \item merging two sorted lists is easy (liner time).
@@ -651,9 +651,9 @@ That yields
  \[C(n)=n\cdot O(1)+\log_2 n\cdot \Theta(n)=\Theta(n\log_2 n)\]
 \medskip
 
-Thus, merge sort is quasilinear and thus strictly more efficient than bubble sort and insertion sort.
+Thus, mergesort is quasilinear and thus strictly more efficient than bubblesort and insertionsort.
 
-Contrary to bubble sort and insertion sort, merge sort takes the same amount of time no matter how sorted the input already is.
+Contrary to bubblesort and insertionsort, mergesort takes the same amount of time no matter how sorted the input already is.
 The recursion and the merging happen in essentially the same way independent of the input list.
 Thus, its best-case complexity is also $\Theta(n\log_2 n)$.
 
@@ -662,12 +662,12 @@ $merge$ could be simplified by always adding the element $xLeft.head$ or $yLeft.
 However, as discussed in Sect.~\ref{sec:ad:list:ds}, adding an element to the beginning of an immutable list takes constant time whereas adding to the end takes linear time.
 
 Therefore, if we added elements to the end of $res$ would become quadratic instead of linear.
-Then merge sort as a whole would also be quadratic.
+Then mergesort as a whole would also be quadratic.
 \end{remark}
 
-\subsection{Quick Sort}
+\subsection{Quicksort}
 
-Quick sort is similar to merge sort in that two sublists are sorted recursively.
+Quicksort is similar to mergesort in that two sublists are sorted recursively.
 The main differences are:
 \begin{compactitem}
  \item It does not divide the list $x$ in half.
@@ -675,7 +675,7 @@ The main differences are:
   Then it divides $x$ into sublists $a$ and $b$ containing the elements smaller and greater than $x$ respectively.\\
   No merging is necessary because all elements in $a$ are smaller than all elements in $b$.
   Thus the sorted list is $quicksort(a)+x+quicksort(b)$.
- \item To divide the list, quick sort has to traverse and reorder the list anyway.
+ \item To divide the list, quicksort has to traverse and reorder the list anyway.
  Therefore, it can easily be implemented in-place avoiding the use of auxiliary memory.
 \end{compactitem}
 
@@ -755,29 +755,29 @@ That value always decreases because the pivot element is never part of the recur
 \paragraph{Complexity}
 Let $n=last-first-1$ be the length of the sublist.
 It is easy to see that, apart from the recursion, $quicksortSublist$ takes $\Theta(n)$ steps because the for-loop traverses the sublist.
-Thus, the complexity of quick sort depends entirely on the lengths of the sublists in the recursive calls.
+Thus, the complexity of quicksort depends entirely on the lengths of the sublists in the recursive calls.
 However, the pivot position and therefore those lengths are hard to predict.
 
 The best-case complexity arises if the pivot always happens to be in the middle.
-Then the same reasoning as for merge sort, yields best-case complexity $\Theta(n\log_2 n)$.
+Then the same reasoning as for mergesort, yields best-case complexity $\Theta(n\log_2 n)$.
 The worst-case arises if the list is already sorted: then the pivot position will always be the last one, and the two sublists have sizes $n-1$ and $0$.
 That results in $n$ recursive calls on sublists of length $n$, $n-1$, \ldots, $1$ as well as $n$ calls on empty sublists.
 Consequently, the worst-case complexity is $\Theta(n^2)$.
 
-However, the worst-case complexity does not do quick sort justice because it is much higher than its average-case complexity.
+However, the worst-case complexity does not do quicksort justice because it is much higher than its average-case complexity.
 Because there are only finitely many permutations for a list of fixed length, the average-case complexity can be worked out systematically.
 The result is $\Theta(n\log_2 n)$.
 \medskip
 
-It may seem that quick sort is less attractive than merge sort because of its higher worst-case complexity.
+It may seem that quicksort is less attractive than mergesort because of its higher worst-case complexity.
 However, that is a minor effect because the algorithms have the same best-case and average-case complexity.
 Instead, the constant factors, which are rounded away by using $\Theta$-classes, become important to compare two algorithms with such similar complexity.
 
-Here quick sort is superior to merge sort.
-Moreover, quick sort can be optimized in many ways.
+Here quicksort is superior to mergesort.
+Moreover, quicksort can be optimized in many ways.
 In particular, the choice of the pivot can be tuned in order to increase the likelihood that the two sublists end up having the same size.
 For example, we can randomly pick $3$ elements of the sublist and use the middle-size one as the pivot.
-With such optimizations, quick sort can become substantially faster than merge sort.
+With such optimizations, quicksort can become substantially faster than mergesort.
 
 \subsection{Other Algorithms}
 
@@ -786,3 +786,23 @@ Examples include counting sort, radix sort, and bucket sort.
 
 One particularly important sorting algorithm is heap sort, which we discuss in Sect.~\ref{sec:ad:heapsort} (after introducing heaps).
 
+\subsection{In Programming Languages}
+
+Most programming languages come with a standard library that includes efficient sorting algorithms.
+Moreover, other libraries for other algorithms may be around.
+In some cases, languages only specify the interface and leave the implementation (and thus the choice of algorithm )to individual implementations of compilers/interpreters.
+
+The following gives some examples.
+
+Python uses Timsort (named after the programmer), which is a hybrid of mergesort and insertionsort with various optimizations.
+It is written directly in C.
+
+Java used to use just quicksort.
+Java 7 uses either Timsort (ported to Java) or a variant of quicksort that uses two pivot elements.
+
+Scala defers to Java's implementation.
+
+C++'s std library specification does not prescribe a sorting algorithm but requires $O(n\log_2 n)$ worst-case complexity (average-case in earlier versions).
+Implementations vary in their choice of algorithm, e.g., using hybrid algorithms that perform some iterations of quicksort before switching to insertionsort for the resulting small lists.
+
+For Javascript, the choice is up to the browser (because every browser is a separate implementation of Javascript).
