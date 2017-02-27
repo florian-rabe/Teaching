@@ -36,6 +36,8 @@
 \newcommand{\aif}[3][]{\akey{if} #2\acomment{#1} \ablock{#3}}
 \newcommand{\aifelse}[4][]{\aif[#1]{#2}{#3}\anewline\akey{else}\ablock{#4}}
 \newcommand{\areturn}[2][]{\akey{return} #2\acomment{#1}}
+\newcommand{\aprint}[2][]{\akey{print} #2\acomment{#1}}
+\newcommand{\aread}[1][]{\akey{read}\acomment{#1}}
 
 \newcommand{\aloopinv}[1]{\acomment{loop invariant: $#1$}\\}
 
@@ -54,6 +56,8 @@
 
 \newcommand{\adata}[2]{\akey{data} #1 \, =\, \fold{\;|\;}{#2}}
 \newcommand{\aval}[3]{\akey{val} #1:#2\ifnonempty{#3}{=#3}}
+\newcommand{\arecval}[3]{\akey{rec val} #1:#2=#3}
+\newcommand{\amval}[3]{\akey{var} #1:#2=#3}
 \newcommand{\atypedef}[2]{\akey{type} #1\ifnonempty{#2}{= #2}}
 
 \newcommand{\afunH}[3]{\akey{fun} #1(\fold{,\,}{#2})\ifnonempty{#3}{:#3} \, =}
