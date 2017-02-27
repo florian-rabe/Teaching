@@ -12,10 +12,6 @@ object Printer {
          case None => ""
        }
        "val " + printName(n) + " : " + printType(a) + vOptS
-     // ***************************
-     case Command(t) => printTerm(t)
-     case Var(n,a,v) =>
-       "var " + printName(n) + " : " + printType(a) + " = " + printTerm(v)
    }
    
    def printName(n: Name) = n.name
@@ -26,8 +22,6 @@ object Printer {
      case Int() => "int"
      case Bool() => "bool"
      case FunType(f,t) => "(" + printType(f) + " -> " + printType(t) + ")"
-     // ***************************
-     case LocationType(a) => printType(a) + "*" 
    }
    
    def printTerm(t: Term): String = t match {
@@ -49,10 +43,5 @@ object Printer {
      case Lambda(x,a,t) => printName(x) + ": " + printType(a) + " => " + printTerm(t)
      case Apply(f,a) => printTerm(f) + "(" + printTerm(a) + ")" 
 
-     // ***************************
-     case loc: Location => "*" + printName(loc.name) + "[" + printTerm(loc.value) + "]"
-     case Assignment(x, v) => printTerm(x) + " = " + printTerm(v)
-     case While(c,b) => "while (" + printTerm(c) + ")" + printTerm(b)
-     case Print(t) => "print(" + printTerm(t) + ")"
    }
 }

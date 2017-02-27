@@ -31,11 +31,6 @@ object Checker {
           checkTermAgainstType(context, v, t)
       }
 
-    //********************
-    case Command(t) =>
-      checkTerm(context, t)
-    case Var(x,a,v) =>
-      checkTermAgainstType(context, v, a)
   }}
   
   // context |- tp : type
@@ -56,11 +51,6 @@ object Checker {
     case FunType(f,t) =>
       checkType(context, f)
       checkType(context, t)
-
-    //********************
-    case LocationType(a) =>
-      println("Warning: location types should not occur statically")
-      checkType(context, a)
   }}
   
   // tm is well-formed if we can infer tp such that context |- tm : tp
@@ -84,9 +74,6 @@ object Checker {
           case Some(d) => d match {
             // check that n declares a term
             case Val(_, tp, _) => tp
-            // ***********************
-            case Var(_, tp, _) => tp
-            case _ => throw Error("not a term: " + n.name)
           }
           case None =>
             throw Error("undeclared name: " + n.name)
@@ -146,31 +133,6 @@ object Checker {
           case _ =>
             throw Error("non-function applied to argument")
         }
-      
-      //********************
-      case loc: Location =>
-        println("Warning: locations should not occur statically")
-        LocationType(loc.tp)
-      case Assignment(x, v) => x match {
-        case TermRef(n) => context.get(n) match {
-          case Some(Var(_,a,_)) =>
-            checkTermAgainstType(context,v,a)
-            Unit()
-          case Some(_) =>
-            throw Error("assignment to non-variable")
-          case None =>
-            throw Error("unknown assignment target: " + n)
-        }
-        case _ =>
-          throw Error("assignment to non-name")
-      }
-      case While(cond, body) =>
-        checkTermAgainstType(context, cond,Bool())
-        inferType(context, body)
-        Unit()
-      case Print(tm) =>
-        inferType(context, tm)
-        Unit()
     }
   }
 }
