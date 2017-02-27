@@ -437,6 +437,7 @@ We obtain them as
 %%% better syntax for full symmetry: data nat(zero: nat){such: nat -> nat}
 %%% constructor arguments of ADT should not be private - better allow every new instance to have arbitrary extra declarations; analogue for pattern matching are auxiliary definitions
 %%% then main difference left: ADT's allow for infinite trees and possibly mutable fields - if mutable fields are allowed multiple instances must be distinguished!, otherwise, compiler is allowed to marge multiple instances with same arguments, i.e., only one start object needed for final coalgebra construction
+%% new instance creation = fresh variable; interpret undefined val by creating new instance, allows symbolic interpretation
 
 \subsubsection{The Type Provided by an Inductive Data Type}
 
