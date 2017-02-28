@@ -179,8 +179,8 @@ The concepts and constructors are given by the following context-free grammar:
 \gcomment{contexts}\\
 \gprod{\Gamma}{Decl^*}{}\\
 \gcomment{declarations}\\
-\gprod{Decl}{\atypedef{a}{A^?}}{type declaration (with optional definiens)}\\
-\galtprod{\aval{x}{A}{t^?}}{term declaration (with optional definiens)}\\
+\gprod{Decl}{\atypedef{a[a^*]}{A^?}}{type declaration (with optional definiens)}\\
+\galtprod{\aval{x[a^*]}{A}{t^?}}{term declaration (with optional definiens)}\\
 \gcomment{types}\\
 \gprod{A}{a}{type names}\\
 \gcomment{terms}\\
@@ -437,6 +437,7 @@ We obtain them as
 %%% better syntax for full symmetry: data nat(zero: nat){such: nat -> nat}
 %%% constructor arguments of ADT should not be private - better allow every new instance to have arbitrary extra declarations; analogue for pattern matching are auxiliary definitions
 %%% then main difference left: ADT's allow for infinite trees and possibly mutable fields - if mutable fields are allowed multiple instances must be distinguished!, otherwise, compiler is allowed to marge multiple instances with same arguments, i.e., only one start object needed for final coalgebra construction
+%% new instance creation = fresh variable; interpret undefined val by creating new instance, allows symbolic interpretation
 
 \subsubsection{The Type Provided by an Inductive Data Type}
 
@@ -776,3 +777,233 @@ The processing pipeline is always
 \draw[arrow] (T) --node[right] {printer} (O);
 \end{tikzpicture}
 \end{center}
+
+\section{Evaluation}
+
+\subsection{Overview}
+
+The framework from Sect.~\ref{sec:sd:typetheory:common} still has to be extended by one aspect: we need an additional judgment \[\evobj{}{\Gamma}{t}{v}\] that describes how a term $t$ is evaluated to a value $v$.
+This judgment is called \textbf{evaluation}.
+For example, we expect a rule like $\evobj{}{\Gamma}{1+1}{2}$.
+
+Evaluation is a dynamic operation whereas checking is static.
+Correspondingly, checking errors are called \textbf{static} or \textbf{compile-time} errors, and evaluation errors are called \textbf{dynamic} or \textbf{run-time} errors.
+Like all dynamic operations, evaluation always happens \emph{after} checking and is only applied to well-formed objects.
+
+Like most operations, it uses a set of mutually recursive functions: one function per non-terminal and one case per production.
+\medskip
+
+From the perspective of programming languages, we can think of terms as programs and of evaluation as running the program.
+From the perspective of logic, we can think of the evaluation rules as a set of axioms that describe the equality relation between objects.
+\medskip
+
+Type theories can very quite drastically in how evaluation works.
+Everything can vary including the abstract shape of the judgment, its notation, and its rules.
+Often differences between formal systems manifest themselves in the details of this judgment.
+
+In particular, the treatment of function application has received a lot of attention.
+
+\subsection{Basic Rules}
+
+\subsubsection{Judgments}
+
+We only give a very simple system here as an example.
+
+We assume that the values are a subset of the terms and use the following judgments:
+\begin{center}
+	\begin{tabular}{|l|l|}
+	  \hline
+		$\;\;\;\evcont{}{\Gamma}{\Gamma'}$           & $\Gamma$ evaluates to $\Gamma'$\\
+		$\evdec{}{\Gamma}{D}{D'}$        & declaration $D$ evaluates to $D'$ \\
+		$\evobj{}{\Gamma}{A}{A'}$        & type $A$ evaluates to $A'$ \\
+		$\evobj{}{\Gamma}{t}{t'}$        & term $t$ evaluates to $t'$ \\
+		\hline
+	\end{tabular}
+\end{center}
+Primarily we evaluate \emph{terms}.
+But because terms occur inside declarations and contexts, we also have to evaluate those, usually by recursing into the terms.
+
+Moreover, depending on the specific type theory used, we may also have to evaluate types.
+The evaluation of types is usually not necessary (i.e., it is the identity function) or at least very simple.
+If the evaluation of types becomes too difficult (e.g., non-termination, undecidable, or even having side-effects), the formal system quickly becomes unmanageable.
+
+\subsubsection{Rules}
+
+The basic rules are
+\begin{itemize}
+\item Contexts are evaluated in order by evaluating every declaration::
+\[\rul{}{\evcont{}{\epsilon}{\epsilon}}
+\tb\tb
+\rul{\evcont{}{\Gamma}{\Gamma'} \tb \evdec{}{\Gamma'}{D}{D'}}{\evcont{}{\Gamma,D}{\Gamma',D'}}
+\]
+
+Note how every declaration $D$ is evaluated in the context, in which all previous declarations have been evaluated already.
+
+\item Declarations are evaluated by evaluating every object in them:
+\[\rul{\evobj{}{\Gamma}{A}{A'}}{\evdec{}{\Gamma}{\atypedef{a}{A}}{\atypedef{a}{A'}}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{A}{A'}\tb\evobj{}{\Gamma}{t}{t'}}
+    {\evdec{}{\Gamma}{\aval{a}{A}{t}}{\aval{a}{A'}{t'}}}\]
+
+Polymorphic declarations or declarations in which optional parts are absent are evaluated accordingly.
+
+\item Declared names evaluate to their definition if they have one and to themselves otherwise:
+\[\rul{\atypedef{a}{A}\;\in\; \Gamma \tb \evobj{}{\Gamma}{A}{A'}}
+      {\evobj{}{\Gamma}{a}{A'}}
+\tb\tb
+\rul{\atypedef{a}{}\;\in\; \Gamma}
+      {\evobj{}{\Gamma}{a}{a}}
+\]
+
+\[\rul{\aval{x}{A}{t}\;\in\; \Gamma \tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{x}{t'}}
+\tb\tb
+\rul{\aval{x}{A}{}\;\in\; \Gamma}
+      {\evobj{}{\Gamma}{x}{x}}
+\]
+
+Note how the definiens is evaluated recursively here.
+This is usually redundant because all previous declarations are already evaluated, i.e., the definition will not change anymore.
+But occasionally, we use formal systems where this step is necessary.
+\end{itemize}
+
+\subsection{Rules for Individual Language Features}
+
+For most language features---such as product and function types---evaluation simply recurses through the expressions.
+However, in a few key places non-trivial steps happen.
+Those few places are the reason why evaluation ``makes something happen''.
+Most importantly, this includes function application.
+
+In the following, we give evaluation rules for important features.
+We omit data types---they are similar but more complex.
+
+\subsubsection{Types}
+
+Evaluation for types just straightforwardly recurses through the type.
+The expansion of definitions from above is the only non-trivial step:
+
+\[\rul{\text{for base types } b}
+      {\evobj{}{\Gamma}{b}{b}}
+\]
+
+\[
+\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
+    {\evobj{}{\Gamma}{A \times B}{A'\times B'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
+    {\evobj{}{\Gamma}{A \to B}{A'\to B'}}
+\]
+
+\subsubsection{Terms Regarding Base Types}
+
+The literals trivially evaluate to themselves:
+
+\[\rul{l\in R_b}
+      {\evobj{}{\Gamma}{l}{l}}
+\]
+
+Operator applications evaluate to the result of calling the corresponding function in the underlying system.
+The underlying system can be another programming language but is ultimately the hardware on which evaluation is executed.
+
+For example, 
+\[\rul{\evobj{}{\Gamma}{s}{i} \tb \evobj{}{\Gamma}{t}{j} \tb i,j\in \Z}
+      {\evobj{}{\Gamma}{s+t}{i\oplus j}}
+\]
+where $s$ and $t$ evaluate to the integers $i$ and $j$, and $i\oplus j $ is actual integer addition performed by the underlying system.
+Note that here $s+t$ is a term, i.e., $+$ is just a symbol, where $i\oplus t$ is the result of an operation.
+\medskip
+
+Operator application is straightforward.
+However, to allow for generalizations to programming languages (where evaluation may run forever, fail, or have side-effects), we have to be careful about the order in which the arguments are evaluated.
+
+The typical convention is to evaluate the argument left-to-right.
+For example, $s$ is evaluated before $t$.
+\medskip
+
+Of particular importance are the rules for the if-operator:
+\[\rul{\evobj{}{\Gamma}{c}{\true}\tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{\aifelseI{c}{t}{e}}{t'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{c}{\false}\tb \evobj{}{\Gamma}{e}{e'}}
+      {\evobj{}{\Gamma}{\aifelseI{c}{t}{e}}{e'}}
+\]
+These rules only evaluate the branch that is needed---either $t$ or $e$.
+The other branch is discarded.
+
+For example, if we define the boolean operators as in $s\wedge t:=\aifelseI{s}{t}{\false}$, this yields short-circuit evaluation:
+\[\rul{\evobj{}{\Gamma}{s}{\false}}
+      {\evobj{}{\Gamma}{s\wedge t}{\false}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{s}{\true} \tb\evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{s\wedge t}{t'}}
+\]
+
+
+\subsubsection{Terms Regarding Product Types}
+
+Pairs are evaluated by a simple recursion:
+\[\rul{\evobj{}{\Gamma}{s}{s'} \tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{(s,t)}{(s',t')}}
+\]
+
+Projections are more complicated because something actually happens: we retrieve a component from a pair using the rules
+\[\rul{\evobj{}{\Gamma}{u}{(s,t)}}
+      {\evobj{}{\Gamma}{u.1}{s}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{u}{(s,t)}}
+      {\evobj{}{\Gamma}{u.2}{t}}
+\]
+
+If $u$ does not evaluate to a pair, we simply recurse.
+
+\subsubsection{Terms Regarding Function Types}
+
+Intuitively, the key evaluation rule relevant to product types is $\beta$-reduction: substitute the variable $x$ in $\alam[A]{x}{t}$ with $s$ in order to evaluate $(\alam[A]{x}{t})\,s$.
+However, the details  present considerable difficulties.
+
+Historically very important was the choice between call-by-name and call-by-value evaluation.
+\textbf{Call-by-value} evaluates the argument of the function first, then substitutes it for $x$:
+\[\rul{\evobj{}{\Gamma}{s}{s'} \tb\evobj{}{\Gamma}{t[x/s']}{u}}
+      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\]
+where $t[x/s]$ is the result of substituting $x$ with $s$ in $t$.
+\textbf{Call-by-nam}e first substitutes, then evaluates the result:
+\[\rul{\evobj{}{\Gamma}{t[x/s]}{u}}
+      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\]
+Without side-effects, both yield the same result.
+Call-by-name is usually less efficient because $s$ has to be evaluated multiple times if $x$ occurs multiple times in $t$.
+But if side-effects are possible, the order matters; moreover, evaluating $s$ multiple times may be exactly what the programmer wants.
+\medskip
+
+Another problem is the evaluation of anonymous functions.
+The intuitive rule
+\[\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma,x:A'}{t}{t'}}
+      {\evobj{}{\Gamma}{\alam[A]{x}{t}}{\alam[A']{x}{t'}}}
+\]
+does not work in the presence of side-effects: The side-effects of $t$ should not be triggered in this rule, when the function is \emph{constructed}.
+Instead, they should occur be triggered later when the function is \emph{called}.
+
+On the other hand, we cannot delay the entire evaluation of an anonymous function until call time.
+Consider the following program:
+\[\aval{v}{\Int}{1} \tb;\tb \aval{f}{\Int\to\Int}{\alam[\Int]{x}{x+v}} \tb ; \tb \aval{v}{\Int}{2} \tb ;\tb \aprint{f(1)}\]
+Here the reference to $v$ must be evaluated before $f(1)$ is applied: otherwise, $f$ would be moved into a different environment in which $v$ refers to a different declaration.
+Therefore, programming languages have to perform \textbf{closures} in which an anonymous function is made independent of its environment.
+
+The following is a simple definition of closure:
+
+\begin{definition}[Closure]
+Assume that $\Gamma$ are fully evaluated.
+In particular, all declarations in $\Gamma$ have a definition that does not refer to any previously declared names.
+
+Then given an object $X$ in context $\Gamma$, we define $Closure_\Gamma(X)$ as the object that arises from $X$ by replacing every name with its definition.
+\end{definition}
+
+Then we can use the following rule:
+\[\rul{A'=Closure_\Gamma(A) \tb t'=Closure_\Gamma(t)}
+      {\evobj{}{\Gamma}{\alam[A]{x}{t}}{\alam[A']{x}{t'}}}
+\]
+This rule resolves all references but does not apply any evaluation rules to $t$.
+The resulting function does not refer to any names anymore and can therefore be safely transported into another context.
+
+Many formal systems are simple enough so that the closure of a type is the type itself, i.e., only the terms have to be closed.

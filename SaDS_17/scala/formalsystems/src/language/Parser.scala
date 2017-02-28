@@ -45,12 +45,11 @@ class Parser(input: String) {
   // parse some characters (as long as they satisfy a condition) and return them
   private def parseCertainCharacters(take: Char => Boolean): String = {
     parseWhitespace
-    var l = 0
-    while (pos+l < length && take(input(pos+l))) {
-      l += 1
+    val p = pos
+    while (pos < length && take(input(pos))) {
+       pos += 1
     }
-    val n = input.substring(pos, pos+l)
-    pos += l
+    val n = input.substring(p, pos)
     n
   }
   
@@ -122,14 +121,8 @@ class Parser(input: String) {
     } else if (startsWith("val ")) {
       parseTerminal("val")
       parseVal
-    }
-    // ********************
-    else if (startsWith("var ")) {
-      parseTerminal("var")
-      parseVar
     } else {
-      val tm = parseTerm
-      Command(tm)
+      throw Error("keyword expected")
     }
   }
   
@@ -142,17 +135,6 @@ class Parser(input: String) {
     val v = parseTerm
     Val(n,t,Some(v))
   }
-   
-  // auxiliary function of parseDecl
-  private def parseVar: Var = {
-    val n = parseName
-    parseTerminal(":")
-    val t = parseType
-    parseTerminal("=")
-    val v = parseTerm
-    Var(n,t,v)
-  }
-
   
   def parseType: Type = {
     parseWhitespace
@@ -231,17 +213,6 @@ class Parser(input: String) {
           BoolLit(false)
         case "if" =>
           ??? //TODO
-        case "while" =>
-          parseTerminal("(")
-          val cond = parseTerm
-          parseTerminal(")")
-          val body = parseTerm
-          While(cond, body)
-        case "print" =>
-          parseTerminal("(")
-          val t = parseTerm
-          parseTerminal(")")
-          Print(t)
         case _ =>
           TermRef(Name(n))
       }
@@ -283,15 +254,7 @@ class Parser(input: String) {
           val second = parseTerm
           Operator(op, List(tm, second))
         case None =>
-          // ***************** check for an assignment (must come after operators because some operators start with =)
-          if (startsWith("=")) {
-             parseTerminal("=")
-             val second = parseTerm
-             Assignment(tm, second)
-          } else {
-            // done
             tm
-          }
       }
     }
   }
