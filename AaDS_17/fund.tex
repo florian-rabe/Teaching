@@ -376,7 +376,15 @@ Software development consists of $3$ steps:
 \begin{enumerate}
 \item The \textbf{specification} describes the intended behavior in terms of mathematical sets and functions.\\
 It does not prescribe in any way how these sets and functions are realized.
-The same specification can have multiple different correct realizations differing among others in size, maintainability, or efficiency.
+The same specification can have multiple different correct realizations differing among others in size, maintainability, or efficiency.\\
+A good specification should be:
+\begin{compactitem}
+  \item adequate: actually describe the problem that needs solving
+  \item simple: easy to understand
+  \item unambiguous: impossible to misunderstand
+  \item consistent: possible to realize
+  \item (optionally) complete: no freedom in what it means (An incomplete specification is not necessarily a flaw. For example, one might specify a function on integers without saying what should happen for negative input.)
+\end{compactitem}
 \item The \textbf{architecture} makes concrete choices for the data structures and algorithms that realize the needed sets and functions.\\
 It usually defines many auxiliary data structures and algorithms that are not part of the specification.\\
 The architecture does not prescribe a programming language. It can be correctly realized in any programming language.
