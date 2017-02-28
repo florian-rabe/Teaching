@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=3,date=2017-02-23,duedate=2017-03-09,unpublished]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=3,date=2017-02-28,duedate=2017-03-09]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,12 +10,49 @@
 
 \header
 
-\begin{problem}{Formal Systems}{10}
-Implement the type theory from Chapter~7 of the lecture notes.
+\begin{problem}{Formal Systems: Practice}{6}
+Consider the partial implementation of a formal system in the course repository.
+It already includes most algorithms and features discussed in the notes.
 
-The repository contains a partial implementation (in Scala) that you may extend.
-You can use a different design or a different programming language if you prefer.
-The Scala code is provided only as guidance because it would be too difficult otherwise.
+Extend this implementation with product types.
+That requires changing the data types, parser, printer, checker, and interpreter.
+\end{problem}
+
+\begin{problem}{Formal Systems: Theory}{7}
+Consider the type theory and programming language developed in the lecture notes.
+\begin{enumerate}
+\item Give two meaningful programs as terms over the programming language developed in the lecture notes.
+
+The details of the programs are not essential but one program each should consist of (at least):
+\begin{compactitem}
+ \item a recursive function declaration,
+ \item a function declaration that contains a while-loop that makes assignments to a mutable variable
+\end{compactitem}
+For example, you can implement the factorial function once recursively and once using a while-loop.
+
+\item Give the derivations for the well-formedness of your programs in all detail.
+\end{enumerate}
+
+Note: The typing derivations are trees that tend to grow quickly and can be painful to write down.
+For example, you may:
+\begin{compactitem}
+  \item write them manually on paper and submit a photograph or scan,
+  \item write them in LaTeX,
+  \item adapt the Checker.scala class to print out the derivation in some format (svg, LaTeX, \ldots).
+\end{compactitem}
+\end{problem}
+
+\begin{problem}{Formal Systems: Theory}{7}
+Add disjoint-union types to the type theory by giving new
+\begin{compactitem}
+ \item productions to the grammar,
+ \item typing rules,
+ \item evaluation rules.
+\end{compactitem}
+
+The disjoint-union type $A+B$ implements the disjoint union of the two types $A$ and $B$.
+Its terms are $inj_1(a)$ for $a\in A$ and $inj_2(b)$ for $b\in B$.
+To work with a term $u: A+B$, we use case-distinction $cases(u,f,g):C$ where $f:A\to C$ and $g:B\to C$.
 \end{problem}
 
 \end{document}
