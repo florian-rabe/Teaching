@@ -1,0 +1,150 @@
+\section{Formulas}
+
+Like programming languages, logics add new concepts to type theory: formulas and proofs.
+Only proofs are fundamentally new and correspond very closely to programs.
+
+\subsection{Formulas as Terms}
+
+Formulas are almost already covered by type theory and part of all programming languages.
+Indeed, type theory already has the type $\Bool$ with operators for equality and propositional connectives.
+However, logic goes beyond that by introducing the quantifiers $\forall$ and $\exists$.
+
+Using the type $\Bool$ for formulas is a simple solution in situations where we anyway use type theories and programming languages that have it already.
+The combination of function types and formulas as terms leads to what is called higher-order logic (HOL).
+This was the logic originally introduced by Church when developing the $\lambda$-calculus \cite{churchtypes}.
+
+\subsubsection{Grammar and Typing}
+
+In principle, it is not difficult to add them to type theories as well, and many type theories do that to some extent.
+This requires just two productions
+\[t \bbc \afa[A]{x}{t} \bnfalt \exists x:A.t\]
+with corresponding typing rules
+\[\rul{\oftype{}{\Gamma,\aval{x}{A}{}}{t}{\Bool}}{\oftype{}{\Gamma}{\afa[A]{x}{t}}{\Bool}}
+\tb\tb
+\rul{\oftype{}{\Gamma,\aval{x}{A}{}}{t}{\Bool}}{\oftype{}{\Gamma}{\aex[A]{x}{t}}{\Bool}}
+\]
+
+\subsubsection{Evaluation}
+
+We cannot extend the typing-evaluation pair of algorithms known from type theory and programming languages to logic: the evaluation of quantified formulas is undecidable.
+
+More precisely, it is undecidable whenever the domain of quantification---the type $A$ above---is infinite.
+If $A$ is finite, we can (usually inefficiently) evaluate quantified formulas by testing the instances for every possible $x:A$.
+If $A$ is infinite, testing can only evaluate universally quantified formulas to $\false$ (by finding some instance that is $\false$) or existentially quantified ones to $\true$ (by finding some instance for which it is true).
+
+Actually, undecidable evaluation in logic is not all that different from programming languages.
+After all programming languages allow for non-terminating evaluation, which also leads to undecidability.
+Moreover, type theories routinely use the equality operator even though its evaluation is also undecidable in certain situations, e.g., for function types.
+However, while such undecidable behavior is accidental in programming and can be worked around, quantified formulas with undecidable evaluation are essential in logic.
+
+To handle these formulas, we have to replace evaluation with an entirely new concept: proofs.
+
+\subsection{Formulas not as Terms}
+
+The treatment of formulas has received a great deal of attention, and multiple different approaches have been developed.
+We will not pursue these in the sequel but list them here for completeness.
+
+\subsubsection{Formulas as a Separate Concept}
+
+The most obvious alternative is to use a separate concept, i.e., a new non-terminal symbol.
+This is standard practice in first-order logic (FOL), where terms and formulas are strictly separated.
+
+This is particularly reasonable for untyped FOL---the standard variant of FOL.
+Here there are no types, i.e., no non-terminal $A$.
+Alternatively, we can say that there is exactly one base type, and all terms have the same type.
+
+In typed FOL, we have terms, types, and formulas.
+Here we usually have a base type $\Bool$.
+Thus, equality and propositional connectives must be duplicated as operators on terms and as operators on formulas.
+An advantage of this design is that the quantifiers can be restricted to the formula-level so that the evaluation terms stays decidable.
+
+\subsubsection{Formulas as Types}
+
+A surprising but formally appealing variant is to make all formulas special cases of \emph{types}.
+This is common in constructive type theories like Coq or Agda.
+
+This has the advantage that proofs can be elegantly introduced as terms whose type is a formula.
+A proof $P$ of $F$ would be represented as a term $\oftype{}{}{P}{F}$.
+
+A drawback of this design is that all boolean operators are again duplicated.
+
+An advantage is a striking elegance between type operators and connectives.
+For example, if formulas are types, product types yield conjunction, and function types yield implication.
+All logical operators except negation have meaningful analogues as operators on types.
+
+This has made it possible to present theorems as programs.
+For example, a theorem like $\afa[A]{x}{\afa[B]{y}{\aex[C]{z}{\true}}}$ can be represented as a function $\afunI[C]{f}{x:A,y:B}{P}$.
+Giving the body $P$ of this function becomes equivalent to finding a proof of the theorem.
+
+\section{Proofs as Terms}
+
+As for programs, we have to decide whether proofs are a new non-terminal symbol or a special case of terms.
+Both work well.
+But for the same reason as for programs, it makes the language easier to make them terms: it eliminates the need for duplicating productions.
+
+The details of what proof constructors to add and what typing rules to give them goes beyond the scope of this treatment.
+We only give the necessary features for an empty logic and some examples.
+
+\subsection{Basic Rules}
+
+We introduce a new type constructor that lifts boolean terms to types:
+
+\[A \bbc \aproof{t}\]
+
+\[\rul{\oftype{}{\Gamma}{t}{\Bool}}{\oftype{}{\Gamma}{\aproof{t}}{\type}}\]
+
+The basic intuition is that the typing judgment becomes a proving judgment: we say that $P$ is a proof of $F$ using assumptions $\Gamma$ if
+\[\oftype{}{\Gamma}{P}{\aproof{F}}\]
+
+\subsection{Common Logical Features}
+
+Logical features are very similar to type theoretical features.
+In both cases, we usually add three productions and typing rules:
+
+\begin{ctabular}{|l|l|}
+\hline
+Type theory & Logic \\
+\hline
+type constructor & formula constructor \\
+\multicolumn{2}{|c|}{term constructor for building \ldots} \\
+\ldots terms of that type & \ldots proofs of that formula \\
+\ldots new terms from terms of that type & \ldots new proofs using proofs of that formula \\
+\hline
+\end{ctabular}
+
+Thus, we need three productions and three typing rules each for conjunction, disjunction, negation, implication, universal quantification, and existential quantification.
+
+\subsubsection{Implication}
+
+We add implication using three productions
+\[t \bbc t\impl t \bnfalt implIntro(x:t,t) \bnfalt modusPonens(t,t)\]
+and three typing rules
+\[\rul{\oftype{}{\Gamma}{F}{\Bool}\tb\oftype{}{\Gamma}{G}{\Bool}}{\oftype{}{\Gamma}{F\impl G}{\Bool}}\]
+
+\[\rul{\oftype{}{\Gamma,\aval{x}{\aproof{F}}{}}{P}{\aproof{G}}}{\oftype{}{\Gamma}{implIntro(x:\aproof{F},P)}{\aproof{(F\impl G)}}}
+\tb\tb
+\rul{\oftype{}{\Gamma}{P}{\aproof{(F\impl G)}}\tb \oftype{}{\Gamma}{Q}{\aproof{F}}}{\oftype{}{\Gamma}{modusPonens(P,Q)}{\aproof{G}}}\]
+
+In logic textbooks, the typing rules for the proofs are usually written by omitting the proof terms themselves.
+Then we obtain the more familiar-looking
+\[\rul{\iscons{}{\Gamma,\aproof{F}}{}{\aproof{G}}}{\iscons{}{\Gamma}{}{\aproof{(F\impl G)}}}
+\tb\tb
+\rul{\iscons{}{\Gamma}{}{\aproof{(F\impl G)}}\tb \iscons{}{\Gamma}{}{\aproof{F}}}{\iscons{}{\Gamma}{}{\aproof{G}}}\]
+If we additionally write simply $F$ instead of $\aproof{F}$, we obtain the usual notation.
+
+\section{Logics for Reasoning about Systems}
+%  LTL, CTL
+
+Logics like FOL and HOL are sufficient for reasoning about mathematical concepts.
+(The difficulty here is usually to enrich the type theory in order to allow for more natural representations of mathematical objects.)
+
+But for reasoning about dynamic systems like physical systems and machines, we need more.
+Specifically, we must be able to represent the \emph{change} of the system over time.
+
+For software systems, we can use \textbf{discrete} time, i.e., a representation of change as a sequence of states.
+This corresponds to representing points in time as natural numbers.
+For example, to verify a piece of code $C$, we have to talk about the values of all variables in two different states: \emph{before} and \emph{after} execution of $C$.
+
+For physical systems, especially those interacting via sensor data, we may have to use \textbf{continuous} time: a representation of points in time as real numbers and of all values as functions over the real numbers.
+
+Both present substantial challenges, and a variety of different logics has been developed.
