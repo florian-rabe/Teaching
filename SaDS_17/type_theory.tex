@@ -167,10 +167,10 @@ Examples are:
 \end{compactitem}
 
 
-\subsection{A Basic Type Theory}
+\subsection{A Basic Formal System}
 
 We now introduce a comprehensive example that we will build on later.
-We first introduce an empty type theory, i.e., a type theory that has all the structure but non non-trivial objects yet.
+We first introduce an empty formal system, i.e., a type theory that has all the necessary structure but no non-trivial objects yet.
 We can then extend it with specific types and terms in Sect.~\ref{sec:sd:typetheory:objects}
 
 The concepts and constructors are given by the following context-free grammar:
@@ -189,12 +189,14 @@ The concepts and constructors are given by the following context-free grammar:
 
 The judgments are:
 \begin{center}
-	\begin{tabular}{|l|l|}
+	\begin{tabular}{|l|l|l|}
+	\hline
+	non-terminal & \multicolumn{2}{l|}{typing judgment} \\
 	  \hline
-		$\;\;\;\iscont{}{\Gamma}$           & $\Gamma$ is well-formed\\
-		$\isdecl{}{\Gamma}{D}$        & declaration $D$ is well-formed in context $\Gamma$ \\\hline
-		$\oftype{}{\Gamma}{A}{\type}$ & $A$ is a well-formed type in context $\Gamma$ \\
-		$\oftype{}{\Gamma}{t}{A}$     & $t$ is a well-formed term of type $A$ type in context $\Gamma$ \\
+		$\Gamma$ & $\;\;\;\iscont{}{\Gamma}$           & $\Gamma$ is well-formed\\
+		$D$ & $\isdecl{}{\Gamma}{D}$        & declaration $D$ is well-formed in context $\Gamma$ \\\hline
+		$A$ & $\oftype{}{\Gamma}{A}{\type}$ & $A$ is a well-formed type in context $\Gamma$ \\
+		$t$ & $\oftype{}{\Gamma}{t}{A}$     & $t$ is a well-formed term of type $A$ type in context $\Gamma$ \\
 		\hline
 	\end{tabular}
 \end{center}
@@ -785,12 +787,6 @@ The processing pipeline is always
 The framework from Sect.~\ref{sec:sd:typetheory:common} still has to be extended by one aspect: we need an additional judgment \[\evobj{}{\Gamma}{t}{v}\] that describes how a term $t$ is evaluated to a value $v$.
 This judgment is called \textbf{evaluation}.
 For example, we expect a rule like $\evobj{}{\Gamma}{1+1}{2}$.
-
-Evaluation is a dynamic operation whereas checking is static.
-Correspondingly, checking errors are called \textbf{static} or \textbf{compile-time} errors, and evaluation errors are called \textbf{dynamic} or \textbf{run-time} errors.
-Like all dynamic operations, evaluation always happens \emph{after} checking and is only applied to well-formed objects.
-
-Like most operations, it uses a set of mutually recursive functions: one function per non-terminal and one case per production.
 \medskip
 
 From the perspective of programming languages, we can think of terms as programs and of evaluation as running the program.
@@ -803,33 +799,56 @@ Often differences between formal systems manifest themselves in the details of t
 
 In particular, the treatment of function application has received a lot of attention.
 
-\subsection{Basic Rules}
+\subsection{Typing vs. Evaluation}
 
-\subsubsection{Judgments}
+Primarily we evaluate \emph{terms} to \emph{values}.
+Values are a subset of the terms that can no longer be simplified.
+For example, all the literals of the base types are values.
 
-We only give a very simple system here as an example.
+Because terms occur inside declarations and contexts, we also have to evaluate those, usually by recursing into the terms.
+Moreover, depending on the specific type theory used, we may also have to evaluate types.
+For example, if we allow type definitions, we have to expand those evaluation.
+However, the evaluation of types is very simple.
+If it becomes too difficult (e.g., non-terminating, undecidable, or with side-effects), the formal system quickly becomes unmanageable.
 
-We assume that the values are a subset of the terms and use the following judgments:
+Both typing and evaluation typically consist of one judgment per non-terminal and one rule per production.
+Thus, both describe a family of mutually recursive functions on the grammar.
+This yields the following table:
+
 \begin{center}
-	\begin{tabular}{|l|l|}
-	  \hline
-		$\;\;\;\evcont{}{\Gamma}{\Gamma'}$           & $\Gamma$ evaluates to $\Gamma'$\\
-		$\evdec{}{\Gamma}{D}{D'}$        & declaration $D$ evaluates to $D'$ \\
-		$\evobj{}{\Gamma}{A}{A'}$        & type $A$ evaluates to $A'$ \\
-		$\evobj{}{\Gamma}{t}{t'}$        & term $t$ evaluates to $t'$ \\
+	\begin{tabular}{|l|l|l|l|}
+	\hline
+	non-terminal & typing judgment & \multicolumn{2}{l|}{evaluation judgment} \\
+	  \hline\hline
+		$\Gamma$ & $\iscont{}{\Gamma}$ & $\;\;\;\evcont{}{\Gamma}{\Gamma'}$           & $\Gamma$ evaluates to $\Gamma'$\\
+		$D$ & $\isdecl{}{\Gamma}{D}$ & $\evdec{}{\Gamma}{D}{D'}$        & declaration $D$ evaluates to $D'$ \\
+		$A$ & $\oftype{}{\Gamma}{A}{\type}$ & $\evobj{}{\Gamma}{A}{A'}$        & type $A$ evaluates to $A'$ \\
+		$t$ & $\oftype{}{\Gamma}{t}{A}$ & $\evobj{}{\Gamma}{t}{t'}$        & term $t$ evaluates to $t'$ \\
 		\hline
 	\end{tabular}
 \end{center}
-Primarily we evaluate \emph{terms}.
-But because terms occur inside declarations and contexts, we also have to evaluate those, usually by recursing into the terms.
 
-Moreover, depending on the specific type theory used, we may also have to evaluate types.
-The evaluation of types is usually not necessary (i.e., it is the identity function) or at least very simple.
-If the evaluation of types becomes too difficult (e.g., non-termination, undecidable, or even having side-effects), the formal system quickly becomes unmanageable.
 
-\subsubsection{Rules}
+Because we think of evaluation as running a program, evaluation is the primary \emph{dynamic} operation.
+Typing is the primary \emph{static} operation.
+Like all dynamic operations, evaluation always happens \emph{after} type-checking and is only applied to well-formed objects.
 
-The basic rules are
+Correspondingly, typing errors are called \textbf{static} or \textbf{compile-time} errors, and evaluation errors are called \textbf{dynamic} or \textbf{run-time} errors.
+\medskip
+
+As a general rule, the evaluation of well-formed terms should not cause errors, i.e., we want to statically verify that there will be no run-time errors.
+
+In practice, however, some run-time errors must be accepted, e.g., errors that are
+\begin{compactitem}
+ \item intentionally generated by the programmer (i.e., correct program behavior that happens to take the form of an abort)
+ \item caused by interaction with the environment such as hardware or network failures or missing access rights to files
+ \item caused by missing dependencies (e.g., type-checking against a library that at run-time is missing or present in a different version)
+\end{compactitem}
+Moreover, as we will see in Sect.~\ref{sec:formsys:decsoucomp}, sufficiently complete formal systems such as programming languages may make the absence of run-time errors undecidable.
+
+\subsection{Basic Rules}
+
+The rules for the empty formal system are
 \begin{itemize}
 \item Contexts are evaluated in order by evaluating every declaration::
 \[\rul{}{\evcont{}{\epsilon}{\epsilon}}
@@ -937,6 +956,16 @@ For example, if we define the boolean operators as in $s\wedge t:=\aifelseI{s}{t
 \rul{\evobj{}{\Gamma}{s}{\true} \tb\evobj{}{\Gamma}{t}{t'}}
       {\evobj{}{\Gamma}{s\wedge t}{t'}}
 \]
+\medskip
+
+The equality operator presents a problem though when it is combined with functions: equality of functions is undecidable.
+There are two approaches to work around this problem:
+\begin{compactitem}
+ \item Functional languages tend to use typing rules that restrict equality to those types for which equality is decidable.
+ \item Imperative languages tend to allow equality for all types but then implement it using reference equality.
+  In that case, equality of functions will be true less often than it should be.
+\end{compactitem}
+
 
 
 \subsubsection{Terms Regarding Product Types}

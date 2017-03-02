@@ -2,7 +2,7 @@ The framework from Ch.~\ref{sec:sd:typetheory} can be applied systematically to 
 Then checking provides the first step of static analysis, and evaluation specifies an interpretation algorithm that runs the programs.
 In fact, we can systematically read off the implementation of a type checker and an interpreter from the rule systems for typing and evaluation.
 
-\section{Decidability vs. Soundness vs. Completeness}
+\section{Decidability vs. Soundness vs. Completeness}\label{sec:formsys:decsoucomp}
 
 \subsection{Definitions}
 Three properties are desirable for building formal systems:
@@ -13,7 +13,10 @@ That allows us to tell statically and algorithmically whether an object is well-
 \textbf{Soundness} states all well-formed objects are meaningful.
 The details of this can very across formal systems.
 But usually it subsumes the requirement that every term $t$ of type $A$ can be semantically interpreted as an element $\ov{t}$ of some set $\ov{A}$.
-In particular, every \emph{function term} $f:A\to B$ should yield an actual function $\ov{t}$.
+\begin{compactitem}
+ \item In logic, soundness means that all proofs give rise to valid formulas, i.e., theorems.
+ \item In programming, it means that every \emph{function term} $f:A\to B$ should yield an actual function $\ov{t}$.
+\end{compactitem}
 
 \textbf{Completeness} states that every meaningful value can be obtained as the interpretation of some term of the formal system.
 Again the details vary.
@@ -52,7 +55,7 @@ This yields a somewhat rough but very intuitive classification of formal systems
 Thus, to turn a type theory into a programming language, we have to allow writing well-formed terms whose evaluation does not terminate.
 The most commonly used features are recursion or while-loops.
 
-\subsection{Programs as Terms}
+\section{Programs as Terms}
 
 The easiest way to extend type theory to programming is to add a new concept for programs with a non-terminal $P$.
 
@@ -433,3 +436,38 @@ To type-check $\akey{mutual}\{D_1,\ldots,D_n\}$, we first check all types in all
 
 In the most general case, all declarations must be allowed to reference any other.
 This often happens in object-oriented languages, where classes distributed over multiple files must be able to refer to each other.
+
+
+\section{Control Flow Operators}
+
+The last remaining major programming language feature are control flow operators such as
+\begin{itemize}
+  \item $\areturn{t}$ for exiting a function from anywhere inside its body,
+  \item $\abreak$ for exiting a while-loop from anywhere inside its body,
+  \item $\athrow{e}$ for throwing an exception and exiting a try-block at any time during execution of its body.
+\end{itemize}
+
+All of these share the property that they jump to a different place in the programming, discarding the current state and restoring a previous state where execution continues.
+Contrary to a function call, execution never returns to the place we jumped away from.
+
+It is much harder to give typing and evaluation rules for these operators, and programming language research invests substantial effort into it.
+
+\subsection{Typing}
+
+It is straightforward to give these operators a type: they all have type the empty $\Void$.
+That makes sense because they never return and therefore do not have a value from the perspective of the surrounding code.
+
+We must avoid confusion between the following two groups of commands:
+\begin{itemize}
+\item Commands that return nothing like printing, assignment, and while-loop. Those have type $\Unit$.
+\item Commands that do not return like breaking, throwing, and returning. Those have type $\Void$.
+\end{itemize}
+
+However, giving rules that describe the well-formedness or the surrounding constructs (functions, while-loops, and try-blocks) is much harder.
+
+\subsection{Evaluation}
+
+Giving evaluation rules is very hard as well.
+
+However, implementing an interpreter is surprising easy---if we use a programming language that has some similar control flow operator.
+For example, if we use a programming language that allows throwing exceptions, it is straightforward to implement $\areturn{e}$, $\abreak$, and $\athrow{e}$ by using exceptions.

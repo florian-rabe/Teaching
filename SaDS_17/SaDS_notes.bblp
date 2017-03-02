@@ -5,4 +5,16 @@ A.~Algirdas, J.~Laprie, and B.~Randell.
 \newblock {Fundamental concepts of dependability}, 2001.
 \newblock University of Newcastle upon Tyne, Computing Science.
 
+\bibitem[BF14]{swebok}
+P.~Bourque and R.~Fairley.
+\newblock {\em Guide to the Software Engineering Body of Knowledge (SWEBOK
+  Guide)}.
+\newblock IEEE, 2014.
+\newblock \url{https://www.computer.org/web/swebok}.
+
+\bibitem[Chu40]{churchtypes}
+A.~Church.
+\newblock {A Formulation of the Simple Theory of Types}.
+\newblock {\em {Journal of Symbolic Logic}}, 5(1):56--68, 1940.
+
 \end{thebibliography}
