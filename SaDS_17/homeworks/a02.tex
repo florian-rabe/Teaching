@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=2,date=2017-02-08,duedate=2017-03-02]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=2,date=2017-02-08,duedate=2017-03-07]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -23,8 +23,9 @@ SML will work well; Java or C++ are OK. I personally recommend Scala.
 \item Implement datatypes for the following grammar, which represents the commands our shell can handle.
 \[\begin{array}{lcl@{\tb}l}
  \text{commands} \\
- COMM & \bbc & fun\;NAME(NAME) \{COMM\} & \text{function definition} \\
-      & \bnfalt & run\;NAME \rep{\bnfbracket{SPACE\; EXPR}} & \text{shell call}\\
+ COMM & \bbc    & val\;NAME=EXP\\
+      & \bnfalt & fun\;NAME(NAME) \{COMM\} & \text{function definition} \\
+      & \bnfalt & run\;EXPR & \text{shell call}\\
       & \bnfalt & NAME(EXPR) & \text{function call}\\
       & \bnfalt & COMM ; COMM & \text{command sequence}\\
  \text{expressions} \\
@@ -48,27 +49,23 @@ However, watch out that writing the parser will become increasingly work-intensi
 \afun[Expr]{parseExpr}{expr : String}{\ldots}
 \end{acode}
 
-\item Implement an interpreter for your data type. It should be of the form
+\item Implement an interpreter for your data type. It could be of the form
 \begin{acode}
-\aclassA{Value}{}{}{}\\
-\aclass{StringValue}{value: String}{Value}{}\\
-\\
-\aclassA{Def}{}{}{}\\
-\aclass{ValDef}{name: String, value: Value}{Def}{}\\
-\aclass{FunDef}{name: String, argName: String, body: Comm}{Def}{}\\\\
 \afun[{List[Def]}]{interpret}{context: List[Def], command: Comm}{\ldots} \\
-\afun[Value]{evaluate}{context: List[Def], expr: Expr}{\ldots}
+\afun[\String]{evaluate}{context: List[Def], expr: Expr}{\ldots}
 \end{acode}
-and interpret commands as follows:
+where $Def$ is the type of those commands that are definitions, i.e., define a value ($val \ldots$) or a function ($fun\ldots$).
+
+It should interpret commands as follows:
 \begin{compactitem}
-\item $fun\;f(x)\{C\}$: return $FunDef(f,x,C)$
-\item $run\;n\,arg_1\,\ldots\,arg_n$: call the shell function $n$ with the listed arguments
-\item $f(e)$: evaluate $e$ to $v$, retrieve $FunDef(f,x,C)$ from the context, interpret $C$ with an additional $ValDef(x,v)$ in the context
-\item $C ; D$: interpret $C$, then interpret $D$ with the $FunDef$s returned by $C$ added to the context
+\item for value or function definition, return itself
+\item for $run\;e$: evaluate $e$ to a string and then run it in the shell
+\item $f(e)$: evaluate $e$ to $v$, retrieve the function definition $fun\;f(x){C}$ from the context, interpret $C$ with an additional $val\;x=v$ in the context
+\item $C ; D$: interpret $C$, then interpret $D$ with the definitions returned by $C$ added to the context
 \end{compactitem}
 and evaluate expressions as follows
 \begin{compactitem}
-\item $n$: retrieve $ValDef(n,v)$ from the context and return $v$
+\item $n$: retrieve $val\;n=v$ from the context and evaluate $v$
 \item $"s"$: return the string $s$ with the escapes removed
 \end{compactitem}
 
