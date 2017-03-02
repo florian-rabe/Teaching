@@ -1,0 +1,4 @@
+val c: int = 1
+val f : int -> int = x:int => x+c
+val c: int = 2
+val main : int = {val x: int = f(c); f(x)}

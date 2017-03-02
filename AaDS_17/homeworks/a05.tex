@@ -1,0 +1,44 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=5,date=2017-03-07,duedate=2017-03-16,duetime=11:00,unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Sorting Lists of Integers}{8+8}
+We want to sort lists of integers according to $\leq$.
+
+Implement $2$ out of bubble sort, insertion sort, merge sort, and quick sort in any programming language(s).
+\medskip
+
+Remark: Alternatively, you may implement the algorithms for arbitrary arguments $ord:TotOrd[A], x:List[A]$.
+(That's actually the same amount of work once you have understood polymorphism.)
+\end{problem}
+
+\begin{problem}{Sorting List}{8}
+Adapt one of your two sorting implementations from the previous question to sort lists of strings lexicographically.
+\medskip
+
+Remark: If you gave a polymorphic solution above, these points are for free using $Lexicographic:TotOrd[\String]$ from before.
+Otherwise, you have to duplicate your work.
+\end{problem}
+
+\begin{problem}{Comparing Sorting Algorithms}{5}
+Using the lecture notes, literature, the internet etc., make a table that compares as many sorting algorithms as you can find.
+For each algorithm, collect at least
+\begin{compactitem}
+ \item $\Theta$-class of the best-case, average-case, and worst-case time complexity (measured in the length of the list)
+ \item whether it can be used as an in-place algorithm
+\end{compactitem}
+\medskip
+
+Remark: Such questions often occur in job interviews or in standardized tests, e.g., for grad school admission.
+So it is good to have such a table handy.
+\end{problem}
+
+\end{document}

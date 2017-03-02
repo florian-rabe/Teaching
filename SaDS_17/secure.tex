@@ -1,10 +1,59 @@
+   \footnote{This section is under development and should be considered unpublished.}
+
 \section{History}
+
+% caesar etc.
+
+\section{Preliminaries}
+
+\begin{definition}[polynomial-time algorithm]
+ An algorithm $A$ is called polynomial time algorithm iff there exists $k\in \mathbb{N}$ such that the maximum number $t$ of operations $A$ has to perform for input of length $n$ satisfies $t(n)\in O(n^k)$.
+\end{definition}
+
+\begin{definition}[A probabilistic polynomial-time algorithm]
+ A probabilistic polynomial-time algorithm (PPT) is a polynomial-time algorithm that might be non-deterministic. If it is deterministic we will just call it polynomial time algorithm.
+\end{definition}
+
+\begin{definition}
+ A function $f:\,\mathbb{N}\to\mathbb{R}$ is called negligible iff $$\forall k\in\mathbb{N}.\,\exists N_k\in\mathbb{N}.\,\forall n\geq N_k:\,n\left|f(n)\right|<1.$$
+\end{definition}
+
+One important cryptographic primitive is the so called one-way function (OWF). Using these one-way-functions one can build provably secure symmetric encryption algorithms. However, it is currently not known whether there exist any one-way function. In the following we will especially consider one-way permutations (OWP), bijective OWFs with identical input and output length. 
+
+\begin{definition}[One way function]
+ A function $f:\{0,1\}^*\to \{0,1\}^*$, is called a one-way function iff, $f$ is a PPT and for any natural number $n$ and any PPT $A$, there is a negligible function $neg$ such that: $$\mathrm{Pr}\left[f(A(f(x),1^n))=f(x)\right]\leq neg,$$ where $x$ is chosen uniformly random.
+\end{definition}
+Intuitively, OWFs are simply hard to invert PPTs. Some functions that are commonly believed to be OWFs are modular exponentiation and the multiplication of big prime numbers. 
+%\vdots\ \\
+%One way permutations\\\vdots\ \\
+
+Another important concept is the so called Pseudo-random generator (PRG or PRNG). 
+\begin{definition}[PRGs]
+ A function $H:\{0,1\}^*\to \{0,1\}^*$ is called PRG iff:
+ \begin{itemize}
+  \item $H$ is a PPT
+  \item There exists a PPT the so called \emph{length extension function} $l:\mathbb{N}\to\mathbb{N}$, s.t. $\forall n\in\mathbb{N}.\,l(n)>n\land \left|H(x)\right|=l(\left|x\right|), \forall x\in\{0,1\}^*$
+  \item There is a negligible function $neg$ s.t. for any PPT $A$, we have:
+  $$\left|\mathrm{Pr}\left[A(H(U_n))=1\right]-\mathrm{Pr}\left[D(U_{l(n)})=1\right]\right|<neg(n),$$ where $U_k$ denotes a uniformly random element of $\{0,1\}^k$. 
+ \end{itemize}
+\end{definition}
+
+It can be shown that given any OWF, we can build a PRG. %TODO: Insert a proof for at least OWPs using hard core bits
+\begin{definition}[hard-core bit]
+ Let $f$ be a one-way function. Now the function $b:\{0,1\}^*\to\{0,1\}$ is called a \emph{hard-core bit} for $f$ if $b$ is computable in polynomial time and there exists a negligible function $neg(n)$ such that for any $n\in\\mathbb{N}$ and any PPT $A$:
+ $$\mathrm{Pr}\left[A(f(x),1)=b(x)\right]\leq\frac{1}{2}+neg(n), $$ where $x\in\{0,1\}$ uniformly random. 
+\end{definition}
+
+The next step is to find one-way functions (assuming that there are one-way functions at all) for which we can build hard-core bits. 
+\begin{theorem}
+ Let $f$ be a one-way function. Define $g:\{0,1\}^{2n}\to\{0,1\}^*$ as $g(x\circ y)=f(x)\circ y$, where $\left|x\right|=\left|y\right|=n$. Then $g$ is a one-way function with hard-core bit $$b(x,y)=\bigoplus_{i=1}^n x_i\land y_i=\sum_{i=1}^{n}x_iy_i (\mod 2).$$
+\end{theorem}
+If now $f$ was a one-way permutation, we can use the above construction to get an additional pseudo-random bit, so we already have a pseudo-random generator.
+
 
 \section{Symmetric Encryption}
 \input{symmetric}
 % substitution, one-time pad DES
-
-\subsection{AES}
 
 \section{Asymmetric Encryption}
 
@@ -97,3 +146,7 @@ Larger keys are especially important if data is needed to remain secure far into
 \subsection{SHA-x}
 
 \section{Key Generation and Distribution}
+
+   % security protocol correctness, such as key management protocol correctness,
+   % e.g., going back to the work by Burrows, Abadi, and Needham on a logic of authentication (https://doi.org/10.1145/77648.77649)
+   % Its an application of logic to a concrete problem space where errors are obviously bad.

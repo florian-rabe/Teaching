@@ -1,17 +1,6 @@
-\footnote{This section is a student contribution. It's probably good but still up for revision.}
+\subsection{General Definition}
 
-
-\subsection{Preliminaries}
 %\vdots polynomial time algorithm\\\vdots\ \\probabilistic algorithm\\\vdots\ \\negligible functions\\\vdots \\encryption scheme\\\vdots
-\begin{definition}[polynomial-time algorithm]
- An algorithm $A$ is called polynomial time algorithm iff there exists $k\in \mathbb{N}$ such that the maximum number $t$ of operations $A$ has to perform for input of length $n$ satisfies $t(n)\in O(n^k)$.
-\end{definition}
-\begin{definition}[A probabilistic polynomial-time algorithm]
- A probabilistic polynomial-time algorithm (PPT) is a polynomial-time algorithm that might be non-deterministic. If it is deterministic we will just call it polynomial time algorithm.
-\end{definition}
-\begin{definition}
- A function $f:\,\mathbb{N}\to\mathbb{R}$ is called negligible iff $$\forall k\in\mathbb{N}.\,\exists N_k\in\mathbb{N}.\,\forall n\geq N_k:\,n\left|f(n)\right|<1.$$
-\end{definition}
 \begin{definition}
  An encryption scheme is an ordered triple $(G, E, D)$, where $G$ and $E$ are PPT algorithms and $D$ is a polynomial time algorithm iff for any \emph{security parameter} $n\in\mathbb{N}$:
  \begin{itemize}
@@ -20,7 +9,7 @@
   \item The \emph{decryption algorithm} $D$, takes an encrypted message and uses the key $k$ to decipher it (deterministically). So we have $$\forall n\in\mathbb{N},\,\forall m\in P_n,\,\forall k \in K_n.\,D_k(E_k(m))=m.$$
  \end{itemize}
 \end{definition}
-\subsection{Notions of secure Encryption}
+
 There are various different notions of ``security'' of encryption. We will discuss the notions of %guess indistinguishability (guess ind.), 
 computational indistinguishability (comp. ind.) and security against a chosen Plaintext attack (ind. CPA). 
 %\begin{definition}[guess indistinguishable]
@@ -31,30 +20,17 @@ computational indistinguishability (comp. ind.) and security against a chosen Pl
  We will call an encryption scheme $(E,D,k)$ guess indistinguishable iff for any PPT $A$, for any two messages $m_1, m_2$ of length $n$ and $i\in \{0,1\}$, uniformly random chosen, there is a negligible function $neg.$ s.t.:
  \[(\mathrm{Pr}\left[A(E(m_0))=1\right]-\mathrm{Pr}\left[A(E(m_1))=1\right])\leq \frac{1}{2}+neg(n), \] where $neg(n)$ is a negligible function.
 \end{definition}
-\subsection{Realization of secure encryption}
-One important cryptographic primitive is the so called one-way function (OWF). Using these one-way-functions one can build provably secure symmetric encryption algorithms. However, it is currently not known whether there exist any one-way function. In the following we will especially consider one-way permutations (OWP), OWFs with identical input and output length. 
-\begin{definition}[One way function]
- A function $f:\{0,1\}^*\to \{0,1\}^*$, is called a one-way function iff, $f$ is a PPT and for any natural number $n$ and any PPT $A$, there is a negligible function $neg$ such that: $$\mathrm{Pr}\left[f(A(f(x),1^n))=f(x)\right]\leq neg,$$ where $x$ is chosen uniformly random.
-\end{definition}
-Intuitively, OWFs are simply hard to invert PPTs. Some functions that are commonly believed to be OWFs are modular exponentiation and the multiplication of big prime numbers. 
-%\vdots\ \\
-%One way permutations\\\vdots\ \\
-Another important concept is the so called Pseudo-random generator (PRG or PRNG). 
-\begin{definition}[PRGs]
- A function $H:\{0,1\}^*\to \{0,1\}^*$ is called PRG iff:
- \begin{itemize}
-  \item $H$ is a PPT
-  \item There exists a PPT the so called \emph{length extension function} $l:\mathbb{N}\to\mathbb{N}$, s.t. $\forall n\in\mathbb{N}.\,l(n)>n\land \left|H(x)\right|=l(\left|x\right|), \forall x\in\{0,1\}^*$
-  \item There is a negligible function $neg$ s.t. for any PPT $A$, we have:
-  $$\left|\mathrm{Pr}\left[A(H(U_n))=1\right]-\mathrm{Pr}\left[D(U_{l(n)})=1\right]\right|<neg(n),$$ where $U_k$ denotes a uniformly random element of $\{0,1\}^k$. 
- \end{itemize}
-\end{definition}
-It can be shown that given any OWF, we can build a PRG. %TODO: Insert a proof for at least OWPs using hard core bits
+
+\subsection{Specific Schemes}
+
 Given a PRG, we can iterate it on its own output to get an arbitrarily long pseudo-random output. Now we can construct an encryption scheme by simply taking the key as input to a pseudo random generator and xoring the message with the output of the pseudo-random generator. The decryption is the can be done by simply encrypting the ciphertext a second time. The resulting encryption scheme can already be shown to be computational indistinguishable, but not necessarily ind. CPA secure. We will now try to improve the security to also reach at least ind. CPA security. 
+
+\subsubsection{Feistel Ciphers}
+
 For this we can use a so called Feistel network.
 %Improving a comp. ind. encryption scheme to an ind. CPA secure scheme using a Feistel-network.
 \begin{definition}[A Feistel cipher]
- Let $k$ be any natural number (the number of \emph{rounds}). Let $f_{k_i}$ be a family of functions\protect\footnote{If possible pseudorandom functions and possibly one way functions.} ($f$ is the so called \emph{round function}) of output length $n$ indexed by the sequence of \emph{round keys} $k_1, k_2, \ldots, k_n$. 
+ Let $k$ be any natural number (the number of \emph{rounds}). Let $f_{k_i}$ be a family of functions\protect\footnote{If possible pseudorandom functions and possibly one-way functions.} ($f$ is the so called \emph{round function}) of output length $n$ indexed by the sequence of \emph{round keys} $k_1, k_2, \ldots, k_n$. 
  Then the following encryption algorithm $E_k$ is called Feistel cipher. %network with $k$ iterations (for some odd $k$) based on a pseudo random generator $f_{k_i}$ and round keys $k_1, k_2, \ldots, k_n$ is an encryption scheme $(G,E,D)$, defined by:
  %For any odd $k\in\mathbb{N}$ we call an encryption scheme $(G, E, D)$ a Feistel network with $k$ iterations and $P$-Box $f$, iff for some \emph{round keys} $k_1, k_2, \ldots, k_n$ used as input for the pseudo random generator $f_{k_i}$. 
  \begin{itemize}
@@ -68,10 +44,13 @@ For this we can use a so called Feistel network.
  \end{itemize}
 \end{definition}
 Feistel ciphers have been shown to fulfill several notions of security assuming that the round function is actually pseudo random. For instance Feistel networks with at least $3$ rounds are ind. CPA secure and for more rounds they fulfill even stronger notions of security. %TODO: Check and clearify the exact model (3 seems sufficient under some assumptions, but 4 is better (and olready fulfills stronger notions)) and perhaps mention some other results. %see \url{https://link.springer.com/chapter/10.1007/978-3-540-45146-4\_30}
-\subsection{Realization in actually used encryption}
+
+
  In practice many symmetric encryption schemes are based either on Feistel networks or on substitution-permutation-networks. 
  \begin{definition}[Substitution-permutation-network]
   A substitution-permutation-networks is an series of linked substitutions (\emph{$S$-Boxes}) and permutations \emph{$P$-Boxes} of blocks in an encryption algorithm. The corresponding encryption algorithm splits the message into several boxes with are typically fed into the $S$-Boxes then the result is fed into the $P$-Box (and at some point the round key is used, for instance xored with the result as is AES). The later mentioned AES-encryption algorithm is one example of an encryption algorithm build around a substitution-permutation-network.
  \end{definition}
- Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar, but there are also a few differences. Ciphers based on substitution-permutation-network can be better parallelized, but Feistel ciphers can use any pseudo random function (for instance any one way function) and is not limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
+ Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar, but there are also a few differences. Ciphers based on substitution-permutation-network can be better parallelized, but Feistel ciphers can use any pseudo random function (for instance any one-way function) and is not limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
 %TODO:Insert some additional material about block modes.
+
+\subsubsection{AES}

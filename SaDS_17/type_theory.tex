@@ -75,19 +75,28 @@ This sublanguage consists of all objects of the context-free language for which 
 While objects are always anonymous, the declarations of a formal system introduce \textbf{names} for objects.
 Like objects, the declarations are defined by a grammar and inference system.
 
-Typically, there is a fixed non-terminal $Decl$ and a fixed judgment $\isdecl{}{D}$ for declarations $D$.
+Typically, there is a fixed non-terminal $Decl$ and a fixed judgment $\isdecl{}{}{D}$ for declarations $D$.
 The each declaration-kind is defined by one production and one rule.
 
 Examples are
 \begin{compactitem}
- \item Variable definitions are the declarations that introduce a name for a term. They consist of the production
+ \item Term definitions are the declarations that introduce a name for a term.
+ Those are the variable definitions known from most programming languages.
+ They consist of the production
   \[Decl ::= \aval{x}{A}{t}\]
-  for a new variable $n$ of type $A$ with initial value $t$
+  for a new variable $x$ of type $A$ with initial value $t$
   and the rule
-  \[\rul{\oftype{}{}{t}{A}}{\isdecl{}{}{\aval{n}{A}{t}}}\]
+  \[\rul{\oftype{}{}{t}{A}}{\isdecl{}{}{\aval{x}{A}{t}}}\]
+  that checks that the initial value has the expected type.
+ \item Type definitions similarly introduce a name for a type.
+ They consist of the production
+  \[Decl ::= \atypedef{a}{A}\]
+  for a new type variable $a$ with value $A$
+  and the rule
+  \[\rul{\oftype{}{}{A}{\type}}{\isdecl{}{}{\atypedef{a}{A}}}\]
   that checks that the initial value has the expected type.
 \end{compactitem}
-To make parsing easier, many languages (e.g., SML or Scala) require each declaration-kind to start with a special keyword (like $\akey{val}$ above).
+To make parsing easier, many languages (e.g., SML or Scala) require each declaration-kind to start with a special keyword (like $\akey{val}$ and $\akey{typedef}$ above).
 
 We need to be able to use the names as objects later on.
 Therefore, every concept comes with a built-in production for names.
@@ -98,18 +107,23 @@ That shows us that we cannot simply use the judgment $\oftype{}{}{x}{A}$---there
 Therefore, we have to collect all declarations that are in scope and carry them around.
 That is the purpose of signatures and contexts.
 
+\subsubsection{Assumptions}
+
+Often we distinguish two kinds of declarations:
+\begin{compactitem}
+% \item \textbf{Global} declarations are the entire input (source file, program, etc.) that we are checking.
+% These are fixed during checking.
+% \item \textbf{Local} declarations are introduced temporarily while checking certain declarations.
+% Examples are the variables declared inside a function.
+ \item \textbf{Definitions} are declarations a definiens (i.e., an assignment to the new name). Most declarations in user input are of this form.
+ \item \textbf{Assumptions} are declarations without a definiens.
+ This should only be allowed in specific circumstances.\\
+ Examples are the parameters of a function or a constructor.
+\end{compactitem}
 
 \subsubsection{Collecting Declarations}
 
 A \textbf{context} $\Gamma$ is a list of declarations.
-
-Often we distinguish two kinds of declarations:
-\begin{compactitem}
- \item The \textbf{global} declarations are the entire input (source file, program, etc.) that we are checking.
- It is fixed during checking.
- \item The \textbf{local} declarations are introduced temporarily while checking certain declarations.
- Examples are the parameters of a functions or variables declared inside a function.
-\end{compactitem}
 
 Usually all judgments for objects take a context as an additional argument.
 It is usually placed to the left of the $\der$ symbol.
@@ -119,7 +133,8 @@ For example, we have $\oftype{}{\Gamma}{t}{A}$ or $\oftype{}{\Gamma}{F}{\form}$.
 Now the simplest form of scope-checking uses the rule
 \[\rul{\aval{x}{A}{\_}\in \Gamma}{\oftype{}{\Gamma}{x}{A}}\]
 
-And when checking input consisting of global declarations $D_1,\ldots,D_n$, we check for each $i=1,\ldots,n$ that $\isdecl{}{D_1,\ldots,D_{i-1}}{D_i}$.
+And when checking input consisting of global declarations $D_1,\ldots,D_n$, we check for each $i=1,\ldots,n$ that
+ \[\isdecl{}{D_1,\ldots,D_{i-1}}{D_i}\]
 Thus, each declaration is checked in the context of the previous ones.
 \medskip
 
@@ -133,37 +148,85 @@ Examples are
  \item Some declarations may only be allowed globally (e.g., class definitions in some programming languages) or only locally (e.g., undefined variables to represent the parameters of a function).
 \end{compactitem}
 
-\subsection{A Basic Type Theory}
+\subsubsection{Polymorphic Declarations}
+
+Very often it is convenient to introduce a new name that takes type parameters.
+For example, the type $List[A]$ of lists over $A$ should take a parameter for the type $A$ of the elements.
+Similarly, the function $revert[A]:List[A]\to List[A]$ takes a type parameter.
+
+That can be accomplished by allowing for type assumptions in all declarations that we allow to be polymorphic.
+Examples are:
+\begin{compactitem}
+ \item For parametric type definitions (also called \textbf{type operators}), we use
+  \[Decl ::= \atypedef{a[(\atypedef{a}{})^*]}{A}\]
+  \[a ::= a[A^*]\]
+  where $a[A_1,\ldots,A_n]$ is the type that arises by applying $a$ to the parameters $A_1,\ldots,A_n$.
+ \item For parametric constants (also called \textbf{polymorphic constants}), we use
+  \[Decl ::= \aval{x[a^*]}{A}{t}\]
+  \[t ::= t[A^*]\]
+\end{compactitem}
+
+
+\subsection{A Basic Formal System}
 
 We now introduce a comprehensive example that we will build on later.
-We first introduce an empty type theory, i.e., a type theory that has all the structure but non non-trivial objects yet.
+We first introduce an empty formal system, i.e., a type theory that has all the necessary structure but no non-trivial objects yet.
 We can then extend it with specific types and terms in Sect.~\ref{sec:sd:typetheory:objects}
 
 The concepts and constructors are given by the following context-free grammar:
 
 \begin{commgrammar}
+\gcomment{contexts}\\
+\gprod{\Gamma}{Decl^*}{}\\
 \gcomment{declarations}\\
-\gprod{Decl}{\atypedef{a}{A}}{type definition}\\
-\galtprod{\aval{x}{A}{t}}{term definition}\\
+\gprod{Decl}{\atypedef{a[a^*]}{A^?}}{type declaration (with optional definiens)}\\
+\galtprod{\aval{x[a^*]}{A}{t^?}}{term declaration (with optional definiens)}\\
 \gcomment{types}\\
 \gprod{A}{a}{type names}\\
 \gcomment{terms}\\
-\gprod{t}{x}{term names}
+\gprod{t}{x}{term names}\\
 \end{commgrammar}
 
 The judgments are:
 \begin{center}
-	\begin{tabular}{|l|l|}
+	\begin{tabular}{|l|l|l|}
+	\hline
+	non-terminal & \multicolumn{2}{l|}{typing judgment} \\
 	  \hline
-		$\oftype{}{\Gamma}{A}{\type}$ & $A$ is a well-formed type in context $\Gamma$ \\
-		$\oftype{}{\Gamma}{t}{A}$     & $t$ is a well-formed term of type $A$ type in context $\Gamma$ \\
+		$\Gamma$ & $\;\;\;\iscont{}{\Gamma}$           & $\Gamma$ is well-formed\\
+		$D$ & $\isdecl{}{\Gamma}{D}$        & declaration $D$ is well-formed in context $\Gamma$ \\\hline
+		$A$ & $\oftype{}{\Gamma}{A}{\type}$ & $A$ is a well-formed type in context $\Gamma$ \\
+		$t$ & $\oftype{}{\Gamma}{t}{A}$     & $t$ is a well-formed term of type $A$ type in context $\Gamma$ \\
 		\hline
 	\end{tabular}
 \end{center}
 
-We only need the simple rules for scope-checking:
-\[\rul{\atypedef{a}{A}\in \Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
-\[\rul{\aval{x}{A}{\_}\in \Gamma}{\oftype{}{\Gamma}{x}{A}}\]
+The rules for this empty type type mostly take care of scope-checking:
+\begin{compactitem}
+\item Every declaration can use the previous ones (where $\epsilon$ is the empty context):
+\[\rul{}{\iscont{}{\epsilon}}
+\tb\tb
+\rul{\iscont{}{\Gamma} \tb \isdecl{}{\Gamma}{D}}{\iscont{}{\Gamma,D}}
+\]
+
+\item Types and terms can be declared with type parameters and definiens:
+\[
+\rul{\oftype{}{\Gamma,\atypedef{a_1}{},\ldots,\atypedef{a_n}{}}{A}{\type}}{\isdecl{}{\Gamma}{\atypedef{a[a_1,\ldots,a_n]}{A}}}
+\tb\tb
+\rul{\oftype{}{\Gamma,\atypedef{a_1}{},\ldots,\atypedef{a_n}{}}{t}{A}}{\isdecl{}{\Gamma}{\aval{x[a_1,\ldots,a_n]}{A}{t}}}
+\]
+\item Declared names can be used later on with the right number of type parameters:
+\[\rul{\begin{array}{c}
+         \atypedef{a[a_1,\ldots,a_n]}{A}\;\in\; \Gamma \\
+         \oftype{}{\Gamma}{A_1}{\type}\tb\ldots\tb \oftype{}{\Gamma}{A_n}{\type}
+      \end{array}}
+      {\oftype{}{\Gamma}{a[A_1,\ldots,A_n]}{\type}} \tb\tb
+\rul{\begin{array}{c}
+       \aval{x[a_1,\ldots,a_n]}{A}{\_}\;\in\; \Gamma \\
+       \oftype{}{\Gamma}{A_1}{\type}\tb\ldots\tb \oftype{}{\Gamma}{A_n}{\type}
+    \end{array}}
+    {\oftype{}{\Gamma}{x[A_1,\ldots,A_n]}{A}}\]
+\end{compactitem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Concrete Objects}\label{sec:sd:typetheory:objects}
@@ -270,14 +333,17 @@ The first part introduces the new type:
 The second part introduces terms of the new type:
 
 \[t \bbc \alam[A]{x}{t}\]
-\[\rul{\oftype{}{\Gamma,x:A}{t}{A}}{\oftype{}{\Gamma}{\alam[A]{x}{t}}{A\to B}}\]
+\[\rul{\oftype{}{\Gamma}{A}{\type}\tb\oftype{}{\Gamma,\aval{x}{A}{}}{t}{B}}{\oftype{}{\Gamma}{\alam[A]{x}{t}}{A\to B}}\]
 
 Terms of function type are the $\lambda$-abstractions $\lambda x:A.t$.
 In programming languages we usually write something like $\alam[A]{x}{t}$ instead.
 The meaning is the same.
 
+Our grammar and rule use the special case where all functions take exactly $1$ argument.
+The general case can be defined accordingly (or can be obtained by using unit and product types).
+
 $\lambda$-abstractions are more difficult than most other terms because they introduce a local variable.
-This is no problem at all if we have understood type theory properly: we can simply add the local variable to the context while checking the term $t$.
+This is no problem at all if we have understood type theory properly: we can simply add the variable to the context as a local assumption while checking the term $t$.
 \medskip
 
 However, many programming languages and programmers are confused or overwhelmed by this.
@@ -287,9 +353,9 @@ Instead, they introduce a special declaration for named functions:
 \[Decl \bbc \afunI[B]{f}{x:A}{t}\]
 
 Using anonymous functions, that is just a special case of a definition:
-\[\afunI[B]{f}{x:A}{t} \tb\text{is}\tb \aval{f}{A\to B}{\alam[A]{x}{t}}\]
+\[\afunI[B]{f}{x:A}{t} \tb\text{is the same as}\tb \aval{f}{A\to B}{\alam[A]{x}{t}}\]
 
-However, named functions come up so often and are so convenient that most languages allow them even if they are redundant.
+However, named functions come up so often and are so convenient that most languages allow function declarations even if they are redundant.
 
 \subsubsection{Terms Formed From Functions: Function Applications}
 
@@ -299,25 +365,42 @@ The third part introduces terms formed from a term $t:A\to B$ of the new type:
 
 \[\rul{\oftype{}{\Gamma}{s}{A\to B}\tb \oftype{}{\Gamma}{t}{A}}{\oftype{}{\Gamma}{s(t)}{B}}\]
 
-
-  %records
+%records
   
+\subsection{Objects with Local Definitions}
+
+Local definitions introduce an abbreviation to be used in subsequent expressions.
+
+Depending on the language, they are usually written as $\akey{let}\aval{x}{A}{s}\;\akey{in}t(x)$ or simply $\aval{x}{A}{s};t(x)$.
+The latter tends to be nicer because it can be chained more easily.
+
+Languages differ in what kind of definitions may be used locally in what kind of concepts.
+For example, the above expressions use a local definitions of a \emph{term} inside a \emph{term}.
+
+The following production and rule can be used to allow \emph{any} local definitions in a \emph{term}.
+\[t \bbc Decl; t\]
+
+\[\rul{\isdecl{}{\Gamma}{D}\tb\oftype{}{\Gamma,D}{t}{A}}{\oftype{}{\Gamma}{D; t}{A}}\]
+
+Many programming language write these terms as $\{D;t\}$ with the understanding that chained local definitions can be grouped in a single pair of brackets as in $\{D_1;\ldots;D_n;t\}$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Types}
 
-Software is most dependable if programs mimic the domain knowledge as closely as possible.
+Software is most dependable if programs represent the domain knowledge as closely as possible.
 That requires being able to define new types capturing exactly the concepts of the domain.
 The terms of these new types should capture exactly the needed domain data.
 
-Data types are always named, i.e., they are introduced by declarations not by objects.
-Like base, product, and function types, \emph{each} inductive data type declaration introduces $3$ kinds of objects.
-
-Most programming languages allow defining data types.
+Data types are the most important way to do that.
+Most typed programming languages allow defining data types.
 But they may differ substantially in how they do it.
+
+Data types are always named, i.e., they are introduced by declarations not by objects.
+Like base, product, and function types, \emph{each} data type declaration introduces $3$ kinds of objects.
 
 \subsection{Inductive Data Types}
 
-An inductive data type is defined by a context-free grammar with a single non-terminal symbol.
+An inductive data type represents a context-free grammar with a single non-terminal symbol.
 It uses one term constructor for every production of the grammar such that its terms capture exactly the words of the grammar.
 The operation on its terms is pattern-matching.
 
@@ -332,10 +415,36 @@ The declaration of an inductive data type looks as follows:
 \[Con \bbc c(A,\ldots,A)\]
 \[a,c \bbc \text{name} \]
 
-\[\rul{\adata{a}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
-
 Given $\adata{a}{Con_1,\ldots,Con_n}$, $a$ is the \textbf{name} of the data type and each $Con_i$ is a \textbf{constructor}.
 For a constructor $c(A_1,\ldots,A_n)$, $c$ is the name of the constructor and the $A_i$ are its \textbf{argument types}.
+
+The rule for checking a data type declaration looks as follows:
+\[
+\rul{\overbrace{\oftype{}{\Gamma,\atypedef{a}{}}{A_i}{\type}}^{\mfor i =1,\ldots,n}}
+    {\isdecl{}{\Gamma}{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}}}
+\]
+Here, for simplicity, the typing rule only covers the case where every constructor takes exactly $1$ argument.
+The general case works accordingly (or can be obtained by using the unit type or a product type as the argument type).
+
+Note that the data type $a$ is already assumed to exists when checking the types of the constructors.
+That is critical to allow writing recursive data types such as:
+
+\begin{example}
+The standard example of an inductive data type are the natural numbers.
+We obtain them as
+\[\adata{nat}{zero(),succ(nat)}\]
+\end{example}
+
+%%% Positional arguments: also possible for IDT: For example, data nat(zero) = succ(nat), and eval(n:nat) = match n(0){succ(x) => x+1}
+%%% better syntax for full symmetry: data nat(zero: nat){such: nat -> nat}
+%%% constructor arguments of ADT should not be private - better allow every new instance to have arbitrary extra declarations; analogue for pattern matching are auxiliary definitions
+%%% then main difference left: ADT's allow for infinite trees and possibly mutable fields - if mutable fields are allowed multiple instances must be distinguished!, otherwise, compiler is allowed to marge multiple instances with same arguments, i.e., only one start object needed for final coalgebra construction
+%% new instance creation = fresh variable; interpret undefined val by creating new instance, allows symbolic interpretation
+
+\subsubsection{The Type Provided by an Inductive Data Type}
+
+Once declared, the name of the data type is a well-formed type:
+\[\rul{\adata{a}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
 
 %In some programming language, each argument is of the form $s_i:A_i$ for a name $s_i$.
 %The $s_i$ are called \textbf{selectors}.
@@ -359,10 +468,9 @@ terminal symbols $T_i$ in production & ignored \\
 The constructors form elements of the type $a$:
 
 \[t \bbc c(t,\ldots,t)\]
-\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\tb\in\tb\Gamma \tb \oftype{}{\Gamma}{t}{A_i}}{\oftype{}{\Gamma}{c_i(t)}{a}}\]
+\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{A_i}}{\oftype{}{\Gamma}{c_i(t)}{a}}\]
 
-Here, for simplicity, the typing rule only covers the case where every constructor takes exactly $1$ argument.
-The general case works accordingly (or can be obtained by using a product type as the single argument type).
+Again we only use constructors with exactly $1$ argument.
 
 \subsubsection{Terms Formed From Terms of Inductive Data Type}
 
@@ -375,9 +483,10 @@ In $\amatchI{t}{Cas_1,\ldots,Cas_n}$, $t$ is the matched term and the $Cas_i$ ar
 In a case $\acase{c(x_1,\ldots,x_n)}{t}$, we call $c(x_1,\ldots,x_n)$ the \textbf{pattern} where $c$ is a constructor name and the $x_i$ are variables.
 $t$ is called the \textbf{body} of the case.
 
-Finally, the typing rule is: 
+Finally, the typing rule is (again assuming all constructors take exactly $1$ argument): 
 
-\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\tb\in\tb\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb\oftype{}{\Gamma,x:A_1}{t_1}{B}\tb\ldots\tb\oftype{}{\Gamma,x:A_n}{t_n}{B}}
+\[\rul{\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\;\;\in\;\;\Gamma \tb \oftype{}{\Gamma}{t}{a}\tb
+       \overbrace{\oftype{}{\Gamma,\aval{x}{A_i}{}}{t_i}{B}}^{\mfor i=1,\ldots,n}}
       {\oftype{}{\Gamma}{\amatchI{t}{\acase{c_1(x)}{t_1},\ldots,\acase{c_n(x)}{t_n}}}{B}}\]
 
 
@@ -385,27 +494,84 @@ Finally, the typing rule is:
 
 Inductive and abstract data types are dual to each other.
 
-An inductive data type is defined bottom-up: the terms are exactly the words over some context-free grammar.
-Thus, we know the terms exactly.
-When we operate on a term on the other hand, we have to inspect all possible cases.
+An inductive data type is defined bottom-up: the terms are exactly the \emph{syntax trees} of the words over some context-free grammar.
+That makes it easy to build terms---we just apply one of the constructor.
+But it makes it difficult to operate on a term---we have to pattern-match for all possible cases.
 
 An abstract data type is defined top-down by its \emph{behavior}: any object that exhibits the required behavior is a term of the type.
-Thus, we do not know what the terms are---instead, we have to implement the behavior in each case.
-When we operate on a term on the other hand, we know exactly what we can do because each term has the same behavior.
+That makes it easy to operate on a term---we just apply one of the required behaviors.
+But it makes it difficult to build terms---we have to implement all required behaviors.
 
 \subsubsection{Type Declaration}
 
 The declaration of an abstract data type looks as follows:
 
-\[Decl \bbc \aclassAI{a}{s:A,\ldots,s:A}{}{Field,\ldots,Field}\]
+\[Decl \bbc \aclassAI{a}{x:A,\ldots,x:A}{}{Field,\ldots,Field}\]
 \[Field \bbc f:A\]
-\[a,f,s,x \bbc \text{name} \]
-
-\[\rul{\aclassAI{a}{\ldots}{\ldots}\in\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
+\[a,f,x \bbc \text{name} \]
 
 Given $\aclassAI{a}{x_1:A_1,\ldots,x_n:A_m}{}{Field_1,\ldots,Field_n}$, $a$ is the \textbf{name} of the data type and each $Field_i$ is a \textbf{field}.
 The $x_i:A_i$ are called the \textbf{constructor arguments}.
 For a field $f:A$, $f$ is the name of the field and $A$ its type.
+
+The rule for checking the declarations is as follows:
+
+\[\rul{\overbrace{\oftype{}{\Gamma,\atypedef{a}{}}{A_i}{\type}}^{\mfor i=1,\ldots,m} \tb 
+       \overbrace{\oftype{}{\Gamma,\atypedef{a}{}}{B_i}{\type}}^{\mfor i=1,\ldots,n}}
+      {\isdecl{}{\Gamma}{\aclassAI{a}{x_1:A_1,\ldots,x_m:A_m}{}{f_1:B_1,\ldots,f_n:B_n}}}
+\]
+
+Like for inductive data types, the new type $a$ is already assumed when checking the types of the constructor arguemtns and the fields.
+That is critical to describe many practical examples:
+
+\begin{example}\label{ex:ad:datatype:automata}
+Standard examples of abstract data types tend to be polymorphic.
+
+One of the standard examples of abstract data types is an automaton.
+In this example, we use numbered states and strings as the input and output of a transition:
+
+\[\aclassAI{automaton}{state:\Int}{}{inFinalState: \Bool,\; transition: \String\to \String}\]
+
+The constructor argument $state$ provides the initial state as well as the private variable that tracks the current state.
+In concrete implementations (see also Rem.~\ref{rem:ad:datatype:dual}), the values of $inFinalState$ and $transition$ may depend on and change the value of $state$.
+
+Such an automaton may or may not be finite---that depends on which states are reachable from the initial state by applying transitions.
+\end{example}
+
+\begin{remark}[Duality]\label{rem:ad:datatype:dual}
+Intuitively, inductive data types start with nothing and build all objects inductively by applying constructors.
+(We do not even need a base case---instead, we use constructors that take $0$ arguments.)
+Therefore, there is wide agreement on their intuition, syntax, and semantics (because it is easy to agree on what \emph{nothing} means).
+In other words, by default we assume objects are not members of an inductive data type; only those whose membership can be proved by applying constructors to build them are allowed.
+
+Abstract data types are dual in the sense that they start with \emph{everything} and discard all objects that show the wrong behavior.
+In other words, by default we assume all objects are members of an inductive data type; but we only disallow those membership can be disproved by applying fields to obtain an illegal behavior.
+
+But it is much harder to agree on what \emph{everything} is.
+Therefore, intuition, syntax, and semantics of abstract data types can vary widely across languages.
+Particular incarnations include coalgebras, coinductive data types, and object-orientation-like classes.
+\medskip
+
+This has an important consequence on the relation between specification and implementation.
+If a specification includes an inductive data type, every implementation must include the same data type with the same meaning.
+(If the specification and the implementation are written in the same language, e.g., by using SML signatures and SML structures, respectively, this can even get awkward because the exact declaration must be repeated twice.)
+
+But if a specification includes an abstract data type, the choice of implementation language can substantially affect what objects can be built.
+We often write the specification in a logic and the implementation in a programming language.
+Then it is possible that the abstract data type is very weak in the logic: the logic might be able to define no or only trivial behavior.
+For example, the type theory of this section cannot define many objects of the abstract data type of automate from Ex.~\ref{ex:ad:datatype:automata}.
+The same abstract data type in the programming language may be much larger because the programming can express so much more behavior.
+
+That is not a defect.
+It shows the abstraction at work: objects of an abstract data type are black boxes that we can never inspect, and how the behavior is defined is completely open and irrelevant.
+No language ever knows what kind of objects an abstract data type has.
+So even if a logic cannot define any object of an abstract data type, neither can it prove that the type is empty.
+\end{remark}
+
+\subsubsection{The Type Provided by an Abstract Data Type}
+
+Like for inductive data types, once declared, the name is a new type:
+\[\rul{\aclassAI{a}{\ldots}{}{\ldots}\;\;\in\;\;\Gamma}{\oftype{}{\Gamma}{a}{\type}}\]
 
 \begin{remark}[Relation to Object-Orientation]
 Object-oriented programming languages provide a very rich formalism for defining abstract data types.
@@ -418,6 +584,8 @@ Our variant here is a special case that arises if we make the following restrict
  \item All methods are public and abstract.
  \item When creating a new instance, all methods must be implemented.
 \end{compactitem}
+This is obviously too restrictive for programming.
+But it is enough to explain the theory systematically.
 It is straightforward to relax these restrictions when defining practical languages.
 \end{remark}
 
@@ -429,8 +597,9 @@ Machine & Abstract Data Type \\
 \hline
 set of possible states & product $A_1\times \ldots \times A_n$ of constructor argument types\\
 initial state & constructor arguments $(s_1,\ldots,s_n)$ \\
-current state & current value of tuple $(s_1,\ldots,s_n)$ \\
-$f$-transition (push button labeled $f$) & field $f$ of function type\\
+current state & current tuple of private variables $(x_1,\ldots,x_n)$ \\
+query about current state (e.g., being final) & apply field of non--function type \\
+$f$-transition (push button labeled $f$) & apply field $f$ of function type\\
 possible inputs for transition $f$ & argument types of $f$\\
 possible outputs of transition $f$ & return type of $f$\\
 \hline
@@ -442,16 +611,16 @@ Terms of an abstract data type $a$ are created using the \textbf{new} operator.
 They are also called \textbf{instances} of $a$.
 
 \[t \bbc \anewA{a}{t,\ldots,t}{Def,\ldots,Def}\]
-\[Def \bbc x=t\]
+\[Def \bbc f=t\]
 
 In $\anewA{a}{t_1,\ldots,t_n}{Def_1,\ldots,Def_n}$, the $t_i$ are the \textbf{constructor arguments}, and the $Def_i$ are the \textbf{field definitions}.
 
 Again, we state the typing rule only for a special case: we assume that the constructor takes exactly $1$ argument.
 The general case works accordingly.
 
-\[\rul{\aclassAI{a}{x:A}{}{f_1:A_1,\ldots,f_n:A_n}\tb\in\tb\Gamma\tb
+\[\rul{\aclassAI{a}{x:A}{}{f_1:A_1,\ldots,f_n:A_n}\;\;\in\;\;\Gamma\tb
        \oftype{}{\Gamma}{t}{A} \tb
-       \oftype{}{\Gamma}{t_1}{A_1}\tb\ldots\tb\oftype{}{\Gamma}{t_n}{A_n}}
+       \overbrace{\oftype{}{\Gamma}{t_i}{A_i}}^{\mfor i=1,\ldots,n}}
       {\oftype{}{\Gamma}{\anewA{a}{s}{f_1=t_1,\ldots,f_n=t_n}}{a}}\]
 
 
@@ -461,21 +630,72 @@ To operate on a term of an abstract data type, we access its fields:
 
 \[t \bbc t.f\]
 
-\[\rul{\aclassAI{a}{\ldots}{}{f_1:A_1,\ldots,f_n:A_n}\tb\in\tb\Gamma\tb
+\[\rul{\aclassAI{a}{\ldots}{}{f_1:A_1,\ldots,f_n:A_n}\;\;\in\;\;\Gamma\tb
        \oftype{}{\Gamma}{t}{a}}
       {\oftype{}{\Gamma}{t.f_i}{A_i}}\]
+
+\subsection{Polymorphic Data Types}
+
+Data types are usually allowed to be polymorphic.
+
+Therefore, the grammar must actually allow all declarations and all references to constructors and fields to take type parameters.
+
+We omit the rules and only list the resulting productions:
+
+\begin{commgrammar}
+\gcomment{data type declarations}\\
+\gprod{Decl}{\adata{a[a^*]}{Con^*}}{inductive}\\
+\galtprod{\aclassAI{a[a^*]}{(x:A)^*}{}{Field^*}}{abstract}\\
+\gcomment{types (same productions as before)}\\
+\gprod{A}{a[A^*]}{data type applied to type parameters}\\
+\gcomment{building and using terms}\\
+\gprod{t}{c[A^*](t^*)}{constructor application}\\
+\galtprod{\amatchI{t}{Cas^*}}{pattern-match}\\
+\galtprod{\anewA{a}{t^*}{Def^*}}{new instance}\\
+\galtprod{t.f[A^*]}{field access}\\
+\gcomment{auxiliary non-terminals}\\
+\gprod{Con}{c(A^*)}{constructor declaration}\\
+\gprod{Cas}{\acase{c(x^*)}{t}}{case in pattern-match}\\
+\gprod{Field}{f:A}{field declaration}\\
+\gprod{Def}{f=t}{field definition in new instance}\\
+\end{commgrammar}
+
+\begin{example}[Lists and Trees]
+The standard example of a polymorphic inductive data type are lists over a type $a$:
+\[\adata{List[a]}{nil,{cons(a,List[a])}}\]
+
+Trees are only slightly more complex, e.g., for complete binary trees whose leafs are labeled with elements of $a$:
+\[\adata{Tree[a]}{leaf(a),{node(Tree[a],Tree[a])}}\]
+\end{example}
+
+\begin{example}[Iterators and Streams]
+The standard example of a polymorphic abstract data type are iterators (also called streams) over a type $a$:
+\[\aclassAI{Iterator[a]}{}{}{hasNext:\Bool,\;next:a}\]
+Technically, the return type of $a$ should $a^?$ (i.e., options of $a$), but it is commonly agreed that the behavior of $next$ is unspecified if no next element is left.
+
+If next always returns another element, we obtain streams, i.e., infinite sequences:
+\[\aclassAI{Stream[a]}{}{}{next:a}\]
+
+Like for automata, we have to generalize the language to allow for defining more interesting objects.
+In particular, new instances should be allowed to have additional private variables, e.g., to track the current position in the iterator/stream.
+\end{example}
 
 \subsection{Inheritance}
 
 Inheritance generalizes abstract data types in two ways:
 \begin{compactitem}
- \item fields may have a definition; such fields are skipped when creating a new instance
- \item we can form a new data type by extending an existing one, which has the effect of copying over all its fields
+ \item Fields may already have a definition. Such fields are not implemented anymore when creating a new instance.
+ \item We can form a new data type by extending an existing one, which has the effect of copying over all its fields.
 \end{compactitem}
 
 Both generalizations can be seen as a matter of convenience.
-However, by fixing certain definitions in the extended class, we gain enormous power to fine-tune the desirable behavior of the instances.
+However, by fixing certain definitions in an class, we gain enormous power to fine-tune the desirable behavior of the instances.
 
+\begin{remark}[Inheritance for Inductive Data Types]
+Inheritance works exactly the same way for inductive data types: fields with definition are skipped when pattern-matching, and new types can reuse the set of constructors of an existing type.
+
+However, this is not used in practice.\footnote{Possibly because no one has understood it clearly so far.}
+\end{remark}
 
 \subsubsection{Inductive Data Types Via Classes}
 
@@ -508,10 +728,311 @@ as
 
 Constructing a term $c_i(t_1,\ldots,t_n)$ corresponds to $\anew{c_i}{t_1,\ldots,t_n}$.
 Equality at $a$ must be implemented such that $x==y$ iff $x$ and $y$ are instances of the same class $c_i$ and created with equal constructor arguments.
-Pattern-matching can be implemented as well.
 
-\begin{remark}[Inheritance for Inductive Data Types]
-Inheritance works exactly the same way for inductive data types: fields with definition are skipped when pattern-matching, and new types can reuse the set of constructors of an existing type.
+Pattern-matching must be implemented manually.
 
-However, this is not used in practice.\footnote{Possibly because no one has understood it clearly so far.}
-\end{remark}
+\section{Implementation}
+
+Formal systems can be implemented very systematically in any programming language that supports inductive data types.
+
+The design is as follows:
+\begin{compactenum}
+ \item Define inductive types $DT$ that represents the context-free grammar.
+ \item Define parsing and printing functions that translate between $\String$ and $DT$.
+ \item Define checking functions that check whether $DT$-objects are well-formed.
+ \item Define processing functions that take $DT$-objects. In particular,
+  \begin{compactitem}
+   \item interpreters or evaluators turn objects into their values,
+   \item static analysis tool perform additional checks or statistics,
+   \item compilers transform objects into equivalent objects in a different formal system.
+  \end{compactitem}
+\end{compactenum}
+
+The following table gives an overview:
+
+\begin{ctabular}{|l|l|}
+\hline
+Component \ldots & contains for each concept/non-terminal $N$ one \ldots\\
+\hline
+data type & inductive data type $N$ \\
+printer  & function $printN(o: N): \String$ \\
+parser   & function $parseN(input: \String): N$ \\
+checker  & function $checkN(o: N):\Bool$\\
+\hline
+%interpreter & function $interpret(t: term): \Unit$ \\
+%compiler    & function $compile(t: term):T$ where $T$ is target type \\
+%\hline
+\end{ctabular}
+In each component, the respective functions are usually mutually recursive.
+
+The processing pipeline is always
+\begin{center}
+\begin{tikzpicture}
+\node[ellipse,draw] (S) at (0,0) {source};
+\node[ellipse,draw] (D) at (0,2) {DT};
+\node[ellipse,draw] (C) at (0,4) {DT, checked};
+\node[ellipse,draw] (T) at (6,4) {target type};
+\node[ellipse,draw] (O) at (6,0) {output};
+\draw[arrow] (S) --node[left] {parser} (D);
+\draw[arrow] (D) --node[left] {checker} (C);
+\draw[arrow] (C) --node[above] {processor} (T);
+\draw[arrow] (T) --node[right] {printer} (O);
+\end{tikzpicture}
+\end{center}
+
+\section{Evaluation}
+
+\subsection{Overview}
+
+The framework from Sect.~\ref{sec:sd:typetheory:common} still has to be extended by one aspect: we need an additional judgment \[\evobj{}{\Gamma}{t}{v}\] that describes how a term $t$ is evaluated to a value $v$.
+This judgment is called \textbf{evaluation}.
+For example, we expect a rule like $\evobj{}{\Gamma}{1+1}{2}$.
+\medskip
+
+From the perspective of programming languages, we can think of terms as programs and of evaluation as running the program.
+From the perspective of logic, we can think of the evaluation rules as a set of axioms that describe the equality relation between objects.
+\medskip
+
+Type theories can very quite drastically in how evaluation works.
+Everything can vary including the abstract shape of the judgment, its notation, and its rules.
+Often differences between formal systems manifest themselves in the details of this judgment.
+
+In particular, the treatment of function application has received a lot of attention.
+
+\subsection{Typing vs. Evaluation}
+
+Primarily we evaluate \emph{terms} to \emph{values}.
+Values are a subset of the terms that can no longer be simplified.
+For example, all the literals of the base types are values.
+
+Because terms occur inside declarations and contexts, we also have to evaluate those, usually by recursing into the terms.
+Moreover, depending on the specific type theory used, we may also have to evaluate types.
+For example, if we allow type definitions, we have to expand those evaluation.
+However, the evaluation of types is very simple.
+If it becomes too difficult (e.g., non-terminating, undecidable, or with side-effects), the formal system quickly becomes unmanageable.
+
+Both typing and evaluation typically consist of one judgment per non-terminal and one rule per production.
+Thus, both describe a family of mutually recursive functions on the grammar.
+This yields the following table:
+
+\begin{center}
+	\begin{tabular}{|l|l|l|l|}
+	\hline
+	non-terminal & typing judgment & \multicolumn{2}{l|}{evaluation judgment} \\
+	  \hline\hline
+		$\Gamma$ & $\iscont{}{\Gamma}$ & $\;\;\;\evcont{}{\Gamma}{\Gamma'}$           & $\Gamma$ evaluates to $\Gamma'$\\
+		$D$ & $\isdecl{}{\Gamma}{D}$ & $\evdec{}{\Gamma}{D}{D'}$        & declaration $D$ evaluates to $D'$ \\
+		$A$ & $\oftype{}{\Gamma}{A}{\type}$ & $\evobj{}{\Gamma}{A}{A'}$        & type $A$ evaluates to $A'$ \\
+		$t$ & $\oftype{}{\Gamma}{t}{A}$ & $\evobj{}{\Gamma}{t}{t'}$        & term $t$ evaluates to $t'$ \\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+Because we think of evaluation as running a program, evaluation is the primary \emph{dynamic} operation.
+Typing is the primary \emph{static} operation.
+Like all dynamic operations, evaluation always happens \emph{after} type-checking and is only applied to well-formed objects.
+
+Correspondingly, typing errors are called \textbf{static} or \textbf{compile-time} errors, and evaluation errors are called \textbf{dynamic} or \textbf{run-time} errors.
+\medskip
+
+As a general rule, the evaluation of well-formed terms should not cause errors, i.e., we want to statically verify that there will be no run-time errors.
+
+In practice, however, some run-time errors must be accepted, e.g., errors that are
+\begin{compactitem}
+ \item intentionally generated by the programmer (i.e., correct program behavior that happens to take the form of an abort)
+ \item caused by interaction with the environment such as hardware or network failures or missing access rights to files
+ \item caused by missing dependencies (e.g., type-checking against a library that at run-time is missing or present in a different version)
+\end{compactitem}
+Moreover, as we will see in Sect.~\ref{sec:formsys:decsoucomp}, sufficiently complete formal systems such as programming languages may make the absence of run-time errors undecidable.
+
+\subsection{Basic Rules}
+
+The rules for the empty formal system are
+\begin{itemize}
+\item Contexts are evaluated in order by evaluating every declaration::
+\[\rul{}{\evcont{}{\epsilon}{\epsilon}}
+\tb\tb
+\rul{\evcont{}{\Gamma}{\Gamma'} \tb \evdec{}{\Gamma'}{D}{D'}}{\evcont{}{\Gamma,D}{\Gamma',D'}}
+\]
+
+Note how every declaration $D$ is evaluated in the context, in which all previous declarations have been evaluated already.
+
+\item Declarations are evaluated by evaluating every object in them:
+\[\rul{\evobj{}{\Gamma}{A}{A'}}{\evdec{}{\Gamma}{\atypedef{a}{A}}{\atypedef{a}{A'}}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{A}{A'}\tb\evobj{}{\Gamma}{t}{t'}}
+    {\evdec{}{\Gamma}{\aval{a}{A}{t}}{\aval{a}{A'}{t'}}}\]
+
+Polymorphic declarations or declarations in which optional parts are absent are evaluated accordingly.
+
+\item Declared names evaluate to their definition if they have one and to themselves otherwise:
+\[\rul{\atypedef{a}{A}\;\in\; \Gamma \tb \evobj{}{\Gamma}{A}{A'}}
+      {\evobj{}{\Gamma}{a}{A'}}
+\tb\tb
+\rul{\atypedef{a}{}\;\in\; \Gamma}
+      {\evobj{}{\Gamma}{a}{a}}
+\]
+
+\[\rul{\aval{x}{A}{t}\;\in\; \Gamma \tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{x}{t'}}
+\tb\tb
+\rul{\aval{x}{A}{}\;\in\; \Gamma}
+      {\evobj{}{\Gamma}{x}{x}}
+\]
+
+Note how the definiens is evaluated recursively here.
+This is usually redundant because all previous declarations are already evaluated, i.e., the definition will not change anymore.
+But occasionally, we use formal systems where this step is necessary.
+\end{itemize}
+
+\subsection{Rules for Individual Language Features}
+
+For most language features---such as product and function types---evaluation simply recurses through the expressions.
+However, in a few key places non-trivial steps happen.
+Those few places are the reason why evaluation ``makes something happen''.
+Most importantly, this includes function application.
+
+In the following, we give evaluation rules for important features.
+We omit data types---they are similar but more complex.
+
+\subsubsection{Types}
+
+Evaluation for types just straightforwardly recurses through the type.
+The expansion of definitions from above is the only non-trivial step:
+
+\[\rul{\text{for base types } b}
+      {\evobj{}{\Gamma}{b}{b}}
+\]
+
+\[
+\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
+    {\evobj{}{\Gamma}{A \times B}{A'\times B'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
+    {\evobj{}{\Gamma}{A \to B}{A'\to B'}}
+\]
+
+\subsubsection{Terms Regarding Base Types}
+
+The literals trivially evaluate to themselves:
+
+\[\rul{l\in R_b}
+      {\evobj{}{\Gamma}{l}{l}}
+\]
+
+Operator applications evaluate to the result of calling the corresponding function in the underlying system.
+The underlying system can be another programming language but is ultimately the hardware on which evaluation is executed.
+
+For example, 
+\[\rul{\evobj{}{\Gamma}{s}{i} \tb \evobj{}{\Gamma}{t}{j} \tb i,j\in \Z}
+      {\evobj{}{\Gamma}{s+t}{i\oplus j}}
+\]
+where $s$ and $t$ evaluate to the integers $i$ and $j$, and $i\oplus j $ is actual integer addition performed by the underlying system.
+Note that here $s+t$ is a term, i.e., $+$ is just a symbol, where $i\oplus t$ is the result of an operation.
+\medskip
+
+Operator application is straightforward.
+However, to allow for generalizations to programming languages (where evaluation may run forever, fail, or have side-effects), we have to be careful about the order in which the arguments are evaluated.
+
+The typical convention is to evaluate the argument left-to-right.
+For example, $s$ is evaluated before $t$.
+\medskip
+
+Of particular importance are the rules for the if-operator:
+\[\rul{\evobj{}{\Gamma}{c}{\true}\tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{\aifelseI{c}{t}{e}}{t'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{c}{\false}\tb \evobj{}{\Gamma}{e}{e'}}
+      {\evobj{}{\Gamma}{\aifelseI{c}{t}{e}}{e'}}
+\]
+These rules only evaluate the branch that is needed---either $t$ or $e$.
+The other branch is discarded.
+
+For example, if we define the boolean operators as in $s\wedge t:=\aifelseI{s}{t}{\false}$, this yields short-circuit evaluation:
+\[\rul{\evobj{}{\Gamma}{s}{\false}}
+      {\evobj{}{\Gamma}{s\wedge t}{\false}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{s}{\true} \tb\evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{s\wedge t}{t'}}
+\]
+\medskip
+
+The equality operator presents a problem though when it is combined with functions: equality of functions is undecidable.
+There are two approaches to work around this problem:
+\begin{compactitem}
+ \item Functional languages tend to use typing rules that restrict equality to those types for which equality is decidable.
+ \item Imperative languages tend to allow equality for all types but then implement it using reference equality.
+  In that case, equality of functions will be true less often than it should be.
+\end{compactitem}
+
+
+
+\subsubsection{Terms Regarding Product Types}
+
+Pairs are evaluated by a simple recursion:
+\[\rul{\evobj{}{\Gamma}{s}{s'} \tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{(s,t)}{(s',t')}}
+\]
+
+Projections are more complicated because something actually happens: we retrieve a component from a pair using the rules
+\[\rul{\evobj{}{\Gamma}{u}{(s,t)}}
+      {\evobj{}{\Gamma}{u.1}{s}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{u}{(s,t)}}
+      {\evobj{}{\Gamma}{u.2}{t}}
+\]
+
+If $u$ does not evaluate to a pair, we simply recurse.
+
+\subsubsection{Terms Regarding Function Types}
+
+Intuitively, the key evaluation rule relevant to product types is $\beta$-reduction: substitute the variable $x$ in $\alam[A]{x}{t}$ with $s$ in order to evaluate $(\alam[A]{x}{t})\,s$.
+However, the details  present considerable difficulties.
+
+Historically very important was the choice between call-by-name and call-by-value evaluation.
+\textbf{Call-by-value} evaluates the argument of the function first, then substitutes it for $x$:
+\[\rul{\evobj{}{\Gamma}{s}{s'} \tb\evobj{}{\Gamma}{t[x/s']}{u}}
+      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\]
+where $t[x/s]$ is the result of substituting $x$ with $s$ in $t$.
+\textbf{Call-by-nam}e first substitutes, then evaluates the result:
+\[\rul{\evobj{}{\Gamma}{t[x/s]}{u}}
+      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\]
+Without side-effects, both yield the same result.
+Call-by-name is usually less efficient because $s$ has to be evaluated multiple times if $x$ occurs multiple times in $t$.
+But if side-effects are possible, the order matters; moreover, evaluating $s$ multiple times may be exactly what the programmer wants.
+\medskip
+
+Another problem is the evaluation of anonymous functions.
+The intuitive rule
+\[\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma,x:A'}{t}{t'}}
+      {\evobj{}{\Gamma}{\alam[A]{x}{t}}{\alam[A']{x}{t'}}}
+\]
+does not work in the presence of side-effects: The side-effects of $t$ should not be triggered in this rule, when the function is \emph{constructed}.
+Instead, they should occur be triggered later when the function is \emph{called}.
+
+On the other hand, we cannot delay the entire evaluation of an anonymous function until call time.
+Consider the following program:
+\[\aval{v}{\Int}{1} \tb;\tb \aval{f}{\Int\to\Int}{\alam[\Int]{x}{x+v}} \tb ; \tb \aval{v}{\Int}{2} \tb ;\tb \aprint{f(1)}\]
+Here the reference to $v$ must be evaluated before $f(1)$ is applied: otherwise, $f$ would be moved into a different environment in which $v$ refers to a different declaration.
+Therefore, programming languages have to perform \textbf{closures} in which an anonymous function is made independent of its environment.
+
+The following is a simple definition of closure:
+
+\begin{definition}[Closure]
+Assume that $\Gamma$ are fully evaluated.
+In particular, all declarations in $\Gamma$ have a definition that does not refer to any previously declared names.
+
+Then given an object $X$ in context $\Gamma$, we define $Closure_\Gamma(X)$ as the object that arises from $X$ by replacing every name with its definition.
+\end{definition}
+
+Then we can use the following rule:
+\[\rul{A'=Closure_\Gamma(A) \tb t'=Closure_\Gamma(t)}
+      {\evobj{}{\Gamma}{\alam[A]{x}{t}}{\alam[A']{x}{t'}}}
+\]
+This rule resolves all references but does not apply any evaluation rules to $t$.
+The resulting function does not refer to any names anymore and can therefore be safely transported into another context.
+
+Many formal systems are simple enough so that the closure of a type is the type itself, i.e., only the terms have to be closed.

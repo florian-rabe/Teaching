@@ -1,0 +1,473 @@
+The framework from Ch.~\ref{sec:sd:typetheory} can be applied systematically to build programming languages.
+Then checking provides the first step of static analysis, and evaluation specifies an interpretation algorithm that runs the programs.
+In fact, we can systematically read off the implementation of a type checker and an interpreter from the rule systems for typing and evaluation.
+
+\section{Decidability vs. Soundness vs. Completeness}\label{sec:formsys:decsoucomp}
+
+\subsection{Definitions}
+Three properties are desirable for building formal systems:
+
+\textbf{Decidability} states that all well-formedness judgments (i.e., all judgments except possibly evaluation) are decidable.
+That allows us to tell statically and algorithmically whether an object is well-formed.
+
+\textbf{Soundness} states all well-formed objects are meaningful.
+The details of this can very across formal systems.
+But usually it subsumes the requirement that every term $t$ of type $A$ can be semantically interpreted as an element $\ov{t}$ of some set $\ov{A}$.
+\begin{compactitem}
+ \item In logic, soundness means that all proofs give rise to valid formulas, i.e., theorems.
+ \item In programming, it means that every \emph{function term} $f:A\to B$ should yield an actual function $\ov{t}$.
+\end{compactitem}
+
+\textbf{Completeness} states that every meaningful value can be obtained as the interpretation of some term of the formal system.
+Again the details vary.
+\begin{compactitem}
+\item In logic, completeness means that all valid formulas (i.e., all semantically possible theorems) can be obtained as the interpretation of a proof in the formal system, i.e., the formal system can prove every theorem.
+\item In programming, completeness means that all computable functions (i.e., all algorithmically possible function values) can be obtained as the interpretation of some function term in the formal system, i.e., the formal system can define all functions.
+That is usualyl called Turing-completeness.
+\end{compactitem}
+
+\subsection{Mutual Exclusivity}
+
+Unfortunately, the three properties cannot be realized at once (except in degenerate, trivial cases).
+
+That is easy to prove:
+\begin{theorem}
+No formal system that interprets function terms as total functions is decidable, sound, and complete.
+\end{theorem}
+\begin{proof}
+Assume such a system.
+
+Due to completeness, every computable function can be written as a function term.
+Due to decidability, we have an algorithm to decide whether such terms are well-formed.
+Due to soundness, all well-formed terms yield terminating functions. (Otherwise, the functions would be partial.)
+
+Taking together, we could decide the halting problem, in violation of the known result that it is undecidable.
+\end{proof}
+
+Therefore, every formal system must sacrifice one of the three properties.
+This yields a somewhat rough but very intuitive classification of formal systems:
+\begin{itemize}
+ \item Type theories sacrifice (Turing-)completeness. Thus, we can check and evaluate all terms but cannot implement all computable functions.
+ \item Programming languages sacrifice soundness. Thus, we can implement and check all functions, but we have no guarantee whether a function terminates.
+ \item Logics sacrifice decidability. We can describe every computable function (as a set of axioms). But we have no algorithm for checking whether such a specification actually defines a function.
+\end{itemize}
+
+Thus, to turn a type theory into a programming language, we have to allow writing well-formed terms whose evaluation does not terminate.
+The most commonly used features are recursion or while-loops.
+
+\section{Programs as Terms}
+
+The easiest way to extend type theory to programming is to add a new concept for programs with a non-terminal $P$.
+
+We could then have productions like
+\begin{commgrammar}
+\gcomment{new declarations}\\
+\gprod{Decl}{\amval{x}{A}{t}}{mutable variables}\\
+\gcomment{programs}\\
+\gprod{P}{P;P}{sequencing}\\
+\galtprod{x=t}{assignments to variables}\\
+\galtprod{\awhileI{t}{P}}{loops}\\
+\galtprod{\aprint{P}}{user output}\\
+\galtprod{p(t)}{procedure calls}\\
+\gcomment{new terms}\\
+\gprod{t}{x}{variable reference}\\
+\galtprod{\aread}{user input}\\
+\end{commgrammar}
+
+Together with data types, this already yields a pretty convenient programming language.
+
+However, the distinction between terms and programs is not always convenient: it quickly leads to a duplication of language feature.
+For example, we need two productions $t\bbc \aifelseI{t}{t}{t}$ and $P\bbc \aifelseI{t}{P}{P}$.
+Similarly, procedure calls are essentially the same as function applications except that they do not return a value.
+Down the line, when we design the rules and implement checking and evaluation, that duplication causes a substantial overhead.
+\medskip
+
+Therefore, it is appealing to treat programs as terms.
+That means we conflate the non-terminals $P$ and $t$.
+But there is one problem: terms must have a type and evaluate to a value.
+We can solve that problem using the $\Unit$ type: all program terms have type $\Unit$.
+
+Using the $\Unit$ type in this way is common practice in functional language.
+In imperative languages, it is (deplorably) not common even though it is very simple and elegant.
+
+\section{Language Features}
+% exceptions
+%  SML, (Haskell: laziness, monads), Scala
+
+Many programming language features can be described as terms given by new productions for terms and new typing and evaluation rules for them.
+
+\subsection{Sequencing}
+
+\subsubsection{Grammar}
+
+Sequencing is very simple: first do $s$, then do $t$, and return the result of the latter $t$.
+
+\[t\bbc t;t\]
+
+If bracketing is necessary to be unambiguous, we usually use $\{s;t\}$.
+It is also commonly agreed that $;$ should be associative, i.e., we can write $\{t_1;\ldots;t_n\}$ without further bracketing.
+
+The notation $\{s;t\}$ is very similar to the notation $\{D;t\}$ for local declarations.
+Indeed, many programs have to alternate between declarations and commands.
+
+Thus, it is convenient to use a production $t\bbc (Decl|t);t$.
+Alternatively, we can use a production $Decl \bbc t$ for anonymous declarations.
+
+\subsubsection{Typing}
+
+Even though the only the last program step determines the type of the overall sequence, we have to check each step to make sure the program is well-formed:
+
+\[\rul{\oftype{}{\Gamma}{s}{A}\tb \oftype{}{\Gamma}{t}{B}}
+      {\oftype{}{\Gamma}{s;t}{B}}
+\]
+
+\subsubsection{Evaluation}
+
+Evaluation proceeds in-order in a straightforward fashion:
+
+\[\rul{\evobj{}{\Gamma}{s}{s'}\tb \evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{s;t}{t'}}
+\]
+
+Again it is important to evaluate $s$ first even though $s'$ is discarded.
+That way we trigger all side-effects of $s$.
+Moreover, if $s$ does not terminate, the evaluation of $t$ never starts.
+
+\subsection{Loops}
+
+While-loops are a key ingredient to allow for non-termination.
+
+\subsubsection{Grammar}
+
+\[t\bbc \awhileI{t}{t}\]
+
+\subsubsection{Typing}
+
+The type of a while-loop is trivially the unit type.
+So we only have to type-check all subterms and ignore their types:
+
+\[\rul{\oftype{}{\Gamma}{c}{\Bool}\tb \oftype{}{\Gamma}{t}{A}}
+      {\oftype{}{\Gamma}{\awhileI{c}{t}}{\Unit}}
+\]
+
+The type of the body does not matter.
+But it is usually a programming error if $A\neq \Unit$.
+Therefore, we might alternatively enforce $A=\Unit$.
+
+\subsubsection{Evaluation}
+
+Evaluation of a while-loop either does not terminate or yields the unit term:
+
+\[\rul{\evobj{}{\Gamma}{c}{\true}\tb \evobj{}{\Gamma}{t}{t'} \tb \evobj{}{\Gamma}{\awhileI{c}{t}}{u}}
+      {\evobj{}{\Gamma}{\awhileI{c}{t}}{u}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{c}{\false}}
+      {\evobj{}{\Gamma}{\awhileI{c}{t}}{()}}
+\]
+
+Here the left rule may look circular.
+But it is not because the premises must be evaluated left-to-right: the rule performs one iteration of the loop and then revisits the loop.
+
+
+\subsection{State and Assignments}
+
+Assignments require a whole new primitive concept: state.
+We must allow for variables whose definition changes during evaluation.
+There is a large amount of theoretical research on this issue, and we only consider a very simple solution here.
+
+\subsubsection{Grammar}
+
+Programming languages may choose to unify immutable and mutable variables.
+Then immutable variables are simply mutable variables that we happen to never assign a new value to.
+That simplifies the grammar and some implementation aspects.
+
+However, for purposes of static analysis it can be much better to limit the impact of state.
+Statefulness is notoriously difficult to handle formally and often the source of errors.
+Moreover, in well-written programs, only very few names actually have to be mutable.
+
+Therefore, we use two different declarations.
+However, we use the same letter $x$ to represent both kinds of names.
+
+\[Decl \;\bbc\; \amval{x}{A}{t}\]
+\[t \;\bbc\; x=t \;\bnfalt\; x\]
+
+\subsubsection{Typing}
+
+The type of an assignment is trivially the unit type.
+
+Variable declarations are well-formed if the initial value has the right type.
+\[\rul{\oftype{}{\Gamma}{t}{A}}
+      {\isdecl{}{\Gamma}{\amval{x}{A}{t}}}
+\]
+
+Imperative programming languages sometimes often allow uninitialized variables.
+That is a bad idea.
+
+Assignments are well-formed if the assigned term has the right type:
+
+\[\rul{\amval{x}{A}{\_} \;\in\;\Gamma \tb \oftype{}{\Gamma}{t}{A}}
+      {\oftype{}{\Gamma}{x=t}{\Unit}}
+\]
+
+Imperative programming languages sometimes use the type $A$ as the type of the assignment.
+That makes some programs shorted, but has the huge drawback of encouraging the use of assignments inside terms, which is often the source of errors.
+
+Finally, references to mutable variables are treated in the same way as the immutable case:
+\[\rul{\amval{x}{A}{\_} \;\in\;\Gamma}
+      {\oftype{}{\Gamma}{x}{A}}
+\]
+
+
+\subsubsection{Evaluation}
+
+The evaluation rules for variables are difficult because assignments change the value of a variable---something we cannot capture well with context-sensitive inference rules.
+We have to introduce a whole new formal object: the \textbf{environment}.
+
+The environment is a global object that maintains all state throughout program evaluation.
+Theoretical models of state and environment abound but none is fully convincing in all desirable ways.
+Therefore, we use a very simple and general definition that captures the main idea:
+
+\begin{definition}[Environment]\label{sec:sd:environment}
+A \textbf{location} consists of a number $l\in\Z$ and a term $t$.
+An \textbf{environment} $E$ is a set of differently-numbered locations.
+
+We define the following operations on an environment $E$:
+\begin{ctabular}{|l|l|l|}
+\hline
+Operation & Effect & Return value \\
+\hline
+$add(E,t)$ & add a new location to $E$ containing $t$ & the number of the new location \\
+$get(E,l)$ & none & the term in location $l$ of $E$\\
+$update(E,l,t)$ & update the term in the location $l$ of $E$ with $t$ & none \\
+$delete(l)$ & remove the location $l$ from $E$ & none \\
+\hline
+\end{ctabular}
+\end{definition} 
+
+We can think of locations $l$ as positions in the tape of a Turing machine or as memory locations in a modern computer.
+The latter is how the environment is implemented in modern programming languages.
+
+Now we say that during evaluation there is exactly one environment $E$, and evaluation rules can perform operations on $E$.
+Moreover, we allow the numbers of locations to be used as terms:
+\[t \bbc l \mfor{l\in\Z}\]
+It is understood that these terms are used internally during the evaluation.
+Therefore, we give no typing rule for them---thus, any program containing locations is automatically ill-formed.
+
+Now we can formulate the evaluation rules for mutable variables as follows:
+\begin{itemize}
+\item A variable declaration creates a new location and uses its number as the value of the variable:
+\[\rul{\evobj{}{\Gamma}{A}{A'}\tb \evobj{}{\Gamma}{t}{t'} \tb l=add(E,t')}
+      {\evdec{}{\Gamma}{\amval{x}{A}{t}}{\amval{x}{A'}{l}}}
+\]
+\item Assignments change the value in the location and return the unit term:
+\[\rul{\evobj{}{\Gamma}{t}{t'}\tb \amval{x}{\_}{l}\;\in\Gamma \tb update(E,l,t')}
+      {\evobj{}{\Gamma}{x=t}{()}}
+\]
+\item Variable references evaluate to the term currently stored in the location:
+\[\rul{\amval{x}{\_}{l}\;\in\Gamma \tb t=get(E,l)}
+      {\evobj{}{\Gamma}{x}{t}}
+\]
+We do not have to evaluate $t$ anymore because we only store fully evaluated terms in locations in the first place.
+\end{itemize}
+
+
+\subsubsection{Memory Deallocation}
+
+The above evaluation rules use only three of the four operations provided by the environment: we never delete a location.
+Theoretically, we never have to delete locations because the environment can simply hold on to all locations.
+We could then discard the environment as a whole after evaluation.
+
+But that is problematic for programs that create many locations, especially programs like servers that are meant to run permanently.
+Therefore, programming languages have to delete locations from time to time.
+There are two approaches:
+\begin{itemize}
+\item Explicit \textbf{deallocation} uses special commands such as
+ \[t \bbc dealloc(x)\]
+with the evaluation rule
+\[\rul{\amval{x}{\_}{l}\;\in\Gamma \tb delete(E,l)}
+      {\evobj{}{\Gamma}{dealloc(x)}{()}}
+\]
+This approach is taken by languages in the C-family.
+It is problematic because it can be impossible to give typing rules that ensure that a deallocated variable is indeed never referenced again.
+Moreover, programmer are prone to forger deallocation, leading to what is called \emph{memory leaks}.
+\item \textbf{Garbage collection} is an automated process that runs in the background and automatically deletes inaccessible locations.
+Here a location $l$ is inaccessible if no declaration is in scope anymore in which $l$ occurs.
+This approach is taken by Java, where garbage collection is provided by the virtual machine.
+\end{itemize}
+
+Garbage collection is preferable from a dependability perspective because it eliminates a source of errors.
+Its only caveat is that it typically runs at unpredictable times.
+This can be problematic for reliability because it becomes harder to give short-term timing guarantees.
+
+
+\subsection{Input and Output}
+
+Ultimately, a programming languages is practical only it it allows for input and output.
+Intuitively, input and output are straightforward, but the evaluation rules put additional complexity on the environment.
+
+\subsubsection{Grammar}
+
+We only consider console I/O and only use two simple commands for input and output:
+
+\[t\bbc \aprint{t} \bnfalt \aread\]
+
+\subsubsection{Typing}
+
+We only consider I/O of integers in principle any term (especially strings) could be written or read.
+Then we can use the rules:
+
+\[\rul{\oftype{}{\Gamma}{t}{\Int}}{\oftype{}{\Gamma}{\aprint{t}}{\Unit}}\]
+
+\[\rul{}{\oftype{}{\Gamma}{\aread}{\Int}}\]
+
+\subsubsection{Evaluation}
+
+We amend Def.~\ref{sec:sd:environment} as follows:
+
+\begin{definition}
+An environment supports I/O if it contains two special locations $IN$ and $OUT$, each holding a list of integer literals.
+
+We define the following operations:
+\begin{ctabular}{|l|l|l|}
+\hline
+Operation & Effect & Return value \\
+\hline
+$in()$ & remove the first element from the list in location $IN$ of $E$ & that element \\
+$out(t)$ & append $t$ to the term in location $OUT$ of $E$ & none\\
+\hline
+\end{ctabular}
+\end{definition}
+
+Then the evaluation rules simply defer to the I/O-supporting environment:
+
+\[\rul{\evobj{}{\Gamma}{t}{i} \tb out(i)}
+      {\evobj{}{\Gamma}{\aprint{t}}{()}}
+\tb\tb
+\rul{i=in()}
+    {\evobj{}{\Gamma}{\aread}{i}}
+\]
+
+If $IN$ should be empty, we must further specify whether the evaluation of $\aread$ waits until $IN$ is non-empty or yields a special END-OF-INPUT value (e.g., the number $4$ when interpreting integers as Unicode characters).
+
+
+\section{Recursion}
+
+Contrary to the features from the previous section, recursion is a new declaration.
+
+\subsection{Single Recursion}
+
+\subsubsection{Grammar}
+
+Rules for recursive functions can be obtained relative easily.
+We introduce a new declaration for \textbf{recursive} values, i.e., values whose definition may already use the currently-being-declared name.
+
+Its production looks the same as normal value definitions:
+\[Decl \bbc \arecval{x}{A}{t}\]
+Indeed, many programming languages just use one declaration.
+In other words, they allow every function to be recursive.
+
+It is however good practice to strictly separate them to limit the impact of recursion.
+
+\subsubsection{Typing}
+
+Recursive declarations are checked as follows:
+\[\rul{\oftype{}{\Gamma}{A}{\type} \tb \oftype{}{\Gamma,\aval{x}{A}{}}{t}{A}}
+      {\isdecl{}{\Gamma}{\arecval{x}{A}{t}}}
+\]
+Here the existence of an $x$ of type $A$ is already assumed when checking the definition.
+That allows recursion.
+
+Together with the if-operator, we can already express all computable functions:
+
+\begin{example}
+The following definition of the factorial function is a well-formed declaration in the empty context:
+
+\[\isdecl{}{}{\arecval{fact}{\Int\to\Int}{\alam[\Int]{x}{\aifelseI{x\leq 0}{1}{x\cdot fact(x-1)}}}}\]
+
+It clearly terminates, but that is not guaranteed by well-formedness.
+The following nonsensical definitions are also well-formed:
+\[\isdecl{}{}{\arecval{foo}{\Int\to\Int}{\alam[\Int]{x}{foo(x)}}}\]
+\[\isdecl{}{}{\arecval{bar}{\Int}{bar}}\]
+\end{example}
+
+\subsubsection{Evaluation}
+
+In principle, the existing evaluation rules still work in the presence of non-termination.
+However, formal systems may want to make some changes to carefully decide \emph{when} non-termination occurs during the evaluation algorithm.
+
+The simplest evaluation rule for recursive values corresponds to the typing rule:
+\[\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma,\aval{x}{A'}{}}{t}{t'}}
+      {\evdec{}{\Gamma}{\arecval{x}{A}{t}}\arecval{x}{A'}{t'}}
+\]
+Thus, evaluating a recursive declaration does not cause non-termination.
+
+Later declarations are checked with the full recursive declaration in the context.
+Thus, every reference to the name triggers a cascade of definition expansion--steps.
+Every such step corresponds to one iteration of the recursion.
+
+\begin{example}
+Consider the program $\Gamma$
+\[\arecval{fact}{\Int\to\Int}{\alam[\Int]{x}{F(x)}}, \; \aval{main}{\Int}{f(1)}\]
+where we abbreviate
+\[F(x) \tb := \aifelseI{x\leq 0}{1}{x\cdot fact(n-1)}\]
+
+The evaluation of $\Gamma$ first evaluates the first declaration.
+That terminates easily. Because there are no defined names in the context, the closure of the function is the same as the function.
+
+Evaluating the second declaration leads to
+\[\evobj{}{\arecval{fact}{\Int\to\Int}{\alam[\Int]{x}{F(x)}}}{f(1)}{???}\]
+At this point evaluation proceeds as follows:
+\[f(1) \rewrites (\alam[\Int]{x}{F(x)})\,1 \rewrites F(1) \rewrites 1\cdot fact(1-1) \rewrites 1 \cdot fact(0) \rewrites 1\cdot F(0) \rewrites 1\cdot 1\rewrites 1\]
+and thus
+\[\evobj{}{\arecval{fact}{\Int\to\Int}{\alam[\Int]{x}{F(x)}}}{\aval{main}{\Int}{f(1)}}{\aval{main}{\Int}{1}}\]
+
+Note how the evaluation rules for $\akey{if}$ and definition expansion work together in such a way that evaluation of $fact(1)$ terminates even though $fact$ is recursive.
+\end{example}
+
+\subsection{Mutual Recursion}
+
+Recursion as describe above allows only one declaration to recurse into itself.
+More generally, we want to allow sets of mutually recursive declarations, i.e., a set of declarations that can refer to each other.
+
+One option is to use groups of declarations like
+\[Decl \bbc \akey{mutual}\{Decl^*\}\]
+This is the approach taken by SML.
+To type-check $\akey{mutual}\{D_1,\ldots,D_n\}$, we first check all types in all $D_i$, then we put the types into the context and check all definitions.
+
+In the most general case, all declarations must be allowed to reference any other.
+This often happens in object-oriented languages, where classes distributed over multiple files must be able to refer to each other.
+
+
+\section{Control Flow Operators}
+
+The last remaining major programming language feature are control flow operators such as
+\begin{itemize}
+  \item $\areturn{t}$ for exiting a function from anywhere inside its body,
+  \item $\abreak$ for exiting a while-loop from anywhere inside its body,
+  \item $\athrow{e}$ for throwing an exception and exiting a try-block at any time during execution of its body.
+\end{itemize}
+
+All of these share the property that they jump to a different place in the programming, discarding the current state and restoring a previous state where execution continues.
+Contrary to a function call, execution never returns to the place we jumped away from.
+
+It is much harder to give typing and evaluation rules for these operators, and programming language research invests substantial effort into it.
+
+\subsection{Typing}
+
+It is straightforward to give these operators a type: they all have type the empty $\Void$.
+That makes sense because they never return and therefore do not have a value from the perspective of the surrounding code.
+
+We must avoid confusion between the following two groups of commands:
+\begin{itemize}
+\item Commands that return nothing like printing, assignment, and while-loop. Those have type $\Unit$.
+\item Commands that do not return like breaking, throwing, and returning. Those have type $\Void$.
+\end{itemize}
+
+However, giving rules that describe the well-formedness or the surrounding constructs (functions, while-loops, and try-blocks) is much harder.
+
+\subsection{Evaluation}
+
+Giving evaluation rules is very hard as well.
+
+However, implementing an interpreter is surprising easy---if we use a programming language that has some similar control flow operator.
+For example, if we use a programming language that allows throwing exceptions, it is straightforward to implement $\areturn{e}$, $\abreak$, and $\athrow{e}$ by using exceptions.

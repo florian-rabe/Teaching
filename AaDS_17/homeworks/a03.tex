@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,due=2017-03-02,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,duedate=2017-03-02,duetime=11:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,12 +10,13 @@
 
 \header
 
-\begin{problem}{Problem Complexity}{6+6}
+\begin{problem}{Problem Complexity}{6+6+6}
 What is the complexity class of the worst-case time complexity $C(n)$ of the following \emph{problems}:
 \begin{enumerate}
 \item Find the smallest element in a list of length $n$ of integers.
 \item Find an unknown $x\in \N$ between $0$ and $n$ by repeatedly asking yes/no questions about $x$.\\
 (Any question is allowed that has a well-defined answer. For example, you may ask ``Is $x$ prime?'' or ``Is $x==5$?'' A solution must determine $x$ with perfect certainty in all cases.)
+\item Crack an unknown password if the only prior knowledge you have is that it contains $n$ characters.
 \end{enumerate}
 
 In each case, answer the question in two parts:
@@ -26,19 +27,19 @@ In each case, answer the question in two parts:
 \end{problem}
 
 \begin{problem}{Complexity Analysis}{5}
-The following is a (highly simplified variant of an) example that came up last year in the author's research:
+The following is a (highly simplified variant of an) example that came up last year in the instructor's research:
 Consider the following function in the Scala programming language:
 
 \begin{lstlisting}
 def processString(s: String) {
   var rest: String = s
-  while (s != "") {
+  while (rest != "") {
     if (rest.startsWith("foo")) {
       // does not matter, assume this takes O(1)
     } else {
       // does not matter, assume this takes O(1)
     }
-    rest = s.substring(1)
+    rest = rest.substring(1)
   }
 }
 \end{lstlisting}
@@ -52,11 +53,11 @@ In the author's case, the surprising effect was noticed by a student trying to p
 \end{problem}
 
 \begin{problem}{Polynomial Algorithms}{$\infty$}
-Consider the following problem: Given a natural number $x$ that uses $n$ bits, find a non-trivial factor of $x$ (or say that $n$ is prime).
+Consider the following problem: Given a natural number $x$ that uses $n$ bits, find a non-trivial factor of $x$ (or say that $x$ is prime).
 
 Here ``non-trivial factor'' means a number $p|x$ such that $1<p<x$.
 
-Give an algorithm (pseudo-code or programming language) with polynomial run-time complexity $C(n)$ or show that no such algorithm exists.
+Give an algorithm (pseudo-code or programming language) with polynomial worst-case time complexity $C(n)$ or show that no such algorithm exists.
 \end{problem}
 
 \end{document}

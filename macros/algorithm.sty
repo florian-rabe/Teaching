@@ -1,5 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% pseudo code
 \RequirePackage{xcolor}                                           
+\RequirePackage{framed}
 
 \definecolor{shadecolor}{RGB}{245,245,245}
 \newenvironment{acode}{\setcounter{aindent}{0}\let\@anewline=\\\renewcommand{\\}{\anewline}\noindent\begin{snugshade}$}{$\end{snugshade}}
@@ -16,7 +17,11 @@
 \newcommand{\amatchI}[2]{\akey{match}#1\;\ablockI{\fold{|}{#2}}}
 \newcommand{\acase}[2]{#1 \mapsto #2}
 \newcommand{\anew}[2]{\akey{new} #1(#2)}
-\newcommand{\anewA}[3]{\akey{new} #1(#2)\ablockI{\fold{|}{#3}}}
+\newcommand{\anewA}[3]{\akey{new} #1(#2)\ablockI{\fold{,\,}{#3}}}
+
+\newcommand{\afa}[3][]{\forall\ifnonempty[#2]{#1}{#2\text{:}#1}.\; #3}
+\newcommand{\aex}[3][]{\exists\ifnonempty[#2]{#1}{#2\text{:}#1}.\; #3}
+\newcommand{\aproof}[1]{\akey{proof} #1}
 
 \newcommand{\aisinst}[2]{#1 \,\akey{isInstanceOf} #2}
 \newcommand{\aasinst}[2]{#1 \,\akey{asInstanceOf} #2}
@@ -28,14 +33,17 @@
 \newcommand{\aneq}{\neq}
 
 % statements
-\newcommand{\aval}[4][]{\akey{val}#2:#3=#4\acomment{#1}}
 \newcommand{\aseq}[2][]{\fold{;}{#2} \acomment{#1}}
 \newcommand{\awhile}[3][]{\akey{while} #2 \acomment{#1} \ablock{#3}}
 % for{i}{m}{n}{code(i)} = code(m) ; ... ; code(n)
 \newcommand{\afor}[5][]{\akey{for} #2 \;\akey{from}#3 \;\akey{to} #4 \acomment{#1} \ablock{#5}}
 \newcommand{\aif}[3][]{\akey{if} #2\acomment{#1} \ablock{#3}}
 \newcommand{\aifelse}[4][]{\aif[#1]{#2}{#3}\anewline\akey{else}\ablock{#4}}
+\newcommand{\aprint}[2][]{\akey{print} #2\acomment{#1}}
+\newcommand{\aread}[1][]{\akey{read} \acomment{#1}}
 \newcommand{\areturn}[2][]{\akey{return} #2\acomment{#1}}
+\newcommand{\abreak}[1][]{\akey{break}\!\!\acomment{#1}}
+\newcommand{\athrow}[2][]{\akey{throw}#2\acomment{#1}}
 
 \newcommand{\aloopinv}[1]{\acomment{loop invariant: $#1$}\\}
 
@@ -53,7 +61,10 @@
 \newcommand{\aclassAI}[4]{\aclassH[abstract\; class]{#1}{#2}{#3}\ablockI{#4}}
 
 \newcommand{\adata}[2]{\akey{data} #1 \, =\, \fold{\;|\;}{#2}}
-\newcommand{\atypedef}[2]{\akey{typedef} #1 = #2}
+\newcommand{\aval}[3]{\akey{val} #1:#2\ifnonempty{#3}{=#3}}
+\newcommand{\atypedef}[2]{\akey{type} #1\ifnonempty{#2}{= #2}}
+\newcommand{\arecval}[3]{\akey{recval} #1:#2=#3}
+\newcommand{\amval}[3]{\akey{var} #1:#2=#3}
 
 \newcommand{\afunH}[3]{\akey{fun} #1(\fold{,\,}{#2})\ifnonempty{#3}{:#3} \, =}
 \newcommand{\afun}[4][]{\afunH{#2}{#3}{#1} \ablock{#4}}

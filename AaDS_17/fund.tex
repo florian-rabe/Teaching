@@ -349,6 +349,7 @@ For every program of every language, we must provide an equivalent program in ev
 
 However, this can be done (and has been done) for all languages.
 \end{proof}
+%This should only hold for Turing complete languages (and some especially nice programming languages like e.g. Agda are not Turing complete). Non Turing complete languages can not nessecarily construct all the set a Turing complete language can. For instance in Agda (and some other total functional programming languages) you can only implement algorithms (including constructors of data types) for programs proven to be terminating. According to the halting problem this implies, that there are some algorithms that you can define on a Turing machine, but not in Agda. 
 
 A related (stronger) theorem is that every programming language $P$ allows defining for every programming language $Q$ a program that executes $Q$-programs.
 
@@ -357,7 +358,7 @@ It is generally believed but impossible to prove that there is no programming la
 \section{Specification vs. Design vs. Implementation}
 
 Above we have seen sets and functions as well as data structures and algorithms.
-Moreover, we have already mentioned and programs.
+Moreover, we have already mentioned programs consisting of types and functions.
 
 The following table gives a overview of the relation between these concepts:
 
@@ -375,7 +376,15 @@ Software development consists of $3$ steps:
 \begin{enumerate}
 \item The \textbf{specification} describes the intended behavior in terms of mathematical sets and functions.\\
 It does not prescribe in any way how these sets and functions are realized.
-The same specification can have multiple different correct realizations differing among others in size, maintainability, or efficiency.
+The same specification can have multiple different correct realizations differing among others in size, maintainability, or efficiency.\\
+A good specification should be:
+\begin{compactitem}
+  \item adequate: actually describe the problem that needs solving
+  \item simple: easy to understand
+  \item unambiguous: impossible to misunderstand
+  \item consistent: possible to realize
+  \item (optionally) complete: no freedom in what it means (An incomplete specification is not necessarily a flaw. For example, one might specify a function on integers without saying what should happen for negative input.)
+\end{compactitem}
 \item The \textbf{architecture} makes concrete choices for the data structures and algorithms that realize the needed sets and functions.\\
 It usually defines many auxiliary data structures and algorithms that are not part of the specification.\\
 The architecture does not prescribe a programming language. It can be correctly realized in any programming language.
@@ -653,8 +662,11 @@ The $D_i$ are called the \textbf{type parameters} or \textbf{type arguments} of 
 This is best understood by example:
 
 \begin{example}[Lists]
-Lists are a polymorphic data structure: $List[A]$ is the data structure of lists whose elements have type $A$, e.g., it is a data structure for the set $A^*$.
-For example, $List[\Int]$ contains the lists of integers.
+Lists are a polymorphic data structure.
+$A^*$ is the set of lists whose elements have type $A$.
+Any data structure for $A^*$ should take $A$ as a type parameter.
+
+For example, $List[A]$ may be a data structure such that $List[\Int]$ is the type of lists of integers.
 
 Most algorithms about lists are polymorphic as well.
 For example, reversing a list can be realized using an algorithm
@@ -693,6 +705,14 @@ Then a polymorphic sorting algorithm could look like
 }
 \end{acode}
 \end{example}
+
+\begin{notation}[Omitting Type Parameters]
+Most of the time it is possible to omit the type parameters when calling a polymorphic function without ambiguity.
+For example, if $l: List[\Int]$, we can simply say $revert(l)$ instead of $revert[\Int](l)$---both human readers and compiler can infer the type argument.
+
+Most programming languages that allow polymorphism also allow omitting parameters if they can be inferred uniquely.
+It is also allowed to do so in examples and pseudo-code.
+\end{notation}
 
 \subsubsection{In Programming Languages}
 

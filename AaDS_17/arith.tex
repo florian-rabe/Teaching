@@ -14,7 +14,7 @@ It is straightforward to give an algorithm for exponentiation.
 For example,
 \begin{acode}
 \afun[\N]{power}{x:\Z,n:\N}{
-  \aifelse{x==0}{1}{x\cdot power(x,n-1)}
+  \aifelse{n==0}{1}{x\cdot power(x,n-1)}
 }
 \end{acode}
 
@@ -65,7 +65,7 @@ Moreover, we know from the base case that $C(0)=1$.
 Substituting these above yield
 \[C(n)\in O(1)+\Theta(\log_2 n)\cdot O(1)=\Theta(\log_2 n)\]
 
-Thus, we can compute power in logarithmic time.
+Thus, we can compute $power$ in logarithmic time.
 
 \section{Fibonacci Numbers}\label{sec:ad:fib}
 
@@ -169,6 +169,10 @@ Correctness follows from the correctness of square-and-multiply.
 \paragraph{Complexity}
 Square-and-multiply has complexity $O(\log n)$.
 Thus, we can compute $fib(n)$ with logarithmic complexity.
+
+%\section{Multiplication}
+% Karatsuba
+
 
 \section{Matrices}
 
