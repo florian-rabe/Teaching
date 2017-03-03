@@ -31,13 +31,34 @@ We cannot extend the typing-evaluation pair of algorithms known from type theory
 More precisely, it is undecidable whenever the domain of quantification---the type $A$ above---is infinite.
 If $A$ is finite, we can (usually inefficiently) evaluate quantified formulas by testing the instances for every possible $x:A$.
 If $A$ is infinite, testing can only evaluate universally quantified formulas to $\false$ (by finding some instance that is $\false$) or existentially quantified ones to $\true$ (by finding some instance for which it is true).
+However, even if $A$ is finite, it is usually too big to make evaluation by testing useful.
 
-Actually, undecidable evaluation in logic is not all that different from programming languages.
-After all programming languages allow for non-terminating evaluation, which also leads to undecidability.
-Moreover, type theories routinely use the equality operator even though its evaluation is also undecidable in certain situations, e.g., for function types.
+Actually, undecidable evaluation in logic is not all that new---we also found it in programming languages.
+Firstly, they allow for non-termination, which already makes evaluation undecidable.
+Secondly, programming languages and even many type theories routinely use the equality operator even though its evaluation is also undecidable in certain situations, e.g., for function types.
 However, while such undecidable behavior is accidental in programming and can be worked around, quantified formulas with undecidable evaluation are essential in logic.
 
-To handle these formulas, we have to replace evaluation with an entirely new concept: proofs.
+\subsubsection{Proving}
+
+To handle these formulas, we have to replace evaluation with an entirely new concept: proving.
+
+Proving can be seen as a static variant of evaluation: we try to evaluate terms in the presence of \emph{arbitrary unknown values}.
+Concretely, we assume that $\Gamma$ contains undefined names as in $\aval{x}{A}{}$.
+In logic, these names are usually called \textbf{free variables}.
+For example, to prove $\afa[A]{x}{F}$, we try to evaluate $F$ in a context that declares $\aval{x}{A}{}$.
+
+Note that in executable programs, free variables are not allowed: every variable must have a concrete value.
+
+If free variables are allowed, a formula $F$ does not necessarily evaluate to $\true$ or $\false$ anymore.
+Instead, there are three options:
+\begin{compactitem}
+ \item Free variables can be eliminated, and $F$ evaluates to $\true$.
+ \item Free variables can be eliminated, and $F$ evaluates to $\false$.
+ \item $F$ evaluates to some term that still contains free variables.
+\end{compactitem}
+
+The distinction between the options is undecidable.
+Proving tries to establish that one of the former holds.
 
 \subsection{Formulas not as Terms}
 
@@ -85,7 +106,7 @@ But for the same reason as for programs, it makes the language easier to make th
 The details of what proof constructors to add and what typing rules to give them goes beyond the scope of this treatment.
 We only give the necessary features for an empty logic and some examples.
 
-\subsection{Basic Rules}
+\subsection{Empty Formal System}
 
 We introduce a new type constructor that lifts boolean terms to types:
 
@@ -132,7 +153,7 @@ Then we obtain the more familiar-looking
 \rul{\iscons{}{\Gamma}{}{\aproof{(F\impl G)}}\tb \iscons{}{\Gamma}{}{\aproof{F}}}{\iscons{}{\Gamma}{}{\aproof{G}}}\]
 If we additionally write simply $F$ instead of $\aproof{F}$, we obtain the usual notation.
 
-\section{Logics for Reasoning about Systems}
+\subsection{Logics for Reasoning about Systems}
 %  LTL, CTL
 
 Logics like FOL and HOL are sufficient for reasoning about mathematical concepts.
@@ -148,3 +169,76 @@ For example, to verify a piece of code $C$, we have to talk about the values of 
 For physical systems, especially those interacting via sensor data, we may have to use \textbf{continuous} time: a representation of points in time as real numbers and of all values as functions over the real numbers.
 
 Both present substantial challenges, and a variety of different logics has been developed.
+
+\section{Discrete-Time Logic}
+
+\subsection{Grammar and Intuitions}
+
+The basic idea of discrete time is to use a set of states and transitions between them.
+All the intuitions and concepts from finite automata (which are sometimes alternatively called \emph{finite state machines}) can be generalized to arbitrary state machines.
+The set of states is usually infinite or at least very large.
+
+The central is the following:
+\begin{definition}
+A \textbf{state} is a possible value for the set of cells in the environment.
+
+A \textbf{transition} is a triple $(s,o,s')$, where $s$ is a state, $o$ is one of the operations that can be called on the environment, and $s'$ is the state after calling $o$ in state $s$.
+\end{definition}
+
+Now the evaluation of every term (including the truth of formulas) depends on the state.
+Thus, the meaning of a formula is no longer a boolean but a function from states to booleans.
+
+When designing logics, we try to avoid talking about states explicitly---that would just amount to reformulating verification problems in a different formalism.
+Instead, we try to talk about states indirectly or to introduce names for only a few certain states.
+
+\subsubsection{Modal Logic}
+
+Historically, the central ideas go back to modal logic, which introduced the following operators in the early $20$th century:
+\begin{ctabular}{|l|l|}
+\hline
+Formula & Holds in state $s$ if \\
+\hline
+$\square F$ & $F$ holds in all possible successor states of $s$\\
+$\diamond F$ & $F$ holds in some possible successor state of $s$\\
+\hline
+\end{ctabular}
+
+\subsubsection{Dynamic Logic}
+
+Dynamic logic expands on modal logic by clarifying what transitions should be taken into consideration:
+
+\[t \bbc \abox{t}{t} \bnfalt \adia{t}{t}\]
+
+\begin{ctabular}{|l|l|}
+\hline
+Formula & Holds in state $s$ if  \\
+\hline
+$\abox{P}{F}$ & $F$ holds in all successor state of $s$ reachable by executing $P$ \\
+$\adia{P}{F}$ & $F$ holds in some successor state of $s$ reachable by executing $P$ \\
+\hline
+\end{ctabular}
+
+If $P$ is a deterministic program, then for every $s$ there is at most $1$ successor state reachable by executing $P$: if $P$ terminates, there is exactly $1$ state; otherwise, there is no state.
+
+In that case, the operators become very easy:
+\begin{ctabular}{|l|l|}
+\hline
+Formula & Holds in state $s$ if  \\
+\hline
+$\abox{P}{F}$ & if $P$ terminates from $s$, $F$ holds afterwards \\
+$\adia{P}{F}$ & $P$ terminates from $s$ and $F$ holds afterwards \\
+\hline
+\end{ctabular}
+
+Note that all terms considered so far are deterministic with the exception of $\aread$.
+
+\subsection{Typing}
+
+There are different choices for the typing rules.
+The following is just a simple example:
+
+\[\rul{\oftype{}{\Gamma}{P}{A}\tb \oftype{}{\Gamma}{F}{\Bool}}
+      {\oftype{}{\Gamma}{\abox{P}{F}}{\Bool}}
+\tb\tb
+\rul{\oftype{}{\Gamma}{P}{A}\tb \oftype{}{\Gamma}{F}{\Bool}}
+    {\oftype{}{\Gamma}{\adia{P}{F}}{\Bool}}\]
