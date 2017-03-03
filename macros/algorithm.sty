@@ -21,6 +21,8 @@
 
 \newcommand{\afa}[3][]{\forall\ifnonempty[#2]{#1}{#2\text{:}#1}.\; #3}
 \newcommand{\aex}[3][]{\exists\ifnonempty[#2]{#1}{#2\text{:}#1}.\; #3}
+\newcommand{\abox}[2]{[#1]#2}
+\newcommand{\adia}[2]{\langle#1\rangle#2}
 \newcommand{\aproof}[1]{\akey{proof} #1}
 
 \newcommand{\aisinst}[2]{#1 \,\akey{isInstanceOf} #2}
@@ -40,7 +42,7 @@
 \newcommand{\aif}[3][]{\akey{if} #2\acomment{#1} \ablock{#3}}
 \newcommand{\aifelse}[4][]{\aif[#1]{#2}{#3}\anewline\akey{else}\ablock{#4}}
 \newcommand{\aprint}[2][]{\akey{print} #2\acomment{#1}}
-\newcommand{\aread}[1][]{\akey{read} \acomment{#1}}
+\newcommand{\aread}[1][]{\akey{read}\!\! \acomment{#1}}
 \newcommand{\areturn}[2][]{\akey{return} #2\acomment{#1}}
 \newcommand{\abreak}[1][]{\akey{break}\!\!\acomment{#1}}
 \newcommand{\athrow}[2][]{\akey{throw}#2\acomment{#1}}
