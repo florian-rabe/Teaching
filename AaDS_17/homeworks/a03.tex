@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,duedate=2017-03-02,duetime=11:00]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=3,date=2017-02-21,duedate=2017-03-02,duetime=11:00,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -24,6 +24,35 @@ In each case, answer the question in two parts:
 \item Give an algorithm (in pseudo-code or a programming language) that is in the given complexity class. (3 points each)
 \item Argue informally (but convincingly) why there can be no better algorithm. (3 points each)
 \end{compactitem}
+
+\begin{solution}
+Solutions had to actually give the algorithms. Here the algorithms are only sketched.
+\begin{compactenum}
+\item $\Theta(n)$
+	\begin{compactitem}
+	\item It is straightforward to give a linear algorithm.
+	\item The smallest element can be any element in the list, and there is no relation between elements in different positions.
+	Therefore, the optimal algorithm must inspect every element of the list, and thus be at least linear.
+	\end{compactitem}
+\item $\Theta(\log_2 n)$
+	\begin{compactitem}
+	\item We use give an algorithm such that every question cuts the range of possible values for $x$ in half.
+	For example, we can ask ``Is $x\leq n/2$?'' If yes, we recurse for the lower half; if no, we recurse for the upper half.
+	After $k$ questions, the range is reduced to $n/2^k$. Thus, we know $x$ after $\log_2 n$ questions.
+	\item There are $n$ possible solutions. Therefore, the optimal algorithm must be such that it can return $n$ different values.
+	But the only data that can be used to return different values are the answers to the questions.
+	After $k$ questions we have received $2^k$ possible sequences of answers.
+	Therefore, we must have $2^k\geq n$ to be able to return $n$ different values.
+	Thus, we have to ask at least $\log_2 n$ questions.
+	\end{compactitem}
+\item $\Theta(c^n)$ for a constant $c$. Note that there are $c^n$ possible passwords if $c$ is the number of characters allowed in the password.
+	\begin{compactitem}
+	\item A brute-force attack cracks the password by trying every possibility. That takes $c^n$ attempts in the worst-case.
+	\item Any password could be the right one.
+	Because we have no other information, even the optimal algorithm might try the correct password last in the worst-case.
+	\end{compactitem}
+\end{compactenum}
+\end{solution}
 \end{problem}
 
 \begin{problem}{Complexity Analysis}{5}
@@ -49,7 +78,29 @@ Let $C(n)$ be the run time of this function where $n$ is the length of the input
 What is the complexity class of $C(n)$ and why?
 
 You can try the program yourself on increasingly large input to find out. (If you prefer, you can use Java instead of Scala---the effect is the same.)
-In the author's case, the surprising effect was noticed by a student trying to process a $100$ MB text file, e.g., when $n>10^8$. The problem is already noticeable for smaller values of $n$.
+In the instructor's case, the surprising effect was noticed by a student trying to process a $100$ MB text file, e.g., when $n>10^8$. The problem is already noticeable for smaller values of $n$.
+
+\begin{solution}
+The complexity depends on the implementation of \lstinline|substring| in the Java standard library.
+
+The simplest implementation always copies the string, \lstinline|rest = rest.substring(1)| is linear in the length of \lstinline|rest|.
+Then the algorithm is quadratic.
+
+But it is possible to implement \lstinline|substring| efficiently so that it always takes constant time.
+The trick is not to copy the original string and instead store every string in terms of its start and end position.
+Then the algorithm is linear.
+\medskip
+
+It turns out an earlier version of the standard Java library had implemented \lstinline|substring| efficiently.
+But the current version had switched to the simpler implementation.
+That confusion caused the instructor to mistakenly believe his implementation to be linear when it actually was quadratic.
+
+We noticed it when trying to parse a $100$ MB JSON file.
+Parsing JSON is a straightforward linear operation that should be faster than reading the file from the hard drive.
+But it took $30$ minutes.
+After writing a data structure that allowed for constant-time substring operations, parse time went down to about a second.
+\end{solution}
+
 \end{problem}
 
 \begin{problem}{Polynomial Algorithms}{$\infty$}
@@ -58,6 +109,31 @@ Consider the following problem: Given a natural number $x$ that uses $n$ bits, f
 Here ``non-trivial factor'' means a number $p|x$ such that $1<p<x$.
 
 Give an algorithm (pseudo-code or programming language) with polynomial worst-case time complexity $C(n)$ or show that no such algorithm exists.
+
+\begin{solution}
+This was a bit of a trick question---the complexity of factorization is not known.
+
+We know that factorization is at most exponential: we can simply test all numbers $p$ from $2$ to $\sqrt{2^n}$.
+Moreover, given a potential factor $p$ of $x$, we can test $p|x$ in at most quadratic time by doing the division.
+Finally, we know that testing whether $x$ has any non-trivial factor is polynomial (using the advanced AKS algorithm discovered in 2002).
+
+But we do not know if there is a polynomial algorithm that can find a non-trivial factor of $x$ (even if we know $x$ has one).
+It is generally assumed that there is none.
+\medskip
+
+Finding such an algorithm might make many public key encryption schemes vulnerable to attacks.
+Their security is often based on the property that a brute-force attack is at least as complex as factorization.
+With factorization assumed to be super-polynomial, these attacks are assumed to be infeasible.
+
+Showing that there is no such algorithm would immediately prove the $P\neq NP$ conjecture---one of the most famous open problems in computer science.
+\medskip
+
+However, we know that any complexity analysis depends on assumptions about the underlying physical machines.
+In 1994, Shor found a polynomial factorization algorithm running on a then-hypothetical quantum computer.
+This is one of the motivations of researchers, industry, and military/intelligence agencies to build quantum computers.
+This has been accomplished by now at small scales: the current quantum computation record factored numbers for $n=16$.
+But the physical difficult and financial cost of building and running quantum computers is still large.
+\end{solution}
 \end{problem}
 
 \end{document}

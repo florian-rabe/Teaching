@@ -8,6 +8,7 @@
 \DeclareStringOption{duedate}
 \DeclareStringOption[before the lecture]{duetime}
 \DeclareBoolOption{unpublished}
+\DeclareBoolOption{solutions}
 \ProcessKeyvalOptions*
 
 %% standard packages
@@ -15,6 +16,7 @@
 \RequirePackage{amsmath,amssymb}
 \RequirePackage{url}
 \RequirePackage{paralist}
+\RequirePackage{comment}
 \RequirePackage{listings}
 \lstset{basicstyle=\ttfamily}
 
@@ -32,6 +34,12 @@
 \pagestyle{empty}
 
 %% main commands
+
+\ifhw@solutions
+\includecomment{solutions}
+\else
+\excludecomment{solutions}
+\fi
 
 %% \header
 \newcommand{\header}{
@@ -71,6 +79,6 @@ There will be no deadline extensions unless mentioned otherwise in the lecture.
   {\large \textbf{Bonus Problem \arabic{assignmentno}.\arabic{problemno}} \hspace{0.2cm}\textit{#1}} \hfill (#2 bonus point\ifthenelse{#2=1}{}{s})\refstepcounter{problemno}\vspace{2pt}\\}
 %%  {\bf Problem F.\arabic{problem}:} \textit{#1} \hfill (#2 point\ifthenelse{#2=1}{}{s})\refstepcounter{problem}}\\ 
 
-\newcommand{\solution}{\pagebreak[2]{\bf Solution:}}
+\newenvironment{solution}{\pagebreak[2]\vspace{.5cm}\hrule{\bf Solution:}}{\hrule\vspace{.5cm}}
 
 \newenvironment{hint}{\vspace{.5cm}\hrule \textbf{Hint:}}{\hrule\medskip}
