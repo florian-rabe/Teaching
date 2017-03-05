@@ -410,6 +410,16 @@ For example:
 }
 \end{acode}
 
+The complexity of some methods on array, linked list and double linked list with length $l$ is summurized as follows:
+\begin{ctabular}{|l|l|l|l|l|l|l|l|l|} 
+\hline
+\multirow{2}{*}{}  & \multirow{2}{*}{$length[A]$} & \multicolumn{4}{c|}{At position n} & \multirow{2}{*}{$prepend[A]$} & \multirow{2}{*}{$append[A]$} & \multirow{2}{*}{$reverse[A]$} \\ \cline{3-6}
+&       & $get[A]$ & $update[A]$ & $insert[A]$ & $delete[A]$ &         &        &         \\ \hline
+Array & $\Theta(1)$ & \multicolumn{2}{l|}{$\Theta(1)$} & \multicolumn{2}{l|}{$\Theta(l-n)$} & $\Theta(l)$ & $\Theta(1)$ & $\Theta(l)$ \\
+Linked List & $\Theta(l)$ & \multicolumn{2}{l|}{$\Theta(n)$} & \multicolumn{2}{l|}{$\Theta(n)$} & $\Theta(1)$ & $\Theta(l)$ & $\Theta(l)$ \\
+Double-linked List & $\Theta(l)$ & \multicolumn{2}{l|}{$\Theta(n)$} & \multicolumn{2}{l|}{$\Theta(n)$} & $\Theta(1)$ & $\Theta(1)$ & $\Theta(l)$  \\ \hline
+\end{ctabular}
+
 
 \subsubsection{Growable Arrays}
 
