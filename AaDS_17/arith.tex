@@ -239,7 +239,7 @@ Therefore, we have to state correctness a bit more carefully:
    \end{compactitem}
  \item for $z:=mult(x,y)$
    \begin{compactitem}
-     \item[precondition:]  $x.rows==y.columns$
+     \item[precondition:]  $x.columns==y.rows$
      \item[postcondition:] $z:=mult(x,y)$ is $x\cdot y$ and $z.rows==x.rows$ and $z.columns==y.columns$
    \end{compactitem}
 \end{compactitem}
@@ -274,7 +274,7 @@ But for simplicity, we only consider the case $l=m=n$, i.e., we are multiplying 
 Then the naive algorithm has complexity $\Theta(n^3)$, and we know the specification has complexity $\Omega(n^2)$.
 The question is to find a solution in between.
 
-We further simplify to $n=2^k$, i.e., we can recursively subdivide our $2^k$-matrices $4$ $2^{k-1}$-matrices.
+We further simplify to $n=2^k$, i.e., we can recursively subdivide our $2^k$-matrices to $4$ $2^{k-1}$-matrices.
 Then we can design a recursive algorithm that only needs $k$ nested recursions.
 
 The complexity depends on the details of the implementation.
@@ -284,7 +284,17 @@ That yields
 Because $k=\log_2 n$ and $C(1)\in O(1)$, that yields $C(n)\in\Theta(n^{\log_2 8})=\Theta(n^3)$.
 
 However, Strassen observed that we can do better.
-With some fiddling around, we can replace the $8$ multiplications and $4$ additions with $7$ multiplications and $18$ additions.
+With some fiddling around, we can replace the $8$ multiplications and $4$ additions with $7$ multiplications and $18$ additions:
+\[M_1 = a(f-h)\]
+\[M_2 = (a+b)h\]
+\[M_3 = (c+d)e\]
+\[M_4 = d(g-e)\]
+\[M_5 = (a+d)(e+h)\]
+\[M_6 = (b-d)(g+h)\]
+\[M_7 = (a-c)(e+f)\]
+\[\begin{pmatrix} a & b \\ c & d\end{pmatrix}\cdot \begin{pmatrix} e & f \\ g & h\end{pmatrix}=
+  \begin{pmatrix} M_5 + M_4 + M_2 + M_6 & M_1 + M_2 \\ M_3 + M_4 & M_1 + M_5 - M_3 - M_7 \end{pmatrix}\]
+
 The extra additions do not harm because they are $\Theta(n^2)$.
 But turning the $8$ into a $7$ yields $C(n)=\Theta(n^{\log_2 7})$.
 Thus, Strassen's algorithm reduces $n^3$ to $n^{2.81\ldots}$, which can yield practically relevant improvements for relatively small $n$, e.g., $n\approx 30$.
