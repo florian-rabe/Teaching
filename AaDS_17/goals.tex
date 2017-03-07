@@ -212,7 +212,7 @@ To work with the while-loop, we prove that $F$ is a loop invariant:
   \begin{compactitem}
    \item $x<y$: Then $(m',n',x',y') = (m,n,x,y-x)$.
    Thus we have to prove that $\gcd(m,n)=\gcd(x,y-x)$.\\
-   Because of (ii), it is sufficient to prove $\gcd(x,y)=\gcd(y-x)$.
+   Because of (ii), it is sufficient to prove $\gcd(x,y)=\gcd(x,y-x)$.
    That follows from the mathematical properties of $\gcd$.
    \item $y<x$: Then $(m',n',x',y') = (m,n,x-y,y)$.
    We have to prove that $\gcd(m,n)=\gcd(x-y,x)$.\\
