@@ -325,7 +325,7 @@ Then we can use the rules:
 We amend Def.~\ref{sec:sd:environment} as follows:
 
 \begin{definition}
-An environment supports I/O if it contains two special locations $IN$ and $OUT$, each holding a list of integer literals.
+An environment supports I/O if it contains two special locations $IN$ and $OUT$ (usually called \emph{standard input} and \emph{standard output}), each holding a list of integer literals.
 
 We define the following operations:
 \begin{ctabular}{|l|l|l|}
@@ -333,7 +333,7 @@ We define the following operations:
 Operation & Effect & Return value \\
 \hline
 $in()$ & remove the first element from the list in location $IN$ of $E$ & that element \\
-$out(t)$ & append $t$ to the term in location $OUT$ of $E$ & none\\
+$out(t)$ & append $t$ to the list in location $OUT$ of $E$ & none\\
 \hline
 \end{ctabular}
 \end{definition}

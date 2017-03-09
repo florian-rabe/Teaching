@@ -410,12 +410,24 @@ For example:
 }
 \end{acode}
 
+The following table summarizes the complexity of some operations on arrays, linked lists and doubly-linked lists in terms of the length $l$: 
+\begin{ctabular}{|l|l|l|l|l|l|l|l|l|} 
+\hline
+\multirow{2}{*}{}  & \multirow{2}{*}{$length[A]$} & $get[A]$ & $update[A]$ & $insert[A]$ & $delete[A]$ & \multirow{2}{*}{$prepend[A]$} & \multirow{2}{*}{$append[A]$} & \multirow{2}{*}{$reverse[A]$} \\ \cline{3-6}
+&       & \multicolumn{4}{c|}{at position $n$}  &         &        &         \\ \hline
+Array & $\Theta(1)$ & \multicolumn{2}{c|}{$\Theta(1)$} & \multicolumn{2}{c|}{$\Theta(l-n)$} & $\Theta(l)$ & $\Theta(1)$ & $\Theta(l)$ \\
+Linked list & $\Theta(l)$ & \multicolumn{2}{c|}{$\Theta(n)$} & \multicolumn{2}{c|}{$\Theta(n)$} & $\Theta(1)$ & $\Theta(l)$ & $\Theta(l)$ \\
+Doubly-linked List & $\Theta(l)$ & \multicolumn{2}{c|}{$\Theta(n)$} & \multicolumn{2}{c|}{$\Theta(n)$} & $\Theta(1)$ & $\Theta(1)$ & $\Theta(l)$  \\ \hline
+\end{ctabular}
+
 
 \subsubsection{Growable Arrays}
 
 Growable arrays are a compromise between arrays and linked lists.
 Initially, they behave like an array with a fixed length $l$.
 However, when inserting an element that increases the length beyond $l$, we create a second array of length $l$ (elsewhere in memory) and connect the two.
+Thus, a growable array is a linked list of fixed-length arrays.
+The choice of $l$ is up to the data structure designer, who may allow the programmer to tweak it.
 
 Retrieval and update technically are linear now.
 To access the element in position $n$, we have to make $n/l$ retrievals to jump to the needed array.
@@ -530,7 +542,7 @@ In the best-case, if $x$ is already sorted, the while-loop never runs, and the c
 Mergesort is based on the observation that
 \begin{compactitem}
   \item sorting smaller lists is much easier than sorting larger lists (because the number of pairs that have to be compared in $\Theta(n^2)$,
-  \item merging two sorted lists is easy (liner time).
+  \item merging two sorted lists is easy (linear time).
 \end{compactitem}
 Thus, we can divide a list into two halves, sort them recursively, then merge the results.
 This is similar to the idea of square-and-multiply (Sect.~\ref{sec:ad:exp:sqmult}) and an example of the family of divide-and-conquer algorithms.

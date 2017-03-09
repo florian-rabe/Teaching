@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=5,date=2017-03-07,duedate=2017-03-16,duetime=11:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=5,date=2017-03-07,duedate=2017-03-16,duetime=11:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -9,6 +9,14 @@
 \begin{document}
 
 \header
+
+\begin{problem}{Standard Libraries}{0}
+In your favorite programming language's standard library, track down the source code of
+\begin{compactitem}
+ \item (mutable or immutable) linked lists
+ \item the sorting algorithm(s) for arrays or lists (Which one is it?)
+\end{compactitem}
+\end{problem}
 
 \begin{problem}{Sorting Lists of Integers}{8+8}
 We want to sort lists of integers according to $\leq$.
@@ -20,7 +28,7 @@ Remark: Alternatively, you may implement the algorithms for arbitrary arguments 
 (That's actually the same amount of work once you have understood polymorphism.)
 \end{problem}
 
-\begin{problem}{Sorting List}{8}
+\begin{problem}{Sorting Lists of Strings}{8}
 Adapt one of your two sorting implementations from the previous question to sort lists of strings lexicographically.
 \medskip
 

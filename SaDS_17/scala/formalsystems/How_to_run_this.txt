@@ -1,0 +1,31 @@
+Option 1: lightweight approach - compile yourself
+
+- Install a JVM.
+- Download the scala compiler (which should include the file scala-library.jar)
+- Use the scala compiler to compile all sources in src/ to a folder bin/.
+
+Then run the program as
+ 
+ java -classpath bin:PATH/TO/scala-library.jar language.Main test.sads main
+  
+(On windows, use ; instead of :)
+
+This should call the 'main' method of 'language.Main' using the arguments ["test.sads", "main"]
+
+
+
+Option 2: heavyweight approach - use an IDE
+
+- Intall an IDE that supports Scala, i.e., Eclipse or IntelliJ.
+- Install the Scala plugin for your IDE if it does not come bundled with it.
+- Create a new project from this folder.
+- Run 'language.Main' using command line arguments ["test.sads", "main"]
+
+
+
+Option 3: extremely lightweight approach - use an online IDE
+
+Copy all files into an online IDE that supports Scala and run it from there.
+
+Just search for "online IDE" - there are many. Some of them can even import projects from github.
+
