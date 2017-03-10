@@ -58,4 +58,25 @@ This can be done in such a way that all queue operations take constant time with
 
 \end{problem}
 
+\begin{problem}{Buffers}{8}
+Implement a fixed-size circular buffer as follows: $\mathit{Buffer}[A]$ consists of
+\begin{compactitem}
+ \item an $Array[A]$ named $elements$ of some fixed size $n$
+ \item an integer $begin$ indicating the first valid entry in $elements$
+ \item an integer $end$ indicating the slot right after the last valid entry in $elements$
+\end{compactitem}
+Enqueueing writes to $elements[end]$ and increments $end$.
+Dequeueing reads from $elements[begin]$ and increments $begin$.
+
+The buffer becomes circular by incrementing modulo $n$: When $begin$ or $end$ reach $n$, we circle back to $0$.
+
+Your implementation should detect \emph{buffer underflow} (trying to dequeue from an empty buffer) and \emph{buffer underflow} (trying to enqueue into a full buffer) and raise appropriate exceptions.
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new buffers
+ \item enqueues some values in it
+ \item dequeues all values and prints them
+\end{compactitem}
+\end{problem}
 \end{document}
