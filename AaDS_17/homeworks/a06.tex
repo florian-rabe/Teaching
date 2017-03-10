@@ -62,13 +62,13 @@ This can be done in such a way that all queue operations take constant time with
 Implement a fixed-size circular buffer as follows: $\mathit{Buffer}[A]$ consists of
 \begin{compactitem}
  \item an $Array[A]$ named $elements$ of some fixed size $n$
- \item an integer $begin$ indicating the first valid entry in $elements$
- \item an integer $end$ indicating the slot right after the last valid entry in $elements$
+ \item an integer $0\leq begin <n$ indicating the first valid entry in $elements$
+ \item an integer $0\leq size\leq n$ indicating the number of valid entries in $elements$
 \end{compactitem}
-Enqueueing writes to $elements[end]$ and increments $end$.
-Dequeueing reads from $elements[begin]$ and increments $begin$.
+Enqueueing writes to $elements[(begin+size)\modop n]$ and increments $begin$ and $size$ modulo $n$.
+Dequeueing reads from $elements[begin]$, increments $begin$, and decrements $size$ modulo $n$.
 
-The buffer becomes circular by incrementing modulo $n$: When $begin$ or $end$ reach $n$, we circle back to $0$.
+Because addition, incrementing, and decrementing are computed modulo $n$, the buffer becomes circular: when reaching index $n$ (which is outside the buffer), we start from $0$ again.
 
 Your implementation should detect \emph{buffer underflow} (trying to dequeue from an empty buffer) and \emph{buffer underflow} (trying to enqueue into a full buffer) and raise appropriate exceptions.
 
