@@ -1,0 +1,67 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=9,date=2017-04-04,duedate=2017-04-13,duetime=11:00,unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Records}{8}
+Represent the record type and ... the record value ... in the following languages
+\begin{compactitem}
+ \item using structs in C
+ \item using records in SML
+ \item using class and instances in some object-oriented languages
+ \item using dictionaries in Python
+ \item using JSON objects in Javascript
+\end{compactitem}
+
+Naturally, untyped languages cannot handle record \emph{types}. So you can skip the type for Javascript and Python.
+\end{problem}
+
+\begin{problem}{Monoids}{8}
+Implement the data structure of monoids, e.g., as a class
+
+\begin{acode}
+\aclassA{Monoid[A]}{}{}{
+ \afun[A]{compose[A]}{x:A,y:A}{}\\
+ \afun[A]{neutral[A]}{}{}
+}
+\end{acode}
+
+Give a concrete instance $MatMult:Monoid[Mat]$ of this class that implements the monoid of matrix multiplication of $2\times 2$-matrices over the integers.
+For example, this could look like:
+\begin{acode}
+\aclass{Mat}{a:\Int,b:\Int,c:\Int,d:\Int}{}{}
+\\
+MatMult := \anewA{Monoid[Mat]}{}{\ablock{
+ \afun[Mat]{compose}{x:Mat,y:Mat}{\ldots}\\
+ \afun[Mat]{neutral]}{}{\anew{Mat}{1,0,0,1}}
+}\\
+}
+\end{acode}
+where $\anew{Mat}{a,b,c,d}$ represents the matrix $\begin{pmatrix}a & b \\ c & d\end{pmatrix}$.
+
+Write a test program that computes the matrix $MatMult.compose(F,MatMult.compose(F,F))$ for th matrix $F=\anew{Mat}{1,1,1,0}$ (i.e., the matrix for Fibonacci numbers).
+\end{problem}
+
+\begin{problem}{Square-and-Multiply}{8}
+Implement the square-and-multiply algorithm to compute powers in an arbitrary monoid.
+
+This should be a function
+\begin{acode}
+\afun[A]{power[A]}{monoid:Monoid[A], x:A, n: \N}{\ldots}
+\end{acode}
+that satisfies the specification
+\[power(monoid, x, 0)=monoid.neutral\]
+\[power(monoid, x, n+1)=monoid.compose(power(monoid, x, n), x)\]
+
+Test your function by computing large Fibonacci numbers logarithmically using
+$power(MatMult, F, n)$ where $F$ is as in the previous problem and $n$ is large.\footnote{You will probably want to use arbitrary-precision arithmetic for $Mat$ to truly appreciate how efficient this algorithm is.}
+\end{problem}
+
+\end{document}

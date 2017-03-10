@@ -1,0 +1,61 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=6,date=2017-03-14,duedate=2017-03-23,duetime=11:00,unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Stacks}{8}
+In any object-oriented programming language, implement the data structure of mutable stacks.
+Make sure that all stack operations take constant time.
+
+This should be a class with a mutable field for an immutable linked list.
+We say that the stack is \emph{backed} by an immutable list.
+
+Depending on your programming language, this might look similar to this snippet:
+\begin{acode}
+\aclass{Stack[A]}{}{}{
+ \akey{private} elements := [] \acomment{the immutable linked list backing the stack, initially empty}\\\\
+ \afun[\Unit]{push[A]}{x:A}{}\\
+ \afun[{Option[A]}]{pop[A]}{}{}\\
+ \afun[{Option[A]}]{top[A]}{}{}\\
+}
+\end{acode}
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new stack
+ \item pushes some values onto the stack
+ \item pops all values and prints them
+\end{compactitem}
+\end{problem}
+
+\begin{problem}{Queues}{8}
+In any programming language, implement the data structure of mutable queues.
+Make sure that all queue operations take constant time.
+
+For example, this could be a class like in the first problem but backed by a doubly-linked list.
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new queue
+ \item enqueues some values in the queue
+ \item dequeues all values and prints them
+\end{compactitem}
+\end{problem}
+
+
+\begin{problem}{Queues backed by Two Singly-Linked Lists}{8}
+Doubly-linked lists can be tricky to implement.
+As an alternative, give an implementation of $Queue[A]$ that is backed by \emph{two} immutable singly-linked lists.
+
+This can be done in such a way that all queue operations take constant time with the exception that $dequeue$ sometimes takes linear time.
+
+\end{problem}
+
+\end{document}

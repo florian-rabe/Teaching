@@ -285,11 +285,11 @@ The simplest data structure for trees uses lists:
 \end{acode}
 
 The example tree is represented as
-\[\anew{Tree[\Z]}{5,\; \big[\anew{Tree[\Z]}{3,Nil},\;\anew{Tree[\Z]}{1, [\anew{Tree[\Z]}{6,Nil}]}\big]}\].
+\[\anew{Tree[\Z]}{5,\; \big[\anew{Tree[\Z]}{3,Nil},\;\anew{Tree[\Z]}{1, [\anew{Tree[\Z]}{6,Nil}]}\big]}\]
 
 \subsection{Using Sibling Pointers}\label{sec:ad:pointertrees}
 
-Some programmers or programming languages prefer a more awkward (but slightly less memory-intensive) data structure that does not use lists.
+Some programmers or programming languages prefer a more awkward (but less memory-intensive) data structure that does not use lists.
 
 Here every node has two pointers: one to its first child and one to its next sibling:
 \begin{acode}
