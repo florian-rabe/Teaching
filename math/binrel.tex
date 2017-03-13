@@ -96,3 +96,24 @@ If it holds for all pairs, we write $X\leq Y$.
 
 The relation $\leq$ on the quotient is an order.
 \end{theorem}
+
+\begin{remark}[Totality]
+If $\leq$ is a preorder, then for all elements $x,y$, there are four mutually exclusive options:
+
+\begin{ctabular}{|l|c|c|c|}
+\hline
+& $x\leq y$ & $x\geq y$ & $x=y$ \\
+\hline
+$x$ strictly smaller than $y$, i.e., $x>y$ & true  & false & false\\
+$x$ strictly greater than $y$, i.e., $x<y$ & false & true  & false \\
+$x$ and $y$ incomparable      & false & false & false \\
+$x$ and $y$ similar           & true  & true  & maybe \\
+\hline
+\end{ctabular}
+Now anti-symmetry excludes the option of similarity (except when $x=y$ in which case trivially $x\leq y$ and $x\geq y$).
+And totality excludes the option of incomparability.
+
+Combining the two exclusions, a total order only allows for $x>y$, $y<x$, and $x=y$.
+\end{remark}
+
+
