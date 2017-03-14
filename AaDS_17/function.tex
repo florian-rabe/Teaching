@@ -1,0 +1,98 @@
+\section{Specification}
+
+Functions implement the set $A\to B$, also written $B^A$.
+Two fundamentally different ways of treating functions must be distinguished.
+
+\emph{Algorithmic functions} are defined by algorithms that transform the input of type $A$ into the output of type $B$.
+They are always immutable, and the only operation on them is function application:
+\begin{ctabular}{|l|l|}
+\hline
+function & returns \\
+\hline
+$apply[A,B](f\in A\to B,a\in A)\in B$ & $f(a)$\\
+\hline
+\end{ctabular}
+
+\emph{Tabular functions} are finite sets of pairs $(a,b)\in A\times B$ indicating that $a$ should be mapped to $b$.
+They are usually partial functions (unless $A$ is finite and the function contains a pair for every $a\in A$).
+Apart from possible being partial, they are a special case of algorithmic functions: We can define $f(a)$ by searching for the pair $(a,b)$ in $f$ and returning $b$.
+
+Tabular functions can be mutable or immutable.
+We only give the mutable case, which is the most useful in practice.
+The main operations are
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+$isDefined[A,B](f\in A\to B, a\in A)\in \B$ & true if $f$ is defined for $a$ & none \\
+$apply[A,B](f\in A\to B,a\in A)\in B^?$ & $f(a)$ if defined & none\\
+$keys[A,B](f\in A\to B)\in List[A]$ & values for which $f$ is defined & none \\
+\hline
+$update[A,B](f\in A\to B, a\in A, b\in B)\in \Unit$ & nothing & change $f$ to also map $a$ to $b$ \\
+\hline
+\end{ctabular}
+
+\section{Data Structures for Algorithmic Functions}
+
+\subsection{As a Primitive Type}
+
+All functional programming languages include a primitive feature to form the function type $A\to B$.
+In fact, the existence of this type is the defining characteristic of being a functional language.
+Individual functions that map every $x:A$ to $t(x)$ are built using $\lambda$-abstraction $\alam[A]{x}{t(x)}$.
+
+Most untyped languages also provide an untyped $\lambda$-abstraction as $\alam{x}{t(x)}$.
+
+\subsection{As a Class}
+
+In non-functional object-oriented languages, we can define the type $A\to B$ as a class:
+
+\begin{acode}
+\acomment{$A\to B$}\\
+\aclassA{Function[A,B]}{}{}{
+ \afun[B]{apply}{x:A}{}
+}\\
+\tb\acomment{$\alam[A]{x}{t(x)}$}\\
+\anew{Function[A,B]}{}\ablock{
+ \afun[B]{apply}{x:A}{t(x)}
+}
+\end{acode}
+
+Thus, object-oriented language are in some sense also functional, except that the syntax for $\lambda$-abstractions is very awkward.
+
+\section{Data Structures for Tabular Functions}
+
+Data structures for tabular functions $TableFun[A,B]$ can be easily realized by using data structures for $Set[A\times B]$.
+If the programming language does not offer product types or in order to optimize better, the corresponding data structures for sets can be modified to handle functions.
+We give some examples.
+
+\subsection{List Functions}
+
+\paragraph{Design}
+It is straightforward to define the data structure $ListFun[A,B]$ of list-backed functions in analogy to $ListSet[A]$.
+It represents the function that maps $a_i$ to $b_i$ as the list $[(a_1,b_1),\ldots,(a_n,b_m)]$.
+
+\paragraph{Complexity}
+The complexity properties are essentially the same as for $ListSet[A]$.
+$isDefined$, $apply$, and $update$ are linear in the size of the function because we have to find the corresponding pair in the list.
+
+\subsection{Hash Tables}
+
+\paragraph{Design}
+For a hash function $hash:A\to \Z_m$, the data structure $HashTable[A,B]=Array[ListFun[A,B]](m)$ holds functions backed by a hash set.
+
+For a hash table $h:HashTable[A,B]$, each $h[i]$ holds the list of pairs $(a,b)$ for which $hash(a)=i$.
+
+\paragraph{Complexity}
+The complexity properties are essentially is the same as for $HashSet[A]$.
+
+\subsection{Binary Search Trees}
+
+\paragraph{Design}
+Binary search trees can be easily generalized to represent a function $f$.
+The basic idea is to make a binary search tree for the set of keys.
+Each node in the tree then stores not only the key $a$ but also the corresponding value $f(a)$.
+
+\paragraph{Complexity}
+The complexity properties are essentially is the same as when representing sets.
+
+% includes list
