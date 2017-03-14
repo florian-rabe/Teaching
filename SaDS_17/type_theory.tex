@@ -992,13 +992,14 @@ However, the details  present considerable difficulties.
 
 Historically very important was the choice between call-by-name and call-by-value evaluation.
 \textbf{Call-by-value} evaluates the argument of the function first, then substitutes it for $x$:
-\[\rul{\evobj{}{\Gamma}{s}{s'} \tb\evobj{}{\Gamma}{t[x/s']}{u}}
-      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\[\rul{\evobj{}{\Gamma}{f}{\alam[A]{x}{t}} \tb
+       \evobj{}{\Gamma}{s}{s'} \tb\evobj{}{\Gamma}{t[x/s']}{u}}
+      {\evobj{}{\Gamma}{f(s)}{u}}
 \]
 where $t[x/s]$ is the result of substituting $x$ with $s$ in $t$.
-\textbf{Call-by-nam}e first substitutes, then evaluates the result:
-\[\rul{\evobj{}{\Gamma}{t[x/s]}{u}}
-      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\textbf{Call-by-name} first substitutes, then evaluates the result:
+\[\rul{\evobj{}{\Gamma}{f}{\alam[A]{x}{t}}\tb \evobj{}{\Gamma}{t[x/s]}{u}}
+      {\evobj{}{\Gamma}{f(s)}{u}}
 \]
 Without side-effects, both yield the same result.
 Call-by-name is usually less efficient because $s$ has to be evaluated multiple times if $x$ occurs multiple times in $t$.

@@ -68,15 +68,39 @@ More complex queue data structures may also for dequeueing based on priority (se
 
 \section{Buffers}\label{sec:ad:buffer}
 
-Buffers are very similar to queues.
-$Buffer[A]$ is usually optimized for enqueueing and dequeueing many elements of $A$ at once.
-While stacks and queues can be easily implemented using linked lists, buffers usually use array to be faster.
+Buffers are conceptually very similar to queues.
+But $\mathit{Buffer}[A]$ is usually optimized for enqueueing and dequeueing many elements of $A$ at once.
+Therefore, while stacks and queues can be implemented well using linked lists, buffers usually use arrays to be faster.
 
-For example, buffers are used when a program is writing to a file.
-In that case, a $Buffer[\Char]$ is used holding the characters that are written to the file.
-The write command does not actually write strings to the file---it only enqueues them in the buffer.
+A typical $\mathit{Buffer}[A]$ consists of three components:
+\begin{compactitem}
+ \item an $Array[A]$ $b$
+ \item two integers $begin$ and $end$ indicating the first and last valid entry in the array.
+\end{compactitem}
+Enqueueing writes to $b[end+1]$ and increments $end$.
+Dequeueing reads from $b[begin]$ and increments $begin$.
+
+
+A buffer overflow occurs when incrementing $begin$ 
+
+For example, when a browser receives a web page, its network component loads the page into a $\mathit{Buffer}[\Char]$.
+In parallel, its HTML parser component starts processing the partially received page.
+That way the HTML page can be displayed partially already before it is fully loaded.
+
+Buffers are almost always used automatically when a program is writing to a file.
+In that case, a $\mathit{Buffer}[\Int]$ or $\mathit{Buffer}[\Char]$ is used that holds the data written to the file.
+The write command does not actually write data to the file directly---it only enqueues it in the buffer.
 That is advantageous because enqueueing to a buffer in memory is much faster than writing to the hard drive.
-While the program is already moving on, the hard drive is still busy dequeueing as fast as it can and writing all characters to the file.
+While the program is already moving on, the programming language libraries or the operating system work in the background to periodically dequeue and write all characters to the file.
+
+When working with files, an important operation is \emph{flushing} the buffer.
+This forces the immediate processing of all data in the buffer.
+Flushing happens automatically at the latest when the program terminates.
+However, occasionally manual flushing is necessary:
+\begin{compactitem}
+ \item When a program terminates with an error, buffers have to be flushed to avoid losing data.
+ \item When a program writes log data to a file that the programmer wants to read immediately, it is important to flush regularly to make sure the programmer reads updated information.
+\end{compactitem}
 
 \section{Iterators}\label{sec:ad:iter}
 
@@ -308,7 +332,7 @@ Then $insert$ and $extract$ correspond to $enqueue$ and $dequeue$.
 
 \subsection{Heapsort Algorithm}\label{sec:ad:heapsort}
 
-Heapsort is a sorting algorithm that runs in $O(n\log n)$.
+Heapsort is a sorting algorithm that runs in $\Theta(n\log n)$.
 
 If $\leq$ is the total order for sorting, a simple heapsort is given by
 \begin{acode}
@@ -333,9 +357,10 @@ This uses two loops using $length(n)$ iterations each.
 The first loop throws all elements of $x$ into the heap; the second loop pulls them out again and builds the list $res$ to be returned.
 Because $extract$ always returns the greatest element, the result automatically sorted.
 
-If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $O(\log n)$.
-Thus, heapsort runs in $O(n\log n)$.
+If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $\Theta(\log n)$.
+Thus, heapsort runs in $\Theta(n\log n)$.
 \medskip
 
-There are much more optimized implementations of heapsort than the above example, possibly using optimized implementaitons of heaps.
-With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $O(n\log n)$).
+There are much more optimized implementations of heapsort than the above example, possibly using optimized implementations of heaps.
+In particular, there are encodings of the heap structure in an array, which allows using heapsort as an in-place sorting algorithm.
+With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $\Theta(n\log n)$).

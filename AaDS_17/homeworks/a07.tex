@@ -1,0 +1,42 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=7,date=2017-03-21,duedate=2017-03-30,duetime=11:00,unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Heap-Backed Priority Queue}{8}
+Depending on your programming language, this might look similar to this snippet:
+\begin{acode}
+\aclass{Stack[A]}{}{}{
+ \akey{private} elements := [] \acomment{the immutable linked list backing the stack, initially empty}\\\\
+ \afun[\Unit]{push[A]}{x:A}{}\\
+ \afun[{Option[A]}]{pop[A]}{}{}\\
+ \afun[{Option[A]}]{top[A]}{}{}\\
+}
+\end{acode}
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new stack
+ \item pushes some values onto the stack
+ \item pops all values and prints them
+\end{compactitem}
+\end{problem}
+
+\begin{problem}{DFS}{8}
+\end{problem}
+
+\begin{problem}{BFS}{8}
+
+\end{problem}
+
+% exercise: proof Thm.~\ref{thm:ad:bintree}
+% exercise:  minmax for tictactoe
+
+\end{document}
