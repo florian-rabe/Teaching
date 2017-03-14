@@ -469,7 +469,7 @@ If no such elements exist, the list is sorted.
  sorted := \false \\
  \awhile{!sorted}{
    sorted:=\true \\
-   \afor{i}{0}{length(x)-2}{
+   \afor{i}{0}{length(x)-1}{
      \aif{! x[i]\leq x[i+1]}{
        sorted := \false \\
        swap(x,i,i+1)
