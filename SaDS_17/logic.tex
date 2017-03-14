@@ -1,4 +1,4 @@
-\section{Formulas}
+\section{Formulas}\label{sec:sd:formulas}
 
 Like programming languages, logics add new concepts to type theory: formulas and proofs.
 Only proofs are fundamentally new and correspond very closely to programs.
@@ -60,6 +60,16 @@ Instead, there are three options:
 The distinction between the options is undecidable.
 Proving tries to establish that one of the former holds.
 
+Proving may use evaluation rules but usually a new set of rules and possibly auxiliary non-terminals and judgments have to be invented.
+Together, these are called the \textbf{proof system} or \textbf{calculus}.
+
+Implementations of such proof systems are called \textbf{theorem provers}.
+The practical ones are usually extremely sophisticated, often comprising $>10^5$ lines of code.
+Still, the problem of finding a proof of a given formula is so complex that \emph{fully automated} provers perform very poorly in practice.
+
+Note that the problem of \emph{finding} a proof has to be distinguished from the problem of \emph{checking} a given proof.
+The latter is easily decidable as we will see in Sect.~\ref{sec:sd:axthm}.
+
 \subsection{Formulas not as Terms}
 
 The treatment of formulas has received a great deal of attention, and multiple different approaches have been developed.
@@ -97,7 +107,7 @@ This has made it possible to present theorems as programs.
 For example, a theorem like $\afa[A]{x}{\afa[B]{y}{\aex[C]{z}{\true}}}$ can be represented as a function $\afunI[C]{f}{x:A,y:B}{P}$.
 Giving the body $P$ of this function becomes equivalent to finding a proof of the theorem.
 
-\section{Proofs as Terms}
+\section{Proofs as Terms}\label{sec:sd:proofterms}
 
 As for programs, we have to decide whether proofs are a new non-terminal symbol or a special case of terms.
 Both work well.
@@ -154,7 +164,6 @@ Then we obtain the more familiar-looking
 If we additionally write simply $F$ instead of $\aproof{F}$, we obtain the usual notation.
 
 \subsection{Logics for Reasoning about Systems}
-%  LTL, CTL
 
 Logics like FOL and HOL are sufficient for reasoning about mathematical concepts.
 (The difficulty here is usually to enrich the type theory in order to allow for more natural representations of mathematical objects.)
@@ -170,7 +179,24 @@ For physical systems, especially those interacting via sensor data, we may have 
 
 Both present substantial challenges, and a variety of different logics has been developed.
 
-\section{Discrete-Time Logic}
+\section{Axioms and Theorems as Declarations}\label{sec:sd:axthm}
+
+A major advantage of representing formulas and proofs as terms is that we do not need to introduce new declarations for axioms and theorems.
+They are normal value declarations whose type happens to be $\aproof{F}$ for some $F$.
+
+If there is no definition, this yields an axiom declaration.
+The declaration $\aval{a}{\aproof{F}}{}$ introduces an axiom named $a$ that asserts $F$.
+This corresponds to assuming that we have a proof of $F$ without further specifying where it comes from.
+
+If there is a definition, this yields a theorem declaration.
+The declaration $\aval{a}{\aproof{F}}{P}$ introduces a theorem named $a$ that asserts $F$ and whose proof is $P$.
+This corresponds to introducing $a$ as an abbreviation for the proof $P$.
+
+Type-checking of these declarations proceeds in the same way as before.
+In particular, to check $\isdecl{}{}{\aval{a}{\aproof{F}}{P}}$, we have to check $\oftype{}{}{P}{\aproof{F}}$, i.e., we have to check that $P$ is indeed a proof of $F$.
+Thus, proof-checking becomes a special case of type-checking.
+
+\section{Discrete-Time Logic}\label{sec:sd:discretetime}
 
 \subsection{Grammar and Intuitions}
 
