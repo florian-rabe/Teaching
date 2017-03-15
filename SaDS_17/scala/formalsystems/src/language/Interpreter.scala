@@ -10,7 +10,7 @@ abstract class Environment {
   def delete(loc: Location): scala.Unit
   
   def out(t: Term ): scala.Unit
-  def in(): scala.Int
+  def in(): Int
 }
 
 /** a simple environment that delegates to the underlying JVM */
@@ -43,7 +43,7 @@ class JVMEnvironment extends Environment {
     println(Printer.printTerm(t))
   }
   
-  def in(): scala.Int = {
+  def in(): Int = {
      System.in.read()
   }
 }
@@ -106,6 +106,7 @@ class Interpreter(env: Environment) {
   def interpretType(context: Context, tp: Type): Type = tp match {
     case b: BaseType => b
     case FunType(a,b) => FunType(interpretType(context, a), interpretType(context, b))
+    case ProdType(as) => ProdType(as.map(a => interpretType(context, a)))
     case TypeRef(n) => context.get(n) match {
       case Some(d) => d match {
         case TypeDecl(_, aO) => aO match {
@@ -238,7 +239,18 @@ class Interpreter(env: Environment) {
           } catch {case ControlFlowMessage(Return(r)) =>
              r
           }
-        case _ => Apply(funI, argI) // should not happen
+        case _ => Apply(funI, argI) // should only happen if there are free variables
+      }
+
+    case Tuple(ts) =>
+      val tsI = ts.map(t => interpretTerm(context, t)) // components of tuple are evaluated from left to right
+      Tuple(tsI)
+      
+    case Project(t,i) =>
+      val tI = interpretTerm(context, t)
+      tI match {
+        case Tuple(ts) => ts(i-1) // i is within bounds for well-formed terms
+        case _ => Project(tI, i)  // should only happen if there are free variables
       }
       
     // ********************************
@@ -396,7 +408,12 @@ object Closer {
       val funC = closeTerm(context, fun)
       val argC = closeTerm(context, arg)
       Apply(funC, argC)
-
+    case Tuple(ts) =>
+      val tsC = ts.map(t => closeTerm(context, t))
+      Tuple(tsC) 
+    case Project(t,i) =>
+      val tC = closeTerm(context, t)
+      Project(tC, i) 
     case loc: Location =>
       loc
     case Assignment(x,v) =>

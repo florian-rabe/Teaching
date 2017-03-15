@@ -102,6 +102,8 @@ object Checker {
     case FunType(f,t) =>
       checkType(context, f)
       checkType(context, t)
+    case ProdType(ts) =>
+      ts foreach {t => checkType(context, t)}
   }}
   
   // ************************************************************************* terms
@@ -143,7 +145,7 @@ object Checker {
       case UnitLit() =>
         (tm,Unit())
       case IntLit(_) =>
-        (tm,Int())
+        (tm,Integers())
       case BoolLit(_) =>
         (tm, Bool())
       case Operator(op, args) =>
@@ -159,8 +161,8 @@ object Checker {
           } else {
             (types(0),types(1)) match {
               // operators on integers
-              case (Int(),Int()) => op match {
-                case "+" | "-" | "*" | "mod" | "div" => Int()
+              case (Integers(),Integers  ()) => op match {
+                case "+" | "-" | "*" | "mod" | "div" => Integers()
                 case "<=" | ">=" | ">" | "<" => Bool()
                 case _ => throw Error("ill-typed operator application")
               }
@@ -216,7 +218,7 @@ object Checker {
         }
 
       case Apply(fun,arg) =>
-        // turn constructor applications into ConsApply
+        // parser parses both function and constructor applications as function application; introduce constructor application here if applicable
         fun match {
           case TermRef(n) =>
             context.decls.reverseIterator.exists {
@@ -237,6 +239,32 @@ object Checker {
             throw Error("non-function applied to argument")
         }
       
+      case Tuple(ts) =>
+        val (tsC,tsI) = expected match {
+          case Some(ProdType(as)) =>
+            if (as.length == ts.length) {
+              (ts.zip(as)).map {case (t,a) => inferOrCheckType(context, t, Some(a))}.unzip
+            } else {
+              throw Error("product type has " + as.length + " components, tuple has " + ts.length)
+            }
+          case _ =>
+            ts.map(t => inferOrCheckType(context, t, None)).unzip
+        }
+        (Tuple(tsC), ProdType(tsI))
+      
+      case Project(t, i) =>
+        val (tC,tI) = inferOrCheckType(context, t, None)
+        tI match {
+          case ProdType(as) =>
+            if (i >= 1 && i <= as.length) {
+              (Project(tC,i), as(i-1)) //we start counting projections from 1, scala counts list indices from 0
+            } else {
+              throw Error("index out of bounds in projection: " + i + " (expected at least 1, at most " + as.length + ")")
+            }
+          case _ =>
+            throw Error("projection applied to non-tuple")
+        }
+        
       //******************** programs
       case loc: Location =>
         throw Error("locations may not occur statically")
@@ -262,7 +290,7 @@ object Checker {
       case Print(tm) =>
         val (tmC,_) = inferOrCheckType(context, tm, None)
         (Print(tmC), Unit())
-      case Read() => (tm, Int()) // we only read integers for simplicity
+      case Read() => (tm, Integers()) // we only read integers for simplicity
       
       // control flow
       case Break() =>

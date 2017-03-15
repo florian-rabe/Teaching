@@ -49,9 +49,10 @@ object Printer {
      case TypeRef(n) => printName(n)
      case Unit() => "unit"
      case Void() => "void"
-     case Int() => "int"
+     case Integers() => "int"
      case Bool() => "bool"
      case FunType(f,t) => "(" + printType(f) + " -> " + printType(t) + ")"
+     case ProdType(as) => "(" + as.map(printType).mkString(" * ") + ")"
    }
    
    def printTerm(t: Term): String = t match {
@@ -82,6 +83,9 @@ object Printer {
        printName(x) + aS + " => " + printTerm(t)
      case Apply(f,a) => printTerm(f) + "(" + printTerm(a) + ")" 
 
+     case Tuple(ts) => "(" + ts.map(printTerm).mkString(", ") + ")"
+     case Project(t,i) => printTerm(t) + "." + i
+     
      // *************************** programs
      case loc: Location => "<location:" + loc.hashCode + ">"
      case Assignment(x, v) => printTerm(x) + " = " + printTerm(v)

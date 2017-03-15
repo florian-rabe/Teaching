@@ -279,7 +279,7 @@ class Parser(input: String) {
       n match {
         case "void" => Void()
         case "unit" => Unit()
-        case "int" => Int()
+        case "int" => Integers()
         case "bool" => Bool()
         case n =>
           val name = Name(n)
@@ -287,8 +287,7 @@ class Parser(input: String) {
       }
     }
     // we have a type now; we check what comes next to decide if we should parse more
-    //TODO for product types: handle infix operator *
-    val infixOps = List("->")
+    val infixOps = List("->", "*")
     parseWhitespace
     // check if an infix operator follows 
     infixOps.find(startsWith) match {
@@ -298,6 +297,7 @@ class Parser(input: String) {
         val second = parseType
         op match {
           case "->" => FunType(tp,second)
+          case "*" => ProdType(List(tp,second)) // TODO parse multiple components in product
         }
       case None =>
         // something else follows: done
@@ -428,8 +428,8 @@ class Parser(input: String) {
         // projections out of tm or accessing a field of tm
         parseTerminal(".")
         if (startsWith(c => c.isDigit)) {
-      	  val n = parseDigits
-      		??? //TODO for product types
+      	  val i = parseDigits.toInt
+      		tm = Project(tm, i)
         } else {
           val n = parseName
           tm = FieldAccess(tm, n)

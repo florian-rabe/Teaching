@@ -77,11 +77,12 @@ case class TypeRef(name: Name) extends Type
 sealed abstract class BaseType extends Type // convenience for grouping all base types together
 case class Void() extends BaseType
 case class Unit() extends BaseType
-case class Int() extends BaseType
+case class Integers() extends BaseType
 case class Bool() extends BaseType
 
 case class FunType(from: Type, to: Type) extends Type
-//TODO product types, more base types
+case class ProdType(types: List[Type]) extends Type
+// this is an improved variant of product types that can handle arbitrarily many arguments; it also makes the unit type redundant because we can use ProdType(Nil) instead
 
 // ***************************************************************** Terms
 
@@ -96,7 +97,7 @@ case class UnitLit() extends Term
 /** boolean literals */
 case class BoolLit(value: Boolean) extends Term
 /** integer literals */
-case class IntLit(value: scala.Int) extends Term
+case class IntLit(value: Int) extends Term
 /** unifies all built-in operators for the base types */
 case class Operator(op: String, args: List[Term]) extends Term
 /** if-then-else */
@@ -111,7 +112,11 @@ case class Lambda(argName: Name, argType: Option[Type], body: Term) extends Term
 /** function application */
 case class Apply(fun: Term, args: Term) extends Term
 
-//TODO pairs and projections for product types
+/** n-tuples */
+case class Tuple(args: List[Term]) extends Term
+
+/** projections (index >= 1) */
+case class Project(from: Term, index: Int) extends Term // all projections in one production
 
 
 object Operator {
