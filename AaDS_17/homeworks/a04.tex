@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=4,date=2017-02-28,duedate=2017-03-09,duetime=11:00]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=4,date=2017-02-28,duedate=2017-03-09,duetime=11:00,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -19,14 +19,16 @@ Consider the following algorithm for reverting a list:
   \awhile{rest \neq []}{
     rev := cons(rest.head, rev)\\
     rest := rest.tail
-  }
+  }\\
+  \areturn{rev} \footnotemark
 }
 \end{acode}
+\footnotetext{This line was accidentally missing in the original formulation. But the intention of the algorithm was clear from the context.}
 
 Its specification is
 \begin{compactitem}
  \item precondition: nothing
- \item postcondition: $revertFun(x)==reverse(x)$
+ \item postcondition: $revertFun(x)==revert(x)$
 \end{compactitem}
 
 Prove correctness by doing the following:
@@ -35,6 +37,16 @@ Prove correctness by doing the following:
  \item Argue informally why it implies partial correctness. 
  \item Give a termination ordering $T(x,rest,rev)$ for the while-loop.
 \end{compactenum}
+
+\begin{solution}
+\begin{compactenum}
+ \item $x==revert(rev)+rest$
+ \item When terminating, $rest==[]$. Plugging that into the loop invariant yields $x==reverse(rev)$ and therefore $reverse(x)=rev$.
+ Because $rev$ is the value that is returned, we have $rev==revertFun(x)$.
+ Combining the two yields the postcondition.
+ \item $length(rest)$
+\end{compactenum}
+\end{solution}
 \end{problem}
 
 \begin{problem}{Lists}{6+6}

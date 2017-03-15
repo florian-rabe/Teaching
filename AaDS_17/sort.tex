@@ -24,6 +24,7 @@ $length[A](x\in A^*)\in \N$ & $l$ & \\
 $get[A](x\in A^*, n\in\N)\in A^*$ & $a_n$ & $x_n$ or $x[n]$\\
 $prepend[A](a\in A, x\in A^*)\in A^*$ & $[a,a_0,\ldots,a_{l-1}]$ &\\
 $append[A](x\in A^*, a\in A)\in A^*$ & $[a_0,\ldots,a_{l-1},a]$ &\\
+$revert[A](x\in A^*)\in A^*$ & $[a_{l-1},\ldots,a_0]$ & \\
 $concat[A](x\in A^*, y\in A^*)\in A^*$ & $[a_0,\ldots,a_{l-1},b_0,\ldots,b_{k-1}]$ if $y=[b_0,\ldots,b_{k-1}]$ &  $x+y$\\
 $map[A,B](x\in A^*, f\in A\to B)\in B^*$ & $[f(a_0),\ldots,f(a_{l-1})]$ & $l\;map\;f$\\
 $fold[A,B](x\in A^*, b\in B, f\in A\times B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
