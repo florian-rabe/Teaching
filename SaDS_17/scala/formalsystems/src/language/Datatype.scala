@@ -49,8 +49,12 @@ case class Context(decls: List[Decl]) {
   def get(n: Name): Option[Decl] = decls.reverseIterator.find(d => d.name == n)
 }
 
+// ***************************************************************** Names
+
 /** names (We allow arbitrary strings here, but the parser will accept much less.) */
 case class Name(name: String)
+
+// ***************************************************************** Declarations
 
 /** declarations */
 sealed abstract class Decl {
@@ -58,21 +62,32 @@ sealed abstract class Decl {
   def name: Name
 }
 /** variable definition; value is omitted for local assumptions */
-case class Val(name: Name, tp: Type, value: Option[Term]) extends Decl
-// no type definitions---that makes the language harder to implement
-//TODO data types if you feel ambitious
+case class Val(name: Name, tp: Option[Type], value: Option[Term]) extends Decl
+
+/** type assumptions needed for IDTDecl and ADTDecl */
+case class TypeDecl(name: Name, value: Option[Type]) extends Decl
+
+
+// ***************************************************************** Types
 
 /** types */
 sealed abstract class Type
 case class TypeRef(name: Name) extends Type
-case class Unit() extends Type
-case class Int() extends Type
-case class Bool() extends Type
+
+sealed abstract class BaseType extends Type // convenience for grouping all base types together
+case class Void() extends BaseType
+case class Unit() extends BaseType
+case class Int() extends BaseType
+case class Bool() extends BaseType
+
 case class FunType(from: Type, to: Type) extends Type
 //TODO product types, more base types
 
+// ***************************************************************** Terms
+
 /** terms */
 sealed abstract class Term
+
 /** names **/
 case class TermRef(name: Name) extends Term
 
@@ -82,14 +97,16 @@ case class UnitLit() extends Term
 case class BoolLit(value: Boolean) extends Term
 /** integer literals */
 case class IntLit(value: scala.Int) extends Term
-/** convenience for built-in operators for the base types */
+/** unifies all built-in operators for the base types */
 case class Operator(op: String, args: List[Term]) extends Term
+/** if-then-else */
+case class If(cond: Term, then: Term, els: Term) extends Term
 
 /** local declaration in a term */
 case class LocalDecl(decl: Decl, term: Term) extends Term
 
 /** lambda abstraction */
-case class Lambda(argName: Name, argType: Type, body: Term) extends Term
+case class Lambda(argName: Name, argType: Option[Type], body: Term) extends Term
 
 /** function application */
 case class Apply(fun: Term, args: Term) extends Term
@@ -98,6 +115,76 @@ case class Apply(fun: Term, args: Term) extends Term
 
 
 object Operator {
-  /** the list of infix operators */
-  def builtInInfixOperators = List(",", "+", "-", "*", "div", "mod", "&&", "||", "==", "!=", "<=", ">=")
+  /** binary infix operators */
+  def builtInInfixOperators = List("+", "-", "*", "div", "mod", "&&", "||", "==", "!=", "<=", ">=", "<", ">")
+  /** other operators and their arity */
+  def builtInOtherOperators = List(("!", 1))
 }
+
+// ***************************************************************** extensions for programming languages
+
+// Disclaimer: I'm trying to implement this both systematically and easily-understandable.
+//  That's very hard to combine, and I take some shortcuts that make some other things trickier.
+
+// ******************************************************************** anonymous declarations
+
+/** a term in declaration-position that is evaluated for its side-effect, but whose result can be thrown away */
+case class Command(term: Term) extends Decl {
+  def name = Name("") // anonymous
+}
+
+// ******************************************************************** non-termination
+
+case class While(cond: Term, body: Term) extends Term
+
+case class RecursiveVal(name: Name, tp: Type, df: Term) extends Decl
+
+// ******************************************************************* mutable variables
+
+case class Var(name: Name, tp: Option[Type], init: Term) extends Decl
+
+case class Assignment(loc: Term, value: Term) extends Term
+
+/** special terms for the run-time representation of the value of a mutable variable */
+abstract class Location extends Term
+
+// ******************************************************************** I/O
+
+case class Print(term: Term) extends Term
+case class Read() extends Term
+
+
+// ******************************************************************** control flow operators (jumps that do not return)
+
+sealed abstract class ControlFlowCommand extends Term // convenience for grouping all terms that are control flow operators
+
+case class Return(value: Term) extends ControlFlowCommand
+case class Break() extends ControlFlowCommand
+case class Continue() extends ControlFlowCommand
+case class Throw(exception: Term) extends ControlFlowCommand
+
+case class Try(value: Term, handler: Term) extends Term
+
+// ******************************************************************** extensions for data types
+
+/** inductive data types */
+case class IDTDecl(name: Name, constructors: List[Cons]) extends Decl
+case class Cons(name: Name, argType: Type)
+
+case class ConsApply(name: Name, argument: Term) extends Term
+
+case class Match(term: Term, cases: List[ConsCase]) extends Term
+case class ConsCase(name: Name, patvar: Name, argType: Option[Type], body: Term)
+
+/** abstract data types (classes) */
+case class ADTDecl(name: Name, fields: List[Field]) extends Decl
+case class Field(name: Name, tp: Type)
+
+case class New(cls: Name, definitions: List[FieldDef]) extends Term
+
+case class FieldDef(name: Name, tp: Option[Type], definition: Term)
+case class FieldAccess(instance: Term, field: Name) extends Term
+
+/** special terms for the run-time representation of an instance of a class */
+case class Instance(cls: Name, definitions: Context) extends Term
+
