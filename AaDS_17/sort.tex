@@ -714,7 +714,7 @@ Therefore, we often find pairs of function:
   \aifelse{first \geq last}{
     \areturn{}
   }{
-    pivot := A[last]\\
+    pivot := x[last]\\
     pivotPos := first\\ %%    // place for swapping
     \aloopinv{x[k]\leq pivot \mfor k=first,\ldots,pivotPos-1 \mand pivot \leq x[k] \mfor k=pivotPos,\ldots,j-1}
     \afor{j}{first}{last - 1}{
