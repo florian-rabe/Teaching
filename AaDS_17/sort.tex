@@ -508,10 +508,10 @@ If $[x_0,\ldots,x_{i-1}]$ is sorted already, the element $x_i$ is inserted among
 
 \begin{acode}
 \afun{insertionsort}{x:Array[A]}{
-  \afor{i}{0}{length(x)-1}{
+  \afor{i}{1}{length(x)-1}{
     current := x[i] \\
     pos := i \\
-    \awhile[shift elements to the right to make space for $current$]{pos > 0 \aand ! current \leq x[pos-1]}{
+    \awhile[shift elements to the right to make space for $current$]{pos > 0 \aand current < x[pos-1]}{
        x[pos] := x[pos-1] \\
        pos := pos - 1
     }\\
