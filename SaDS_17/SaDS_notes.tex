@@ -35,7 +35,7 @@
  \chapter{Challenges}
    \input{challenges}
 
-% guard against stupid errors; during software development
+% guard against simple errors
 \part{Systematic Software Development}
 
   \chapter{Implementation}\label{sec:sd:systimpl}
@@ -48,8 +48,6 @@
     \input{static}
     
 \part{Formal Systems}
-
-   % maybe heartbleed exercise: reimplement in proper language with high-level data structures for messages
    
   \chapter{Type Theory}\label{sec:sd:typetheory}
   \input{type_theory}
@@ -61,16 +59,19 @@
   \input{logic}
   
 % guard against deep errors
-\part{Formal Methods}
-% https://www.lri.fr/~marche/MPRI-2-36-1/
+\part{Formal Methods}\label{sec:sd:fm}
 
-  \chapter{Program Synthesis} 
+  \chapter{Overview}\label{sec:sd:fmoverview}
+    \input{fm}
 
-  \chapter{Model Checking} 
+  \chapter{Deductive Verification}\label{sec:sd:deductive}
+    \input{verify}
+
+  \chapter{Model Checking}\label{sec:sd:modelcheck}
     \input{modelcheck}
 
-  \chapter{Theorem Proving} 
-   \input{verify}
+  \chapter{Program Synthesis}\label{sec:sd:synthesis}
+   % calculate linear algorithm for maximum segement sum via Horner's rule
 
 % guard against attack
 \part{Security}
@@ -83,7 +84,7 @@
 
   \chapter{Cryptography}
 
-  \paragraph{Acknowledgements}
+  \paragraph{Acknowledgments}
   This chapter contains contributions by Colin Rothgang.
   
     \input{secure}

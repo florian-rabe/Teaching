@@ -1,1 +1,36 @@
-   % Hoare calculus, dynamic logic, theorem proving
+\section{Overview}
+
+Two sub-fields can be distinguished.
+
+\paragraph{Verification Environments}
+These tools are specifically designed to prove correctness of programs.
+
+The programming language may be designed for the tool, or the tool may be designed to work with an existing programming language.
+The used programming languages tend to be simpler and more cleanly designed than mainstream languages.
+Often they arise as well-behaved fragments of existing languages.
+
+They tend to focus on the programming aspects, allowing for user-facing syntax that looks as similar as possible to typical programs.
+They tend to try to hide the logic aspects from the user as much as possible.
+Ideally, they only require the user to ascribe loop invariants, class invariants, and pre/postconditions for functions.
+
+Then automated provers can perform the proving in the background.
+Usually no proof object is produced.
+
+Examples are Why3 (for a simple imperative language) and Key (for Java).
+
+\paragraph{Proof Assistants}
+These are general-purpose tools for proving formulas.
+Many use formal systems that are strong enough to be Turing-complete.
+
+They tend to focus on \emph{pure} programs, i.e., programs where evaluation does not require an environment.
+These are usually functional programming languages emphasizing inductive data types and recursive functions.
+Assignments and I/O are avoided.
+
+The correctness of recursive functions is usually shown using induction arguments.
+Non-termination is the primary source of non-correctness.
+To prove termination, a variety of criteria have been developed, mostly based on certain well-orderings.
+
+All proofs are interactive, and the proof assistant supplies as much automation as possible.
+The result is a proof term that can be verified independently.
+
+Examples are Coq, Agda, PVS, and HOL family, which includes Isabelle, HOL Light, and HOL.
