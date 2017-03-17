@@ -24,44 +24,20 @@ Naturally, untyped languages cannot handle record \emph{types}. So you can skip 
 \end{problem}
 
 \begin{problem}{Monoids}{8}
-Implement the data structure of monoids, e.g., as a class
+Implement the data structure of monoids over a type $A$., e.g., as a class
 
-\begin{acode}
-\aclassA{Monoid[A]}{}{}{
- \afun[A]{compose[A]}{x:A,y:A}{}\\
- \afun[A]{neutral[A]}{}{}
-}
-\end{acode}
+Implement the concrete instance $Matrix22Multtiplication$ (as given in the lecture).
 
-Give a concrete instance $MatMult:Monoid[Mat]$ of this class that implements the monoid of matrix multiplication of $2\times 2$-matrices over the integers.
-For example, this could look like:
-\begin{acode}
-\aclass{Mat}{a:\Int,b:\Int,c:\Int,d:\Int}{}{}
-\\
-MatMult := \anewA{Monoid[Mat]}{}{\ablock{
- \afun[Mat]{compose}{x:Mat,y:Mat}{\ldots}\\
- \afun[Mat]{neutral]}{}{\anew{Mat}{1,0,0,1}}
-}\\
-}
-\end{acode}
-where $\anew{Mat}{a,b,c,d}$ represents the matrix $\begin{pmatrix}a & b \\ c & d\end{pmatrix}$.
-
-Write a test program that computes the matrix $MatMult.compose(F,MatMult.compose(F,F))$ for th matrix $F=\anew{Mat}{1,1,1,0}$ (i.e., the matrix for Fibonacci numbers).
+Write a test program that computes the matrix $(F\cdot F)\cdot F$ by applying $(\anew{Matrix22Multtiplication}{}).op$ twice.
+(Note that $F$ is the matrix for Fibonacci numbers.)
 \end{problem}
 
 \begin{problem}{Square-and-Multiply}{8}
-Implement the square-and-multiply algorithm to compute powers in an arbitrary monoid.
-
-This should be a function
-\begin{acode}
-\afun[A]{power[A]}{monoid:Monoid[A], x:A, n: \N}{\ldots}
-\end{acode}
-that satisfies the specification
-\[power(monoid, x, 0)=monoid.neutral\]
-\[power(monoid, x, n+1)=monoid.compose(power(monoid, x, n), x)\]
+Implement the square-and-multiply algorithm to compute powers in an arbitrary monoid (as specified in the lecture notes).
 
 Test your function by computing large Fibonacci numbers logarithmically using
-$power(MatMult, F, n)$ where $F$ is as in the previous problem and $n$ is large.\footnote{You will probably want to use arbitrary-precision arithmetic for $Mat$ to truly appreciate how efficient this algorithm is.}
+\[(1,0)\cdot sqmult(Matrix22Multtiplication, F, n)\]
+where $F$ is as in the previous problem and $n$ is large.\footnote{You will probably want to use arbitrary-precision arithmetic for the integer operations to truly appreciate how efficient this algorithm is.}
 \end{problem}
 
 \end{document}

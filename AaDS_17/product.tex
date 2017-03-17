@@ -1,0 +1,93 @@
+There are three important data structures for the Cartesian product $A\times B$.
+
+\section{Positional Products}
+
+The simplest data structure directly implements the Cartesian product.
+There are multiple ways to do that.
+
+\subsection{Primitive Products}
+
+Functional programming languages usually include product types as a primitive feature.
+This includes the types $A*B$ in SML or $(A,B)$ in Scala.
+
+\subsection{Products as an Inductive Data Type}
+
+Products can also easily be defined as an inductive data type:
+\begin{acode}
+\adata{Product[A,B]}{{{Pair(A,B)}}}\\
+\\
+\afun[A]{ProjectLeft[A,B]}{p: Product[A,B]}{\amatch{p}{\acase{{Pair(a,b)}}{a}}}\\
+\\
+\afun[B]{ProjectRight[A,B]}{p: Product[A,B]}{\amatch{p}{\acase{{Pair(a,b)}}{b}}}\\
+\end{acode}
+
+\section{Labeled Products: Structures/Records}
+
+Very often, we need the Cartesian product of more than two types.
+Moreover, it can become tedious to keep track of the individual components.
+For example, if we work with the product $\Z\times \Z\times \String\times \N$, code like $p.3$ to access the third component can become hard to read.
+
+Labeled products introduce a name for every component and use those names instead of numbers to access the components.
+
+\subsection{Specification}
+
+Let $l_1,\ldots,l_n$ be some fresh unique names.
+
+The set $P=\{l_1:A_1,\ldots,l_n:A_n\}$ is isomorphic to the set $A_1\times \ldots\times A_n$.
+
+Its elements are $\{l_1=a_1,\ldots,l_n=a_n\}$ for $a_i\in A_i$ with the convention that the components can be given in any order.
+
+Given $u\in P$, we write $u.{l_i}$ for the value of the component $l_i$ in $u$.
+
+\subsection{Data Structures}
+
+Data structures for labeled products are part of almost every programming language.
+However, they occur with very different names and notations.
+
+For example, they are called
+\begin{compactitem}
+ \item records in SML,
+ \item structs in C,
+ \item classes in object-oriented languages,
+ \item objects in Javascript,
+ \item dictionaries in Python.
+\end{compactitem}
+
+In untyped languages like Javascript and Python, of course the type $\{l_1:A_1,\ldots,l_n:A_n\}$ does not exist.
+But the values $\{l_1=a_1,\ldots,l_n=a_n\}$ and $u.{l_i}$ work as in typed languages.
+
+In object-oriented languages, there is often no special data structure for labeled products.
+Instead, labeled products are simply a special case of classes as in
+\begin{acode}
+\acomment{$\{l_1:A_1,\ldots,l_n:A_n\}$}\\
+\aclassA{P}{}{}{
+ \aval{l_1}{A_1}{}\\
+ \vdots\\
+ \aval{l_n}{A_n}{}
+}\\
+\\
+\tb\acomment{$\{l_1=a_1,\ldots,l_n=a_n\}$}\\
+\anew{P}{}\ablock{
+ \aval{l_1}{}{a_1}\\
+ \vdots\\
+ \aval{l_n}{}{a_n}
+}
+\end{acode}
+
+
+\section{Recursive Products: Classes}
+
+Often we want products to be recursive in the sense that the fields of the product refer to the whole product.
+This is a typical application of classes.
+
+We have seen examples already, e.g., in the data structures for lists.
+For example, we can understand $List[A]$ as the product of $A$ (for the head) and $List[A]$ (for the tail).
+
+In the C-family of languages, recursive products are usually realized as structs $S$ that contain pointers to elements of type $S$.
+For example, we might use
+\begin{lstlisting}
+struct IntList {
+  int head;
+  IntList* tail;
+}
+\end{lstlisting}

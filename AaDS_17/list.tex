@@ -124,14 +124,14 @@ The typical way to use an iterator $i\in Iterator[A]$ is the following:
 \begin{acode}
 \awhile{hasNext(i)}{
   a := getNext(i)\\
-  \text{do something with $a$ here}\\
+  \text{do something with $a$ here}
 }
 \end{acode}
 This is called \textbf{traversing} the iterator.
 Afterwards the iterator is traversed and cannot be used again.
 
 $Iterator[A]$ may look somewhat boring.
-In order to understand the value of iterator, we have to make one definition:
+In order to understand the value of iterators, we have to make one definition:
 A data structure $D[A]$ is called \textbf{iterable} if there is a function
  \[iterator(x\in D[A])\in Iterator[A]\]
 
@@ -148,40 +148,6 @@ The best data structures combine both properties, but usually they are mutually 
 
 All the important data structures presented in Part~\ref{sec:ad:ds} have become important because they do well in this way.
 \end{remark}
-
-An important function on iterators is $map$:
-\begin{ctabular}{|l|l|}
-\hline
-function & returns \\
-\hline
-$foreach(x\in Iterator[A],f\in A\to B)\in Iterator[B]$ & an iterator for $[f(a_1),\ldots,f(a_n)]$ where $X=[a_1,\ldots,a_n]$ \\
-\hline
-\end{ctabular}
-
-The trick behind $map$ is that $x$ is not traversed right away.
-Instead, we create a new iterator that, when traversed, applies $f$.
-That way we ensure that $f$ is applied only as often as necessary.
-
-\subsection{Data Structure}
-
-We can give a data structure for iterators as an abstract class:
-\begin{acode}
-\aclassA{Iterator[A]}{}{}{
- \afun[\Bool]{hasNext}{}{}
- \acomment{precondition for $getNext$ is $hasNext==\true$}\\
- \afun[A]{getNext}{}{}
-}
-\end{acode}
-
-Then we can give an algorithm for $map$ as follows:
-\begin{acode}
-\aclass{Map[A,B]}{x:Iterator[A], f:A\to B}{Iterator[B]}{
-  \afunI[\Bool]{hasNext}{}{x.hasNext}\\
-  \afunI[B]{getNext}{}{f(x.getNext)}
-}\\
-\\
-\afunI{map}{x:Iterator[A], f:A\to B}{\anew{Map[A,B]}{x,f}}
-\end{acode}
 
 \subsection{Working with Iterable Data Structures}\label{sec:ad:iter:use}
 
@@ -201,6 +167,7 @@ $find$&$(x\in D[A],\; p\in A\to\Bool)$&$\in A^?$ & the first element $a$ in $X$ 
 $count$&$(x\in D[A],\; p\in A\to\Bool)$&$\in\N$ & the number of elements $a$ in $X$ for which $p(a)$ is $\true$ \\
 $forall$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for every element $a$ in $X$ \\
 $exists$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for some element $a$ in $X$ \\
+$map$&$(x\in D[A],f\in A\to B)$&$\in Iterator[B]$ & an iterator for $[f(a_1),\ldots,f(a_n)]$ where $x=[a_1,\ldots,a_n]$ \\
 $results$&$(x\in D[A],\;f\in A\to B)$&$\in List[B]$ & the list of results from applying $f$ to all $a$ in $X$ \\
 $fold$&$(x\in D[A],\; b\in B, f\in A\times B\to B)$&$\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ with $X=[a_1,\ldots,a_n]$\\
 \hline
@@ -217,10 +184,33 @@ $foreach(x\in D[A],f\in A\to \Unit)\in \Unit$ & nothing & apply $f$ to all $a$ i
 \hline
 \end{ctabular}
 
+The trick behind $map$ (and the difference to $results$) is that $x$ is not traversed right away.
+Instead, we create a new iterator that, when traversed, applies $f$.
+That way we ensure that $f$ is applied only as often as necessary.
+
+
 \subsection{Making Data Structures Iterable}\label{sec:ad:iter:create}
 
-Many important data structures are naturally iterable.
+We can give a data structure for iterators as an abstract class:
+\begin{acode}
+\aclassA{Iterator[A]}{}{}{
+ \afun[\Bool]{hasNext}{}{}
+ \acomment{precondition for $getNext$ is $hasNext==\true$}\\
+ \afun[A]{getNext}{}{}
+}
+\end{acode}
 
+Then we can define, e.g.,  $map$ as follows:
+\begin{acode}
+\aclass{Map[A,B]}{x:Iterator[A], f:A\to B}{Iterator[B]}{
+  \afunI[\Bool]{hasNext}{}{x.hasNext}\\
+  \afunI[B]{getNext}{}{f(x.getNext)}
+}\\
+\\
+\afunI{map}{x:D[A], f:A\to B}{\anew{Map[A,B]}{iterator(x),f}}
+\end{acode}
+
+Many important data structures are naturally iterable, and that can be realized by implementing the abstract class.
 That includes in particular all data structures for lists:
 \begin{acode}
 \aclass{ListIterator[A]}{l: List[A]}{Iterator[A]}{
@@ -236,14 +226,13 @@ That includes in particular all data structures for lists:
 \afunI[{Iterator[A]}]{iterator}{l:List[A]}{\anew{ListIterator}{l}}
 \end{acode}
 
-
 \section{Streams}
 
 $Stream[A]$ is not a data structure for the set $A^*$.
 Instead, it is a data structure for the set $A^\N$.
 
-The set $A^\N$ contains functions $f:\to A$, which we can think of as inifite lists $[f(0),f(1),\ldots]$.
-Because they are so similar to lists, they are usually treated together with lists, even they do not realize the same set.
+The set $A^\N$ contains functions $f:\N\to A$, which we can think of as infinite lists $[f(0),f(1),\ldots]$.
+Because they are so similar to lists, they are usually treated together with lists, even though they do not realize the same set.
 
 The set $A^\N$ is uncountable.
 Therefore, not all possible streams are effective objects that can be represented in a physical machine.
@@ -257,7 +246,7 @@ For exapmle:
  \item We cannot call $length$, $count$, $results$, $fold$, and $foreach$ on streams.
  \item We can call $contains$ on a stream. However, the function may run forever if the searched-for element is not in the stream.
  The same caveat applies to $index$, $find$, $forall$, and $exists$.
- \item We can call $map$. But it must be a special variant of $map$ that returns a new iterator without actually applying the map-function.
+ \item We can call $map$ (because $map$ returns a new iterator without actually applying the map-function to all elements right away).
 \end{compactitem}
 
 \section{Heaps}\label{sec:ad:heaplists}

@@ -316,6 +316,42 @@ The third part introduces terms formed from a term $t:A\times B$ of the new type
 \tb\tb
  \rul{\oftype{}{\Gamma}{t}{A\times B}}{\oftype{}{\Gamma}{t.2}{B}}\]
 
+\subsection{Disjoint Union Types}
+
+Disjoint union types add the union $A+B$ of two types in such a way that there is no overlap, i.e., $|A+B|=|A|+|B|$.
+They are dual to the Cartesian product: all aspects mirror product types with the direction of functions reversed.
+For example, we have two injections into $A+B$ instead of two projections out of $A\times B$.
+
+\subsubsection{Union Type}
+
+The first part introduces the new type:
+
+\[A \bbc A+ A\]
+\[\rul{\oftype{}{\Gamma}{A}{\type}\tb \oftype{}{\Gamma}{B}{\type}}{\oftype{}{\Gamma}{A+ B}{\type}}\]
+
+\subsubsection{Terms of Union Type: Injections}
+
+The second part introduces terms of the new type:
+
+\[t \bbc \inj_1(t) \bnfalt \inj_2(t)\]
+\[\rul{\oftype{}{\Gamma}{t}{A}}{\oftype{}{\Gamma}{\inj_1(t)}{A+B}}
+\tb\tb
+\rul{\oftype{}{\Gamma}{t}{B}}{\oftype{}{\Gamma}{\inj_2(t)}{A+B}}\]
+
+\subsubsection{Terms Formed From Union Terms: Case Distinctions}
+
+The third part introduces terms formed from a term $t:A+ B$ of the new type:
+
+\[t \bbc cases(t,t,t)\]
+
+\[\rul{\oftype{}{\Gamma}{t}{A + B} \tb \oftype{}{\Gamma,\aval{x}{A}{}}{c_1}{C}\tb \oftype{}{\Gamma,\aval{x}{B}{}}{c_2}{C}}{\oftype{}{\Gamma}{cases(t,c_1,c_2)}{C}}\]
+
+A more intuitive notation for $cases(t,c_1(x),c_2(x))$ is $\amatchI{t}{\acase{\inj_1(x)}{c_1(x)},\acase{\inj_2(x)}{c_2(x)}}$.
+Indeed, disjoint union types are rarely used as a primitive feature because they can be easily defined as an inductive type with constructors $\inj_1$ and $\inj_2$.
+
+The formulation here is tweaked to be maximally modular, i.e., independent of other features.
+Alternatively, $c_1$ and $c_2$ be taken to be functions $A\to C$ and $B\to C$.
+
 \subsection{Function Types}
 
 The most important type constructor in computer science is the one for function types---it is critical to implement computations.
@@ -911,6 +947,9 @@ The expansion of definitions from above is the only non-trivial step:
 \tb\tb
 \rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
     {\evobj{}{\Gamma}{A \to B}{A'\to B'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
+    {\evobj{}{\Gamma}{A + B}{A'+ B'}}
 \]
 
 \subsubsection{Terms Regarding Base Types}
@@ -984,6 +1023,26 @@ Projections are more complicated because something actually happens: we retrieve
 \]
 
 If $u$ does not evaluate to a pair, we simply recurse.
+
+\subsubsection{Terms Regarding Disjoint Union Types}
+
+Like pairs, the terms of the new type---the injections---are evaluated by a simple recursion:
+\[\rul{\evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{\inj_1(t)}{\inj_1(t')}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{\inj_2(t)}{\inj_2(t')}}\]
+
+Like for projections, something happens when evaluating the terms that use a term of the new type: a case distinction is contracted if we know which case applies.
+\[\rul{\evobj{}{\Gamma}{u}{\inj_1(t)}\tb\evobj{}{\Gamma}{c_1(t)}{t'}}
+      {\evobj{}{\Gamma}{cases(u,c_1,c_2)}{t'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{u}{\inj_2(t)}\tb\evobj{}{\Gamma}{c_2(t)}{t'}}
+    {\evobj{}{\Gamma}{cases(u,c_1,c_2)}{t'}}
+\]
+Note that only the case that applies is evaluated---that is important in case there are side effects.
+
+If $u$ does not evaluate to an injection, we simply recurse.
 
 \subsubsection{Terms Regarding Function Types}
 
