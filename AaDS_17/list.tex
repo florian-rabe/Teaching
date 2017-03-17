@@ -332,7 +332,7 @@ Then $insert$ and $extract$ correspond to $enqueue$ and $dequeue$.
 
 \subsection{Heapsort Algorithm}\label{sec:ad:heapsort}
 
-Heapsort is a sorting algorithm that runs in $O(n\log n)$.
+Heapsort is a sorting algorithm that runs in $\Theta(n\log n)$.
 
 If $\leq$ is the total order for sorting, a simple heapsort is given by
 \begin{acode}
@@ -357,9 +357,10 @@ This uses two loops using $length(n)$ iterations each.
 The first loop throws all elements of $x$ into the heap; the second loop pulls them out again and builds the list $res$ to be returned.
 Because $extract$ always returns the greatest element, the result automatically sorted.
 
-If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $O(\log n)$.
-Thus, heapsort runs in $O(n\log n)$.
+If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $\Theta(\log n)$.
+Thus, heapsort runs in $\Theta(n\log n)$.
 \medskip
 
-There are much more optimized implementations of heapsort than the above example, possibly using optimized implementaitons of heaps.
-With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $O(n\log n)$).
+There are much more optimized implementations of heapsort than the above example, possibly using optimized implementations of heaps.
+In particular, there are encodings of the heap structure in an array, which allows using heapsort as an in-place sorting algorithm.
+With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $\Theta(n\log n)$).

@@ -196,12 +196,13 @@ In particular, the number of nodes grows exponentially with the depth.
 Vice versa, we can organize $n$ nodes as a binary tree of height $\log_2 n$.
 The latter property is often useful to obtain logarithmic implementations: if we organize $n$ elements in a (nearly) perfect binary tree, we can reach any element in $\log_2 n$ steps.
 
+\subsection{Trees for Ordered Sets}
 
-\subsection{Trees for Ordered Data}
-
-Assume a fixed total preorder $O$ on $A$.
+Special cases of trees are sometimes used to store sets of values for which we have a total order $O$.
 
 \subsubsection{Heaps}\label{sec:ad:heaps}
+
+Assume a fixed total order $O$ on $A$.
 
 \begin{definition}[Heap]
 $Heap[A,O]$ is the subset of $Tree[A]$ containing only trees in which all branches are sorted with respect to $O$.
@@ -245,61 +246,17 @@ Applications are presented in Sect.~\ref{sec:ad:heaplists}.
 
 \subsubsection{Binary Search Trees}
 
-Binary search trees are binary trees in which every node $n$ splits a range of values into two subranges: all left descendants of $n$ have smaller and all right descendants have greater values than $n$.
-That makes them very helpful for quickly finding a specific node.
+Binary search trees are similar to heaps but the order property is different.
+In a heap every node is smaller than both its children.
+In a binary search tree, every node is greater than all its left descendants and smaller than all its right descendants.
 
-Recall that in a total preorder, there are three options for two elements $x,y\in A$: $x$ is strictly smaller, $x$ is strictly greater, or both are similar.
-
-\begin{definition}[Binary Search Trees]
-$BST[A,O]$ is the subset of $Tree[A^*]$ containing only full binary trees satisfying the following properties:
-\begin{compactitem}
- \item All leafs are labeled with the empty list $Nil\in A^*$; all other nodes are labeled with non-empty lists.
- \item For every non-leaf node $n$:
-  \begin{compactitem}
-    \item All values at $n$ are similar to each other.
-    \item All values in the labels of nodes in the left subtree of $n$ are strictly smaller than those at $n$.
-    \item All values in the labels of nodes in the right subtree of $n$ are strictly greater than those at $n$.
-  \end{compactitem}
-\end{compactitem}
-\end{definition}
-
-The leafs hold empty lists as placeholders for elements that we may want to insert later.
-When drawing binary search trees, we always omit them.
-
-\begin{example}
-In most applications, the total preorder $O$ is obtained by comparing keys using a total order.
-Consider a database of people that stores entries consisting of age and name.
-We can use $A=\Z\times\String$ and use the age as the key to compare people: $(k,s) \; O \;(k',s')$ iff $k\leq k'$.
-
-Then we can use a binary search tree to store people indexed by their age:
-\begin{center}
-\begin{tikzpicture}[scale=2]
-\node[] (0) at (0,0) {$[(30,"James"),(30,"Elizabeth"), (30,"William")]$};
-\node[] (00) at (-2,-1) {$[(20,"Richard"),(20,"Patricia"),(20,"Robert")]$};
-\node[] (01) at (2,-1) {$[(35,"Elizabeth"),(35,"Barbara")]$};
-\node[] (001) at (-1,-2) {$[(29,"Mary")]$};
-\node[] (010) at (1,-2) {$[(33,"David")]$};
-\node[] (011) at (3,-2) {$[(37,"Linda"),(37,"John")]$};
-\node[] (0101) at (1.5,-3) {$[(34,"Michael")]$};
-\draw[arrow] (0) -- (00);
-\draw[arrow] (0) -- (01);
-\draw[arrow] (00) -- (001);
-\draw[arrow] (01) -- (010);
-\draw[arrow] (01) -- (011);
-\draw[arrow] (010) -- (0101);
-\end{tikzpicture}
-\end{center}
-Now if we know the age of a person, we can locate her entry efficiently by traversing just one branch of the tree.
-
-Note how we have to distinguish between the left and the right subtree even if there is only one non-trivial subtree (for age $20$ and $33$).
-This is possible because all leafs are labeled with the empty list but not drawn.
-\end{example}
+They are discussed in Sect.~\ref{sec:ad:bst}.
 
 \subsection{Variants}
 
 Trees are simple enough to come up everywhere.
-But they are difficult enough to defy exact standardization.
-Contrary to, e.g., lists, the definition of tree can vary between textbooks, programming language libraries, or computer scientists.
+But they are difficult enough to defy standardization.
+Contrary to, e.g., lists, the definition of tree can vary subtly across textbooks, programming language libraries, and computer scientists.
 
 The following lists some details to watch out for when interacting with what someone else calls \emph{trees}.
 
@@ -326,7 +283,7 @@ And sometimes we need trees where inner nodes are labeled with elements of $A$ a
 Some people will speak of binary trees if every node has $0$ or $2$ nodes (but not $1$).
 
 When nodes with $1$ child are allowed (like in our definition), definitions may or may not distinguish whether that one child is the left or the right child.
-Thus, they may consider the following trees to be the same (like in our definition) or different (which would make the definition of binary search tree simpler):
+Thus, they may consider the following trees to be the same (like in our definition) or different (which would make the definition of binary search tree in Sect.~\ref{sec:ad:bst} simpler):
 
 \begin{center}
 \begin{tikzpicture}[scale=.7]
@@ -361,12 +318,12 @@ Some people say \emph{heap} to refer exclusively to heaps of integers.
 
 Some people will assume that heaps are always binary trees.
 
-\paragraph{Binary Search Trees}
-The standard definition does not use lists.
-Instead, $BST[A,O]$ is usually just a subset of $Tree[A^?]$.
-In fact, most textbooks simply use $Tree[A]$ and label the leafs with $null$.
-
-Our definition is not standard but can be more intuitive and practical.
+%\paragraph{Binary Search Trees}
+%The standard definition does not use lists.
+%Instead, $BST[A,O]$ is usually just a subset of $Tree[A^?]$.
+%In fact, most textbooks simply use $Tree[A]$ and label the leafs with $null$.
+%
+%Our definition is not standard but can be more intuitive and practical.
 
 \section{Data Structures}
 
@@ -583,8 +540,4 @@ For example, at depth $6$, we estimate the current score using heuristic functio
 
 This is a basic design used in artificially intelligent computer players for many games.
 Many optimizations are needed to obtain strong players.
-
-\section{Search Trees}
-
-Binary search trees and red-black trees are discussed in Sect.~\ref{sec:ad:sets}.
 

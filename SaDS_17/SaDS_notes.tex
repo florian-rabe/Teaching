@@ -54,18 +54,12 @@
   \chapter{Type Theory}\label{sec:sd:typetheory}
   \input{type_theory}
 
-  \chapter{Programming}
-  % recursion
-  % statefulness: input/output, exceptions
-  %  SML, (Haskell: laziness, monads), Scala
-
-
-  \chapter{Logic}
-    % sat, hol, LTL, CTL
+  \chapter{Programming}\label{sec:sd:program}
+  \input{programming}
 
   \chapter{Logic}\label{sec:sd:logic}
   \input{logic}
-
+  
 % guard against deep errors
 \part{Formal Methods}
 % https://www.lri.fr/~marche/MPRI-2-36-1/
@@ -88,13 +82,14 @@
   \chapter{Common Criteria}
 
   \chapter{Cryptography}
+
+  \paragraph{Acknowledgements}
+  This chapter contains contributions by Colin Rothgang.
+  
     \input{secure}
 
    % database security -> peter
    % network security: see also Jürgen Schönwälder, slides 269-324
-   % security protocol correctness, such as key management protocol correctness,
-   % e.g., going back to the work by Burrows, Abadi, and Needham on a logic of authentication (https://doi.org/10.1145/77648.77649)
-   % Its an application of logic to a concrete problem space where errors are obviously bad.
 
   \chapter{Privacy}
    % differential privacy: see also wikipedia or http://www.cis.upenn.edu/~aaroth/courses/privacyF11.html
@@ -113,8 +108,8 @@
 
 \tocentryBib
 
-%\input{\currfilebase.bblp}
-\bibliographystyle{alpha}
-\bibliography{../../../../../Program_Data/Latex/bib/rabe}
+\input{\currfilebase.bblp}
+%\bibliographystyle{alpha}
+%\bibliography{../../../../../Program_Data/Latex/bib/rabe,../../../../../Program_Data/Latex/bib/historical}
 
 \end{document}
