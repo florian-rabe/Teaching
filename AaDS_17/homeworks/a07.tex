@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=7,date=2017-03-21,duedate=2017-03-30,duetime=11:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=7,date=2017-03-21,duedate=2017-03-30,duetime=11:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -11,32 +11,52 @@
 \header
 
 \begin{problem}{Heap-Backed Priority Queue}{8}
-Depending on your programming language, this might look similar to this snippet:
+Implement $Heap[\Int,\geq]$ in any programming language.
+
+Use it to implement $PriorityQueue[\Int]$ where the priority of each element is the element itself.
+
+Depending on your programming language, this may look like
 \begin{acode}
-\aclass{Stack[A]}{}{}{
- \akey{private} elements := [] \acomment{the immutable linked list backing the stack, initially empty}\\\\
- \afun[\Unit]{push[A]}{x:A}{}\\
- \afun[{Option[A]}]{pop[A]}{}{}\\
- \afun[{Option[A]}]{top[A]}{}{}\\
+\aclass{MaxHeap}{}{}{
+ \akey{private} elements := \acomment{the underlying data structure backing the heap, e.g., a binary tree}\\\\
+ \afun[\Unit]{insert}{x:\Int}{\ldots}\\
+ \afun[{Option[\Int]}]{extract}{}{\ldots}\\
+ \afun[{Option[A]}]{find[A]}{}{\ldots}\\
+}\\
+\aclass{IntPriorityQueue}{}{}{
+ \akey{private} elements := \anew{MaxHeap}{}\acomment{the underlying heap backing the queue}\\
+ \afun[\Unit]{enqueue}{x:\Int}{elements.insert(x)}\\
+ \afun[{Option[\Int]}]{dequeue}{}{elements.extract()}
 }
 \end{acode}
 
 Write a test program that
 \begin{compactitem}
- \item creates a new stack
- \item pushes some values onto the stack
- \item pops all values and prints them
+ \item creates a new priority queue
+ \item enqueues some values into it
+ \item dequeues all values and prints them
 \end{compactitem}
 \end{problem}
 
-\begin{problem}{DFS}{8}
+
+
+\begin{problem}{Trees, DFS/BFS}{3+6+6}
+Implement a data structure for $Tree[A]$.
+
+Implement two functions $Tree[A]\to Iterator[A]$ that return the nodes of a tree in
+\begin{compactenum}
+ \item DFS order
+ \item BFS order
+\end{compactenum}
+
+One way to do this is to use the functions from the lecture notes to build the list of all nodes in the tree and then to turn the list into an iterator.
+That is bad because it forces traversing the entire tree.
+The right wy to do it is to build the iterator in such a way that the next node is only visited when $next$ is called on the iterator.
+The functions given in the lecture can be adapted in this way.
 \end{problem}
 
-\begin{problem}{BFS}{8}
-
+\begin{problem}{}{5}
+Prove the theorem in the lecture notes about the number of nodes in a perfect binary tree
 \end{problem}
-
-% exercise: proof Thm.~\ref{thm:ad:bintree}
-% exercise:  minmax for tictactoe
 
 \end{document}

@@ -1,4 +1,4 @@
-\section{Formulas}
+\section{Formulas}\label{sec:sd:formulas}
 
 Like programming languages, logics add new concepts to type theory: formulas and proofs.
 Only proofs are fundamentally new and correspond very closely to programs.
@@ -60,6 +60,16 @@ Instead, there are three options:
 The distinction between the options is undecidable.
 Proving tries to establish that one of the former holds.
 
+Proving may use evaluation rules but usually a new set of rules and possibly auxiliary non-terminals and judgments have to be invented.
+Together, these are called the \textbf{proof system} or \textbf{calculus}.
+
+Implementations of such proof systems are called \textbf{theorem provers}.
+The practical ones are usually extremely sophisticated, often comprising $>10^5$ lines of code.
+Still, the problem of finding a proof of a given formula is so complex that \emph{fully automated} provers perform very poorly in practice.
+
+Note that the problem of \emph{finding} a proof has to be distinguished from the problem of \emph{checking} a given proof.
+The latter is easily decidable as we will see in Sect.~\ref{sec:sd:axthm}.
+
 \subsection{Formulas not as Terms}
 
 The treatment of formulas has received a great deal of attention, and multiple different approaches have been developed.
@@ -97,7 +107,7 @@ This has made it possible to present theorems as programs.
 For example, a theorem like $\afa[A]{x}{\afa[B]{y}{\aex[C]{z}{\true}}}$ can be represented as a function $\afunI[C]{f}{x:A,y:B}{P}$.
 Giving the body $P$ of this function becomes equivalent to finding a proof of the theorem.
 
-\section{Proofs as Terms}
+\section{Proofs as Terms}\label{sec:sd:proofterms}
 
 As for programs, we have to decide whether proofs are a new non-terminal symbol or a special case of terms.
 Both work well.
@@ -154,7 +164,6 @@ Then we obtain the more familiar-looking
 If we additionally write simply $F$ instead of $\aproof{F}$, we obtain the usual notation.
 
 \subsection{Logics for Reasoning about Systems}
-%  LTL, CTL
 
 Logics like FOL and HOL are sufficient for reasoning about mathematical concepts.
 (The difficulty here is usually to enrich the type theory in order to allow for more natural representations of mathematical objects.)
@@ -170,7 +179,24 @@ For physical systems, especially those interacting via sensor data, we may have 
 
 Both present substantial challenges, and a variety of different logics has been developed.
 
-\section{Discrete-Time Logic}
+\section{Axioms and Theorems as Declarations}\label{sec:sd:axthm}
+
+A major advantage of representing formulas and proofs as terms is that we do not need to introduce new declarations for axioms and theorems.
+They are normal value declarations whose type happens to be $\aproof{F}$ for some $F$.
+
+If there is no definition, this yields an axiom declaration.
+The declaration $\aval{a}{\aproof{F}}{}$ introduces an axiom named $a$ that asserts $F$.
+This corresponds to assuming that we have a proof of $F$ without further specifying where it comes from.
+
+If there is a definition, this yields a theorem declaration.
+The declaration $\aval{a}{\aproof{F}}{P}$ introduces a theorem named $a$ that asserts $F$ and whose proof is $P$.
+This corresponds to introducing $a$ as an abbreviation for the proof $P$.
+
+Type-checking of these declarations proceeds in the same way as before.
+In particular, to check $\isdecl{}{}{\aval{a}{\aproof{F}}{P}}$, we have to check $\oftype{}{}{P}{\aproof{F}}$, i.e., we have to check that $P$ is indeed a proof of $F$.
+Thus, proof-checking becomes a special case of type-checking.
+
+\section{Discrete-Time Logic}\label{sec:sd:discretetime}
 
 \subsection{Grammar and Intuitions}
 
@@ -179,14 +205,17 @@ All the intuitions and concepts from finite automata (which are sometimes altern
 The set of states is usually infinite or at least very large.
 
 The central is the following:
-\begin{definition}
+\begin{definition}[States]\label{def:sd:state}
 A \textbf{state} is a possible value for the set of cells in the environment.
 
-A \textbf{transition} is a triple $(s,o,s')$, where $s$ is a state, $o$ is one of the operations that can be called on the environment, and $s'$ is the state after calling $o$ in state $s$.
+A \textbf{transition} is a triple $(s,f,s')$, where $s$ is a state, $f$ is any function that can be applied to the environment, and $s'=f(s)$.
+
+Here \emph{any function} means any combination of the operations introduced in Def.~\ref{def:sd:environment} and~\ref{def:sd:environmentio}.
 \end{definition}
 
 Now the evaluation of every term (including the truth of formulas) depends on the state.
-Thus, the meaning of a formula is no longer a boolean but a function from states to booleans.
+Thus, the meaning of every term is a function from states to values.
+In particular, the meaning of a formula is no longer a boolean but a function from states to booleans.
 
 When designing logics, we try to avoid talking about states explicitly---that would just amount to reformulating verification problems in a different formalism.
 Instead, we try to talk about states indirectly or to introduce names for only a few certain states.
@@ -194,18 +223,35 @@ Instead, we try to talk about states indirectly or to introduce names for only a
 \subsubsection{Modal Logic}
 
 Historically, the central ideas go back to modal logic, which introduced the following operators in the early $20$th century:
-\begin{ctabular}{|l|l|}
+\begin{ctabular}{|l|l|l|}
 \hline
-Formula & Holds in state $s$ if \\
+Formula & Holds in state $s$ if & also called\\
 \hline
-$\square F$ & $F$ holds in all possible successor states of $s$\\
-$\diamond F$ & $F$ holds in some possible successor state of $s$\\
+$\square F$ & $F$ holds in all possible successor states of $s$ & necessarily $F$\\
+$\diamond F$ & $F$ holds in some possible successor state of $s$ & maybe $F$\\
 \hline
 \end{ctabular}
 
+Here a possible successor state of $s$ is any state $s'$ such that there is a transition $(s,f,s')$.
+
+Modal logics can be classified further according to the properties of the successor relation.
+The following are the most important ones:
+\begin{compactitem}
+ \item Reflexivity: the successors of $s$ include $s$ itself.
+ \item Transitivity: the successors of $s$ include all successors of successors of $s$.
+\end{compactitem}
+For reasoning about programs, it is most practical to assume both reflexivity and transitivity.
+
+The successor relation of Def.~\ref{def:sd:state} is indeed reflexive and transitive:
+\begin{compactitem}
+ \item Reflexivity follows by using the identity function $id$ on the environment, which yields the do-nothing transition $(s,id,s)$.
+ \item Transitivity follows by using the composition of functions: given $(s,f,s')$ and $(s',f',s'')$, we obtain the first-$f$-then-$f'$ transition $(s,f'\circ f,s'')$.
+\end{compactitem}
+
+
 \subsubsection{Dynamic Logic}
 
-Dynamic logic expands on modal logic by clarifying what transitions should be taken into consideration:
+Dynamic logic expands on modal logic by restricting what transitions should be taken into consideration:
 
 \[t \bbc \abox{t}{t} \bnfalt \adia{t}{t}\]
 
@@ -213,12 +259,12 @@ Dynamic logic expands on modal logic by clarifying what transitions should be ta
 \hline
 Formula & Holds in state $s$ if  \\
 \hline
-$\abox{P}{F}$ & $F$ holds in all successor state of $s$ reachable by executing $P$ \\
-$\adia{P}{F}$ & $F$ holds in some successor state of $s$ reachable by executing $P$ \\
+$\abox{P}{F}$ & $F$ holds in all successor state of $s$ reachable by evaluating $P$ \\
+$\adia{P}{F}$ & $F$ holds in some successor state of $s$ reachable by evaluating $P$ \\
 \hline
 \end{ctabular}
 
-If $P$ is a deterministic program, then for every $s$ there is at most $1$ successor state reachable by executing $P$: if $P$ terminates, there is exactly $1$ state; otherwise, there is no state.
+If $P$ is a deterministic program, then for every initial state $s$ there is at most $1$ successor state reachable by executing $P$: if $P$ terminates, there is exactly $1$ state; otherwise, there is no state.
 
 In that case, the operators become very easy:
 \begin{ctabular}{|l|l|}
@@ -227,18 +273,43 @@ Formula & Holds in state $s$ if  \\
 \hline
 $\abox{P}{F}$ & if $P$ terminates from $s$, $F$ holds afterwards \\
 $\adia{P}{F}$ & $P$ terminates from $s$ and $F$ holds afterwards \\
+$\adia{P}{\true}$ & $P$ terminates from $s$ \\
 \hline
 \end{ctabular}
 
-Note that all terms considered so far are deterministic with the exception of $\aread$.
-
 \subsection{Typing}
 
-There are different choices for the typing rules.
-The following is just a simple example:
+The typing rules for the modal operators are very simple:
+
+\[\rul{\oftype{}{\Gamma}{F}{\Bool}}
+      {\oftype{}{\Gamma}{\square F}{\Bool}}
+\tb\tb
+\rul{\oftype{}{\Gamma}{F}{\Bool}}
+    {\oftype{}{\Gamma}{\diamond F}{\Bool}}\]
+
+For the operators of dynamic logic, there are different choices for the typing rules.
+The following is a simple example:
 
 \[\rul{\oftype{}{\Gamma}{P}{A}\tb \oftype{}{\Gamma}{F}{\Bool}}
       {\oftype{}{\Gamma}{\abox{P}{F}}{\Bool}}
 \tb\tb
 \rul{\oftype{}{\Gamma}{P}{A}\tb \oftype{}{\Gamma}{F}{\Bool}}
     {\oftype{}{\Gamma}{\adia{P}{F}}{\Bool}}\]
+
+\subsection{Proving}
+
+\subsubsection{Modal Logic}
+
+Reflexivity and transitivity can be easily captured by the following axioms:
+
+\[\rul{}{\iscons{}{\Gamma}{}{\square F\impl F}}\tb\tb\rul{}{\iscons{}{\Gamma}{}{F\impl \diamond F}}\]
+
+\[\rul{}{\iscons{}{\Gamma}{}{\square F\impl \square\square F}}\tb\tb\rul{}{\iscons{}{\Gamma}{}{\diamond\diamond F\impl \diamond F}}\]
+
+However, it is subtly difficult to give the basic rules for $\square$ and $\diamond$.
+
+\subsubsection{Dynamic Logic}
+
+The rules for the dynamic operators cannot be given generically.
+Instead, we usually need to give a separate proof rule for every production of the program $P$.
+We expand on that in Ch.~\ref{sec:sd:deductive}.

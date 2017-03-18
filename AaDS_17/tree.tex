@@ -445,7 +445,7 @@ For example, $f$ can check if $n$ is the needed solution or do some other work o
 \begin{acode}
 \afun{DFS[A]}{n: Tree[A], f:Tree[A]\to \Unit}{
   f(n)\\
-  foreach(n.children, x \mapsto DFSAux[A](x,f))
+  foreach(n.children, x \mapsto DFS[A](x,f))
 }
 \end{acode}
 
