@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=4,date=2017-03-14,duedate=2017-03-21,unpublished]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=4,date=2017-03-15,duedate=2017-03-23,unpublished]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,13 +10,38 @@
 
 \header
 
-\begin{problem}{Formal Systems: Practice}{3}
+\begin{problem}{Fixing C}{3}
+Try to give productions, typing rules, and evaluation rules for C-style pointers.
+
+This is not entirely possible because C is mis-designed from a formal system perspective.
+
+But it can be done partially:
+\begin{compactitem}
+ \item for every type $A$, there should be a type $*A$ of pointers to locations holding objects of type $A$,
+ \item for every pointer $p:*A$, there should be a type $p*:A$ that evaluates to the value at location $p$,
+ \item for every (this is tricky/impossible depending on how you try it) name $x:A$, there should be a pointer $\&x:*A$ such that $(\&x)*==x$,
+ \item for every pointer $p:*A$ and integer $n$, there should be a pointer $p+n$ (this is impossible in general but may work for special cases of $A$ and $n$)
+\end{compactitem}
+
+Any partial solution yields a well-behaved fragment of $C$.
 \end{problem}
 
-\begin{problem}{Formal Systems: Theory}{4}
+\begin{problem}{Dynamic Logic: Practice}{3}
+Install either Why3 or KeY (see the links in the lecture notes).
+
+Write a simple program that contains a while-loop and use the tool to verify that it meets its specification.
+\medskip
+
+Submit a reasonable combination of screen shots, shell logs, system output etc. that demonstrates you completed the task.
+
+You may use any example that is already part of the available documentation or tutorials.
+But you have to prove that you actually installed the system and ran the verification.
+For example, you can copy an example from the tutorial, rename the function to your name, and then run the verification.
 \end{problem}
 
-\begin{problem}{Formal Systems: Theory}{3}
+
+\begin{problem}{Dynamic Logic: Theory}{4}
+
 \end{problem}
 
 \end{document}

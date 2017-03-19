@@ -1,8 +1,6 @@
-\section{Overview}
-
 Two sub-fields can be distinguished.
 
-\paragraph{Verification Environments}
+\paragraph{Provers for Dynamic Logics}
 These tools are specifically designed to prove correctness of programs.
 
 The programming language may be designed for the tool, or the tool may be designed to work with an existing programming language.
@@ -16,9 +14,11 @@ Ideally, they only require the user to ascribe loop invariants, class invariants
 Then automated provers can perform the proving in the background.
 Usually no proof object is produced.
 
-Examples are Why3 (for a simple imperative language) and Key (for Java).
+Examples are Why3\footnote{\url{http://why3.lri.fr/}} \cite{why3} (for a custom imperative language) and KeY\footnote{\url{https://www.key-project.org/}} \cite{key} (for Java-like languages).
+    % https://www.lri.fr/~marche/MPRI-2-36-1/
 
-\paragraph{Proof Assistants}
+
+\paragraph{General Purpose Proof Assistants}
 These are general-purpose tools for proving formulas.
 Many use formal systems that are strong enough to be Turing-complete.
 
@@ -33,4 +33,170 @@ To prove termination, a variety of criteria have been developed, mostly based on
 All proofs are interactive, and the proof assistant supplies as much automation as possible.
 The result is a proof term that can be verified independently.
 
-Examples are Coq, Agda, PVS, and HOL family, which includes Isabelle, HOL Light, and HOL.
+Examples are Coq \cite{coq}, Agda \cite{agda}, PVS \cite{pvs}, and the HOL family \cite{holsemantics}, which includes Isabelle \cite{isabelle}, HOL Light \cite{hollight}, and HOL \cite{hol}.
+Major verifications have been done of a C compiler\footnote{\url{http://compcert.inria.fr/}} using Coq\footnote{\url{https://coq.inria.fr/}} and of the L4 micro kernel\footnote{\url{http://ts.data61.csiro.au/projects/TS/l4.verified/}} in Isabelle\footnote{\url{https://isabelle.in.tum.de/}}.
+
+\section{Proof Rules for Dynamic Logic}
+
+We can focus on \emph{partial} correctness because termination can be established separately using termination orders.
+
+Partial correctness requires proving formulas that contain the box operator $\abox{t}{Q}$.
+Its proof rules requires a separate case for every possible $t$.
+
+There is quite some variety in choosing the proof rules.
+We only give some examples.
+
+\paragraph{Restricting Side Effects}
+Often simplifying assumptions can be made to reduce the difficulty.
+Most importantly, it is desirable to restrict side effects as much as possible.
+One useful restriction is to say that any term that has side effects must occur by itself.
+
+It is straightforward to rewrite programs into equivalent ones that satisfy these conditions.
+For example, if $t$ has a side effect, we can rewrite $f(t)$ into the equivalent $\{\aval{x}{A}{t};f(x)\}$.
+Exhaustively applying such rewrites eventually yields assignments like $\aval{x}{\Unit}{\aprint{t}}$, which can be rewritten into simply $\aprint{t}$.
+
+That way we can assume that many terms are pure, e.g.,
+\begin{compactitem}
+ \item definition of a value or mutable variable,
+ \item right hand side of an assignment,
+ \item conditions in if and while commands,
+ \item arguments of a function application, operator application, or print command.
+\end{compactitem}
+
+\subsection{Sequencing}
+
+The rule for $s;t$ first applies $s$, then $t$:
+
+\[\rul{\iscons{}{\Gamma}{}{\abox{s}{\abox{t}{F}}}}{\iscons{}{\Gamma}{}{\abox{s;t}{F}}}
+\]
+
+To prove the soundness of this rule, we show that for all states $q$ if all premises hold in $q$, then so does the conclusion.
+That is straightforward because the two formulas are equivalent.
+
+\subsection{Branching}
+
+The rule for if commands distinguishes two cases:
+
+\[\rul{C \text{ pure} \tb \iscons{}{\Gamma}{}{C\impl \abox{t}{F}} \tb \iscons{}{\Gamma}{}{\neg C\impl \abox{t'}{F}}}
+      {\iscons{}{\Gamma}{}{\abox{\aifelseI{C}{t}{t'}}{F}}}\]
+
+
+\subsection{Loops}
+
+The rule for while-loops invents a loop invariant $I$:
+
+\[\rul{C \text{ pure} \tb \iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{(I\wedge C)\impl \abox{t}{I}} \tb \iscons{}{\Gamma}{}{I\wedge \neg C \impl F}}
+      {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{I}}{F}}}\]
+
+To prove the soundness of this rule, we use induction: we show inductively for all $n$ that $I$ holds are $n$ iterations of the loop.
+The first two premises are exactly the base and step case of the induction.
+The third premise yields the desired formula $F$ if and whenever the while-loop terminates.
+
+\subsection{Assignments}
+
+Reasoning about assignments is very difficult: we have to keep track of the current value of each mutable variable.
+Evaluation delegated that to the environment.
+But a proof is static: there is no environment because we are reasoning about what evaluation would do for an arbitrary, unknown initial state.
+
+One simple way is to replace the definition of $x$ in the context.
+Effectively, that means we use the context as the environment that holds the current values of the variables.
+
+\[\rul{t \text{ pure} \tb \iscons{}{\Gamma,\amval{x}{A}{t[x/t']},\Gamma'}{}{F}}
+      {\iscons{}{\Gamma,\amval{x}{A}{t'},\Gamma'}{}{\abox{x:=t}{F}}}\]
+Because $x$ may occur in $t$, we have to substitute its current value for it.
+
+The above rule is sound in many simple situations.
+Given the frequency of assignments and the cost of substitution (the entire formula must be traversed), this is not an efficient solution.
+
+Moreover, it easily runs into difficulties when aliasing is allowed, e.g., when using pointers or classes.
+If multiple parts of the program can access the same memory location, each assignment must be communicated to all other branches of the derivation.
+The above rule does not allow for that because all assignments modify only the context in the current branch.
+
+\subsection{Function Application}
+
+For a function application, we create a local variable for the argument and evaluate the body:
+
+\[\rul{\iscons{}{\Gamma}{}{\abox{\{\aval{x}{A}{a};t\}}{F}}}
+      {\iscons{}{\Gamma}{}{\abox{(\alam[A]{x}{t})\,a}{F}}}
+\]
+
+\paragraph{Function Specifications}
+We do not need a special rule for the application of named functions: those can be replaced with their definition using the usual rules for reasoning about equality.
+However, it is useful to have a special rule for when a named function has a specification.
+
+\[\rul{\iscons{}{\Gamma}{}{PfQ} \tb
+       \iscons{}{\Gamma}{}{P} \tb
+       \iscons{}{\Gamma,\aval{z}{A}{}}{}{}{Q(z)\impl F}}
+     {\iscons{}{\Gamma}{}{\abox{z:=f(x_1,\ldots,x_n)}{F}}}\]
+
+Here $PfQ$ abbreviates that $f$ satisfies the specification given by $P$ and $Q$.
+That has to be verified once and for all when $f$ is declared.
+
+If $f$ is not recursive and has no separate return-command, the following rule works:
+
+\[\rul{\iscons{}{
+          \Gamma,
+          \afunI[A]{f}{x_1:A_1,\ldots, x_n:A_n}{t},
+          \aval{x_1}{A_1}{},\ldots,\aval{x_n}{A_n}{},
+          \aval{x}{A}{}
+      }{}{
+          P(x_1,\ldots,x_n)\impl \abox{x:=t}{Q(x_1,\ldots,x_n,x)}
+      }
+    }{\iscons{}{\Gamma,\afunI[A]{f}{x_1:A_1,\ldots, x_n:A_n}{t}}{}{PfQ}}\]
+
+If $f$ is recursive, $PfQ$ has to be assumed in the premise of the rule.
+
+\subsection{Pure Terms}
+
+All other term constructors from Ch.~\ref{sec:sd:typetheory} can simply be ignored because their evaluation has no side effects:
+
+\[\rul{\iscons{}{\Gamma}{}{F}}
+      {\iscons{}{\Gamma}{}{\abox{x}{F}}}
+\tb\tb
+\rul{l \text{ is literal} \tb \iscons{}{\Gamma}{}{F}}
+      {\iscons{}{\Gamma}{}{\abox{l}{F}}}
+\tb\tb
+\rul{\iscons{}{\Gamma}{}{F}}
+      {\iscons{}{\Gamma}{}{\abox{\alam[A]{x}{t}}{F}}}
+\]
+
+\subsection{Input/Output}
+
+Reasoning about input and output is very difficult and depends on various subtleties.
+
+\paragraph{Unknown Environment}
+For example, if the logic does not allow every referring to the special locations $IN$ and $OUT$ of the environment, then formulas can never talk about future reads or past prints.
+That makes it easy to give rules that reason about arbitrary states of the environment:
+
+\[\rul{\iscons{}{\Gamma,\aval{x}{\Int}{}}{}{F}}
+      {\iscons{}{\Gamma}{}{\abox{x:=\aread}{F}}}
+\tb\tb
+\rul{t\text{ pure}\tb\iscons{}{\Gamma}{}{F}}
+      {\iscons{}{\Gamma}{}{\abox{\aprint{t}}{F}}}
+\]
+
+If $F$ cannot talk about upcoming reads, then the result of a read could be anything.
+Thus, the only way for $\abox{x:=\aread}{F}$ to hold is if $F$ holds for arbitrary $x$.
+
+Similarly, if $F$ cannot talk about previous prints, the side effect of printing can be ignored.
+Thus, if $t$ is pure, $\abox{\aprint{t}}{F}$ holds iff $F$ holds.
+
+\paragraph{Reasoning about Side Effects}
+The assumption that the logic cannot talk about the environment is often too restrictive: after all, the communication with the environment is what can be observed by the user.
+Therefore, we want our specifications to be able to talk about what will be printed and how the program will respond differently depending on what is read.
+
+That requires additional language features in the logic, which then require more complex proof rules.
+
+\subsection{Local Declarations}
+
+Local value declarations can simply be moved into the context:
+
+\[\rul{t\text{ pure}\tb\iscons{}{\Gamma,\aval{x}{A}{t}}{}{\abox{P}{F}}}
+      {\iscons{}{\Gamma}{}{\abox{\{\aval{x}{A}{t}; P\}}{F}}}
+\]
+
+Local variable declarations can be moved to the context, too. They will be modified later when assignments are made.
+
+\[\rul{t\text{ pure}\tb\iscons{}{\Gamma,\amval{x}{A}{t}}{}{\abox{P}{F}}}
+      {\iscons{}{\Gamma}{}{\abox{\{\amval{x}{A}{t}; P\}}{F}}}
+\]
