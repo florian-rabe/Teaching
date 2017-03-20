@@ -24,11 +24,6 @@ Many use formal systems that are strong enough to be Turing-complete.
 
 They tend to focus on \emph{pure} programs, i.e., programs where evaluation does not require an environment.
 These are usually functional programming languages emphasizing inductive data types and recursive functions.
-Assignments and I/O are avoided.
-
-The correctness of recursive functions is usually shown using induction arguments.
-Non-termination is the primary source of non-correctness.
-To prove termination, a variety of criteria have been developed, mostly based on certain well-orderings.
 
 All proofs are interactive, and the proof assistant supplies as much automation as possible.
 The result is a proof term that can be verified independently.
@@ -46,9 +41,11 @@ Its proof rules requires a separate case for every possible $t$.
 There is quite some variety in choosing the proof rules.
 We only give some examples.
 
-\paragraph{Restricting Side Effects}
 Often simplifying assumptions can be made to reduce the difficulty.
 Most importantly, it is desirable to restrict side effects as much as possible.
+Therefore, we make some restrictions that will be in place throughout this section.
+
+\paragraph{Isolating Side Effects}
 One useful restriction is to say that any term that has side effects must occur by itself.
 
 It is straightforward to rewrite programs into equivalent ones that satisfy these conditions.
@@ -62,6 +59,15 @@ That way we can assume that many terms are pure, e.g.,
  \item conditions in if and while commands,
  \item arguments of a function application, operator application, or print command.
 \end{compactitem}
+
+\paragraph{Reasoning Must Be Pure}
+A non-optional restriction is that the logical formulas may not have any side-effects at all.
+Otherwise, the reasoning itself would affect the thing we want to reason about. That would not make sense.
+
+So in $\abox{P}{F}$, only $P$ but not $F$ may contain assignments, loops, I/O, or control flow commands.
+Of course, $P$ may contain booleans again, which may or may not be pure.
+
+Similarly, all annotations such as loop invariants, class invariants, pre/postconditions of functions, and termination orderings must be pure terms.
 
 \subsection{Sequencing}
 
@@ -77,20 +83,23 @@ That is straightforward because the two formulas are equivalent.
 
 The rule for if commands distinguishes two cases:
 
-\[\rul{C \text{ pure} \tb \iscons{}{\Gamma}{}{C\impl \abox{t}{F}} \tb \iscons{}{\Gamma}{}{\neg C\impl \abox{t'}{F}}}
+\[\rul{\iscons{}{\Gamma}{}{C\impl \abox{t}{F}} \tb \iscons{}{\Gamma}{}{\neg C\impl \abox{t'}{F}}}
       {\iscons{}{\Gamma}{}{\abox{\aifelseI{C}{t}{t'}}{F}}}\]
 
+(Recall that $C$ is assumed to be pure.)
 
 \subsection{Loops}
 
 The rule for while-loops invents a loop invariant $I$:
 
-\[\rul{C \text{ pure} \tb \iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{(I\wedge C)\impl \abox{t}{I}} \tb \iscons{}{\Gamma}{}{I\wedge \neg C \impl F}}
+\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{(I\wedge C)\impl \abox{t}{I}} \tb \iscons{}{\Gamma}{}{I\wedge \neg C \impl F}}
       {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{I}}{F}}}\]
 
-To prove the soundness of this rule, we use induction: we show inductively for all $n$ that $I$ holds are $n$ iterations of the loop.
-The first two premises are exactly the base and step case of the induction.
-The third premise yields the desired formula $F$ if and whenever the while-loop terminates.
+(Recall that $C$ and $I$ are assumed to be pure.)
+
+%To prove the soundness of this rule, we use induction: we show inductively for all $n$ that $I$ holds are $n$ iterations of the loop.
+%The first two premises are exactly the base and step case of the induction. 
+%The third premise yields the desired formula $F$ if and whenever the while-loop terminates.
 
 \subsection{Assignments}
 
@@ -132,19 +141,21 @@ However, it is useful to have a special rule for when a named function has a spe
 Here $PfQ$ abbreviates that $f$ satisfies the specification given by $P$ and $Q$.
 That has to be verified once and for all when $f$ is declared.
 
-If $f$ is not recursive and has no separate return-command, the following rule works:
+If $f$ is not recursive and has no separate return-command, the following rule is sound:
 
 \[\rul{\iscons{}{
-          \Gamma,
-          \afunI[A]{f}{x_1:A_1,\ldots, x_n:A_n}{t},
+          \begin{array}{c}\Gamma,
+          \afunI[A]{f}{x_1:A_1,\ldots, x_n:A_n}{t},\\
           \aval{x_1}{A_1}{},\ldots,\aval{x_n}{A_n}{},
-          \aval{x}{A}{}
+          \aval{x}{A}{}\end{array}
       }{}{
           P(x_1,\ldots,x_n)\impl \abox{x:=t}{Q(x_1,\ldots,x_n,x)}
       }
     }{\iscons{}{\Gamma,\afunI[A]{f}{x_1:A_1,\ldots, x_n:A_n}{t}}{}{PfQ}}\]
 
 If $f$ is recursive, $PfQ$ has to be assumed in the premise of the rule.
+
+If $f$ uses a return-command, we need a more complex rule, because we cannot use the assignment $x:=t$.
 
 \subsection{Pure Terms}
 
@@ -200,3 +211,60 @@ Local variable declarations can be moved to the context, too. They will be modif
 \[\rul{t\text{ pure}\tb\iscons{}{\Gamma,\amval{x}{A}{t}}{}{\abox{P}{F}}}
       {\iscons{}{\Gamma}{}{\abox{\{\amval{x}{A}{t}; P\}}{F}}}
 \]
+
+\section{Soundness and Completeness}
+
+\paragraph{Theorems}
+Because all formulas are pure, their semantics is just a function from states to $\{\true,\false\}$.
+
+\begin{definition}[Theorem]
+A pure term $t:\Bool$ is a \textbf{theorem} if it is $\true$ in every state.
+\end{definition}
+
+
+\paragraph{Soundness}
+To formally state the soundness theorem, we need some additional definitions:
+
+\begin{definition}[Soundness]
+A set of rules is \textbf{sound} if all provable formulas are theorems.
+\end{definition}
+
+In particular, if a set of rules is sound, if every rule's conclusion is a theorem whenever its premises are.
+
+We can now prove the soundness of all rules described above.
+
+\paragraph{Completeness}
+
+It is easy to define completeness:
+
+\begin{definition}[Completeness]
+A set of rules is \textbf{complete} if every theorem is provable.
+\end{definition}
+
+But it is very difficult to make a dynamic logic complete.
+
+First of all, we have to find a complete calculus for the logic even in the absence of any programs.
+That can already be impossible if we allow function types, a built-in type of natural numbers, or inductive data types.
+Ultimately, this is due to G\"odel's incompleteness theorem.
+
+Therefore, we usually aim at relative completeness: the rules for programs should be such that they yield a complete calculus if there is/were one for the pure logic.
+Dynamic logics are usually relatively complete.
+The basic idea of the proof is to show that exhaustively applying the rules (in the presence of sufficient annotations like loop invariants) reduces $\abox{P}{F}$ to a formula without the box operator.
+
+However, our set of rules is not complete: we would have to add some rules or make more restrictions about what programs $P$ we allow.
+
+\section{Verification in Pure Logics}
+
+General purpose proof assistants use pure logics.
+There are no assignments, while-loops, I/O, control flow commands, or classes.
+Thus, evaluation does not need an environment and can never lead to run-time errors.
+
+Reasoning in these logics can be carried out entirely without the formulas $\abox{P}{F}$.
+Any program $P$ is just a term that evaluates to some other term $P'$, and $P==P'$ is a theorem.
+Therefore, the usual equality reasoning is sufficient to reason about programs.
+
+Recursive functions are the only source of non-termination.
+And non-termination is the only source of abnormal behavior (i.e., there are no run-time errors).
+
+The partial correctness of recursive functions is usually shown using induction arguments.
+To prove termination, a variety of families of termination orderings have been developed.

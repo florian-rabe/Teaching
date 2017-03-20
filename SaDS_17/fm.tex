@@ -1,0 +1,412 @@
+\section{Approaches}
+
+\emph{Formal methods} is the area of computer science that develops static methods for verifying the correctness of software and hardware.
+This is different from testing in that correctness is \emph{guaranteed}---systems are proved to be correct for arbitrary input (instead of dynamically checking a selected set of inputs).
+It is different from the static analysis methods presented in Ch.~\ref{sec:sd:static} in that the \emph{entire} correctness is established (instead of checking for the presence of certain common errors).
+
+Three branches can be roughly distinguished and are discussed separately in the following chapters.
+
+All branches have in common that they use formal systems that involve both programs and formulas.
+The latter is used to write specifications, the former to write implementations.
+The goal is typically to show that the latter satisfies the former.
+
+The separation between them is not clear-cut, and there are a lot of sharing of fundamental concepts, cross-fertilization, and and attempts at system integration between them.
+
+\textbf{Deductive verification} focuses on representing the entire program as a term and logically proving the correctness.
+Correctness is stated as a formula that is proved using appropriate proof rules.
+This requires (semi)-manually transliterating the original program into the logic or automatically generating executable code from a program developed inside the logic.
+
+\textbf{Model checking} focuses on statically analyzing a program only as much as necessary to establish correctness.
+Often this involves building an abstraction of the program (which is written in an existing programming language) as, e.g., a state machine by analyzing its control flow graph.
+Formal systems are mostly used to describe the behavior of the model checker, and not necessarily as the internal data structure of the model checker.
+
+\textbf{Program synthesis} focuses on transforming (called \emph{refining}) the specification step-by-step into an implementation in such a way that correctness is guaranteed by construction.
+Contrary to the other two branches, synthesis is applied to the specification, not to an existing implementation.
+
+\section{Correctness}
+
+By using a formal systems that combines logic and programming, we can concisely define what it means for a program to be correct.
+
+\subsection{Programs}
+
+\begin{definition}
+A \textbf{program} is a term $t$ in some context $\Gamma$.
+
+The \textbf{semantics} of $t$ consists of
+\begin{compactitem}
+ \item the term $t'$ such that $\evobj{}{\Gamma}{t}{t'}$,
+ \item the mapping of initial states $s$ to transitions $(s,o,s')$ where $o$ is the sequence of operations triggered while evaluating $t$ and $s'$ is the resulting state.
+\end{compactitem}
+
+$t$ is called \textbf{pure} if
+\begin{compactitem}
+ \item $t'$ does not depend on the initial state $s$ (independence from the environment)
+ \item $s=s'$ (no side effects)
+\end{compactitem}
+\end{definition}
+
+Here $\Gamma$ contains all the
+\begin{compactitem}
+ \item declarations that are part of the program: classes, functions, global variables etc.
+ \item the mathematical formalizations that are needed to write the specification: axioms, definitions, theorems, etc.
+\end{compactitem}
+
+The term $t$ is the initial function call that starts the program.
+Often this a special constant named $main$ (possibly applied to arguments) defined somewhere in $\Gamma$.
+Moreover, often $main$ is required to have $List[\String]\to \Int$ where the inputs are the command line arguments and the output is the exit code.
+Then $t$ is of the form $main([arg_1,\ldots,arg_n]):\Int$.
+
+In imperative languages, the semantics usually emphasizes the side effects of $t$ (especially the I/O operations that are observable by the user such as reading and printing).
+The evaluation result $t'$ is negligible.
+
+In functional languages, the semantics usually emphasizes the term $t'$, often restricting attention entirely to pure programs.
+
+\subsection{Specifications}
+
+The specification of a program is a set of axioms that characterize the intended semantics.
+
+\begin{definition}[Specification]
+Consider a program $t:A$ in some context $\Gamma$.
+
+A \textbf{specification} for it consists of
+\begin{compactitem}
+\item a \textbf{precondition}: a formula in context $\Gamma$,
+\item a \textbf{postcondition}: a formula in context $\Gamma$.
+\end{compactitem}
+\end{definition}
+
+We think of the precondition as a property of the environment that we assume holds before evaluating $t$.
+We think of the postcondition as a property of the environment that we guarantee will hold after evaluating $t$.
+
+\subsection{Correctness}
+
+For deterministic programs, we can define correctness as follows:
+
+\begin{definition}[Correctness]
+Consider a program $t$ in context $\Gamma$ and a specification with precondition $P$ and postcondition $Q$.
+
+With respect to the specification, $t$ is called 
+\begin{compactitem}
+\item \textbf{partially correct} if $\iscons{}{\Gamma}{}{P\impl \abox{t}{Q}}$, i.e., if the precondition holds and $t$ terminates, then the postcondition holds afterwards.
+\item \textbf{terminating} if $\iscons{}{\Gamma}{}{P\impl \adia{t}{\true}}$, i.e., if the precondition holds, then $t$ terminates.
+\item \textbf{totally correct} if $\iscons{}{\Gamma}{}{P\impl \adia{t}{Q}}$, i.e., if the precondition holds, then $t$ terminates and the postcondition holds afterwards.
+\end{compactitem}
+Equivalently, total correctness is the conjunction of partial correctness and termination.
+\end{definition}
+
+The triple of $P$, $Q$, and $t$ is also called a Hoare-triple after their inventor. %\cite{hoarelogic}
+In the context of Hoare-triples, partial correctness is often written as $\{P\}t\{Q\}$.
+
+\subsection{Undecidability}
+
+We assume a reasonably expressive logic, i.e., it should include at least first-order logic.
+Then given a program and a specification, each of the following is undecidable:
+\begin{compactitem}
+ \item total correctness
+ \item partial correctness
+ \item termination
+\end{compactitem}
+Even termination without a precondition (i.e., $\adia{t}{\true}$) is undecidable.
+
+For any problem that involves termination, that follows immediately from the undecidability of the halting problem.
+For any problem that involves a postcondition, that follows immediately from the undecidability of first-order logic theorems.
+
+\section{Annotating Programs to Aid Formal Methods}
+
+Due to undecidability, we cannot expect any automated formal correctness arguments.
+In order to aid automation, we have to attach additional information to our programs that guides correctness arguments.
+These can be seen as stepping stones for correctness proofs.
+
+Several such annotations are common.
+
+\begin{example}[Running Example]\label{ex:sd:sqrt}
+The following function computes the approximate square root:
+\begin{acode}
+\afun[\Int]{sqrt}{n:\Int}{
+rt := 0\\
+sq := 0\\
+\awhile{sq \leq n}{
+  rt := rt + 1\\
+  sq := sq + 2\cdot rt + 1
+}\\
+\areturn{rt-1}
+}
+\end{acode}
+Its intended meaning and correctness are non-obvious, even for humans.
+\end{example}
+
+\subsection{Function Specifications}
+
+\subsubsection{Definition}
+
+We can attach pre- and postconditions to function declarations.
+These allow reasoning about the result of a function call in one big step without inspecting the body of the function.
+
+\begin{definition}[Function Specification]\label{def:fm:funspec}
+Consider a function declaration
+ \[\afunI[A]{f}{x_1:A_1,\ldots, x_n:A_n}{t}\]
+that is part of a fixed context $\Gamma$.
+
+Let $\gamma=\aval{x_1}{A_1}{},\ldots,\aval{x_n}{A_n}{}$.
+
+A \textbf{specification} for $f$ consists of
+\begin{compactitem}
+ \item precondition: a formula $P(x_1,\ldots,x_n)$ in context $\Gamma,\gamma$,
+ \item postcondition: a formula $Q(x_1,\ldots,x_n,x)$ in context $\Gamma,\gamma,x:A$.
+\end{compactitem}
+
+Relative to the specification, $f$ is partially correct/terminating/totally correct if the program $x:=f(x_1,\ldots,x_n)$ is.
+\end{definition}
+
+The extra variables $x_i$ and $x$ represent the input and output of $f$.
+
+Very often, we are interested in verifying a function by itself, as a modular component.
+In that case, we use a specification of $f$ in the minimal (ideally: empty) context $\Gamma$.
+Then correctness results can be reused in any larger context that comes up during program execution.
+
+\begin{example}[Continuing Ex.~\ref{ex:sd:sqrt}]\label{ex:sd:sqrt2}
+We specify $sqrt$ as follows:
+
+The precondition $P(n)$ is $n\geq 0$.
+The postcondition $Q(n,x)$ is $x^2\leq n < (x+1)^2$.
+\end{example}
+
+\subsubsection{Application}
+
+Consider a partially correct function with $f$, $P$ and $Q(x)$, as in Def.~\ref{def:fm:funspec}.
+Moreover, assume that the body of $f$ is pure.
+
+Then the following proof rule is sound:
+
+\[\rul{\iscons{}{\Gamma}{}{P(t_1,\ldots,t_n)} \tb \iscons{}{\Gamma,\aval{x}{A}{}}{}{}{Q(t_1,\ldots,t_n,x)\impl F}}{\iscons{}{\Gamma}{}{\abox{x:=f(t_1,\ldots,t_n)}{F}}}\]
+
+This can be read as follows: to call $f$, we
+\begin{compactenum}
+ \item establish the precondition of $f$,
+ \item assume the postcondition of $f$ holds about the result, and
+ \item continue the correctness proof
+\end{compactenum}
+
+If $f$ is totally correct, we obtain a corresponding rule for the diamond operator.
+
+
+\subsection{Loop Invariants}
+
+\subsubsection{Definition}
+
+Similar to function specification allowing us to reason about a function call in one big step, a loop invariant allows reasoning about a while-loop in one big step.
+Loop invariants are critical to prove the partial correctness of while-loops.
+
+\begin{definition}[Loop Invariant]
+Consider a context $\Gamma$ and a while-loop $\awhileI{C}{t}$ in which $C$ is pure.
+
+A \textbf{loop invariant} is a formula $F$ such that
+ \[\iscons{}{\Gamma}{}{(I\wedge C)\impl \abox{t}{I}}\]
+\end{definition}
+
+Intuitively, a loop invariant is a formula whose truth is preserved by executing the body of the loop.
+
+\begin{example}[Continuing Ex.~\ref{ex:sd:sqrt2}]\label{ex:sd:sqrt3}
+The following are loop invariants for the while-loop in $sqrt$:
+\begin{compactitem}
+ \item $\true$: technically correct, but useless
+ \item $\false$: technically correct, but useless (also, does not hold at the beginning of the loop)
+ \item $rt>0 \wedge sq > 0$: better but will not help prove the postcondition
+ \item $rt^2==sq$: the one that captures the idea of the loop and is useful in practice
+\end{compactitem}
+
+Note how it is basically impossible to figure out the loop invariant without first understanding how the algorithm works.
+We cannot expect being able to automate this process.
+
+So put $I=rt^2==sq$.
+We can now prove that
+\[\iscons{}{\aval{rt}{\Int}{};\;\aval{sq}{\Int}{}}{}{(I\wedge \neg sq\leq n)\impl \abox{rt := rt + 1;\; sq := sq + 2\cdot rt + 1}{I}}\]
+i.e., $I$ is a loop invariant, and
+\end{example}
+
+\subsubsection{Application}
+
+If we have a loop invariant $I$, the following proof rule is sound:
+
+\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{I\wedge \neg C \impl F}}
+      {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{I}}{F}}}\]
+
+We can read this as follows:
+to execute a while-loop,
+\begin{compactenum}
+ \item establish the loop-invariant $I$,
+ \item execute the body loop until $C$ becomes false (which always preserves $I$),
+ \item assume $I$ and $\neg C$, and
+ \item continue the proof.
+\end{compactenum}
+
+\begin{example}[Continuing Ex.~\ref{ex:sd:sqrt3}]\label{ex:sd:sqrt4}
+To apply the loop invariant $I$, we first have to prove that
+\[\iscons{}{\aval{n}{\Int}{},\;\aval{rt}{\Int}{0},\;\aval{sq}{\Int}{0}}{}{rt^2==sq}\]
+i.e., $I$ holds at the beginning of the loop.
+That is easy.
+
+Then we have to prove that the loop invariant and the negative loop condition allow proving the postcondition about the return value $rt-1$:
+\[\iscons{}{\aval{n}{\Int}{},\;\aval{rt}{\Int}{};\;\aval{sq}{\Int}{}}{}{rt^2==sq\wedge \neg sq\leq n \impl (rt-1)^2\leq n < (rt-1+1)^2}\]
+The proof of $n<rt^2$ is easy.
+
+But we cannot easily prove $(rt-1)^2\leq n$.
+We know it is true: when the while-loop terminates, not only is $sq>n$ but it must be the smallest square number above $n$.
+(Because each iteration of the loop increments $rt$ by $1$ only, we cannot skip a square number.)
+But that knowledge is not captured by the loop invariant.
+
+Thus, we have to go back and prove a strengthened loop invariant.
+For example,
+\[rt^2==sq \wedge \neg \aex[\Int]{k}{n < k^2 < rt^2}\]
+is also a loop invariant (which is trivial to prove) and is strong enough to prove the postcondition.
+\end{example}
+
+\subsection{Class Invariants}
+
+For simplicity, we will only work with a very simple special case of classes.
+We assume a class declaration is of the form
+\[\aclassI{C}{x:A}{}{\ldots,\aval{f_i}{B_i\to B'_i}{t_i},\ldots}\]
+where
+\begin{compactitem}
+ \item $x$ is the only constructor argument and the only mutable fields of $C$,
+ \item $x$ is private to the class,
+ \item all other fields of $C$ are methods $f_i$ that take exactly one argument.
+\end{compactitem}
+We do allow the characteristic property of object-orientatiton: the bodies $t_i$ of the methods may use and assign to the private variables $x$.
+
+No fundamental conceptual difficulties arise when generalizing to arbitrary classes, but, depending on the details, the complexity of giving class invariants can increase substantially.
+
+\subsubsection{Definition}
+
+A class invariant is similar to a loop invariant: it is a formula whose truth is preserved by operations.
+In a loop invariant, the body of the loop is the only operation.
+In a class, any method call is a possible operation.
+
+\begin{definition}[Class Invariant]
+Consider a class declaration $C$ as above that is part of a context $\Gamma$.
+
+A \textbf{class invariant} is a formula $I(c)$ in context $\Gamma,c:C$ such that
+\[\iscons{}{\Gamma,\aval{a}{A}{}}{}{I(\anew{C}{a})}\]
+and for every method $f:B\to B'$
+\[\iscons{}{\Gamma,\aval{c}{C}{},\aval{b}{B}{}}{}{I(c)\impl \abox{c.f(b)}{I(c)}}\]
+\end{definition}
+
+Intuitively, $I(o)$ holds for all new instances $c$ and cannot be invalidated by any method calls on $c$.
+
+\begin{example}{Size of stack}
+The following implementation of stacks allows for constant-time computation of the size of the stack:
+\begin{acode}
+\aclass{Stack[A]}{}{}{
+ \akey{private} elements := Nil[A] \acomment{the immutable linked list backing the stack, initially empty}\\
+ \akey{private} size := 0 \\
+ \afunI[\N]{getSize}{}{size}\\
+ \afun[\Unit]{push[A]}{x:A}{
+    elements := cons(x,elements)\\
+    size:=size+1
+ }\\
+ \afun[{Option[A]}]{pop[A]}{}{
+    \aifelse{elements == []}{
+      None
+    }{
+      e := elements.head\\
+      elements := elements.tail\\
+      size :=size-1\\
+      Some(e)
+    }
+ }
+}
+\end{acode}
+
+An important class invariant for it is $length(elements)==size$.
+\end{example}
+
+Similar class invariants come up every time a class store the same data in multiple ways for efficiency or redundancy.
+
+Another important use case are validity conditions about auxiliary data that is built over the lifetime of a class:
+
+\begin{example}[Formal System Case Study]
+The parser class from the formal system example satisfies the class invariant $0\leq pos\leq length(input)$.
+
+The interpreter class satisfies the class invariant that the environment contains only well-typed terms.
+\end{example}
+
+\subsubsection{Application}
+
+Because the $\anew{C}{x}$ operator is the only way to every obtain a new instance of $C$, a class invariant must be true for all instances at all times.
+
+Formally, if we have a class invariant $I(c)$ for a class $C$, the following proof rule is sound:
+
+\[\rul{}
+      {\iscons{}{\Gamma,\aval{c}{C}{}}{}{\square I(c)}}\]
+
+
+\subsection{Termination Orderings}
+
+Partial correctness and termination usually require very different arguments.
+Therefore, they are often treated separately.
+The annotations described above help with proving partial correctness.
+Termination orderings help with proving termination.
+
+\subsubsection{Definition}
+
+We consider the two most important sources of possible non-termination: while-loops and recursion.
+
+\paragraph{Loops}
+A termination ordering for a while-loop is a term of type $\N$ that strictly decreases with every iteration of the loop.
+Because natural numbers can only strictly decrease finitely many times, the existence of a termination ordering guarantees the termination of the overall loop.
+
+We assume that a specification of the natural numbers $\N$ with the usual ordering $<$ is part of all contexts $\Gamma$.
+
+\begin{definition}[Termination Ordering for a while-loop]
+Consider a context $\Gamma$ and a while-loop $\awhileI{C}{B}$ in which $C$ is pure.
+
+A \textbf{termination ordering} is a pure term $\oftype{}{\Gamma}{t}{\N}$ such that
+ \[\iscons{}{\Gamma,\aval{before}{\N}{t}}{}{C\impl \abox{B}{\{\aval{after}{\N}{t}; after<before\}}}\]
+\end{definition}
+
+Here $before$ and $after$ contain the values of $t$ before and after evaluating the body $B$.
+And $after<before$ expresses that $t$ strictly decreases.
+
+\begin{example}[Continuing Ex.~\ref{ex:sd:sqrt}]\label{ex:sd:sqrt5}
+A termination ordering for the while-loop is given by $n-sq$.
+\end{example}
+
+\paragraph{Recursive Functions}
+
+A termination ordering for a recursive function expresses that the size of the arguments of the function decreases with every recursive call.
+
+\begin{definition}[Termination Ordering for a recursive function]
+Consider a context $\Gamma$ and a pure function $\afunI[A]{f}{x_1:A_1,\ldots,x_n:A_n}{B}$.
+
+A \textbf{termination ordering} is a pure term $t(x_1,\ldots,x_n)$ in context $\Gamma,x_1:A_n,\ldots,x_n:A_n$ such that for every recursive call $f(a_1,\ldots,a_n)$ inside $t$, we have
+ \[\iscons{}{\Gamma,x_1:A_n,\ldots,x_n:A_n}{}{t(a_1,\ldots,a_n)<t(x_1,\ldots,x_n)}\]
+\end{definition}
+
+Here $t(x_1,\ldots,x_n)$ corresponds to the $before$-value---the function arguments in the current call---and $t(a_1,\ldots,a_b)$ correspond to the after-value---the function arguments in the next call of $f$.
+
+\subsubsection{Application}
+
+If there is a termination ordering for a while-loop, the loop is guaranteed to terminate.
+
+If there is a termination ordering for a recursive function $f$, every function call $f(v_1,\ldots,v_n)$ is guaranteed to terminate.
+
+\subsubsection{Generalization}
+
+In practice, it is not always easy to give a termination ordering $t:\N$.
+However, we can generalize the argument as follows.
+
+Let $(A,<)$ be a strict ordering.
+Moreover, assume a $<$-preserving function $f:A\to \N$, i.e., a function $f$ such $a<a'$ implies $f(a)<f(a')$.
+
+Then any term $t:A$ can be used as a termination ordering.
+
+\paragraph{Subterm-Ordering}
+The most important special case is the subterm ordering on inductive data types.
+
+Let $A$ be an inductive data type.
+We define a strict ordering $<$ on $A$ by: $s<t$ iff $s$ is a proper subterm of $t$.
+
+Then the function $f:A\to \N$ that maps every term to the height of its syntax tree preserves $<$.
+
+The subterm ordering is extremely helpful to prove the termination of recursive functions on inductive data types: almost all the time such functions recurse only into subterms.
+The termination of any such function follows immediately.
