@@ -92,10 +92,14 @@ The rule for if commands distinguishes two cases:
 
 The rule for while-loops invents a loop invariant $I$:
 
-\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{(I\wedge C)\impl \abox{t}{I}} \tb \iscons{}{\Gamma}{}{I\wedge \neg C \impl F}}
-      {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{I}}{F}}}\]
+\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma^*}{}{(I\wedge C)\impl \abox{t}{I}} \tb \iscons{}{\Gamma^*}{}{(I\wedge \neg C) \impl F}}
+      {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{t}}{F}}}\]
 
 (Recall that $C$ and $I$ are assumed to be pure.)
+
+Here $\Gamma^*$ is like $\Gamma$ but all definitions of mutable variables whose value may change while executing $t$ are dropped.
+This is necessary because every iteration of the loop may change the state of those variables, and we cannot make any assumptions about their values other than the loop invariant.\footnote{This clarification was added after presenting the rule in the lecture. It is not critical for the homeworks.}
+
 
 %To prove the soundness of this rule, we use induction: we show inductively for all $n$ that $I$ holds are $n$ iterations of the loop.
 %The first two premises are exactly the base and step case of the induction. 
@@ -134,14 +138,19 @@ We do not need a special rule for the application of named functions: those can 
 However, it is useful to have a special rule for when a named function has a specification.
 
 \[\rul{\iscons{}{\Gamma}{}{PfQ} \tb
-       \iscons{}{\Gamma}{}{P} \tb
-       \iscons{}{\Gamma,\aval{z}{A}{}}{}{}{Q(z)\impl F}}
-     {\iscons{}{\Gamma}{}{\abox{z:=f(x_1,\ldots,x_n)}{F}}}\]
+       \iscons{}{\Gamma}{}{P(t_1,\ldots,t_n)} \tb
+       \iscons{}{\Gamma^z}{}{}{Q(t_1,\ldots,t_n,z)\impl F}}
+     {\iscons{}{\Gamma}{}{\abox{z:=f(t_1,\ldots,t_n)}{F}}}\]
 
 Here $PfQ$ abbreviates that $f$ satisfies the specification given by $P$ and $Q$.
 That has to be verified once and for all when $f$ is declared.
 
-If $f$ is not recursive and has no separate return-command, the following rule is sound:
+$\Gamma^z$ is the variant of $\Gamma$ where the definition of $z$ is dropped.\footnote{This clarification was added after presenting this rule in the lecture. It is not critical for the homeworks.}
+That is necessary because we do not know the exact value of $z$ afterwards---we only know that the postcondition holds.
+Therefore, the postcondition must be so strong that we can continue the proof without explicitly knowing the value of $z$.
+Most of the time the postcondition is strong enough to uniquely determine the value of $z$, but not always.
+
+If $f$ is not recursive and has no separate return-command, the following rule is sound to prove $PfQ$:
 
 \[\rul{\iscons{}{
           \begin{array}{c}\Gamma,
@@ -206,11 +215,198 @@ Local value declarations can simply be moved into the context:
       {\iscons{}{\Gamma}{}{\abox{\{\aval{x}{A}{t}; P\}}{F}}}
 \]
 
-Local variable declarations can be moved to the context, too. They will be modified later when assignments are made.
-
+Local variable declarations can be moved to the context, too. They will be modified later when assignments are made or when the definition is dropped because it is not statically known anymore.
 \[\rul{t\text{ pure}\tb\iscons{}{\Gamma,\amval{x}{A}{t}}{}{\abox{P}{F}}}
       {\iscons{}{\Gamma}{}{\abox{\{\amval{x}{A}{t}; P\}}{F}}}
 \]
+
+
+\subsection{Inductive Data Types}
+
+Inductive data types do not introduce major practical complications.
+We only have to add induction rules to reason about inductive functions.
+
+However, they introduce theoretical complications: completeness may be out of reach (see below).
+
+For every inductive data type
+\[\adata{a}{c_1(A_1),\ldots,c_n(A_n)}\]
+we add a set of rules.
+The intuition behind the rules is that the possible values of type $a$ are exactly the terms that can be formed from the constructors.
+Intuitively, the constructors are jointly injective (two different terms have different values) and jointly surjective (all values are terms).
+
+\begin{example}[Natural Numbers]\label{ex:typetheory:nat2}
+For the natural numbers from Ex.~\ref{ex:typetheory:nat}, the induction axioms are exactly the Peano axioms:
+\begin{compactitem}
+ \item Different terms have different values:
+   \begin{compactitem}
+    \item $0$ is not a successor
+    \item the successor function is injective
+   \end{compactitem}
+ \item All values are terms: if $P(n)$ holds for all terms (i.e., $P(0)$ and $P(n)\impl P(succ(n))$, then $\forall x.P(x)$.
+\end{compactitem}
+\end{example}
+
+\paragraph{Constructors Are Jointly Injective}
+In the special case, where all constructors are unary, we add the following axioms
+ \[\iscons{}{\aval{x}{A_i}{},\aval{y}{A_j}{}}{}{c_i(x)\neq c_j(y)} \tb\mfor i,j= 1,\ldots,n\mand i\neq j\]
+ \[\iscons{}{\aval{x}{A_i}{},\aval{y}{A_i}{}}{}{x\neg y\impl c_i(x)\neq c_i(y)} \tb \mfor i=1,\ldots,n\] 
+For other constructors, we adapt the axioms accordingly.
+
+The first axiom ensures that different constructors produce different values.
+The second axiom makes all constructors injective.
+
+These axioms are sometimes called \emph{no confusion axioms} because they make sure that no two terms can be confused with each other.
+
+\paragraph{Constructors Are Mutually Surjective}
+The second group consists of what is usually called \emph{the} induction axiom.
+It is also sometimes called \emph{no junk axiom} because it makes sure that there are no other values around.
+
+It can be stated as an axiom.
+But it is more intuitive and more practical to state it as a rule.
+
+For simplicity, we assume that all constructors take two arguments: a recursive argument $y$, whose type is the inductive type $a$, and a non-recursive argument $x$, whose type $A$ does not mention $a$.
+This distinction is necessary because the induction hypothesis only applies to he recursive arguments.
+In that simple case, the rule is:
+\[
+\rul{\overbrace{\iscons{}{\aval{x}{A}{},\aval{y}{a}{}, p: \aproof{F(y)}}{}{F(c_i(x,y))}}^{\mfor i=1,\ldots,n\mwith c_i(A,a)}}
+    {\iscons{}{x:a}{}{F(x)}}
+\]
+
+For any $F:a\to\Bool$, if $F(c_i(x,y))$ holds whenever the induction hypothesis holds for the recursive arguments, then $F$ holds for arbitrary values.
+
+%Here $F^{A_i}:A_i\to \Bool$ is the induction hypothesis at type $A$.
+%It depends on the argument type $A_i$.
+%This can be defined by induction for any $A_i$, but the following cases often suffice in practice:
+%\begin{compactitem}
+% \item $A_i$ is a base type: $F^{A_i}(x)=\true$ (i.e., no induction hypothesis),
+% \item $A_i=a$ is the inductive data type: $F^a(x)=F(x)$ (i.e., the induction hypothesis).
+%\end{compactitem}
+
+\begin{example}[Continuing Ex.\ref{ex:typetheory:nat2}]\label{ex:typetheory:nat3}
+For the data type of natural numbers, the induction axioms are the following
+
+\begin{compactitem}
+\item Different constructors yield different terms
+ \[\iscons{}{y:nat}{}{zero()\neq succ(y)}\]
+\item Constructors are injective
+ \[\iscons{}{x:nat,y:nat}{}{x\neq y\impl succ(x)\neq succ(y)}\]
+\item Induction rule
+\[
+\rul{\iscons{}{x:nat, p: \aproof{F(x)}}{}{F(succ(x))}}
+    {\iscons{}{x:a}{}{F(x)}}
+\]
+\end{compactitem}
+\end{example}
+
+\subsection{Abstract Data Types}
+
+Abstract data types (i.e., classes) introduce major theoretical and practical problems.
+Even for the simplified variants presented in Sect.~\ref{sec:typetheory:adt}, it is open problem to give elegant proof rules.
+
+We discuss the most critical problems.
+
+\subsubsection{Referential Transparency}
+
+Every new instance of a class allocates a memory location, and future method calls may change the values at these memory locations.
+That makes certain intuitively sound rules unsound.
+
+For example, reflexivity is not sound anymore: $\anew{A}{}\neq \anew{A}{}$.
+That is because every new instance occupies a fresh memory location.
+And even if those happen to contain the exact same values at some point, they may differ in the future.
+
+\subsubsection{Equality}
+
+Two instances of the same class are \textbf{observationally equal} if the same finite sequence of method calls on them will produce the same results.
+Two instances are \textbf{reference equal} if they point to the same memory location.
+Two instances are \textbf{state equal} if they agree in the current values of all their private variables.
+Clearly, reference equality implies state equality, which in turn implies observational equality.
+
+For example, consider
+\begin{acode}
+\aclass{A}{x:\Int}{}{
+ \afun[\Int]{next}{}{
+   x := x+1\\
+   x \modop 2
+ }
+}\\
+i := \anew{A}{0}\\
+j := \anew{A}{2}
+\end{acode}
+Because $x$ is a private variable, the instances $i$ and $j$ are observationally equivalent, e.g., $i.next.next == j.next.next == 0$.
+But $i$ and $j$ are not state equal, let alone reference equal.
+
+Observational equality is undecidable.
+Therefore, most object-oriented programming languages simply implement $==$ as reference equality.
+This is often desirable.
+For example, we usually want to have $\anew{A}{0}\neq \anew{A}{0}$ even though the two instances are state equal.
+
+But observational equality could be very helpful for reasoning: if $x$ and $y$ are observationally equal, proving a theorem about $x$ also yields the corresponding theorem about $y$.
+That is because there is no formula that can distinguish between them.
+
+\subsubsection{Instance Lifetime}
+
+Creating a new instance of a class is similar to making a named declaration in that they introduces a new object that can be used later on.
+But the latter is static: we know statically where names are declared and in which parts of the program a name is visible.
+Instance creation is dynamic: We know only at run-time which objects are created and who is still using an object.
+
+Therefore, evaluation needs to use the environment to store all instances (usually stored in what is called the \emph{heap}), and explicit deallocation or garbage collection are needed to remove instances that are not used anymore.
+
+Mimicking this process in proof rules is extremely difficult.
+For example, consider the following local declaration:
+\[\{\aval{x}{A}{\anew{A}{}} ;\; f(x)\}\]
+Normally, we want to throw away the local declaration of $x$ after reasoning about the result of $f(x)$.
+Indeed, at that point the \emph{name} $x$ can never be accessed again because it is out of scope.
+However, the instance that $x$ referred to may still be around: $f(x)$ may have assigned $x$ to some variable that has greater scope.
+
+Because it is undecidable when an instance is not used anymore, we would have to keep all instances around forever.
+That would explode the size of the reasoning problems.
+
+The solution has to involve lifetime annotations that clarify where and when an instance can be accessed.
+But we do not have a good solution for that yet.
+
+\subsubsection{Aliasing}
+
+Aliasing occurs when multiple names refer to the same memory location.
+For example, consider the following two code snippets:
+
+\begin{multicols}{2}
+\begin{acode}
+x:\Int = 1\\
+y:\Int = x\\
+x = x+1\\
+\aprint{x==y}
+\end{acode}
+\columnbreak
+
+\begin{acode}
+x:A = \anew{A}{}\\
+y:A = x\\
+x.a = x.a+1\\
+\aprint{x.a==y.a}
+\end{acode}
+\end{multicols}
+for some class $A$ with a mutable field $a:\Int$.
+
+The left snippet does not introduce aliasing: it will print $\false$.
+This is because the assignment $y:=x$ copies the current value of $x$ into the newly allocated memory location for $y$.
+
+But the right snippet introduces aliasing: it will $\true$.
+This is because the assignment $y:=x$ makes $y$ an alias that also points to the memory location of $x$.
+
+In the presence of aliasing, any part of the program may be able to access and alter variables in all other parts of the code.
+Effectively, all mutable fields of all class instances become global variables.
+That explodes the complexity of reasoning.
+
+Even worse, when handling an assignment, we do not know which variables will be affected: as assignment $x.a:=1$ must affect not only $x.a$ but also $y.a$ for every alias $y$ of $x$.
+And it is undecidable whether $y$ and $x$ are aliases.
+
+A good solution will likely include a requirement that all mutable fields of a class must be private.
+That offers a chance to keep track of aliasing locally by annotating the class with invariants and its methods with specifications.
+
+\paragraph{Other Sources of Aliasing}
+Just like classes with mutable fields, C-style pointers can be used to create aliasing.
+But here the problem is even worse: \emph{any} variable is potentially subject to aliasing, not just the ones related to classes.
+(And because all variables are mutable in C, that really includes everything.)
 
 \section{Soundness and Completeness}
 
@@ -260,11 +456,12 @@ There are no assignments, while-loops, I/O, control flow commands, or classes.
 Thus, evaluation does not need an environment and can never lead to run-time errors.
 
 Reasoning in these logics can be carried out entirely without the formulas $\abox{P}{F}$.
-Any program $P$ is just a term that evaluates to some other term $P'$, and $P==P'$ is a theorem.
+Any program $P$ is just a term that evaluates to some other term $P'$ in such a way that $P==P'$ is a theorem.
 Therefore, the usual equality reasoning is sufficient to reason about programs.
+We only have to add induction so that we can reason about inductive data types and inductive functions.
 
 Recursive functions are the only source of non-termination.
 And non-termination is the only source of abnormal behavior (i.e., there are no run-time errors).
-
-The partial correctness of recursive functions is usually shown using induction arguments.
 To prove termination, a variety of families of termination orderings have been developed.
+
+%Define nats, addition, proof by induction n+0=n, m+succ(n)=succ(m+n)

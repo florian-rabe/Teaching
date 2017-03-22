@@ -434,7 +434,7 @@ But they may differ substantially in how they do it.
 Data types are always named, i.e., they are introduced by declarations not by objects.
 Like base, product, and function types, \emph{each} data type declaration introduces $3$ kinds of objects.
 
-\subsection{Inductive Data Types}
+\subsection{Inductive Data Types}\label{sec:typetheory:adt}
 
 An inductive data type represents a context-free grammar with a single non-terminal symbol.
 It uses one term constructor for every production of the grammar such that its terms capture exactly the words of the grammar.
@@ -465,7 +465,7 @@ The general case works accordingly (or can be obtained by using the unit type or
 Note that the data type $a$ is already assumed to exists when checking the types of the constructors.
 That is critical to allow writing recursive data types such as:
 
-\begin{example}
+\begin{example}\label{ex:typetheory:nat}
 The standard example of an inductive data type are the natural numbers.
 We obtain them as
 \[\adata{nat}{zero(),succ(nat)}\]
@@ -526,7 +526,7 @@ Finally, the typing rule is (again assuming all constructors take exactly $1$ ar
       {\oftype{}{\Gamma}{\amatchI{t}{\acase{c_1(x)}{t_1},\ldots,\acase{c_n(x)}{t_n}}}{B}}\]
 
 
-\subsection{Abstract Data Types}
+\subsection{Abstract Data Types}\label{sec:typetheory:adt}
 
 Inductive and abstract data types are dual to each other.
 
