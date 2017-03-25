@@ -126,8 +126,8 @@ The following function computes the approximate square root:
 rt := 0\\
 sq := 0\\
 \awhile{sq \leq n}{
-  rt := rt + 1\\
-  sq := sq + 2\cdot rt + 1
+  sq := sq + 2\cdot rt + 1\\
+  rt := rt + 1
 }\\
 \areturn{rt-1}
 }
@@ -211,7 +211,7 @@ The following are loop invariants for the while-loop in $sqrt$:
 \begin{compactitem}
  \item $\true$: technically correct, but useless
  \item $\false$: technically correct, but useless (also, does not hold at the beginning of the loop)
- \item $rt>0 \wedge sq > 0$: better but will not help prove the postcondition
+ \item $rt\geq 0 \wedge sq \geq 0$: better but will not help prove the postcondition
  \item $rt^2==sq$: the one that captures the idea of the loop and is useful in practice
 \end{compactitem}
 
@@ -220,7 +220,7 @@ We cannot expect being able to automate this process.
 
 So put $I=rt^2==sq$.
 We can now prove that
-\[\iscons{}{\aval{rt}{\Int}{};\;\aval{sq}{\Int}{}}{}{(I\wedge \neg sq\leq n)\impl \abox{rt := rt + 1;\; sq := sq + 2\cdot rt + 1}{I}}\]
+\[\iscons{}{\aval{rt}{\Int}{};\;\aval{sq}{\Int}{}}{}{(I\wedge \neg sq\leq n)\impl \abox{sq := sq + 2\cdot rt + 1;\;rt := rt + 1}{I}}\]
 i.e., $I$ is a loop invariant, and
 \end{example}
 
@@ -228,7 +228,7 @@ i.e., $I$ is a loop invariant, and
 
 If we have a loop invariant $I$, the following proof rule is sound:
 
-\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{I\wedge \neg C \impl F}}
+\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma}{}{(I\wedge \neg C) \impl F}}
       {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{I}}{F}}}\]
 
 We can read this as follows:
@@ -247,7 +247,7 @@ i.e., $I$ holds at the beginning of the loop.
 That is easy.
 
 Then we have to prove that the loop invariant and the negative loop condition allow proving the postcondition about the return value $rt-1$:
-\[\iscons{}{\aval{n}{\Int}{},\;\aval{rt}{\Int}{};\;\aval{sq}{\Int}{}}{}{rt^2==sq\wedge \neg sq\leq n \impl (rt-1)^2\leq n < (rt-1+1)^2}\]
+\[\iscons{}{\aval{n}{\Int}{},\;\aval{rt}{\Int}{};\;\aval{sq}{\Int}{}}{}{(rt^2==sq\wedge \neg sq\leq n) \impl (rt-1)^2\leq n < (rt-1+1)^2}\]
 The proof of $n<rt^2$ is easy.
 
 But we cannot easily prove $(rt-1)^2\leq n$.
@@ -368,8 +368,9 @@ Here $before$ and $after$ contain the values of $t$ before and after evaluating 
 And $after<before$ expresses that $t$ strictly decreases.
 
 \begin{example}[Continuing Ex.~\ref{ex:sd:sqrt}]\label{ex:sd:sqrt5}
-A termination ordering for the while-loop is given by $n-sq$.
+A termination orderings for the while-loop is given by $n-rt$. Another possibility is $3\cdot n-sq$.\footnotemark
 \end{example}
+\footnotetext{This used to be $n-sq$, but that does not quite work: it might become negative (which is not allowed) in the last iteration of the loop.}
 
 \paragraph{Recursive Functions}
 
