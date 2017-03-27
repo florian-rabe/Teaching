@@ -164,7 +164,7 @@ Now we can locate an element efficiently by traversing just one branch of the tr
 
 Note how a binary search tree has to distinguish between the left and the right subtree even if there is only one subtree (e.g., for the nodes for $20$ and $33$).
 In those cases, we have to use a dummy node as the omitted left child.
-These are usually labeled with $null$ and omitted when drawing the tree.
+These are usually labeled with $null$ or $\bot$ and omitted when drawing the tree.
 \end{example}
 
 The formal definition is as follows:
@@ -183,6 +183,7 @@ $BST[A,O]$ is the subset of $Tree[A^?]$ containing only full binary trees satisf
 
 The leafs hold dummy values as placeholders for elements that we may want to insert later.
 When drawing binary search trees, we always omit them.
+The reason for labeling all leafs with $\bot$ is a technicality: we already need dummy leafs for omitted left children; then it can be simpler to just define that all leafs are dummy nodes.
 
 \subsubsection{Complexity}
 
