@@ -136,6 +136,7 @@ Binary trees over a set are defined accordingly.
 
 A binary tree is called \textbf{full} if all non-leaf nodes have exactly two children.
 A full binary tree is called \textbf{perfect} all leafs have the same depth.
+It is called \textbf{almost-perfect} if it is perfect except for missing some nodes at the deepest level as far to the right as possible.
 \end{definition}
 
 For example, the following are, from left to right, a non-full, a full but not perfect, and a perfect binary tree of integers:
@@ -178,7 +179,7 @@ For example, the following are, from left to right, a non-full, a full but not p
 \draw[arrow] (01) -- (011);
 \end{tikzpicture}
 \end{center}
-
+The middle tree would be almost-perfect if $6$ and $5$ were children of $3$ instead of $1$.
 
 It is important to know the number of nodes in a binary tree:
 
