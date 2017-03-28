@@ -13,8 +13,9 @@ We say that $\#$ is \ldots if the following holds:
  \item a preorder: reflexive and transitive
  \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
  \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
- \item an order\footnotemark: preorder and anti-symmetric
- \item an equivalence: preorder and symmetric
+ \item an order\footnotemark: preorder and anti-symmetric (= reflexive, transitive, and anti-symmetric)
+ \item an equivalence: preorder and symmetric (= reflexive, transitive, and symmetric)
+ \item a partial equivalence: transitive and symmetric
  \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
  \end{compactitem}
 
@@ -68,6 +69,16 @@ In particular, the elements of $A/\Equiv$
  \item have $A$ as their overall union.
 \end{compactitem}
 \end{theorem}
+
+Consider a partial equivalence relation $\Equiv$ on $A$.
+$\Equiv$ is not an equivalence because it is not reflexive.
+However, we can easily prove: if $x \Equiv y$, then $x\Equiv x$ and $y\Equiv y$.
+
+Thus, we have:
+\begin{theorem}\label{thm:math:per}
+A partial equivalence relation $\Equiv$ on $A$ is the same as an equivalence relation on a subset of $A$.
+\end{theorem}
+
 
 \subsection{Orders}
 

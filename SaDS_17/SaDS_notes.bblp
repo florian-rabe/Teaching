@@ -1,4 +1,11 @@
-\begin{thebibliography}{ALR01}
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{BFMP11}
+
+\bibitem[ABB{\etalchar{+}}05]{key}
+W.~Ahrendt, T.~Baar, B.~Beckert, R.~Bubel, M.~Giese, R.~H{\"a}hnle, W.~Menzel,
+  W.~Mostowski, A.~Roth, S.~Schlager, and P.~Schmitt.
+\newblock {The KeY Tool}.
+\newblock {\em {Software and System Modeling}}, 4:32--54, 2005.
 
 \bibitem[ALR01]{dependability}
 A.~Algirdas, J.~Laprie, and B.~Randell.
@@ -12,9 +19,56 @@ P.~Bourque and R.~Fairley.
 \newblock IEEE, 2014.
 \newblock \url{https://www.computer.org/web/swebok}.
 
+\bibitem[BFMP11]{why3}
+F.~Bobot, J.~Filli{\^a}tre, C.~March{\'e}, and A.~Paskevich.
+\newblock {Why3: Shepherd Your Herd of Provers}.
+\newblock In {\em {Boogie 2011: First International Workshop on Intermediate
+  Verification Languages}}, pages 53--64, 2011.
+
 \bibitem[Chu40]{churchtypes}
 A.~Church.
 \newblock {A Formulation of the Simple Theory of Types}.
 \newblock {\em {Journal of Symbolic Logic}}, 5(1):56--68, 1940.
+
+\bibitem[{Coq}15]{coq}
+{Coq Development Team}.
+\newblock {The Coq Proof Assistant: Reference Manual}.
+\newblock Technical report, INRIA, 2015.
+
+\bibitem[Gor88]{hol}
+M.~Gordon.
+\newblock {HOL: A Proof Generating System for Higher-Order Logic}.
+\newblock In G.~Birtwistle and P.~Subrahmanyam, editors, {\em {VLSI
+  Specification, Verification and Synthesis}}, pages 73--128. {Kluwer-Academic
+  Publishers}, 1988.
+
+\bibitem[GP93]{holsemantics}
+M.~Gordon and A.~Pitts.
+\newblock {The HOL Logic}.
+\newblock In M.~Gordon and T.~Melham, editors, {\em {Introduction to HOL, Part
+  III}}, pages 191--232. Cambridge University Press, 1993.
+
+\bibitem[Har96]{hollight}
+J.~Harrison.
+\newblock {HOL Light: A Tutorial Introduction}.
+\newblock In {\em {Proceedings of the First International Conference on Formal
+  Methods in Computer-Aided Design}}, pages 265--269. Springer, 1996.
+
+\bibitem[Nor05]{agda}
+U.~Norell.
+\newblock {The Agda WiKi}, 2005.
+\newblock \url{http://wiki.portal.chalmers.se/agda}.
+
+\bibitem[ORS92]{pvs}
+S.~Owre, J.~Rushby, and N.~Shankar.
+\newblock {PVS: A Prototype Verification System}.
+\newblock In D.~Kapur, editor, {\em {11th International Conference on Automated
+  Deduction (CADE)}}, pages 748--752. Springer, 1992.
+
+\bibitem[Pau94]{isabelle}
+L.~Paulson.
+\newblock {\em {Isabelle: A Generic Theorem Prover}}, volume 828 of {\em
+  Lecture Notes in Computer Science}.
+\newblock Springer, 1994.
 
 \end{thebibliography}

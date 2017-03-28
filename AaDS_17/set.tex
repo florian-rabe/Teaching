@@ -30,7 +30,8 @@ $delete(x\in Set[A], a\in A)\in\Unit$ & nothing & $x:=x\sm\{a\}$ \\
 \hline
 \end{ctabular}
 
-In both cases, we often need operations for combining and comparing sets:
+In both cases, we often need operations for combining and comparing sets.
+We only consider the immutable case:
 \begin{ctabular}{|l|l|l|}
 \hline
 function & returns & effect \\
@@ -38,7 +39,7 @@ function & returns & effect \\
 $equal(x\in Set[A], y\in Set[A])\in \Bool$ & $\true$ iff $x=y$ & none \\
 $union(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\cup y$ & none \\
 $inter(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\cap y$ & none \\
-$diff(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\sm y$ & none \\
+$\mathit{diff}(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\sm y$ & none \\
 \hline
 \end{ctabular}
 
@@ -117,6 +118,8 @@ For a fixed hash function $hash:A\to \Z_m$, the data structure $HashSet[A]$ is g
 \afunI{insert}{h: HashSet[A], a:A}{insert(h[hash(a)],a)}\\
 \afunI{delete}{h: HashSet[A], a:A}{delete(h[hash(a)],a)}
 \end{acode}
+The elements of the array are called hash \textbf{buckets}.
+Thus, the bucket for $i$ contains all elements of the set whose hash value is $i$.
 
 \subsubsection{Complexity}
 If $n$ is the size of the subset of $A$, the sets $h[0]$, \ldots, $h[m-1]$ have average size $n/m$.

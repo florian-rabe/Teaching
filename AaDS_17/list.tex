@@ -168,6 +168,7 @@ $count$&$(x\in D[A],\; p\in A\to\Bool)$&$\in\N$ & the number of elements $a$ in 
 $forall$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for every element $a$ in $X$ \\
 $exists$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for some element $a$ in $X$ \\
 $map$&$(x\in D[A],f\in A\to B)$&$\in Iterator[B]$ & an iterator for $[f(a_1),\ldots,f(a_n)]$ where $x=[a_1,\ldots,a_n]$ \\
+$filter$&$(x\in D[A],p\in A\to \Bool)$&$\in Iterator[B]$ & like $x$ but skips elements that do not satisfy $p$ \\
 $results$&$(x\in D[A],\;f\in A\to B)$&$\in List[B]$ & the list of results from applying $f$ to all $a$ in $X$ \\
 $fold$&$(x\in D[A],\; b\in B, f\in A\times B\to B)$&$\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ with $X=[a_1,\ldots,a_n]$\\
 \hline

@@ -32,9 +32,9 @@ Depending on your programming language, this might look as follows:
 \begin{acode}
 \aclass{Stack[A]}{}{}{
  \akey{private} elements := Nil[A] \acomment{the immutable linked list backing the stack, initially empty}\\\\
- \afun[\Unit]{push[A]}{x:A}{\ldots}\\
- \afun[{Option[A]}]{pop[A]}{}{\ldots}\\
- \afun[{Option[A]}]{top[A]}{}{\ldots}\\
+ \afun[\Unit]{push}{x:A}{\ldots}\\
+ \afun[{Option[A]}]{pop}{}{\ldots}\\
+ \afun[{Option[A]}]{top}{}{\ldots}\\
 }
 \\
 test := \anew{Stack[\Int]}{}\\

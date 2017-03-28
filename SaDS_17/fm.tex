@@ -286,12 +286,16 @@ In a class, any method call is a possible operation.
 Consider a class declaration $C$ as above that is part of a context $\Gamma$.
 
 A \textbf{class invariant} is a formula $I(c)$ in context $\Gamma,c:C$ such that
-\[\iscons{}{\Gamma,\aval{a}{A}{}}{}{I(\anew{C}{a})}\]
-and for every method $f:B\to B'$
+for every method $f:B\to B'$
 \[\iscons{}{\Gamma,\aval{c}{C}{},\aval{b}{B}{}}{}{I(c)\impl \abox{c.f(b)}{I(c)}}\]
+
+If also
+\[\iscons{}{\Gamma,\aval{a}{A}{}}{}{I(\anew{C}{a})}\]
+$I$ is called \textbf{strong} class invariant, otherwise \textbf{weak}.
 \end{definition}
 
-Intuitively, $I(o)$ holds for all new instances $c$ and cannot be invalidated by any method calls on $c$.
+Intuitively, if $I(o)$ holds for an instance $c$, it cannot be invalidated by any method calls on $c$.
+If $I$ is strong, all instances of $C$ satisfy it.
 
 \begin{example}{Size of stack}
 The following implementation of stacks allows for constant-time computation of the size of the stack:
@@ -317,7 +321,7 @@ The following implementation of stacks allows for constant-time computation of t
 }
 \end{acode}
 
-An important class invariant for it is $length(elements)==size$.
+An important strong class invariant for it is $length(elements)==size$.
 \end{example}
 
 Similar class invariants come up every time a class store the same data in multiple ways for efficiency or redundancy.
@@ -330,15 +334,16 @@ The parser class from the formal system example satisfies the class invariant $0
 The interpreter class satisfies the class invariant that the environment contains only well-typed terms.
 \end{example}
 
+% dates, heaps
+
 \subsubsection{Application}
 
 Because the $\anew{C}{x}$ operator is the only way to every obtain a new instance of $C$, a class invariant must be true for all instances at all times.
 
 Formally, if we have a class invariant $I(c)$ for a class $C$, the following proof rule is sound:
 
-\[\rul{}
+\[\rul{\iscons{}{\Gamma,\aval{c}{C}{}}{}{I(c)}}
       {\iscons{}{\Gamma,\aval{c}{C}{}}{}{\square I(c)}}\]
-
 
 \subsection{Termination Orderings}
 
@@ -411,3 +416,102 @@ Then the function $f:A\to \N$ that maps every term to the height of its syntax t
 
 The subterm ordering is extremely helpful to prove the termination of recursive functions on inductive data types: almost all the time such functions recurse only into subterms.
 The termination of any such function follows immediately.
+
+\section{Representing Subsets and Quotient Sets}
+
+\subsection{Overview}
+
+Subsets $\{x\in A|P(x)\}$ and quotient sets $A/\Equiv$ are among the most important constructions on sets.
+Examples include fundamentals like the prime numbers or the sets $\Z_m$.
+
+But they are usually very difficult to implement correctly.
+If $P$ and $\Equiv$ are not computable, the resulting sets are undecidable.
+But a programming language cannot restrict attention to computable $P$ and $\Equiv$ because that is itself undecidable.
+
+And even if $P$ or $\Equiv$ are computable, the resulting set may behave badly computationally.
+For example, we cannot easily predict how many elements a subset or quotient set has.
+
+Note that using Thm.~\ref{thm:math:per}, we see that partial equivalence relations (PERs) are essentially equivalence relations on subsets.
+Moreover, if we start with a type $A$, any sequence of taking subtypes or quotients can be simplified to a single PER.
+Thus, we can recover both operations and any of their combinations as special cases of PERs.
+
+\subsection{Representing Partial Equivalence Relations}
+
+The first step to proving a system correct is to prove that all data structures correctly implement the required sets.
+Because virtually every specification needs subsets or quotient sets, this is difficult.
+
+A common solution is to use a type $A$ with good computational properties and to represent the intended set as a PER on $A$:
+\begin{acode}
+\aclassA{PER[A]}{}{}{
+ \afun[\Bool]{valid}{x:A}{}\\
+ \afun[\Bool]{equiv}{x:A,y:A}{}
+}
+\end{acode}
+Here $valid(x)$ determines whether $x$ is an element of the desired subset, and $equiv(x,y)$ determines whether $x$ and $y$ are in the desired quotient.
+Thus, for $p:PER[A]$, the meaning of $p$ is the set $\{x\in A|p.valid(x)\}/p.equiv$.
+
+\subsection{Subtypes and Quotient Types of Data Types}
+
+The most important practical applications are subtypes and quotient types of inductive and abstract data types.
+
+\subsubsection{Inductive Data Types}
+
+\paragraph{Validity}
+We know that context-\emph{free} grammars can be easily represented using inductive data types.
+But data structures representing the input and output of programs are often given as context-\emph{sensitive} languages.
+These could be represented using context-sensitive grammars but those are very impractical computationally.
+
+Therefore, the typical solution is to represent the desired context-sensitive language as a subtype of an inductive data type.
+Such representations typically consists of two components:
+\begin{compactitem}
+ \item a set of mutually recursive inductive data types $a_1,\ldots,a_n$ (one per non-terminal),
+ \item a set of mutually recursive inductive function $valid_i:a_i\to\Bool$.
+\end{compactitem}
+
+For example, for a compiler, the input data structure represents the context-sensitive language of programs.
+Then the validity function determines which programs are well-typed.
+
+\paragraph{Equivalence}
+Often there is a natural equivalence relation on input/output languages given by the has-the-same-meaning-as relation.
+
+This relation abstracts away from at least minor decidable aspects dealing with human-readability such as
+\begin{compactitem}
+ \item whitespace
+ \item inferable parts such as input and output types of functions
+ \item comments
+\end{compactitem}
+
+It can also capture major, often undecidable aspects of the semantics.
+For example, for a compiler, the output data structure represents the context-sensitive language of assembly programs.
+Let $C:Program\to Binary$ be the specification of the compiler.
+Then an optimizing compiler may map $p$ to $O(p)$ for $O(p)\neq C(p)$.
+The optimizing compiler is correct if  for all programs $p$ such that $Valid(p)$ we have that $Valid(O(p))$ and $O(p)\Equiv C(p)$.
+
+\subsubsection{Abstract Data Types}
+
+\paragraph{Validity}
+Very often, a class allows more instances than intended.
+
+Every class invariant, defines a well-behaved subtype of the class.
+Here \emph{well-behaved} means that calling a method cannot yield invalid instances.
+
+Ideally, the class invariants are strong so that we can never create invalid instances.
+However, sometimes we need to allow weak invariant because the intended validity condition can be violated by bad constructor arguments.
+
+We can remedy that by adding an assertion inside the class that dynamically checks the intended validity condition.
+That forces a run-time error whenever an invalid instance is created.
+
+A better solution is to make the constructor private in such a way that users of a class $A$ can never call $\anew{A}{\ldots}$.
+Instead, users are forced to call special functions (called \emph{factory methods}) with return type $A$.
+These factory methods are the only places where the constructor of $A$ is called.
+That makes it possible to statically verify that all instances that can ever be created are valid.
+
+\paragraph{Equivalence}
+For abstract data types, the intended equality relation is often undecidable.
+Therefore, most object-oriented programming programming languages simply implement it as reference equality.
+
+Many language allow users to supply the intended equality relation explicitly.
+For example, Java implements $x==y$ as $x.equals(y)$ and allows every class to override the $equals$ method.
+Thus, every Java class defines a quotient type.
+
+Because Java also supports assertions, we can even say that every Java class defines a PER.
