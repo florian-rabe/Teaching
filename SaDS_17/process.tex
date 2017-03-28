@@ -359,6 +359,10 @@ Vice versa, a class $C$ should only have access to methods of $D$ if it actually
 Methods of $D$ that are not needed by $C$ are made invisible by introducing an abstract interface $I$.
 $I$ declares exactly the methods needed by $C$, $D$ implements $I$, and $C$ uses $I$ instead of $D$.
 
+\subsection{Using Libraries}
+
+\footnote{This was not part of the course.}
+
 \section{Stability}
 
 Frequent changes are extremely dangerous to even the best software development process.
@@ -380,9 +384,10 @@ But every change at a high level introduces lots of increasingly greater and mor
 Eventually, the lower levels (especially when resources are tight, which is always the case) have to introduce workarounds, hacks, and special-case treatments to handle the changes.
 
 To the top-level person who requested the change, everything looks fine because the lower levels will usually do a good job of hiding the mess.
-But below the surface the codebase will become increasingly messy until it is unmanagable.
+But below the surface the codebase will become increasingly messy until it is unmanageable.
+In particular, any deep dependability analysis (e.g., a formal correctness proof) may become so difficult that it is practically impossible.
 
-A good metaphor is to think of a long stick representing the hiearchy.
+A good metaphor is to think of a long stick representing the hierarchy.
 The person at the top points the stick at a slightly different angle, which does not very different from the top.
 But at the lower end of the stick, the small change in angle caused a massive shift of the end of the stick.
 The shift may be much bigger than what the inertia of the stick allows, and the sticks breaks somewhere in the middle.
