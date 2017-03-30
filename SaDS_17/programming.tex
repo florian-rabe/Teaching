@@ -228,7 +228,7 @@ Theoretical models of state and environment abound but none is fully convincing 
 Therefore, we use a very simple and general definition that captures the main idea:
 
 \begin{definition}[Environment]\label{def:sd:environment}
-A \textbf{location} consists of a number $l\in\Z$ and a term $t$.
+A \textbf{location} consists of a number $l\in\N$ and a term $t$.
 An \textbf{environment} $E$ is a set of differently-numbered locations.
 
 We define the following operations on an environment $E$:
@@ -249,7 +249,7 @@ The latter is how the environment is implemented in modern programming languages
 
 Now we say that during evaluation there is exactly one environment $E$, and evaluation rules can perform operations on $E$.
 Moreover, we allow the numbers of locations to be used as terms:
-\[t \bbc l \mfor{l\in\Z}\]
+\[t \bbc l \mfor{l\in\N}\]
 It is understood that these terms are used internally during the evaluation.
 Therefore, we give no typing rule for them---thus, any program containing locations is automatically ill-formed.
 

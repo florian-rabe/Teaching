@@ -1,6 +1,7 @@
 \documentclass{book}
 
 \usepackage{graphicx}
+\usepackage{multicol}
 %\usepackage{multirow}
 %\usepackage{bm} %% bold face math symbols
 \usepackage{listings}
@@ -47,7 +48,7 @@
   \chapter{Static Analysis}\label{sec:sd:static}
     \input{static}
     
-\part{Formal Systems}
+\part{Formal Systems}\label{sec:sd:fs}
    
   \chapter{Type Theory}\label{sec:sd:typetheory}
   \input{type_theory}
@@ -61,7 +62,7 @@
 % guard against deep errors
 \part{Formal Methods}\label{sec:sd:fm}
 
-  \chapter{Overview}\label{sec:sd:fmoverview}
+  \chapter{General Concepts}\label{sec:sd:fmoverview}
     \input{fm}
 
   \chapter{Deductive Verification}\label{sec:sd:deductive}
@@ -71,7 +72,7 @@
     \input{modelcheck}
 
   \chapter{Program Synthesis}\label{sec:sd:synthesis}
-   % calculate linear algorithm for maximum segement sum via Horner's rule
+    \input{synthesis}
 
 % guard against attack
 \part{Security}
@@ -111,6 +112,6 @@
 
 \input{\currfilebase.bblp}
 %\bibliographystyle{alpha}
-%\bibliography{../../../../../Program_Data/Latex/bib/rabe,../../../../../Program_Data/Latex/bib/historical}
+%\bibliography{../../../../../Program_Data/Latex/bib/rabe,../../../../../Program_Data/Latex/bib/systems,../../../../../Program_Data/Latex/bib/historical}
 
 \end{document}

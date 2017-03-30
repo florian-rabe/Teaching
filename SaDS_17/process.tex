@@ -327,7 +327,7 @@ Uninitialized variables can easily be spotted by analysis tools.
 They should not be warnings but actual compiler bugs.
 Allowing them at all is a design flaw of the programming language.
 
-A variant uninitialized variables are variables initialized with $null$.
+A variant of uninitialized variables are variables initialized with $null$.
 That is equally easy to spot and equally forbidden.
 
 Uninitialized memory areas are occasionally useful when initializing a large memory area is considered too costly.
@@ -359,6 +359,10 @@ Vice versa, a class $C$ should only have access to methods of $D$ if it actually
 Methods of $D$ that are not needed by $C$ are made invisible by introducing an abstract interface $I$.
 $I$ declares exactly the methods needed by $C$, $D$ implements $I$, and $C$ uses $I$ instead of $D$.
 
+\subsection{Using Libraries}
+
+\footnote{This was not part of the course.}
+
 \section{Stability}
 
 Frequent changes are extremely dangerous to even the best software development process.
@@ -380,9 +384,10 @@ But every change at a high level introduces lots of increasingly greater and mor
 Eventually, the lower levels (especially when resources are tight, which is always the case) have to introduce workarounds, hacks, and special-case treatments to handle the changes.
 
 To the top-level person who requested the change, everything looks fine because the lower levels will usually do a good job of hiding the mess.
-But below the surface the codebase will become increasingly messy until it is unmanagable.
+But below the surface the codebase will become increasingly messy until it is unmanageable.
+In particular, any deep dependability analysis (e.g., a formal correctness proof) may become so difficult that it is practically impossible.
 
-A good metaphor is to think of a long stick representing the hiearchy.
+A good metaphor is to think of a long stick representing the hierarchy.
 The person at the top points the stick at a slightly different angle, which does not very different from the top.
 But at the lower end of the stick, the small change in angle caused a massive shift of the end of the stick.
 The shift may be much bigger than what the inertia of the stick allows, and the sticks breaks somewhere in the middle.
@@ -494,6 +499,89 @@ However, it tends to be mutually exclusive with the other criteria:
 Good high-level languages tend to be younger and therefore have fewer programmers, tool support, libraries and existing codebases.
 The emphasis on high-level concepts makes them less hardware-near and thus less efficient and more mathematical and thus harder to learn.
 
-\subsection{Restricted Programming Languages}
+\section{Programming Language Design}
 
-\footnote{This was not part of the course.}
+\footnote{This section was added after presenting the part on formal methods and collects some lessons that were learned in those lectures.}
+
+There are a number of programming language features that are tremendously important for building dependable software.
+Their common property is to restrict the possible programs that can be written to ensure that only good programs can be written.
+This puts an additional burden on the programmer, who now has to take care to stay inside the restricted set.
+
+Unfortunately, most modern mainstream programming languages are not designed optimally because they do not enforce these restrictions.
+There are multiple reasons for that:
+\begin{itemize}
+\item The true benefit of these restrictions only becomes apparent when formally reasoning about the correctness of programs (see Part~\ref{sec:sd:fm}).
+  That does not happen very often (yet).
+\item Programming languages evolve slowly, and the design of mainstream languages can be decades behind the state of the art.
+\item Self-taught or inexperienced programmers do not understand the restrictions and are unable to see their value, which makes them prefer the simpler unrestricted languages.
+\end{itemize}
+
+When programming in unrestricted languages, it is still good practice for a programmer to stay within a reasonably restricted fragment.
+Without support from the compiler, this can be very tedious.
+
+Much safety-critical software is written in restricted fragments of unrestricted languages, where the restrictions are spelled out explicitly and checked by separate tools.
+The fragment of C without pointer arithmetic is a commonly-used example.
+
+\subsection{Typing}
+
+By far the most important restriction is typing: all functions and terms are typed, and only well-typed programs are allowed.
+This allows the compiler to statically check well-typedness so that errors are caught at compile-time instead of run-time.
+
+This restriction forbids a number of error-prone features such as reflection and C-style pointer arithmetic.
+
+This is discussed in depth in Ch.~\ref{sec:sd:static} and Part.~\ref{sec:sd:fs}.
+
+\subsection{Mutable-Immutable Distinction}
+
+Programming languages can easily force a distinction between mutable and immutable variable declarations.
+The former may be assigned to, the latter are never assigned and permanently retain their initial value.
+
+Immutable variables are also called \textbf{values} because they are abbreviations for a given value.
+
+In practice, the majority of variables are never assigned to.
+Moreover, mutable variables present much bigger difficulties for formal methods.
+Therefore, it is desirable to minimize the number of mutable variables and maximize the number of immutable ones.
+
+That is possible if the programming language provides two different ways to declare variables (e.g., $\aval{x}{\Int}{0}$ and $\amval{x}{\Int}{0}$) and forbids assignments to immutable variables.
+
+\subsection{Command-Query Separation}
+
+A \textbf{command} is a function that has a side effect, i.e., an assignment to a global variable or an I/O-operation.
+A \textbf{query} is a function that returns a value.
+
+In general, a function may bo both.
+Command-query separation is the principle that a function should either have a side effect or return a value.
+
+Due to the lack of side effects, queries are much easier to reason about than commands.
+Therefore, it is desirable to minimize the number of commands and maximize the number of queries.
+
+That is possible if the programming language provides two different ways to declare function and forbids side effects inside queries.
+
+However, there are many practical examples of functions that are naturally both a command and a query.
+These include opening a file, logging (e.g., for debugging) inside a query, statistics about how often a function was called, or the pop method of a mutable stack class.
+
+Therefore, programming language do not enforce command-query separation.
+Erlang is a notable exception.
+
+\subsection{Private Fields}
+
+Instances of classes are often around for a long time, e.g., throughout the duration of the program.
+Moreover, they tend to be global in the sense that many parts of the program can access them.
+
+That makes it difficult to break down reasoning about the entire program to independent reasoning about the program components.
+
+Therefore, the public interface of a class should be as small as possible.
+More precisely, the number of methods that may modify the mutable fields should be minimal.
+
+A simple step towards supporting that is for programming languages to require that all mutable fields be private.
+Moreover, all methods can be private by default so that programmers must explicitly make a method available.
+
+\subsection{Isolated Side Effects}
+
+Side generally are generally very hard to reason about.
+Therefore, it is desirable to allow them only in specific positions.
+
+Typical positions where side effects should be forbidden are the conditions in if and while commands, the arguments of built-in operators such as $+$, or the argument of the print command.
+
+However, it is difficult to enforce this restriction because it is undecidable whether a piece of code as side effects.
+One solution may be to over-approximate by using a decidable set of expressions that may (but not necessarily will) have side effects.

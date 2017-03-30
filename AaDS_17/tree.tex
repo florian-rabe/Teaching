@@ -136,6 +136,7 @@ Binary trees over a set are defined accordingly.
 
 A binary tree is called \textbf{full} if all non-leaf nodes have exactly two children.
 A full binary tree is called \textbf{perfect} all leafs have the same depth.
+It is called \textbf{almost-perfect} if it is perfect except for missing some nodes at the deepest level as far to the right as possible.
 \end{definition}
 
 For example, the following are, from left to right, a non-full, a full but not perfect, and a perfect binary tree of integers:
@@ -178,7 +179,7 @@ For example, the following are, from left to right, a non-full, a full but not p
 \draw[arrow] (01) -- (011);
 \end{tikzpicture}
 \end{center}
-
+The middle tree would be almost-perfect if $6$ and $5$ were children of $3$ instead of $1$.
 
 It is important to know the number of nodes in a binary tree:
 
@@ -368,6 +369,123 @@ It would be better not to use $null$. But programmers who use this data structur
 
 The example tree is represented as
 \[\anew{Node[\Z]}{5,\; \anew{Tree[\Z]}{3,null, \;\anew{Tree[A]}{1, \anew{Tree[\Z]}{6,null,null}}, null}, null}\]
+
+\section{Applications}
+
+The usefulness of lists and sets is self-evident because set- and list-structured data pervades all sciences.
+The usefulness of trees is more questionable by comparison.
+Therefore, we explain the most important applications.
+
+\subsection{Tree-Structured Data}
+
+Tree-structured data is not as pervasive as set- or list-structured data.
+But if tree structures come up, they are often critical as a structure-giving concept.
+That is because sets and lists provide only comparatively trivial structure.
+
+\subsubsection{Hierarchic Grouping}
+
+The most convincing application of trees comes up when recursively grouping data into subsets.
+We give two examples.
+
+\paragraph{Sectioning structure of documents}
+Any document (book, paper, etc.) naturally has a sectioning structure given by its \textbf{sections}.
+Here \emph{section} is the generic term; in practice, sections can be called, e.g., chapters, (sub)section, paragraphs, sentences, etc.
+
+The sectioning structure forms a tree: the overall document is the root, and every subsection is a child of its containing section.
+The root and each inner node are labeled with the their title.
+They may also be labeled with other data, e.g., each element in a collection of articles can be labeled with its author(s).
+The leafs (typically paragraphs or sentences) are labeled with strings that contain the actual text.
+The table of contents shows the entire tree.
+
+Almost every document description language provides an explicit means for sectioning.
+For example, this includes the \texttt{hn} and \texttt{div} elements in HTML\footnote{\url{https://www.w3.org/TR/html5/}}, the \texttt{$\backslash$section} etc. commands in LaTeX, and the \texttt{text:h} and \texttt{text:p} elements in the OASIS OpenDocument standard\footnote{\url{http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html}} for text documents.
+
+In many documents, the sections are numbered, and the numbers provide unique identifiers for the children of a section.
+Examples are software specifications and legal documents.
+Often the path from the root to a node $n$ is used to identify the section at $n$. These paths are written as identifiers like $3.5.2$ for the second child of the fifth child of the third child of the root.
+
+\paragraph{Structure of programs}
+Programs can be seen as a special case of documents.
+The structure into packages, classes, functions, and similar grouping declarations corresponds very closely to the sectioning structure of documents.
+
+\paragraph{File Systems}
+File systems usually employ a tree structure consisting of directories for inner nodes and files for leafs.
+However, in a file system, the order of children usually does not matter. Instead, each node is labeled with a \emph{name} that all nodes with the same parent have different names.
+
+The root of the file system tree is written \texttt{/} in Unix systems.
+Paths like \texttt{/a/b} are used to describe the child named \texttt{b} of the child named \texttt{a} of the root.
+
+\paragraph{Institutions}
+Most institutions like bureaucracies or companies structure their members in a tree structure.
+The root corresponds to the, e.g., president, and the path from the root to a leaf is the \emph{chain of command}.
+
+\subsubsection{Decision Trees}
+
+Many processes or developments can be described naturally as a sequence of decision steps.
+At each step, an agent has to select one out of several options.
+The agents include both software and hardware systems as well as humans.
+
+Each node corresponds to a point in time.
+The root corresponds to the start.
+For every node, the children are the options among which to choose.
+After making a choice, time progresses to the corresponding child, and a new decision must be made.
+
+This yields a discrete model of time where the past is linear (the path from the root to the current node) and the future is branching (the subtree at the current node).
+
+\subsection{Structure-Sharing for Lists}
+
+A prefix of the list $[x_0,\ldots,x_i]$ is any list $[x_0,\ldots,x_i]$ for $i\leq n$.
+A suffix is any list $[x_i,\ldots,x_n]$.
+Very often we have to a large set of lists that share common prefixes or suffixes.
+
+If we represent all lists such that the suffixes are shared, using immutable lists automatically leads to a tree structure.
+For example, consider the following lists:
+\begin{acode}
+a:=[]\\
+\\
+b:=cons(1,a)\\
+c:=cons(2,a)\\
+\\
+d:=cons(3,b)\\
+e:=cons(4,b)\\
+f:=cons(5,b)\\
+g:=cons(6,d)
+\end{acode}
+Because $cons$ for immutable lists does not trigger copying the argument list, the seven lists form a tree in memory.
+Here the root is the empty list, and each list corresponds to the path from a node to the root.
+Note that, contrary to the usual data structure for trees, in this tree each node points to its parent instead of the other way round.
+
+Such lists with shared suffixes occur a lot in hierarchic data structures and recursive functions for them.
+
+For example, when compiling or interpreting a program, we must maintain the function $Var$, which maps places $p$ in the program to the set of variables $Var(p)$ that are in scope at $p$.
+
+Maintaining the lists $Var(p)$ for all $p$ is done most efficiently using a $T:Tree[List[V]]$ where $V$ is the type of variable declarations.
+Every $p$ corresponds to a node of $T$ labeled with the variables declared locally in $p$, and the list $Var(p)$ is given by the concatenation of all lists in the path from $p$ to the root.
+
+If, e.g., $p$ is a line inside a method $f$ inside a class $c$, then $Var(p)=Decl(f)+Decl(c)+global$ where $Decl(f)$ are the local variables declared in $f$ so far, $Decl(c)$ are the declarations of $c$, and $global$ is the list of global variables.
+
+
+
+
+\subsection{Efficient Storage of Sets or Lists}
+
+Sometimes the tree structures is an artifact of storing a set of objects efficiently.
+Concretely, we store a set or a list $C$ of objects as a tree $T$.
+The correspondence between $C$ and $T$ is such that every node or every leaf of $T$ is labeled with an element of $C$.
+
+This can allow for more efficient access to an object of $C$.
+For example, if $C$ has size $n$ and $T$ is a perfect binary tree, we access every object of $C$ using $O(\log n)$ steps.
+
+Examples are heaps (see Sect.~\ref{sec:ad:heaplists}) and binary search trees (see \ref{sec:ad:bst}).
+
+\subsection{Generic Data Description Languages}
+
+Generic data description languages usually provide at two primitive constructors: lists and trees.
+Intuitively, trees are used for hierarchically grouping and lists are used for aggregating objects.
+
+Examples of such languages are XML and JSON.
+
+This indicates that, in practice, all data structures can be encoded relatively conveniently by combining only lists and trees.
 
 \section{Important Algorithms}
 

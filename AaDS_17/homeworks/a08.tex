@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=8,date=2017-03-28,duedate=2017-04-06,duetime=11:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=8,date=2017-03-28,duedate=2017-04-06,duetime=11:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,17 +10,111 @@
 
 \header
 
+
 \begin{problem}{List Sets}{8}
-Implement a data structure for list-backed sets.
+Implement an abstract class for iterable sets.
+The iterator should return the elements in the order of insertion.
+
+Extend it to a concrete class for mutable list-backed sets.
 
 Write a test program that
+\begin{compactitem}
+\item creates a set of integers,
+\item inserts some elements,
+\item prints all elements using the iterator.
+\end{compactitem}
+
+Depending on your programming language, this might look as follows:
+\begin{acode}
+\aclassA{Set[A]}{}{Iterable[A]}{
+ \afunI[\Bool]{contains}{x:A}{}\\
+ \afunI[\Unit]{insert}{x:A}{}\\
+ \afunI[\Unit]{delete}{x:A}{}\\
+ \afunI[{Iterator[A]}]{iterator}{}{}
+}\\
+\\
+\aclass{ListSet[A]}{}{Set[A]}{
+ \akey{private} elements := Nil[A] \acomment{the immutable linked list backing the set, initially empty}\\\\
+ \afun[\Bool]{contains}{x:A}{\ldots}\\
+ \afun[\Unit]{insert}{x:A}{\ldots}\\
+ \afun[\Unit]{delete}{x:A}{\ldots}\\
+ \afun[{Iterator[A]}]{iterator}{}{\ldots}
+}
+\\\\
+test := \anew{ListSet[\Int]}{}\\
+test.insert(4)\\
+test.insert(2)\\
+test.insert(4)\\
+foreach(test.iterator, \alam{x}{\aprint{x}})
+\acomment{prints 2,4 or 4,2}
+\end{acode}
 \end{problem}
 
-\begin{problem}{Binary Search Tree}{8}
+\begin{problem}{Binary Search Trees}{8}
+Implement an iterable data structure for $BST[\Int,\leq]$.
+The iterator should return the elements in $\leq$-order.
+
+Write a test program that
+\begin{compactitem}
+\item creates a set of integers,
+\item inserts some elements,
+\item prints all elements using the iterator.
+\end{compactitem}
+
+If you combine it with the previous problem, this might look as follows:
+\begin{acode}
+\aclass{IntBST}{}{Set[\Int]}{
+ \acomment{the tree backing the set, initially a single node}\\
+ \akey{private} elements : Tree[Option[\Int]] = \anew{Tree[\Int]}{None,Nil}\\\\
+ \afun[\Bool]{contains}{x:A}{\ldots}\\
+ \afun[\Unit]{insert}{x:A}{\ldots}\\
+ \afun[\Unit]{delete}{x:A}{\ldots}\\
+ \afun[{Iterator[A]}]{iterator}{}{\ldots}
+}
+\end{acode}
+
+Make sure that
+\begin{compactitem}
+ \item the implementations of $insert$ and $delete$ preserve the necessary BST property,
+ \item the implementations of $insert$, $delete$, and $contains$ are logarithmic in the best case.
+\end{compactitem}
 \end{problem}
 
-\begin{problem}{}{8}
+\begin{problem}{Hash Sets}{8}
+Implement an abstract class for $HashSet[A]$ sets for an arbitrary hash function $hash:A\to \Z_m$.
+The iterator may return elements in any order.
+Extend it to a concrete class $LastDigitHashSet$ that hashes integers based on their last digit.
 
+Write a test program that
+\begin{compactitem}
+\item creates a $LastDigitHashSet$ of integers,
+\item inserts some elements,
+\item prints all elements using the iterator.
+\end{compactitem}
+
+Depending on your programming language, this may look as follows:
+\begin{acode}
+\aclassA{HashSet[A]}{m:\Int}{Set[A]}{
+ \acomment{the array backing the hash set, initially all buckets empty}\\
+ \akey{private} bucket : Array[ListSet[A]] = \anew{Array[ListSet[A]]}{m}\\
+ \afor{x}{0}{m-1}{bucket[i]:=\anew{ListSet[A]}{}}\\\\
+ \acomment{the abstract hash function that subclasses must provide}\\
+ \acomment{postcondition: return value between $0$ and $m-1$}\\
+ \afunI[\Int]{hash}{x:A}{}\\
+ \\
+ \acomment{the functions implemented in this class}\\
+ \afun[\Bool]{contains}{x:A}{\ldots}\\
+ \afun[\Unit]{insert}{x:A}{\ldots}\\
+ \afun[\Unit]{delete}{x:A}{\ldots}\\
+ \afun[{Iterator[A]}]{iterator}{}{\ldots}
+}
+\\\\
+\aclass{LastDigitHashSet}{}{HashSet[\Int](10)}{
+ \afunI[\Int]{hash}{x:A}{x \modop 10}\\
+}
+\end{acode}
+
+Make sure that your implementation exploits the hashing, i.e., $contains(x)$, $insert(x)$, and $delete(x)$ should only access $bucket[hash(x)]$.
 \end{problem}
 
 \end{document}

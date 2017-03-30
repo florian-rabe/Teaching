@@ -168,6 +168,7 @@ $count$&$(x\in D[A],\; p\in A\to\Bool)$&$\in\N$ & the number of elements $a$ in 
 $forall$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for every element $a$ in $X$ \\
 $exists$&$(x\in D[A],\; p\in A\to\Bool)$&$\in \Bool$ & $\true$ if $p(a)$ is $\true$ for some element $a$ in $X$ \\
 $map$&$(x\in D[A],f\in A\to B)$&$\in Iterator[B]$ & an iterator for $[f(a_1),\ldots,f(a_n)]$ where $x=[a_1,\ldots,a_n]$ \\
+$filter$&$(x\in D[A],p\in A\to \Bool)$&$\in Iterator[B]$ & like $x$ but skips elements that do not satisfy $p$ \\
 $results$&$(x\in D[A],\;f\in A\to B)$&$\in List[B]$ & the list of results from applying $f$ to all $a$ in $X$ \\
 $fold$&$(x\in D[A],\; b\in B, f\in A\times B\to B)$&$\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ with $X=[a_1,\ldots,a_n]$\\
 \hline
@@ -289,34 +290,57 @@ Because $Heap[A,O]$ is underspecified, there are many different options how to i
 In practice, there are dozens of competing variants using different efficiency trade-offs.
 A critical property is that all operations take only $O(\log n)$ where $n$ is the number of elements in the heap.
 
-\subsection{A Heap Implementation}
+\subsection{Implementations}
 
-For a straightforward implementation of $Heap[A,O]$, we use a binary heap $H$, i.e., a binary tree over $A$ that is also a heap.
+The most important case of $Heap[A,O]$ are binary heaps $H$, i.e., binary trees over $A$ that are also heaps.
+There is a wide variety of optimized implementations of heaps.
+
+
+\subsubsection{Using Trees}
+
+For a straightforward implementation, we use a tree.
 
 Let $n$ be the number of nodes in $H$ and $h$ be the height of $h$.
 All operations are such that $H$ remains almost-perfect: for every depth $d<h$ there are maximally many nodes, i.e., $2^d$ nodes.
-(At depth $h$, we have to allow for fewer than $2^h$ nodes because not every $n$ there is a perfect heap.)
+At depth $h$, we have to allow for fewer than $2^h$ nodes because not every $n$ there is a perfect heap.
+We use the convention that the nodes at level $h$ are as far to the left as possible.
 That way, we always have $h\leq\log_2 n$, and all branches have length $h$ or $h-1$, i.e., $O(\log_2 n)$.
 
 $find$ is trivial: We return the root of $H$. That takes $O(1)$.
 
 $insert(H,x)$ inserts $x$ into one of the branches with minimal length.
+If the heap is perfect, we extend it to a new level $h+1$ and insert $x$ all the way to the left.
+Otherwise, we add it in the left-most free slot at level $h$.
 The insertion occurs at the position that keeps the branch sorted.
 Because it was sorted already, that requires $O(l)$ operations, where $l$ is the length of the branch, i.e., $O(\log_2 n)$.
+It is easy to check that the resulting tree is again a heap.
 
 $extract$ removes the root of $H$ and returns it.
 That takes $O(1)$.
 Additionally, we have to repair the heap property.
 To do that, we take some leaf $l$ of $H$ and put it at the root.
-Now have a near-perfect binary tree again, but it is not a heap yet: $l$ is too big to be the root.
+Now we have an almost-perfect binary tree again, but it is not a heap yet: $l$ may be too big to be the root.
 Therefore, we push $l$ down by iteratively swapping it with its smallest child until we have a heap.
 Finding a leaf and pushing along some branch takes $O(\log_2 n)$.
+
+\subsubsection{Using Arrays}
+
+For efficiency, it is often preferable to store the nodes of the heap as an array.
+
+This requires a bijection that translates between positions in the heap to positions in the array.
+Let $h$ be the height of the heap.
+Then a position in the heap is a list $p\in\{left,right\}^*$ of length up to $h$ that describes the path from the root to a node.
+A position in the array is an integer $i\in\{0,\ldots,2^{h+1}-1\}$.
+
+It is straightforward to give such a bijection.
+For example, we can number the nodes of the heap in BFS order.
+Then the heap-position $p$ corresponds to the array position $2^{length(p)}+j$ where $j$ is the number obtained by treating $p$ as a binary number (with $left$ and $right$ corresponding to $0$ and $1$).
 
 \subsection{Priority Queues}\label{sec:ad:heapqueue}
 
 A $PriorityQueue[A]$ behaves like a $Queue[A]$ except that dequeueing returns the element with the highest priority.
 
-This is achieved by using a data strucutre for $Heap[A,O]$ where $O$ orders elements by decreasing priority.
+This is achieved by using a data structure for $Heap[A,O]$ where $O$ orders elements by decreasing priority.
 Then $insert$ and $extract$ correspond to $enqueue$ and $dequeue$.
 
 \subsection{Heapsort Algorithm}\label{sec:ad:heapsort}
@@ -344,12 +368,13 @@ If $\leq$ is the total order for sorting, a simple heapsort is given by
 
 This uses two loops using $length(n)$ iterations each.
 The first loop throws all elements of $x$ into the heap; the second loop pulls them out again and builds the list $res$ to be returned.
-Because $extract$ always returns the greatest element, the result automatically sorted.
+Because $extract$ always returns the greatest element, the result is automatically sorted.
+Any other implementation of a priority queue yields a corresponding sorting algorithm.
 
 If $n$ is the length of the list, each $insert$ and $extract$ operation takes at most $\Theta(\log n)$.
 Thus, heapsort runs in $\Theta(n\log n)$.
 \medskip
 
 There are much more optimized implementations of heapsort than the above example, possibly using optimized implementations of heaps.
-In particular, there are encodings of the heap structure in an array, which allows using heapsort as an in-place sorting algorithm.
+In particular, there are encodings of the heap structure in an array, which allow using heapsort as an in-place sorting algorithm.
 With those optimizations, heapsort is among the fastest sorting algorithms (but still takes $\Theta(n\log n)$).

@@ -1,0 +1,66 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Secure and Dependable Systems},number=5,date=2017-03-28,duedate=2017-04-06]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Verification: Class Invariants}{2}
+Argue informally but rigorously why the formula in the stack example from the notes is a class invariant.
+\end{problem}
+
+\begin{problem}{Verification: Class Invariants}{3}
+Solve one of the following (using pseudo-code, our example formal system, or a programming language):
+
+\begin{enumerate}
+\item Give a useful weak class invariant for the following class:
+
+\begin{acode}
+\aclass{Date}{year:\Int, month:\Int, day:\Int}{}{
+ \afunI[Date]{yesterday}{}{\ldots}\\
+ \afunI[Date]{tomorrow}{}{\ldots}
+}
+\end{acode}
+You can assume that there are no leap years.
+
+Implement the methods such that the class invariant is preserved.
+
+\item Give a useful strong class invariant for the following class:
+\begin{acode}
+\aclassA{PriorityQueue}{}{}{
+ \akey{private} \amval{data}{List[\Int]}{Nil}\\
+ \afunI[{Option[\Int]}]{dequeue}{}{\aifelseI{data==Nil}{None}{Some(data.head)}}\\
+ \afunI[\Unit]{enqueue}{x:\Int}{\ldots}
+}
+\end{acode}
+
+Implement $insert$ such that the class invariant is preserved.
+\end{enumerate}
+\end{problem}
+
+\begin{problem}{Verification: Pure Functions}{3}
+Using the definitions from the notes, formally prove $m+n==n+m$ by induction.
+
+To discharge the subgoals, you may use the theorems $zero\_left$ etc.
+\end{problem}
+
+\begin{problem}{Proof Assistants: Practice}{4}
+Install Isabelle or Coq (see the links in the lecture notes).
+
+Write a simple pure recursive function and verify that it meets its specification using the tool.
+Generate executable code from your function.
+\medskip
+
+Submit a reasonable combination of screen shots, shell logs, system output etc. that demonstrates you completed the task.
+
+You may use any example that is already part of the available documentation or tutorials.
+But you have to prove that you actually installed the system and ran the verification.
+For example, you can copy an example from the tutorial, rename the function to your name, and then run the verification.
+\end{problem}
+
+\end{document}

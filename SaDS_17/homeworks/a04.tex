@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=4,date=2017-03-14,duedate=2017-03-21,unpublished]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=4,date=2017-03-20,duedate=2017-03-30]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,13 +10,79 @@
 
 \header
 
-\begin{problem}{Formal Systems: Practice}{3}
+\begin{problem}{Verification}{4}
+Choose two of the following functions, and give appropriate function specifications, loop invariants, and termination orderings for them.
+
+\begin{acode}
+\afun[\Int]{EuclideanAlgorithm}{m:\Int,n:\Int}{
+x := m\\
+y := n \\
+\awhile{x\neq y}{
+  \aifelse{x<y}{y := y-x}{x := x-y}
+}\\
+\areturn{x}
+}
+\end{acode}
+
+\begin{acode}
+\afun[\N]{factorial}{n:\N}{
+product := 1\\
+factor  := 1 \\
+\awhile{factor \leq n}{
+  product := product \cdot factor\\
+  factor := factor+1
+}\\
+\areturn{product}
+}
+\end{acode}
+
+\begin{acode}
+\afun[\N]{linearFibonacci}{n:\N}{
+  \aifelse{n\leq 1}{n}{
+    prev := 0\\
+    current := 1 \\
+    i = 1 \\
+    \awhile{i<n}{
+      next := current + prev \\
+      prev := current \\
+      current := next\\
+      i := i+1
+    }\\
+    \areturn{current}
+   }
+}
+\end{acode}
+
+\begin{acode}
+\afun[{List[A]}]{revertImmutable[A]}{x:List[A]}{
+  rest := x\\
+  rev := []\\
+  \awhile{rest \neq []}{
+    rev := cons(rest.head, rev)\\
+    rest := rest.tail
+  }\\
+  \areturn{rev}
+}
+\end{acode}
 \end{problem}
 
-\begin{problem}{Formal Systems: Theory}{4}
+
+\begin{problem}{Dynamic Logic: Practice}{3}
+Install either Why3 or KeY (see the links in the lecture notes).
+
+Write a simple function that contains a while-loop in it.
+Annotate it with pre/postcondition and loop invariant and use the tool to verify that it meets the specification.
+\medskip
+
+Submit a reasonable combination of screen shots, shell logs, system output etc. that demonstrates you completed the task.
+
+You may use any example that is already part of the available documentation or tutorials.
+But you have to prove that you actually installed the system and ran the verification.
+For example, you can copy an example from the tutorial, rename the function to your name, and then run the verification.
 \end{problem}
 
-\begin{problem}{Formal Systems: Theory}{3}
+\begin{problem}{Dynamic Logic: Theory}{3}
+Prove the soundness of the rules for if and while.
 \end{problem}
 
 \end{document}
