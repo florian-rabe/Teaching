@@ -223,6 +223,8 @@ Local variable declarations can be moved to the context, too. They will be modif
 
 \subsection{Inductive Data Types}
 
+\subsubsection{Rules}
+
 Inductive data types do not introduce major practical complications.
 We only have to add induction rules to reason about inductive functions.
 
@@ -235,14 +237,19 @@ The intuition behind the rules is that the possible values of type $a$ are exact
 Intuitively, the constructors are jointly injective (two different terms have different values) and jointly surjective (all values are terms).
 
 \begin{example}[Natural Numbers]\label{ex:typetheory:nat2}
-For the natural numbers from Ex.~\ref{ex:typetheory:nat}, the induction axioms are exactly the Peano axioms:
+The natural numbers are given by
+\begin{acode}
+\adata{nat}{zero,succ(nat)}
+\end{acode}
+
+The intended induction axioms are exactly the Peano axioms:
 \begin{compactitem}
  \item Different terms have different values:
    \begin{compactitem}
-    \item $0$ is not a successor
-    \item the successor function is injective
+    \item $zero$ is not a successor
+    \item the $succ$ function is injective
    \end{compactitem}
- \item All values are terms: if $P(n)$ holds for all terms (i.e., $P(0)$ and $P(n)\impl P(succ(n))$, then $\forall x.P(x)$.
+ \item All values are terms: if $P(n)$ holds for all terms (i.e., $P(zero)$ and $P(n)\impl P(succ(n))$, then $\forall x.P(x)$.
 \end{compactitem}
 \end{example}
 
@@ -282,9 +289,8 @@ For any $F:a\to\Bool$, if $F(c_i(x,y))$ holds whenever the induction hypothesis 
 % \item $A_i=a$ is the inductive data type: $F^a(x)=F(x)$ (i.e., the induction hypothesis).
 %\end{compactitem}
 
-\begin{example}[Continuing Ex.\ref{ex:typetheory:nat2}]\label{ex:typetheory:nat3}
-For the data type of natural numbers, the induction axioms are the following
-
+\begin{example}[Continuing Ex.~\ref{ex:typetheory:nat2}]
+The induction axioms are the following
 \begin{compactitem}
 \item Different constructors yield different terms
  \[\iscons{}{y:nat}{}{zero()\neq succ(y)}\]
@@ -296,6 +302,84 @@ For the data type of natural numbers, the induction axioms are the following
     {\iscons{}{x:nat}{}{F(x)}}
 \]
 \end{compactitem}
+\end{example}
+
+\subsubsection{Applications}
+
+Induction is used in two ways:
+\begin{compactitem}
+ \item to define a function by induction
+ \item to prove a theorem by induction
+\end{compactitem}
+
+\begin{example}[Inductive Functions]
+Addition of natural numbers is defined inductively as follows:
+
+\begin{acode}
+\afun[nat]{plus}{x:nat,y:nat}{
+  \amatch{x}{\acase{zero}{y},\acase{succ(n)}{succ(plus(n)(y))}}
+}
+\end{acode}
+We will write $x+y$ instead of $plus(x,y)$.
+
+The termination of this function follows immediately from the subterm ordering: the arguments of the recursive calls are always subterms of the original inputs.
+\end{example}
+
+\begin{example}[Inductive Proofs]
+Our goal is to prove the following theorems
+\[\oftype{}{x:nat}{zero\_left:\aproof{zero+x==x}}\]
+\[\oftype{}{x:nat}{zero\_right:\aproof{x+zero==x}}\]
+\[\oftype{}{x:nat,y:nat}{succ\_left:\aproof{succ(x)+y==succ(x+y)}}\]
+\[\oftype{}{x:nat,y:nat}{succ\_right:\aproof{x+succ(y)==succ(x+y)}}\]
+Together, these allow statically reasoning about all possible additions where at least one argument is given by a constructor application.
+
+The proof $zero\_left$ is easy to obtain.
+The term $zero+x$ evaluates directly to $x$ even if the value of $x$ is unknown.
+Similarly, the proof $succ\_left$ is easy.
+\medskip
+
+However, the evaluation of $x+zero$ gets stuck: if $x$ is unknown, we cannot evaluate the pattern-match.
+Therefore, to show $x+zero==x$, we need to give a proof by induction.
+
+We apply the induction rule to the proof goal $x+zero==x$, which yields two subgoals:
+\[
+\rul{\iscons{}{}{}{zero+zero==zero} \tb \iscons{}{x:nat, p: \aproof{x+zero==x}}{}{succ(x)+zero==succ(x)}}
+    {\iscons{}{x:nat}{}{x+zero==x}}
+\]
+
+The first subgoal can be discharged immediately because it contains no free variables: $zero+zero==zero$ evaluates to $\true$.
+
+The second subgoal cannot be fully evaluated because it still contains a free variable.
+But we can still try to evaluate it step-by-step and see how far we get:
+First we expand the definition of $plus$ to obtain (after $\alpha$-renaming the bound variables for readability):
+\[(succ(x)+zero==succ(x))\tb\rewrites\tb \big(\alam{a}{\alam{b}{\amatchI{a}{\acase{zero}{b},\acase{succ(n)}{succ(n+b)}}}}\big)(succ(x))(zero) == succ(x)\]
+Now the evaluation rule for function application ($\beta$-reduction) yields
+\[\rewrites\tb \amatchI{succ(x)}{\acase{zero}{zero},\acase{succ(n)}{succ(n+zero)}} == succ(x)\]
+Then the evaluation rule for inductive data types (pattern-match reduction) yields
+\[\rewrites\tb succ(x+zero) == succ(x)\]
+Now we can use the induction hypothesis to substitute for $x+zero$, which yields
+\[\rewrites\tb succ(x) == succ(x)\]
+Finally, we can make $x$ disappear using the reflexivity of $==$:
+\[\rewrites\tb \true\]
+
+Thus, we were able to evaluate the second subgoal as well even though it contained a free variable.
+\medskip
+
+For the proof of $succ\_right$, we use induction as well.
+The induction rule is given by
+\[
+\rul{\begin{matrix}{c}\iscons{}{}{}{zero+succ(y)==succ(zero+y)} \\ \iscons{}{x:nat, p: \aproof{x+succ(y)==succ(x+y)}}{}{succ(x)+succ(y)==succ(succ(x)+y)}\end{matrix}}
+    {\iscons{}{x:nat}{}{x+succ(y)==succ(x+y)}}
+\]
+
+Again the first subgoal evaluates easily to $\true$ because $zero+n$ evaluates to $n$, which yields $succ(y)==succ(y)$.
+
+In the second subgoal, we again expand the definition of $plus$ and reduce the function application and the pattern-match.
+That yields
+\[succ(x)+succ(y)==succ(succ(x)+y) \rewrites succ(x+succ(y))==succ(succ(x)+y)\]
+Now we can substitute with the induction hypothesis on the left and evaluate $succ(x)+y\rewrites succ(x+y)$ on the right to obtain
+\[succ(succ(x+y))==succ(succ(x+y))\]
+which evaluates to $\true$.
 \end{example}
 
 \subsection{Abstract Data Types}
@@ -464,80 +548,5 @@ Recursive functions are the only source of non-termination.
 And non-termination is the only source of abnormal behavior (i.e., there are no run-time errors).
 To prove termination, a variety of families of termination orderings are used, most importantly the subterm ordering.
 
-Because proving is so much easier, we can afford to be a lot more rigorous about the proofs and step through the derivations explicitly.
-We give some examples below.
+Because proving is so much easier, we can afford to be a lot more rigorous about the proofs and give deeper tool support.
 
-\subsection{Inductive Functions}
-
-Consider the inductive data type of natural numbers:
-\begin{acode}
-\adata{nat}{zero,succ(nat)}
-\end{acode}
-
-An example of a recursive function is given by addition:
-\begin{acode}
-\afun[nat]{plus}{x:nat,y:nat}{
-  \amatch{x}{\acase{zero}{y},\acase{succ(n)}{succ(plus(n)(y))}}
-}
-\end{acode}
-We will write $x+y$ instead of $plus(x,y)$.
-
-The termination of this function follows immediately from the subterm ordering: the arguments of the recursive calls are always subterms of the original inputs.
-
-\subsection{Inductive Proofs}
-
-Our goal is to prove the following theorems
-\[\oftype{}{x:nat}{zero\_left:\aproof{zero+x==x}}\]
-\[\oftype{}{x:nat}{zero\_right:\aproof{x+zero==x}}\]
-\[\oftype{}{x:nat,y:nat}{succ\_left:\aproof{succ(x)+y==succ(x+y)}}\]
-\[\oftype{}{x:nat,y:nat}{succ\_right:\aproof{x+succ(y)==succ(x+y)}}\]
-Together, these allow statically reasoning about all possible additions where at least one argument is given by a constructor application.
-
-The proof $zero\_left$ is easy to obtain.
-The term $zero+x$ evaluates directly to $x$ even if the value of $x$ is unknown.
-Similarly, the proof $succ\_left$ is easy.
-\medskip
-
-However, the evaluation of $x+zero$ gets stuck: if $x$ is unknown, we cannot evaluate the pattern-match.
-Therefore, to show $x+zero==x$, we need to give a proof by induction.
-
-We apply the induction rule to the proof goal $x+zero==x$, which yields two subgoals:
-\[
-\rul{\iscons{}{}{}{zero+zero==zero} \tb \iscons{}{x:nat, p: \aproof{x+zero==x}}{}{succ(x)+zero==succ(x)}}
-    {\iscons{}{x:nat}{}{x+zero==x}}
-\]
-
-The first subgoal can be discharged immediately because it contains no free variables: $zero+zero==zero$ evaluates to $\true$.
-
-The second subgoal cannot be fully evaluated because it still contains a free variable.
-But we can still try to evaluate it step-by-step and see how far we get:
-First we expand the definition of $plus$ to obtain (after $\alpha$-renaming the bound variables for readability):
-\[(succ(x)+zero==succ(x))\tb\rewrites\tb \big(\alam{a}{\alam{b}{\amatchI{a}{\acase{zero}{b},\acase{succ(n)}{succ(n+b)}}}}\big)(succ(x))(zero) == succ(x)\]
-Now the evaluation rule for function application ($\beta$-reduction) yields
-\[\rewrites\tb \amatchI{succ(x)}{\acase{zero}{zero},\acase{succ(n)}{succ(n+zero)}} == succ(x)\]
-Then the evaluation rule for inductive data types (pattern-match reduction) yields
-\[\rewrites\tb succ(x+zero) == succ(x)\]
-Now we can use the induction hypothesis to substitute for $x+zero$, which yields
-\[\rewrites\tb succ(x) == succ(x)\]
-Finally, we can make $x$ disappear using the reflexivity of $==$:
-\[\rewrites\tb \true\]
-
-Thus, we were able to evaluate the second subgoal as well even though it contained a free variable.
-\medskip
-
-For the proof of $succ\_right$, we use induction as well.
-The induction rule is given by
-\[
-\rul{\begin{matrix}{c}\iscons{}{}{}{zero+succ(y)==succ(zero+y)} \\ \iscons{}{x:nat, p: \aproof{x+succ(y)==succ(x+y)}}{}{succ(x)+succ(y)==succ(succ(x)+y)}\end{matrix}}
-    {\iscons{}{x:nat}{}{x+succ(y)==succ(x+y)}}
-\]
-
-Again the first subgoal evaluates easily to $\true$ because $zero+n$ evaluates to $n$, which yields $succ(y)==succ(y)$.
-
-In the second subgoal, we again expand the definition of $plus$ and reduce the function application and the pattern-match.
-That yields
-\[succ(x)+succ(y)==succ(succ(x)+y) \rewrites succ(x+succ(y))==succ(succ(x)+y)\]
-Now we can substitute with the induction hypothesis on the left and evaluate $succ(x)+y\rewrites succ(x+y)$ on the right to obtain
-\[succ(succ(x+y))==succ(succ(x+y))\]
-which evaluates to $\true$.
-\medskip

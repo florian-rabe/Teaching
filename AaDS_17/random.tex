@@ -1,0 +1,17 @@
+A randomized algorithm is an algorithm that systematically use randomness as part of their implementation.
+Typically, the randomness makes the result (or at least the run time) unpredictable.
+
+Randomized algorithms present two theoretical problems:
+\begin{compactenum}
+\item Because the result is not determined by the input, they are technically not algorithms at all.
+\item They may not always return a correct result.
+\end{compactenum}
+
+Often randomized algorithm are used when it would be too expensive to find a correct solution.
+Ideally, but not necessarily, if an incorrect result is returned, it is at least approximately correct with respect to some measure.
+
+For example, we could give a randomized variant of quicksort that chooses the pivot element randomly.
+That algorithm has a high probability of running in $\Theta(n\log n)$.
+
+Randomized algorithms are often used in problems in statistical analysis or scientific simulation where correct solutions are infeasible anyway.
+Often a correct algorithm is run on a random sample of the input, from which the overall result is estimated.
