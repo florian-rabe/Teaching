@@ -256,7 +256,7 @@ The intended induction axioms are exactly the Peano axioms:
 \paragraph{Constructors Are Jointly Injective}
 In the special case, where all constructors are unary, we add the following axioms
  \[\iscons{}{\aval{x}{A_i}{},\aval{y}{A_j}{}}{}{c_i(x)\neq c_j(y)} \tb\mfor i,j= 1,\ldots,n\mand i\neq j\]
- \[\iscons{}{\aval{x}{A_i}{},\aval{y}{A_i}{}}{}{x\neg y\impl c_i(x)\neq c_i(y)} \tb \mfor i=1,\ldots,n\] 
+ \[\iscons{}{\aval{x}{A_i}{},\aval{y}{A_i}{}}{}{x\neq y\impl c_i(x)\neq c_i(y)} \tb \mfor i=1,\ldots,n\] 
 For other constructors, we adapt the axioms accordingly.
 
 The first axiom ensures that different constructors produce different values.
@@ -368,7 +368,7 @@ Thus, we were able to evaluate the second subgoal as well even though it contain
 For the proof of $succ\_right$, we use induction as well.
 The induction rule is given by
 \[
-\rul{\begin{matrix}{c}\iscons{}{}{}{zero+succ(y)==succ(zero+y)} \\ \iscons{}{x:nat, p: \aproof{x+succ(y)==succ(x+y)}}{}{succ(x)+succ(y)==succ(succ(x)+y)}\end{matrix}}
+\rul{\begin{matrix}\iscons{}{}{}{zero+succ(y)==succ(zero+y)} \\ \iscons{}{x:nat, p: \aproof{x+succ(y)==succ(x+y)}}{}{succ(x)+succ(y)==succ(succ(x)+y)}\end{matrix}}
     {\iscons{}{x:nat}{}{x+succ(y)==succ(x+y)}}
 \]
 
@@ -400,9 +400,9 @@ And even if those happen to contain the exact same values at some point, they ma
 
 \subsubsection{Equality}
 
-Two instances of the same class are \textbf{observationally equal} if the same finite sequence of method calls on them will produce the same results.
+Two instances of the same class are \textbf{observationally equal} if every finite sequence of method calls, applied to each instance, will produce the same results.
 Two instances are \textbf{reference equal} if they point to the same memory location.
-Two instances are \textbf{state equal} if they agree in the current values of all their private variables.
+Two instances are \textbf{state equal} if they agree in the current values of all their mutable variables.
 Clearly, reference equality implies state equality, which in turn implies observational equality.
 
 For example, consider
@@ -416,7 +416,7 @@ For example, consider
 i := \anew{A}{0}\\
 j := \anew{A}{2}
 \end{acode}
-Because $x$ is a private variable, the instances $i$ and $j$ are observationally equivalent, e.g., $i.next.next == j.next.next == 0$.
+Because $x$ is a private variable, the instances $i$ and $j$ are observationally equal, e.g., $i.next.next == j.next.next == 0$.
 But $i$ and $j$ are not state equal, let alone reference equal.
 
 Observational equality is undecidable.
