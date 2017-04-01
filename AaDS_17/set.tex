@@ -30,7 +30,8 @@ $delete(x\in Set[A], a\in A)\in\Unit$ & nothing & $x:=x\sm\{a\}$ \\
 \hline
 \end{ctabular}
 
-In both cases, we often need operations for combining and comparing sets:
+In both cases, we often need operations for combining and comparing sets.
+We only consider the immutable case:
 \begin{ctabular}{|l|l|l|}
 \hline
 function & returns & effect \\
@@ -38,7 +39,7 @@ function & returns & effect \\
 $equal(x\in Set[A], y\in Set[A])\in \Bool$ & $\true$ iff $x=y$ & none \\
 $union(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\cup y$ & none \\
 $inter(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\cap y$ & none \\
-$diff(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\sm y$ & none \\
+$\mathit{diff}(x\in Set[A], y\in Set[A])\in Set[A]$ & $x\sm y$ & none \\
 \hline
 \end{ctabular}
 
@@ -48,27 +49,32 @@ This may or may not be the case for data structures for sets.
 
 \section{Data Structures}
 
-\subsection{Using Bit Vectors}\label{sec:ad:vectorset}
+The complexity of data structures for sets is usually measured in terms of the size $n$ of the set.
 
+\subsection{Bit Vectors}\label{sec:ad:vectorset}
+
+\subsubsection{Design}
 If $A$ is finite with $|A|=m$, an easy data structure for $Set[A]$ are bit vectors of length $m$ such as $Array[\Bool](m)$.
 Given such a vector $a$, we put $a[i]=\true$ to represent that $i$ is in the set.
 
-Then we can implement $insert$ and $delete$ easily in $\Theta(1)$.
-We can also implement $equal$, $union$, $inter$, and $diff$ easily in $\Theta(m)$.
+\subsubsection{Complexity}
+We can implement $insert$ and $delete$ easily in $\Theta(1)$.
+We can also implement $equal$, $union$, $inter$, and $\mathit{diff}$ easily in $\Theta(m)$.
 
 A major drawback is the memory requirement: We need $\Theta(m)$ for each $x:Set[A]$, which is only feasible for small $m$.
 
-\subsection{Using Lists}\label{sec:ad:listset}
+\subsection{List Sets}\label{sec:ad:listset}
 
-For large or infinite $A$, a better data structure for $Set[A]$ is $ListSet[A]$.
+\subsubsection{Design}
+If $A$ is much larger than the sets to be represented, a better data structure for $Set[A]$ is $ListSet[A]$.
 It represents the set $\{a_1,\ldots,a_n\}$ as the list $[a_1,\ldots,a_n]$.
 Thus, it represent sets as lists without repetition.
 
 The operations on $ListSet[A]$ are defined in the same way as for $List[A]$ with one exception: the $insert(x,a)$ operation does nothing if $x$ already contains $a$.
-\medskip
 
+\subsubsection{Complexity}
 If $n$ is the size of the $ListSet$, the operations $contains$, $insert$, and $delete$ takes $\Theta(n)$.
-However, higher-level operations like building a set with $n$ elements  step-by-step by calling $insert$ $n$ times requires $n$ insertions and thus costs $\Theta(n^2)$.
+However, higher-level operations like building a set with $n$ elements step-by-step by calling $insert$ $n$ times requires $n$ insertions and thus costs $\Theta(n^2)$.
 
 Moreover, these operations require calls to the equality on $A$.
 For example, to implement $contains(x,a)$, we have to compare $a$ to every element of $x$.
@@ -82,7 +88,8 @@ These operations quickly become too costly for large subsets of $A$.
 
 \subsection{Hash Sets}\label{sec:ad:hashset}
 
-Hash sets try to comine the advantages of bit vector and list sets.
+\subsubsection{Design}
+Hash sets try to combine the advantages of bit vector and list sets.
 The key parameter is a function $hash:A\to \Z_m$.
 This is called the hash function.
 
@@ -111,8 +118,10 @@ For a fixed hash function $hash:A\to \Z_m$, the data structure $HashSet[A]$ is g
 \afunI{insert}{h: HashSet[A], a:A}{insert(h[hash(a)],a)}\\
 \afunI{delete}{h: HashSet[A], a:A}{delete(h[hash(a)],a)}
 \end{acode}
-\medskip
+The elements of the array are called hash \textbf{buckets}.
+Thus, the bucket for $i$ contains all elements of the set whose hash value is $i$.
 
+\subsubsection{Complexity}
 If $n$ is the size of the subset of $A$, the sets $h[0]$, \ldots, $h[m-1]$ have average size $n/m$.
 Thus, $contains$, $insert$ and $delete$ take $n/m$ on average.
 $equal$, $union$, $inter$, and $diff$ are similarly sped up.
@@ -128,10 +137,81 @@ Optimized data structures for hash sets can dynamically choose $m$ in order to f
 Often users of the $HashSet$ data structure can choose the value of $m$.
 That can help if they know in advance how big the subset is going to get and what kind of operations will be called.
 
-\subsection{Red-Black Trees}\label{sec:ad:redblacktree}
-
-% red-black trees (BST with log n guarantee for insert/delete)
-
 \subsection{Binary Search Trees}\label{sec:ad:bst}
 
-% If we have a total order $\leq$ on $A$, we can use ordered trees to realize $Set[A]$.
+\subsubsection{Design}
+If we have a total order $\leq$ on $A$, we can use binary trees to realize $Set[A]$.
+The idea is that the nodes of the tree hold the elements of the set, and every node $n$ splits a range of values into two subranges: all left descendants of $n$ have smaller and all right descendants have greater values than $n$.
+
+\begin{example}
+We represent the set $\{20,29,30,33,34,37\}\sq \N$ as the following binary tree over $\N$:
+
+\begin{center}
+\begin{tikzpicture}[scale=.7]
+\node[] (0) at (0,0) {$30$};
+\node[] (00) at (-2,-1) {$20$};
+\node[] (01) at (2,-1) {$35$};
+\node[] (001) at (-1,-2) {$29$};
+\node[] (010) at (1,-2) {$33$};
+\node[] (011) at (3,-2) {$37$};
+\node[] (0101) at (1.5,-3) {$34$};
+\draw[arrow] (0) -- (00);
+\draw[arrow] (0) -- (01);
+\draw[arrow] (00) -- (001);
+\draw[arrow] (01) -- (010);
+\draw[arrow] (01) -- (011);
+\draw[arrow] (010) -- (0101);
+\end{tikzpicture}
+\end{center}
+Now we can locate an element efficiently by traversing just one branch of the tree.
+
+Note how a binary search tree has to distinguish between the left and the right subtree even if there is only one subtree (e.g., for the nodes for $20$ and $33$).
+In those cases, we have to use a dummy node as the omitted left child.
+These are usually labeled with $null$ or $\bot$ and omitted when drawing the tree.
+\end{example}
+
+The formal definition is as follows:
+
+\begin{definition}[Binary Search Trees]
+$BST[A,O]$ is the subset of $Tree[A^?]$ containing only full binary trees satisfying the following properties:
+\begin{compactitem}
+ \item All leafs are labeled with the value $\bot$; all other nodes are labeled with elements of $A$.
+ \item For every non-leaf node $n$:
+  \begin{compactitem}
+    \item All values in the left subtree of $n$ are strictly smaller than the one at $n$.
+    \item All values in the right subtree of $n$ are strictly greater than the one at $n$.
+  \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+The leafs hold dummy values as placeholders for elements that we may want to insert later.
+When drawing binary search trees, we always omit them.
+The reason for labeling all leafs with $\bot$ is a technicality: we already need dummy leafs for omitted left children; then it can be simpler to just define that all leafs are dummy nodes.
+
+\subsubsection{Complexity}
+
+Ideally, the binary tree is perfect or nearly perfect.
+That happens when every node is labeled with the median of all the values among its descendants.
+
+In that case, the height of the tree is logarithmic in the size $n$ of the set.
+Then $contains$, $insert$, and $delete$ can be implemented in $O(\log n)$.
+\medskip
+
+But a series of random insertions and deletions may make the tree arbitrarily imperfect.
+In the worst case, the tree degenerates to a list.
+Therefore, a binary search tree must be rearranged from time to time.
+
+This can be done from scratch in one big operation.
+For example, we can do a depth-first traversal of the tree to obtain a sorted list of all elements.
+Then we can create a perfect binary tree of height $\log n$ and put the elements into it.
+Overall that takes $\Theta(n)$.
+
+Alternatively, we can rearrange the tree incrementally.
+Here we try to make minor changes to the tree after every insertion or deletion.
+To keep the tree near perfect.
+One way to do that is to use red-black trees (see Sect.~\ref{sec:ad:redblacktree}).
+
+\subsection{Red-Black Trees}\label{sec:ad:redblacktree}
+
+Red-black trees are a sophisticated variant of binary search trees.
+They guarantee $\Theta(\log n)$ cost for for insertion and deletion.

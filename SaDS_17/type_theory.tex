@@ -316,6 +316,42 @@ The third part introduces terms formed from a term $t:A\times B$ of the new type
 \tb\tb
  \rul{\oftype{}{\Gamma}{t}{A\times B}}{\oftype{}{\Gamma}{t.2}{B}}\]
 
+\subsection{Disjoint Union Types}
+
+Disjoint union types add the union $A+B$ of two types in such a way that there is no overlap, i.e., $|A+B|=|A|+|B|$.
+They are dual to the Cartesian product: all aspects mirror product types with the direction of functions reversed.
+For example, we have two injections into $A+B$ instead of two projections out of $A\times B$.
+
+\subsubsection{Union Type}
+
+The first part introduces the new type:
+
+\[A \bbc A+ A\]
+\[\rul{\oftype{}{\Gamma}{A}{\type}\tb \oftype{}{\Gamma}{B}{\type}}{\oftype{}{\Gamma}{A+ B}{\type}}\]
+
+\subsubsection{Terms of Union Type: Injections}
+
+The second part introduces terms of the new type:
+
+\[t \bbc \inj_1(t) \bnfalt \inj_2(t)\]
+\[\rul{\oftype{}{\Gamma}{t}{A}}{\oftype{}{\Gamma}{\inj_1(t)}{A+B}}
+\tb\tb
+\rul{\oftype{}{\Gamma}{t}{B}}{\oftype{}{\Gamma}{\inj_2(t)}{A+B}}\]
+
+\subsubsection{Terms Formed From Union Terms: Case Distinctions}
+
+The third part introduces terms formed from a term $t:A+ B$ of the new type:
+
+\[t \bbc cases(t,t,t)\]
+
+\[\rul{\oftype{}{\Gamma}{t}{A + B} \tb \oftype{}{\Gamma,\aval{x}{A}{}}{c_1}{C}\tb \oftype{}{\Gamma,\aval{x}{B}{}}{c_2}{C}}{\oftype{}{\Gamma}{cases(t,c_1,c_2)}{C}}\]
+
+A more intuitive notation for $cases(t,c_1(x),c_2(x))$ is $\amatchI{t}{\acase{\inj_1(x)}{c_1(x)},\acase{\inj_2(x)}{c_2(x)}}$.
+Indeed, disjoint union types are rarely used as a primitive feature because they can be easily defined as an inductive type with constructors $\inj_1$ and $\inj_2$.
+
+The formulation here is tweaked to be maximally modular, i.e., independent of other features.
+Alternatively, $c_1$ and $c_2$ be taken to be functions $A\to C$ and $B\to C$.
+
 \subsection{Function Types}
 
 The most important type constructor in computer science is the one for function types---it is critical to implement computations.
@@ -398,7 +434,7 @@ But they may differ substantially in how they do it.
 Data types are always named, i.e., they are introduced by declarations not by objects.
 Like base, product, and function types, \emph{each} data type declaration introduces $3$ kinds of objects.
 
-\subsection{Inductive Data Types}
+\subsection{Inductive Data Types}\label{sec:typetheory:idt}
 
 An inductive data type represents a context-free grammar with a single non-terminal symbol.
 It uses one term constructor for every production of the grammar such that its terms capture exactly the words of the grammar.
@@ -429,7 +465,7 @@ The general case works accordingly (or can be obtained by using the unit type or
 Note that the data type $a$ is already assumed to exists when checking the types of the constructors.
 That is critical to allow writing recursive data types such as:
 
-\begin{example}
+\begin{example}\label{ex:typetheory:nat}
 The standard example of an inductive data type are the natural numbers.
 We obtain them as
 \[\adata{nat}{zero(),succ(nat)}\]
@@ -490,7 +526,7 @@ Finally, the typing rule is (again assuming all constructors take exactly $1$ ar
       {\oftype{}{\Gamma}{\amatchI{t}{\acase{c_1(x)}{t_1},\ldots,\acase{c_n(x)}{t_n}}}{B}}\]
 
 
-\subsection{Abstract Data Types}
+\subsection{Abstract Data Types}\label{sec:typetheory:adt}
 
 Inductive and abstract data types are dual to each other.
 
@@ -911,6 +947,9 @@ The expansion of definitions from above is the only non-trivial step:
 \tb\tb
 \rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
     {\evobj{}{\Gamma}{A \to B}{A'\to B'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{A}{A'} \tb \evobj{}{\Gamma}{B}{B'}}
+    {\evobj{}{\Gamma}{A + B}{A'+ B'}}
 \]
 
 \subsubsection{Terms Regarding Base Types}
@@ -985,6 +1024,26 @@ Projections are more complicated because something actually happens: we retrieve
 
 If $u$ does not evaluate to a pair, we simply recurse.
 
+\subsubsection{Terms Regarding Disjoint Union Types}
+
+Like pairs, the terms of the new type---the injections---are evaluated by a simple recursion:
+\[\rul{\evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{\inj_1(t)}{\inj_1(t')}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{t}{t'}}
+      {\evobj{}{\Gamma}{\inj_2(t)}{\inj_2(t')}}\]
+
+Like for projections, something happens when evaluating the terms that use a term of the new type: a case distinction is contracted if we know which case applies.
+\[\rul{\evobj{}{\Gamma}{u}{\inj_1(t)}\tb\evobj{}{\Gamma}{c_1(t)}{t'}}
+      {\evobj{}{\Gamma}{cases(u,c_1,c_2)}{t'}}
+\tb\tb
+\rul{\evobj{}{\Gamma}{u}{\inj_2(t)}\tb\evobj{}{\Gamma}{c_2(t)}{t'}}
+    {\evobj{}{\Gamma}{cases(u,c_1,c_2)}{t'}}
+\]
+Note that only the case that applies is evaluated---that is important in case there are side effects.
+
+If $u$ does not evaluate to an injection, we simply recurse.
+
 \subsubsection{Terms Regarding Function Types}
 
 Intuitively, the key evaluation rule relevant to product types is $\beta$-reduction: substitute the variable $x$ in $\alam[A]{x}{t}$ with $s$ in order to evaluate $(\alam[A]{x}{t})\,s$.
@@ -992,13 +1051,14 @@ However, the details  present considerable difficulties.
 
 Historically very important was the choice between call-by-name and call-by-value evaluation.
 \textbf{Call-by-value} evaluates the argument of the function first, then substitutes it for $x$:
-\[\rul{\evobj{}{\Gamma}{s}{s'} \tb\evobj{}{\Gamma}{t[x/s']}{u}}
-      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\[\rul{\evobj{}{\Gamma}{f}{\alam[A]{x}{t}} \tb
+       \evobj{}{\Gamma}{s}{s'} \tb\evobj{}{\Gamma}{t[x/s']}{u}}
+      {\evobj{}{\Gamma}{f(s)}{u}}
 \]
 where $t[x/s]$ is the result of substituting $x$ with $s$ in $t$.
-\textbf{Call-by-nam}e first substitutes, then evaluates the result:
-\[\rul{\evobj{}{\Gamma}{t[x/s]}{u}}
-      {\evobj{}{\Gamma}{(\alam[A]{x}{t})\,s}{u}}
+\textbf{Call-by-name} first substitutes, then evaluates the result:
+\[\rul{\evobj{}{\Gamma}{f}{\alam[A]{x}{t}}\tb \evobj{}{\Gamma}{t[x/s]}{u}}
+      {\evobj{}{\Gamma}{f(s)}{u}}
 \]
 Without side-effects, both yield the same result.
 Call-by-name is usually less efficient because $s$ has to be evaluated multiple times if $x$ occurs multiple times in $t$.

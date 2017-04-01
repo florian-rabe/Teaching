@@ -21,7 +21,7 @@ $map(x\in A^?, f\in A\to B)\in B^?$ & apply $f$ to the optional value & none\\
 
 \subsection{Using Inductive Types}
 
-In functional programming languages, a data structure for optional values can be as an inductive type:
+In functional programming languages, a data structure for optional values can be realized as an inductive type:
 
 \begin{acode}
 \adata{Option[A]}{Some(value:A),None}
@@ -31,11 +31,11 @@ Such a definition (except for possibly using different names) is usually part of
 
 \subsection{Using Pointers}
 
-In languages that use pointers, we can represent $Option[A]$ as the type $*A$ of pointers to elements of $A$.
+In languages that use pointers, we can represent $Option[A]$ as the type $Pointer[A]$ (written $A*$ in C) of pointers to elements of $A$.
 In that case, the $null$ pointer represents $\bot$.
 
-In object-oriented languages do not necessarily use pointers (e.g., C++ does, but Java does not).
-However, even if they do not offer pointer, still any class-type implicitly provides the value $null$.
-In this situation it is impossible to represent the set $A$ correctly---any class for $A$ is automatically a data structure for $A^?$.
-This often causes confusion and errors.
+Object-oriented languages do not necessarily expose pointers to the programmers (e.g., C++ does, but Java does not).
+However, even then they use pointers internally, and any class-type provides the value $null$.
+In this situation it is impossible to represent the set $A$ correctly as a class---any class for $A$ is automatically a data structure for $A^?$.
+This often causes ambiguous specifications and subtle errors.
 Therefore, it is good practice to never use $null$ even when possible.

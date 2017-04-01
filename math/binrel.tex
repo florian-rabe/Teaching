@@ -13,8 +13,9 @@ We say that $\#$ is \ldots if the following holds:
  \item a preorder: reflexive and transitive
  \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
  \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
- \item an order\footnotemark: preorder and anti-symmetric
- \item an equivalence: preorder and symmetric
+ \item an order\footnotemark: preorder and anti-symmetric (= reflexive, transitive, and anti-symmetric)
+ \item an equivalence: preorder and symmetric (= reflexive, transitive, and symmetric)
+ \item a partial equivalence: transitive and symmetric
  \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
  \end{compactitem}
 
@@ -69,6 +70,16 @@ In particular, the elements of $A/\Equiv$
 \end{compactitem}
 \end{theorem}
 
+Consider a partial equivalence relation $\Equiv$ on $A$.
+$\Equiv$ is not an equivalence because it is not reflexive.
+However, we can easily prove: if $x \Equiv y$, then $x\Equiv x$ and $y\Equiv y$.
+
+Thus, we have:
+\begin{theorem}\label{thm:math:per}
+A partial equivalence relation $\Equiv$ on $A$ is the same as an equivalence relation on a subset of $A$.
+\end{theorem}
+
+
 \subsection{Orders}
 
 \begin{theorem}[Strict Order vs. Order]
@@ -96,3 +107,24 @@ If it holds for all pairs, we write $X\leq Y$.
 
 The relation $\leq$ on the quotient is an order.
 \end{theorem}
+
+\begin{remark}[Totality]
+If $\leq$ is a preorder, then for all elements $x,y$, there are four mutually exclusive options:
+
+\begin{ctabular}{|l|c|c|c|}
+\hline
+& $x\leq y$ & $x\geq y$ & $x=y$ \\
+\hline
+$x$ strictly smaller than $y$, i.e., $x>y$ & true  & false & false\\
+$x$ strictly greater than $y$, i.e., $x<y$ & false & true  & false \\
+$x$ and $y$ incomparable      & false & false & false \\
+$x$ and $y$ similar           & true  & true  & maybe \\
+\hline
+\end{ctabular}
+Now anti-symmetry excludes the option of similarity (except when $x=y$ in which case trivially $x\leq y$ and $x\geq y$).
+And totality excludes the option of incomparability.
+
+Combining the two exclusions, a total order only allows for $x>y$, $y<x$, and $x=y$.
+\end{remark}
+
+

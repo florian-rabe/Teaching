@@ -55,46 +55,32 @@
  \input{option}
 
 \chapter{List-Like Data Structures}\label{sec:ad:lists}
-% exercise: implement stack and queue using linked list
-% take sublist of doubly-linked list
  \input{list}
+
+\chapter{Tree-Like Data Structures}\label{sec:ad:trees}
+ \input{tree}
 
 \chapter{Set-Like Data Structures}\label{sec:ad:sets}
  \input{set}
-
-\chapter{Tree-Like Data Structures}\label{sec:ad:trees}
-% exercise: proof Thm.~\ref{thm:ad:bintree}
-% exercise: fold and sqmult for any monoid; +, *, min, max, concat,
-% exercise: labyrinth, minmax for tictactoe
- \input{tree}
 
 \chapter{Graph-Like Data Structures}\label{sec:ad:graphs}
  \input{graph}
 
 \chapter{Function-Like Data Structures}\label{sec:ad:functions}
-% merge into sets?
-% specification (isdefined, update, apply), list map, hash map
-% includes list
+ \input{function}
 
 \chapter{Product-Like Data Structures}\label{sec:ad:products}
-% specification, products, records, classes
+ \input{product}
 
 \chapter{Union-Like Data Structures}\label{sec:ad:unions}
-% disjoint union, labeled unions, inductive types
+ \input{union}
 % exercise: 1567 -> 21
 
 \chapter{Algebraic Data Structures}\label{sec:ad:theories}
-% based on one operation, based on two operations, based on one relation
-% matrix multiplication for any semi-ring? use for flow?
+ \input{algebraic}
 
 
 \part{Important Families of Algorithms}\label{sec:ad:algo}
-
-\chapter{Divide and Conquer}
-% binary search vs. linear search
-% Karatsuba: multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication
- 
-\chapter{Greedy Algorithms}
 
 \chapter{Recursion}
 %\begin{acode}
@@ -106,30 +92,50 @@
 %}
 %}
 %\end{acode}
-%
+
+% min-max example
+
+\chapter{Divide and Conquer}
+% binary search vs. linear search
+% Master theorem
+% Karatsuba: multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication
+% associative folding
+ 
 \chapter{Backtracking}
 
-\chapter{Dynamic Programming}
-
-\chapter{Randomization}
+% labyrinth
+% sudoku
 
 \chapter{Parallelization and Distribution}
 
-\chapter{Quantum Algorithms}
+% associative folding
+
+\chapter{Greedy Algorithms}
+
+% coin change problem: greedy vs. dynamic
+
+\chapter{Dynamic Programming}
 
 \chapter{Protocols}
+ \input{protocol}
 
-\part{Concrete Languages}
-
-\chapter{Data Description Languages}
+\chapter{Randomization}
+ \input{random}
  
- \section{JSON}
+\chapter{Quantum Algorithms}
+ \input{quantum}
 
- \section{XML}
- 
- \section{UML}
+%\part{Concrete Languages}
 
-\chapter{Programming Languages}
+%\chapter{Data Description Languages}
+% 
+% \section{JSON}
+%
+% \section{XML}
+% 
+% \section{UML}
+%
+%\chapter{Programming Languages}
  
 
 %\part{Conclusion}

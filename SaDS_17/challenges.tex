@@ -245,6 +245,25 @@ But even using C, it could have been caught by a variety of measures including u
  
 Details: \url{https://www.imperialviolet.org/2014/02/22/applebug.html}
 
+\paragraph{Cloudbleed}
+In 2017, the web services provider cloudfare accidentally included random memory sections in the pages they served.
+This disclosed a large amount of private data.
+It is unclear what data exactly.
+Because cloudflare hosted so many popular domains, millions of passwords were potentially compromised, affecting almost every internet user in some way.
+
+The problem was a small bug in the HTML parser: one error-generating branch failed to adjust for the case where it happened at the end of the input.
+This caused the pointer $n$ to the next character to become one larger than the fixed pointer $l$ to the end of the input buffer.
+However, the condition for terminating parsing tested only for $n==l$, not for $n>l$.
+This caused a buffer overrun: parsing continued behind the end of the buffer until being terminated or crashing for other reasons.
+Because the faulty component performed rewriting HTML on the fly and was designed to be robust against ill-formed HTML, all the data behind the buffer (which in all likelihood was not valid HTML) was simply included without change in the HTML document that was eventually served to the user.
+
+On a higher level, the problem was the wide-spread but well-known to be unsafe use of C-pointers to delimit buffers and of pointer arithmetic to advance pointers in a buffer.
+
+Notably, the fault had been present for a long time but had previously not caused failures because it was so thoroughly tested.
+Only when the company started migrating to a new (and better-designed) code base, these faults became active because the old code was temporarily used differently than in the past.
+
+Details: \url{https://blog.cloudflare.com/incident-report-on-memory-leak-caused-by-cloudflare-parser-bug/}
+
 % see also https://www.dwheeler.com/essays/learning-from-disaster.html for heartbleed, shellshock, and goto fail
 
 \section{Other Interesting Failures}
@@ -313,6 +332,18 @@ Researchers were able to demonstrate that
 This has major implications for the safety and security of systems based on these networks.
 
 Details: \url{http://www.evolvingai.org/fooling}
+
+\paragraph{Pixar's Deletion of Toy Story 2}
+In 2012, Pixar accidentally deleted almost the entire data for the movie Toy Story 2.
+Several weeks of work were lost, and the loss would have been much worse if they had not been able to recover most of the data from one employee's home office computer.
+
+The cause was unclear but assumed to be a human error in the Unix shell that recursively deleted the wrong directory.
+Moreover, the backup system had not been tested properly in the recent past.
+When the backup was swapped in, it turned out that it was limited to $4$ GB and had become inconsistent when more data than that was written to the drive.
+
+Pixar was able to recover most of the data by manually aggregating and comparing thousands of files from multiple partial copies spread over the various computers of the company.
+
+Details: \url{https://thenextweb.com/media/2012/05/21/how-pixars-toy-story-2-was-deleted-twice-once-by-technology-and-again-for-its-own-good/}
 
 \paragraph{Excel Gene Names}
 In 2016, researchers found that about 20\% of papers in genomics journals contain errors in supplementary spreadsheets.
@@ -477,7 +508,7 @@ This led to multiple extortion attempts and possibly suicides.
 The stolen records included name, email address, registration date, and unhashed or badly hashed passwords.
 % https://www.leakedsource.com
 
-\item In two separate hacks in 2013 (only reported in 2016) and 2014 of Yahoo, over $1$ billion user accounts were compromised by presumably state-sponsored actors.
+\item In two separate hacks in 2013 (only reported in 2016) and 2014 of Yahoo, over $1$ billion user accounts were compromised by presumably Russia-sponsored actors.
 The stolen records included name, email address, phone number, date of birth, and hashed passwords, and in some cases security questions and answers.
 \end{compactitem}
 

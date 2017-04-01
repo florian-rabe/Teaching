@@ -1,4 +1,53 @@
-val c: int = 1
-val f : int -> int = x:int => x+c
-val c: int = 2
-val main : int = {val x: int = f(c); f(x)}
+val c = 1
+val f = x:int => x+c
+val c = 2
+val t = {val c: int = f(c); f(c)}
+print(t == 4)
+
+
+var c = 1
+val f = x:int => {c=x+c; c}
+val d = f(2)
+c = 2
+val e = f(3)
+print((d == 3) && (e == 5))
+
+
+val p = {var x = 0; recval n: unit->int = u => {print(x); if (x < 5) {x=x+1; n(())} else -1}; n(())}
+print(p)
+
+
+var s = 0
+var c = 0
+while (c != 6) {s=s+c; c=c+1}
+print(s == 15)
+
+
+recval fact: int -> int = x => if (x == 0) 1 else x * fact(x-1)
+print(fact(5) == 120)
+
+
+data nat {zero(unit) | succ(nat)}
+val id: nat -> nat = x => match x {zero(u) => zero(u) | succ(n) => succ(n)}
+
+recval natToInt: nat -> int = x => match x {zero(u) => 0 | succ(n) => natToInt(n) + 1}
+recval intToNat: int -> nat = x => if (x==0) zero(()) else succ(intToNat(x-1))
+print(natToInt(intToNat(10)) == 10)
+
+recval plus: nat -> nat -> nat = x => match x {zero(u) => y => y | succ(n) => y => succ(plus(n)(y))}
+recval times: nat -> nat -> nat = x => match x {zero(u) => y => zero(u) | succ(n) => y => plus(times(n)(y))(y)}
+{val a = intToNat(7); val b = intToNat(9); val s = times(a)(b); print(natToInt(s) == 63)}
+
+
+class iterator {hasNext: bool, next: unit -> int}
+
+var x = -1
+val nats = new iterator {hasNext = true, next = u => {x = x+1; x}}
+val id: iterator -> iterator = i => new iterator {hasNext = i.hasNext, next = i.next}
+val natsCopy = id(nats)
+
+var s=0
+while (natsCopy.hasNext && (x < 5)) s=s+natsCopy.next(())
+print(s==15)
+
+val main = ()

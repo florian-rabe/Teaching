@@ -1,0 +1,166 @@
+\section{Specification}
+
+Algebraic data types are a not clearly delineated family of record types.
+Typically one field of the record is a type, and the other fields are operations on that type.
+
+Many of them represent mathematical theories, in which case their elements represent mathematical structures.
+Therefore, they tend to come up a lot.
+But their high level of abstraction leads to them often being neglected or not understood.
+
+Three classes are of major importance: these are the data types based on one type $U$ and
+\begin{itemize}
+\item one binary relation $U\times U \to \Bool$ such as in graphs, preorders, orders, and equivalence relations,
+\item one binary function $U\times U\to U$ such as in monoids, groups, and semi-lattices,
+\item two binary functions $U\times U\to U$ such as in rings, fields, and lattices
+\end{itemize}
+and several axioms such as transitivity, associativity, or distributivity.
+
+The most important special cases are specified in Sect.~\ref{sec:math:binrel} for a binary relation and in Sect.~\ref{sec:math:binop} for one binary function.
+We omit the case for two binary functions.
+
+\section{Data Structures}
+
+Apart from the axioms, we can implement algebraic data types very well as polymorphic abstract classes that take $U$ as the type parameter.
+However, the axioms can usually not be implemented elegantly (except in very advanced programming languages) and must be realized as comments.
+
+\subsection{One Binary Relation}
+
+We already implemented some of them when sorting lists.
+
+For example, the type of orders on $U$ can be realized as
+\begin{acode}
+\aclassA{Relation[A]}{}{}{
+  \afun[\Bool]{rel}{x:A,y:A}{\ldots}
+}\\
+\aclassA{Preorder[A]}{}{Relation[A]}{
+  \acomment{$rel$ is reflexive and transitive}
+}\\
+\aclassA{Order[A]}{}{Preorder[A]}{
+  \acomment{$rel$ is anti-symmetric}
+}\\
+\aclassA{TotalOrder[A]}{}{Order[A]}{
+  \acomment{$rel$ is total}
+}
+\end{acode}
+
+Individual structures can now be implemented as concrete classes that implement the abstract ones.
+We have already implemented some concrete orders such as $\leq$ on $\Int$, $|$ on $\Int$, or the lexicographic ordering on $\String$.
+
+\subsection{One Binary Function}
+
+For example, the type of monoids on $U$ can be realized as
+\begin{acode}
+\aclassA{BinOp[A]}{}{}{
+  \afun[A]{op}{x:A,y:A}{\ldots}
+}\\
+\aclassA{Monoid[A]}{}{BinOp[A]}{
+  \afun[A]{e}{}{\ldots}\\
+  \acomment{$op$ is associative and has neutral element $e$}
+}
+\end{acode}
+
+Individual structures can now be implemented as concrete classes that implement the abstract ones.
+
+The following implements some example monoids:
+\begin{acode}
+\aclass{Addition}{}{Monoid[\Int]}{
+  \afunI{op}{x:\Int,y:\Int}{x+y}\\
+  \afunI[A]{e}{}{0}
+}
+\end{acode}
+
+\begin{acode}
+\aclass{Multiplication}{}{Monoid[\Int]}{
+  \afunI{op}{x:\Int,y:\Int}{x*y}\\
+  \afunI[A]{e}{}{1}
+}
+\end{acode}
+
+\begin{acode}
+\aclass{Concatenation}{}{Monoid[\String]}{
+  \afunI{op}{x:\String,y:\String}{x+y}\\
+  \afunI[A]{e}{}{""}
+}
+\end{acode}
+
+\begin{acode}
+\aclass{Maximum}{}{Monoid[\N]}{
+  \afunI{op}{x:\N,y:\N}{\aifelseI{x\leq y}{y}{x}}\\
+  \afunI[A]{e}{}{0}
+}
+\end{acode}
+In each case, we have to check that the axioms (associativity and neutrality) actually hold to show the correctness of the implementations.
+
+For a more complex example, consider the monoid of $2\times 2$ matrices under multiplication:
+\begin{acode}
+\aclass{Matrix22}{a:\Int,b:\Int,c:\Int,d:\Int}{}{}
+\\
+\aclass{Matrix22Multiplication}{}{Monoid[Matrix22]}{
+  \afunI{op}{x:\N,y:\N}{\ldots}\\
+  \afunI[A]{e}{}{\anew{Matrix22}{1,0,0,1}}
+}
+\end{acode}
+where $\anew{Mat}{a,b,c,d}$ represents the matrix $\begin{pmatrix}a & b \\ c & d\end{pmatrix}$.
+
+\subsection{Two Binary Functions}
+
+The types of, e.g., rings and fields are implemented accordingly.
+
+\section{Important Algorithms}
+
+The implementation of algebraic data types and algorithms that
+\begin{compactitem}
+ \item are used in concrete algebraic structures
+ \item compute new algebraic structures from existing ones
+\end{compactitem}
+are studied in the field of \emph{computer algebra}.
+This is essential to for mathematical computation.
+\medskip
+
+Additionally, many algorithms can be easily generalized to take an arbitrary structure as their input.
+For example, sorting can be implemented as a function \[sort(x:List[\Int]):List[\Int].\]
+But it is much more general, equally easy, and essentially as fast to implement a function \[sort[A](ord: TotOrd[A], x:List[A]):List[A]\] that sorts with respect to an arbitrary total order.
+
+We give some examples.
+
+\subsection{Folding Lists over a Monoid}
+
+The function \[fold[A,B](x:List[A], f: A\times B\to B): B\] for lists is important but often confusing.
+
+It becomes much simpler if we consider the special case $A=B$:
+\[fold[A](x:List[A], e: A, f: A\times A\to A): A\]
+If we additionally write $f$ as infix, i.e., write $x\,f\,y$ instead of $f(x,y)$, we have
+\[fold[A]([a_1,\ldots,a_n],e,f)=a_1\,f\,(a_2\,\ldots\,(a_{n-1}\,f\,(a_n\,f\, e))\ldots)\]
+
+In general, the bracketing matters.
+But if $f$ is associative, the bracketing becomes irrelevant.
+In that case, we usually want $e$ to be a neutral element for $f$.
+
+That yields
+\[monoidFold[A](mon:Monoid[A], x:List[A])\]
+\[monoidFold[A](mon, [a_1,\ldots,a_n])=a_1\,mon.op\,a_2\,\ldots\,a_{n-1}\,mon.op\,a_n\,mon.op\, mon.e\]
+In particular, we have
+\[monoidFold[A](mon, [])=mon.e \tb\mand\tb monoidFold[A](mon, [a])=a.\]
+
+For example,
+\begin{compactitem}
+\item $monoidFold[\Int](\anew{Addition}{}, x)$ is the sum of all elements in $x$,
+\item $monoidFold[\Int](\anew{Multiplication}{}, x)$ is the product of all elements in $x$,
+\item $monoidFold[\N](\anew{Maximum}{}, x)$ is the greatest element in $x$,
+\item $monoidFold[\String](\anew{Concatenation}{}, x)$ is the concatenation of all strings in $x$.
+\end{compactitem}
+
+\subsection{Square-and-Multiply}
+
+We can finally give the square-and-multiply algorithm from Sect.~\ref{sec:ad:exp:sqmult} in full generality.
+
+This should be a function
+\begin{acode}
+\afun[A]{sqmult[A]}{mon:Monoid[A], x:A, n: \N}{\ldots}
+\end{acode}
+that satisfies the specification
+\[sqmult(mon, x, 0)=mon.e\]
+\[sqmult(mon, x, n+1)=mon.op(power(mon, x, n), x)\]
+and whose time complexity is $\Theta(\log_2 n)$.
+
+% matrix multiplication for any semi-ring? use for flow?

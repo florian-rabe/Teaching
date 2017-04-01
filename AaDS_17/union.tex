@@ -1,0 +1,58 @@
+Union types provide data structures for the disjoint union $A+B$ of sets.
+
+They are dual to product types and behave in very much the same way.
+
+\section{Positional Unions}
+
+The simplest data structure directly implements the disjoint union.
+
+\subsection{Primitive Unions}
+
+Functional programming languages could include disjoint union as a primitive feature.
+However, this is rare because disjoint unions turn out to be much less practically relevant than products.
+
+Instead, languages almost exclusively define them as inductive data types.
+
+\subsection{Unions as an Inductive Data Type}
+
+Disjoint unions can also easily be defined as an inductive data type:
+\begin{acode}
+\adata{DisjointUnion[A,B]}{InjectionLeft(A), InjectionRight(B)}\\
+\\
+\afun[C]{matchUnion[A,B]}{u: DisjointUnion[A,B], f: A\to C, g: B\to C}{\amatch{u}{\acase{InjectionLeft(a)}{f(a)},\acase{InjectionRight(b)}{g(b)}}}\\
+\end{acode}
+
+\section{Labeled Unions}
+
+Labeled unions define the disjoint union of multiple types.
+
+\subsection{Specification}
+
+Let $l_1,\ldots,l_n$ be some fresh unique names.
+
+The set $U=l_1(A_1)|\ldots|l_n(:A_n)$ is isomorphic to the set $A_1+ \ldots +A_n$.
+
+Its elements are of the form $l_1(a_1)$ or \ldots or $l_n(a_n)$ for $a_i\in A_i$.
+
+Given $u\in U$, we use pattern-matching to distinguish between the $n$ possible cases for $u$.
+
+\subsection{Data Structures}
+
+Data structures for labeled unions are rarely used.
+
+Instead, they can easily be implemented as special cases of inductive data types as in
+\begin{acode}
+\acomment{$l_1(A_1)|\ldots|l_n(A_n)$}\\
+\adata{U}{l_1(A_1),\ldots,l_n(A_n)}
+\end{acode}
+
+
+\section{Recursive Disjoint Unions: Inductive Data Types}
+
+Finally inductive data types arise as the most general case of disjoint unions.
+Here the components of the union may already refer to the whole disjoint union.
+
+We have seen examples already, e.g., in the inductive data type for lists.
+For example, we can understand $List[A]$ as the disjoint union of the unit type (which contains a single element corresponding to the empty list) and the product of $A$ (for the head) and $List[A]$ (for the tail).
+
+Inductive data types are part of all functional programming languages and can be mimicked using classes in object-oriented programming languages (as described in Sect.~\ref{sec:ad:list:ds}).

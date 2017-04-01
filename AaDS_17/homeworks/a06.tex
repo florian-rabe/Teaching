@@ -1,0 +1,95 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Algorithms and Data Structures},number=6,date=2017-03-14,duedate=2017-03-23,duetime=11:00]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+As before, you are not allowed to use any existing implementations in your programming language's libraries.
+
+Exception: You may use libraries for concepts we have learned previously, e.g., for linked lists.
+
+\begin{problem}{Stacks}{8}
+In any object-oriented programming language, implement the data structure of mutable stacks.
+Make sure that all stack operations take constant time.
+
+This should be a class with a mutable field for an immutable linked list.
+We say that the stack is \emph{backed} by an immutable list.
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new stack of integers
+ \item pushes some values onto the stack
+ \item pops all values and prints them
+\end{compactitem}
+
+Depending on your programming language, this might look as follows:
+\begin{acode}
+\aclass{Stack[A]}{}{}{
+ \akey{private} elements := Nil[A] \acomment{the immutable linked list backing the stack, initially empty}\\\\
+ \afun[\Unit]{push}{x:A}{\ldots}\\
+ \afun[{Option[A]}]{pop}{}{\ldots}\\
+ \afun[{Option[A]}]{top}{}{\ldots}\\
+}
+\\
+test := \anew{Stack[\Int]}{}\\
+test.push(4)\\
+test.push(5)\\
+test.push(2)\\
+\awhile{test.top().isDefined}{
+  \aprint{test.pop()}
+}
+\acomment{prints 2,5,4}
+\end{acode}
+
+\end{problem}
+
+\begin{problem}{Queues}{6}
+Implement the data structure of mutable queues.
+Make sure that all queue operations take constant time.
+
+For example, this could be a class like in the first problem but backed by a doubly-linked list.
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new queue of integers
+ \item enqueues some values in the queue
+ \item dequeues all values and prints them
+\end{compactitem}
+\end{problem}
+
+
+\begin{problem}{Queues backed by Two Singly-Linked Lists}{6}
+Doubly-linked lists can be tricky to implement.
+As an alternative, give an implementation of $Queue[A]$ that is backed by \emph{two} immutable singly-linked lists.
+
+This can be done in such a way that all queue operations take constant time with the exception that $dequeue$ sometimes takes linear time.
+\end{problem}
+
+\begin{problem}{Buffers}{8}
+Implement a fixed-size circular buffer as follows: $\mathit{Buffer}[A]$ consists of
+\begin{compactitem}
+ \item an $Array[A]$ named $elements$ of some fixed size $n$
+ \item an integer $0\leq begin <n$ indicating the first valid entry in $elements$
+ \item an integer $0\leq size\leq n$ indicating the number of valid entries in $elements$
+\end{compactitem}
+Enqueueing writes to $elements[(begin+size)\modop n]$ and increments $size$.
+Dequeueing reads from $elements[begin]$, increments $begin$ modulo $n$, and decrements $size$.\footnote{I fixed a small mistake in this explanation.}
+
+Because addition and incrementing are computed modulo $n$, the buffer becomes circular: when reaching index $n$ (which is outside the buffer), we start from $0$ again.
+
+Your implementation should detect \emph{buffer underflow} (trying to dequeue from an empty buffer) and \emph{buffer overflow} (trying to enqueue into a full buffer) and raise appropriate exceptions.
+
+Write a test program that
+\begin{compactitem}
+ \item creates a new buffer of integers
+ \item enqueues some values in it
+ \item dequeues all values and prints them
+\end{compactitem}
+\end{problem}
+\end{document}
