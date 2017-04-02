@@ -1,0 +1,14 @@
+Quantum algorithms use a different physical machine, namely a quantum computer that exploits quantum effects.
+In the most important idea, the superposition of quantum states is used: that allows performing a computation on multiple inputs at the same time, from which a single result value is obtained through measurement.
+
+Quantum algorithms do not allow computing more, i.e., the definition of computable and decidable is not affected.
+But they can solve certain problems faster, e.g., we can give polynomial quantum algorithms for some classically super-polynomial problems.
+That makes them interesting for many application, in particular in cryptography where the non-existence of polynomial solutions is often used as a criterion for security.
+
+For example, a quantum algorithm can be used to test $f(0)=f(1)$ in such a way that $f$ is executed only once.
+We call $f$ on the superposition of the $0$ and $1$ states of a quantum bit to compute the superposition of $f(0)$ and $f(1)$.
+Then we perform a certain quantum transformation that maps superpositions of equal values t0 $0$ and superpositions of different values to $1$.
+Eventually, we measure the result.
+
+Quantum algorithms were hypothetical until researchers succeeded in building quantum computers in recent years.
+Existing quantum computers are still small (e.g., $16$ bits), and it remains open if and when they can be used cost-effectively for large problems.
