@@ -97,12 +97,6 @@ Maintainability is hard to realize because especially inexperienced developers o
 A system \textbf{failure} is an event that occurs when the delivered service deviates from correct service.
 See Fig.~\ref{fig:concepts_fail} for an overview of related concepts.
 
-A \textbf{fault} is the adjudged or hypothesized cause of an error.
-A fault is \textbf{active} when it produces an error; otherwise it is \textbf{dormant}.
-See Fig.~\ref{fig:concepts_fault} for an overview of related concepts.
-
-An \textbf{error} is that part of the system state that may cause a subsequent failure: a failure occurs when an error reaches the service interface and alters the service.
-
 \begin{figure}
 \centering
 %\includegraphics[width=0.7\linewidth]{concepts_fail}
@@ -110,12 +104,22 @@ An \textbf{error} is that part of the system state that may cause a subsequent f
 \label{fig:concepts_fail}
 \end{figure}
 
+\subsection{Faults}
+
+A \textbf{fault} is the adjudged or hypothesized cause of an error.
+A fault is \textbf{active} when it produces an error; otherwise it is \textbf{dormant}.
+See Fig.~\ref{fig:concepts_fault} for an overview of related concepts.
+
 \begin{figure}
 \centering
 %\includegraphics[width=0.7\linewidth]{concepts_fault}
 \caption{Fault Classes}
 \label{fig:concepts_fault}
 \end{figure}
+
+\subsection{Errors}
+
+An \textbf{error} is that part of the system state that may cause a subsequent failure: a failure occurs when an error reaches the service interface and alters the service.
 
 \section{Means}
 
