@@ -387,39 +387,53 @@ We discuss its correctness and complexity in Ch.~\ref{sec:ad:greedy}.
 
 \subsection{Shortest Path}\label{sec:ad:shortestpath}
 
+In this section, we interpret all edge weights as costs.
+We think of the cost as the \emph{distance} between nodes.
+
+\paragraph{Problem}
+Recall that the cost of a path is the sum of the costs of its edges.
+We can think of it as the \emph{length} of the path.
+
+Our goal is to find, for nodes $i$, $j$, the shortest path from $i$ to $j$.
+This has obvious applications in logistics, navigation, and similar situations.
+Whenever we move in a network, we prefer taking the shortest path.
+
+\paragraph{Algorithms}
+Forthcoming.
 % single-source: Dijkstra, greedy
 % all-pairs: matrix powers for min-+ or Floyd Warshall, dynamic programming
 
 \subsection{Maximal Flow}\label{sec:ad:maximalflow}
 
-%In this section, we interpret all edge weights as capacities.
-%We assume that $G=(N,E)$ has two distinguished nodes $source$ with only outgoing and $sink$ with only incoming edges.
-%Such a graph is called a \textbf{flow network}.
-%
-%Intuitively, we think of the edges as pipes, and our goal is to make a liquid flow from the source to the sink.
-%
-%\paragraph{Flows}
-%A flow is a mapping $f:E\to \N$ such that the conditions below hold.
-%
-%Intuitively, a flow says how much is flowing along an edge.
-%To make sense, a flow must satisfy the following conditions:
-%\begin{compactitem}
-% \item No edge is used beyond capacity: $f(e)\leq w(e)$ for all $e\in E$.
-% \item Nothing gets lost or created along the way, i.e., as much flows into a node as flows out: for all nodes $n$ except for $source$ and $sink$
-%  \[\Sigma_{e\in incoming(n)} f(e) = \Sigma_{e\in outgoing(n)} f(e)\]
-%\end{compactitem}
-%
-%From that we can prove that
-% \[\Sigma_{e\in outgoing(source)} f(e) = \Sigma_{e\in incoming(sink)} f(e)\]
-%and that number is called the capacity $Cap(f)$ of $f$.
-%It describes how much is flowing through the network from the source to the sink.
-%
-%\paragraph{Problem}
-%Now our goal is to find $f$ such $Cap(f)$ is maximal.
-%
-%For example, the flow network describes goods that have to be shipped from one place to another via a variety of paths, the maximal flow maximizes the amount of goods that are shipped.
-%Similar examples abound in logistics.
-%
-%\paragraph{Algorithm}
+In this section, we interpret all edge weights as capacities.
+We assume that $G=(N,E)$ has two distinguished nodes $source$ with only outgoing and $sink$ with only incoming edges.
+Such a graph is called a \textbf{flow network}.
+
+Intuitively, we think of the edges as pipes, and our goal is to make a liquid flow from the source to the sink.
+
+\paragraph{Flows}
+A flow is a mapping $f:E\to \N$ such that the conditions below hold.
+
+Intuitively, a flow says how much is flowing along an edge.
+To make sense, a flow must satisfy the following conditions:
+\begin{compactitem}
+ \item No edge is used beyond capacity: $f(e)\leq w(e)$ for all $e\in E$.
+ \item Nothing gets lost or created along the way, i.e., as much flows into a node as flows out: for all nodes $n$ except for $source$ and $sink$
+  \[\Sigma_{e\in incoming(n)} f(e) = \Sigma_{e\in outgoing(n)} f(e)\]
+\end{compactitem}
+
+From that we can prove that
+ \[\Sigma_{e\in outgoing(source)} f(e) = \Sigma_{e\in incoming(sink)} f(e)\]
+and that number is called the capacity $Cap(f)$ of $f$.
+It describes how much is flowing through the network from the source to the sink.
+
+\paragraph{Problem}
+Now our goal is to find $f$ such $Cap(f)$ is maximal.
+
+For example, the flow network describes goods that have to be shipped from one place to another via a variety of paths, the maximal flow maximizes the amount of goods that are shipped.
+Similar examples abound in logistics.
+
+\paragraph{Algorithm}
+Forthcoming.
 %It is straightforward to find the maximal flow once we understand greedy algorithms.
 %We get back to it in Ch.~\ref{sec:ad:greedy}.
