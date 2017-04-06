@@ -13,6 +13,25 @@
 % spring break
 
 \begin{problem}{Graphs}{8}
+Implement the following special case of graphs:
+
+A graph consists of 
+\begin{itemize}
+ \item the type $B$ of weights (possibly $\Unit$ for unlabeled graphs)
+ \item the number $m$ of nodes (assuming $N=\Z_m$)
+\end{itemize}
+supports the side-effect free operations \emph{efficiently}
+\begin{itemize}
+ \item $getEdge(i:\Int,j:\Int):Option[B]$
+ \item $incoming(i:\Int):List[\Int\times B]$
+ \item $outgoing(i:\Int):List[\Int\times B]$
+\end{itemize}
+and is mutable via operations
+\begin{itemize}
+ \item $addNode():\Unit$
+ \item $addEdge(i:\Int,j:\Int,w:B):\Unit$
+ \item $deleteEdge(i:\Int,j:\Int):\Unit$
+\end{itemize}
 \end{problem}
 
 \begin{problem}{}{8}
