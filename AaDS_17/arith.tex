@@ -174,7 +174,7 @@ Thus, we can compute $fib(n)$ with logarithmic complexity.
 % Karatsuba
 
 
-\section{Matrices}
+\section{Matrices}\label{sec:ad:matrix}
 
 \subsection{Specification}
 
@@ -256,7 +256,7 @@ This is not obvious for multiplication.
 Using the same argument, we can say that the complexity of multiplication is $\Omega(ln)$.
 But there cannot be an $\Theta(ln)$-algorithm because $m$ must matter---if $m$ increases, it must take longer.
 
-\subsection{Strassen's Multiplication Algorithm}
+\subsection{Strassen's Multiplication Algorithm}\label{sec:ad:matrix:strassen}
 
 Inspecting the definition of matrix multiplication, we see that we can split up matrices into rectangular areas of submatrices, for example, like so:
 \[\begin{pmatrix}x_{11} & x_{12} & x_{13} & x_{14} \\ x_{21} & x_{22} & x_{23} & x_{24} \\ x_{31} & x_{32} & x_{33} & x_{34} \\ x_{41} & x_{42} & x_{43} & x_{44}\end{pmatrix}

@@ -9,7 +9,7 @@ For example, finding the cheapest available food just requires browsing items in
 But finding out what food is healthy in the long run may require extensive research.
 Humans have a strong tendency towards making local choices because they require so much fewer mental effort and yield immediate gratification.
 
-\section{Basic Structure}
+\section{General Structure}
 
 Consider a set $M$ with a weight function $w:M\to \N$ (or any other other set of positive numbers).
 For a set $S\sq M$, we define the weight of $S$ by summing the weights of the elements.
@@ -40,7 +40,7 @@ To understand when the generic greedy algorithm yields an optimal results, we in
 A \textbf{matroid} consists of
 \begin{compactitem}
 \item a finite set $M$
-\item a property $Acceptable:Set[M]\to\B$ (subsets with this property are called \textbf{acceptable})
+\item a property $Acceptable:Set[M]\to\B$ (subsets with this property are called \textbf{acceptable}\footnotemark)
 \end{compactitem}
 such that the following holds
 \begin{compactitem}
@@ -49,6 +49,7 @@ such that the following holds
  \item If $A$ and $B$ are acceptable and $|A|>|B|$, then $B$ can be increased to an acceptable set $B\cup\{x\}$ by adding an element $x\in A$ to $B$. (Thus, we must have $x\in A\sm B$.)
 \end{compactitem}
 \end{definition}
+\footnotetext{The literature calls them \emph{independent}, but \emph{acceptable} is a more intuitive name for greedy algorithms.}
 
 The third property is the critical one: it guarantees that it does not matter which elements we add to an acceptable set, we always eventually get an acceptable set of maximal size.
 Thus, local choices (which element to add) can never lead to a dead end.
@@ -151,9 +152,16 @@ Then we obtain $\Theta(|E|\log|E|)$ as the overall run time of Kruskal's algorit
 The idea behind the implementation is that $S.acceptableWith(x)$ only has to check that $x$ connects two nodes from different trees.
 By cleverly storing the set of trees, we can check that in $O(\log|S|)$.
 
-%\subsection{Maximal Flow}
+\subsection{Dijkstra's Algorithm}
+
+Because the term \emph{greedy algorithm} is not defined precisely, not every algorithm that has a greedy flavor is a special case of the matroid algorithm.
+
+A counter-example is Dijkstra's algorithm from Sect.~\ref{sec:ad:shortestpath}.
+
+
+%\subsection{Greatest Flow}
 %
-%Consider the maximal flow problem from Sect.~\ref{sec:ad:maximalflow}.
+%Consider the greatest flow problem from Sect.~\ref{sec:ad:maximalflow}.
 %We want to construct a greedy algorithm for it by identifying an appropriate matroid structure.
 %
 %For a path $p$ from $source$ to $sink$, we write $Cap(p)$ for the capacity of $p$.
