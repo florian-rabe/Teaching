@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=9,date=2017-04-04,duedate=2017-04-13,duetime=11:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=9,date=2017-04-06,duedate=2017-04-20,duetime=8:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,14 +10,49 @@
 
 \header
 
-\begin{problem}{Graphs}{8}
+% spring break
+
+\begin{problem}{Graphs}{10}
+Implement a type $Graph$ for the following special case of graphs:
+
+A graph consists of 
+\begin{itemize}
+ \item the number $numNodes:\Int$ of nodes (assuming $N=\Z_{numNodes}=\{0,\ldots,numNodes-1\}$)
+\end{itemize}
+supports the side-effect free operations
+\begin{itemize}
+ \item $getEdge(i:\Int,j:\Int):Option[\Int]$
+ \item $incoming(i:\Int):List[\Int\times \Int]$
+ \item $outgoing(i:\Int):List[\Int\times \Int]$
+\end{itemize}
+and is mutable via operations
+\begin{itemize}
+ \item $addNode():\Unit$
+ \item $addEdge(from:\Int,to:\Int,weight:\Int):\Unit$
+\end{itemize}
+
+All operations should be efficient---so use the double adjacency list data structure.
+
+Write a large graph on paper (include the graph in your submission) and write a program that builds it.
 \end{problem}
 
-\begin{problem}{}{8}
+\begin{problem}{BFS}{6}
+Implement a function for BFS in a graph, i.e.,
+\begin{acode}
+\tb\acomment{precondition: $0\leq start < G.numNodes$}\\
+\tb\acomment{postcondition: $BFS(G,start)$ is list of nodes reachable in $G$ from $start$ in BFS order}\\
+\afun[{List[\Int]}]{BFS}{G:Graph,start:\Int}{\ldots}
+\end{acode}
+
+Test your program on the example graph from above.
 \end{problem}
 
-\begin{problem}{}{8}
+\begin{problem}{}{10}
+Implement Kruskal's algorithm.
 
+You do not have to implement $isSetOfTrees$ with optimal efficiency---any implementation is fine.
+
+Test your program on the example graph from above.
 \end{problem}
 
 \end{document}

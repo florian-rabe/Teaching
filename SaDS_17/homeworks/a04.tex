@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=4,date=2017-03-20,duedate=2017-03-30]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=4,date=2017-03-20,duedate=2017-03-30,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -24,6 +24,15 @@ y := n \\
 }
 \end{acode}
 
+\begin{solution}
+\begin{compactitem}
+\item precondition: $m>0\wedge n>0$
+\item postcondition (for output $z$): $z==\gcd(m,n)$
+\item loop invariant: $\gcd(m,n)==\gcd(x,y)$
+\item termination ordering: $x+y$
+\end{compactitem}
+\end{solution}
+
 \begin{acode}
 \afun[\N]{factorial}{n:\N}{
 product := 1\\
@@ -35,6 +44,16 @@ factor  := 1 \\
 \areturn{product}
 }
 \end{acode}
+
+\begin{solution}
+\begin{compactitem}
+\item precondition: $\true$ (nothing)
+\item postcondition (for output $z$): $z==n!$
+\item loop invariant: $product\cdot factor\cdot (factor+1)\cdot\ldots \cdot n==n!$ \\
+alternative: $product==factor!$
+\item termination ordering: $n-factor$
+\end{compactitem}
+\end{solution}
 
 \begin{acode}
 \afun[\N]{linearFibonacci}{n:\N}{
@@ -53,6 +72,16 @@ factor  := 1 \\
 }
 \end{acode}
 
+\begin{solution}
+Let $F_n$ be the $n$-th Fibonacci number with $F(0)=0$ and $F(1)=1$.
+\begin{compactitem}
+\item precondition: $\true$ (nothing)
+\item postcondition (for output $z$): $z==F_n$
+\item loop invariant: $prev==F_{i-1}\wedge current==F_i$
+\item termination ordering: $n-i$
+\end{compactitem}
+\end{solution}
+
 \begin{acode}
 \afun[{List[A]}]{revertImmutable[A]}{x:List[A]}{
   rest := x\\
@@ -64,6 +93,16 @@ factor  := 1 \\
   \areturn{rev}
 }
 \end{acode}
+
+\begin{solution}
+Let $revert(x)$ and $length(x)$ be the reversal and length of the list $x$, and let $x+y$ be the concatenation of the lists $x$ and $y$.
+\begin{compactitem}
+\item precondition: $\true$ (nothing)
+\item postcondition (for output $z$): $z==revert(x)$
+\item loop invariant: $x==revert(rev)+rest$
+\item termination ordering: $length(rest)$
+\end{compactitem}
+\end{solution}
 \end{problem}
 
 
@@ -83,6 +122,64 @@ For example, you can copy an example from the tutorial, rename the function to y
 
 \begin{problem}{Dynamic Logic: Theory}{3}
 Prove the soundness of the rules for if and while.
+
+\begin{solution}
+For a state $q$ that supplies values for all undefined variables in $\Gamma$, we write $\evobj{}{\Gamma;q}{t}{t'}$ if $t$ evaluates to $t'$ in state $q$.
+
+\paragraph{if}
+The rule is:
+\[\rul{\iscons{}{\Gamma}{}{C\impl \abox{t}{F}} \tb \iscons{}{\Gamma}{}{\neg C\impl \abox{t'}{F}}}
+      {\iscons{}{\Gamma}{}{\abox{\aifelseI{C}{t}{t'}}{F}}}\]
+
+We assume the premises are theorems:
+\[(1)\tb \evobj{}{\Gamma;q}{C\impl \abox{t}{F}}{\true} \tb\mfor\mall q\]
+\[(2) \tb \evobj{}{\Gamma;q}{\neg C\impl \abox{t'}{F}}{\true} \tb\mfor\mall q\]
+
+Our goal is to show that the conclusion is a theorem:
+\[\evobj{}{\Gamma;q}{\abox{\aifelseI{C}{t}{t'}}{F}}{\true} \mfor\mall q\]
+
+To prove the goal, we assume an arbitrary state $q$ and distinguish two cases:
+\begin{itemize}
+ \item $\evobj{}{\Gamma;q}{C}{\true}$: The evaluation rule for \textbf{if} yields
+   \[\evobj{}{\Gamma}{\abox{\aifelseI{C}{t}{t'}}{F}}{t}\]
+  Because $C$ is pure, this is independent of $q$ and can be substituted anywhere. So our goal becomes
+   \[\evobj{}{\Gamma;q}{\abox{t}{F}}{\true}\]
+  By applying modus ponens to (1), we obtain
+   \[\iscons{}{\Gamma;q}{}{\abox{t}{F}}\]
+  which concludes the proof.
+   
+ \item $\evobj{}{\Gamma;q}{C}{\false}$: This case proceeds accordingly using (2) instead of (1).
+\end{itemize}
+
+\paragraph{while}
+The rule is:
+\[\rul{\iscons{}{\Gamma}{}{I} \tb \iscons{}{\Gamma^*}{}{(I\wedge C)\impl \abox{t}{I}} \tb \iscons{}{\Gamma^*}{}{(I\wedge \neg C) \impl F}}
+      {\iscons{}{\Gamma}{}{\abox{\awhileI{C}{t}}{F}}}\]
+
+We assume the premises are theorems:
+\[(1)\tb \evobj{}{\Gamma;q}{I}{\true} \tb\mfor\mall q\]
+\[(2) \tb \evobj{}{\Gamma^*;q}{(I\wedge C)\impl \abox{t}{I}}{\true} \tb\mfor\mall q\]
+\[(3) \tb \evobj{}{\Gamma^*;q}{(I\wedge \neg C)\impl F}{\true} \tb\mfor\mall q\]
+
+Our goal is to show that the conclusion is a theorem:
+\[\evobj{}{\Gamma;q}{\abox{\awhileI{C}{t}}{F}}{\true} \mfor\mall q\]
+
+If the while-loop never terminates, this holds trivially.
+So we can assume it terminates after $N$ iterations.
+
+Let $q_0=q$ and let $q_{n+1}$ be the state after evaluating $t$ in state $q_n$
+We prove by induction on $n$ that
+\[(*)\tb \evobj{}{\Gamma^*;q_n}{I}{\true} \tb\mfor\mall n=0,\ldots,N\]
+\begin{itemize}
+ \item Case for $0$: This follows immediately from (1).
+ \item Case for $n+1\leq N$: This follows from (2) after observing that $n+1\leq N$ is only possible if $C$ holds in $q_n$.
+\end{itemize}
+
+Our goal becomes
+\[\evobj{}{\Gamma^*;q_N}{F}{\true}\]
+Moreover, we know that $(**)$ $\neg C$ must hold in $q_N$.
+Applying $(*)$ at $N$ and $(**)$ to (3) yields the goal.
+\end{solution}
 \end{problem}
 
 \end{document}

@@ -2,7 +2,7 @@
 
 \section{History}
 
-% caesar etc.
+% caesar, one-time pad, substitution + transpostions + products thereof, etc.
 
 \section{Preliminaries}
 
@@ -51,9 +51,16 @@ The next step is to find one-way functions (assuming that there are one-way func
 If now $f$ was a one-way permutation, we can use the above construction to get an additional pseudo-random bit, so we already have a pseudo-random generator.
 
 
+\section{Hashing}
+
+\subsection{MDx}
+
+\subsection{SHA-x}
+
+
 \section{Symmetric Encryption}
 \input{symmetric}
-% substitution, one-time pad DES
+% substitution, one-time pad, DES
 
 \section{Asymmetric Encryption}
 
@@ -138,12 +145,6 @@ Keys of size $1024$ are considered secure today, but because security is a relat
 Larger keys are especially important if data is needed to remain secure far into the future, when faster hardware will be available.
 
 \section{Authentication}
-
-\section{Hashing}
-
-\subsection{MDx}
-
-\subsection{SHA-x}
 
 \section{Key Generation and Distribution}
 

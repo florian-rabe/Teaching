@@ -94,6 +94,14 @@ With respect to the specification, $t$ is called
 Equivalently, total correctness is the conjunction of partial correctness and termination.
 \end{definition}
 
+Note that the partial/total distinction does not mean that a partially correct program is incorrect for some values.
+If the precondition holds, a
+\begin{compactitem}
+ \item partially correct program either runs forever or returns a result that makes the postcondition true.
+ \item totally correct program returns a result that makes the postcondition true.
+\end{compactitem}
+
+
 The triple of $P$, $Q$, and $t$ is also called a Hoare-triple after their inventor. %\cite{hoarelogic}
 In the context of Hoare-triples, partial correctness is often written as $\{P\}t\{Q\}$.
 

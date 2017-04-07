@@ -1,0 +1,181 @@
+Greedy algorithms are an informal grouping of algorithms characterized by the following property: We have to make a number of choices until we are done, and at each step we choose the most attractive option.
+
+A greedy algorithm emphasizes local optimization over global optimization: at each step it makes the optimal local choice.
+That may or may not yield a good result overall.
+For example, eating the cheapest available food every day saves money in the short run (locally optimal) but is not healthy in the long run (globally optimal).
+
+But greedy algorithms are easy to implement and usually very efficient: making a locally optimal choice is usually much easier than making a globally optimal choice.
+For example, finding the cheapest available food just requires browsing items in the market.
+But finding out what food is healthy in the long run may require extensive research.
+Humans have a strong tendency towards making local choices because they require so much fewer mental effort and yield immediate gratification.
+
+\section{Basic Structure}
+
+Consider a set $M$ with a weight function $w:M\to \N$ (or any other other set of positive numbers).
+For a set $S\sq M$, we define the weight of $S$ by summing the weights of the elements.
+ \[w(S)=\Sigma_{x\in S} w(x)\]
+
+Moreover, consider a property $Acceptable$, i.e., if $S\sq M$, then $Acceptable(S)$ is a boolean.
+
+Our goal is to find an acceptable subset of $M$ with maximal weight.
+
+The generic greedy algorithm proceeds as follows:
+\begin{acode}
+\acomment{precondition: $elements$ is the list of all elements of $M$ sorted decreasingly by $w$}\\
+\afun{greedy[M]}{elements:List[M], Acceptable: Set[M]\to\Bool}{
+  solution := \anew{Set[M]}{}\\
+  foreach(elements, \alam{x}{\aifI{Acceptable(solution \cup \{x\})}{insert(solution,x)}})\\
+  solution
+}
+\end{acode}
+Here $solution \cup \{x\}$ is an immutable operation that returns a new set, and $insert(solution,x)$ is a mutable operation that changes $solution$.
+
+We can also use the function $greedy$ to find an acceptable subset with \emph{minimal} weight: we simply sort $elements$ by \emph{increasing} weight.
+
+\section{Matroids}
+
+To understand when the generic greedy algorithm yields an optimal results, we introduce matroids:
+
+\begin{definition}[Matroid]
+A \textbf{matroid} consists of
+\begin{compactitem}
+\item a finite set $M$
+\item a property $Acceptable:Set[M]\to\B$ (subsets with this property are called \textbf{acceptable})
+\end{compactitem}
+such that the following holds
+\begin{compactitem}
+ \item $M$ has at least one acceptable subset.
+ \item $Acceptable$ is subset-closed, i.e., subsets of acceptable sets are also acceptable.
+ \item If $A$ and $B$ are acceptable and $|A|>|B|$, then $B$ can be increased to an acceptable set $B\cup\{x\}$ by adding an element $x\in A$ to $B$. (Thus, we must have $x\in A\sm B$.)
+\end{compactitem}
+\end{definition}
+
+The third property is the critical one: it guarantees that it does not matter which elements we add to an acceptable set, we always eventually get an acceptable set of maximal size.
+Thus, local choices (which element to add) can never lead to a dead end.
+More formally, we can state this as follows:
+\begin{theorem}
+We call an acceptable set $S$ that has no acceptable superset $S'\supset S$ a \textbf{base}.
+
+Then, in a matroid, all bases have the same size.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\section{Greedy Algorithms for Matroids}
+
+\paragraph{Correctness}
+Finding a base is always easy: start with the empty set and keep adding elements as long as the resulting set remains acceptable.
+
+Now the matroid property guarantees that all bases have the same size.
+Thus, it does not matter which elements we add---eventually we get an acceptable set of maximal size.
+
+If we want to find not only an acceptable set of maximal \emph{size} but an acceptable set of maximal \emph{weight}, we simply add the elements in order of weight---that is exactly what the greedy algorithm does.
+Formally, we have:
+
+\begin{theorem}
+If $M$ and $Acceptable$ form a matroid, then the greedy algorithm finds a base with greatest possible weight.
+\end{theorem}
+
+The corresponding theorem holds for finding the base with smallest possible weight.
+
+\paragraph{Complexity}
+The main structure of the greedy algorithm is linear in the number $|M|$ of elements.
+But we also have to sort the elements once and check $Acceptable$ at every step.
+We know sorting takes $\Theta(|M|\log |M|)$.
+So if we can check $Acceptable(S)$ in $O(\log|S|)$, the overall run time (including sorting) is in $O(|M|\log|M|)$.
+
+To be efficient, we usually implement the acceptability check in a greedy algorithm slightly smarter:
+\begin{acode}
+\aclass{Solution[M]}{}{}{
+  \afun{insert}{m:M}{\ldots}\\
+  \afun{acceptableWith}{m:M}{\ldots}
+}\\
+\\
+\acomment{precondition: $elements$ is the list of all elements of $M$ sorted decreasingly by $w$}\\
+\afun{greedy[M]}{elements:List[M]}{
+  solution := \anew{Solution[M]}{}\\
+  foreach(elements, \alam{x}{\aifI{solution.acceptableWith(x)}{solution.insert(x)}})\\
+  solution
+}
+\end{acode}
+
+Here $S.acceptableWith(x)$ is specified as follows:
+\begin{compactitem}
+ \item precondition: $Acceptable(S)$
+ \item postcondition: if $S.acceptableWith(x)$, then $Acceptable(S\cup\{x\})$
+\end{compactitem}
+This works because the greedy algorithm only every needs to check $Acceptable(S\cup\{x\})$ and only if $S$ is already known to be acceptable.
+
+$S.acceptableWith(x)$ can often be implemented much faster than $Acceptable(S\cup\{x\})$ because:
+\begin{compactitem}
+ \item We do not have to copy the set $S$ to build $S\cup\{x\}$.
+ \item The acceptability check can use the information that $S$ is already acceptable.
+\end{compactitem}
+
+\section{Examples}
+
+\subsection{Kruskal's Algorithm}
+
+Kruskal's algorithm from Sect.~\ref{sec:ad:spanningtree} is a simple example of a greedy algorithm.
+
+\paragraph{Correctness}
+To show that it is correct, we only have to show that it operates on a matroid.
+
+We use the following matroid:
+\begin{compactitem}
+ \item The set $M$ is the set of edges of the graph $G=(N,E)$.
+ \item A set $S\sq E$ is acceptable if the graph $(N,S)$ is a set of trees.
+\end{compactitem}
+
+We have to prove the matroid properties:
+\begin{compactitem}
+ \item There is an acceptable set. For example, $(N,\es)$ is a graph where every node is a tree by itself.
+ \item Subsets of acceptable sets are acceptable. Taking an edge away from a tree splits it into two trees. Thus, removing edges from a set of trees again yields a set of trees.
+ \item For the critical third property, assume that $(N,A)$ and $(N,B)$ are sets of trees such that $A$ contains more edges than $B$.
+  We have to find an edge $x\in A\sm B$ that we can add to $B$.
+  We pick any $x\in A$ that connects two nodes that are not in the same tree in $(N,B)$.
+  Then $(N,B\cup\{x\})$ is a set of trees again.
+  We only have to check that such an $x$ exists: If there were no such $x$, the trees in $A$ and $B$ would consist of the same nodes; but then $A$ cannot have more edges then $B$ because the number of edges in a tree is already fixed by the number of nodes.
+\end{compactitem}
+
+Thus, we immediately know that Kruskal's algorithm is correct.
+
+\paragraph{Complexity}
+We have $Acceptable=isSetOfTrees$.
+
+To improve efficiency, we implement an appropriate data structure for the class $Solution$.
+This is indeed possible in $O(\log|S|)$.
+Then we obtain $\Theta(|E|\log|E|)$ as the overall run time of Kruskal's algorithm.
+
+The idea behind the implementation is that $S.acceptableWith(x)$ only has to check that $x$ connects two nodes from different trees.
+By cleverly storing the set of trees, we can check that in $O(\log|S|)$.
+
+%\subsection{Maximal Flow}
+%
+%Consider the maximal flow problem from Sect.~\ref{sec:ad:maximalflow}.
+%We want to construct a greedy algorithm for it by identifying an appropriate matroid structure.
+%
+%For a path $p$ from $source$ to $sink$, we write $Cap(p)$ for the capacity of $p$.
+%Recall that the capacity of a path is the minimum of the weights of the edges of $p$.
+%
+%We want to describe a flow as a set $S$ of such paths.
+%Along each path of $S$, we try to flow as much as the capacity of the path.
+%But we have to make sure we use each edge $e$ only up to its capacity $w(e)$.
+%Because $e$ may be part of multiple paths $p\in S$, the sum of the capacities of these paths $p$ must stay below $w(e)$.
+%
+%That leads us to using the following matroid:
+%\begin{compactitem}
+%  \item $M$ is the set of paths from the source to the sink.
+%  \item A set $S$ of paths is acceptable if for every edge $e\in E$
+%   \[\Sigma_{p\in S\mwith e\in p} Cap(p)\leq w(e)\]
+%\end{compactitem}
+%Then every acceptable set yields a flow.
+%
+%We have to prove the matroid properties:
+%\begin{compactitem}
+%  \item There is an acceptable set, e.g., the empty set.
+%  \item Subsets of acceptable sets are acceptable because lowering the flow cannot introduce a violation of the capacity conditions.
+%  \item Consider two sets $A$ and $B$ of paths such that $|A|>|B|$.
+%  
+%\end{compactitem}
