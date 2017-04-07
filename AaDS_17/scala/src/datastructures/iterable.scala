@@ -19,11 +19,21 @@ abstract class Iterator[A] {
     if (p(a)) Some(a) else find(p)
   }
   
-  def contains(p: A => Boolean): Boolean = if (!hasNext) false else {
+  def contains(x: A): Boolean = if (!hasNext) false else {
     val a = getNext
-    p(a) || contains(p)
+    x == a || contains(x)
   }
 
+  def indexOf(x: A): Option[Int] = if (!hasNext) None else {
+    val a = getNext
+    if (x == a) Some(0) else {
+      indexOf(x) match {
+        case None => None
+        case Some(i) => Some(1+i)
+      }
+    }
+  }
+  
   def forall(p: A => Boolean): Boolean = if (!hasNext) true else {
     val a = getNext
     p(a) && forall(p)
@@ -58,6 +68,33 @@ abstract class Iterator[A] {
       def getNext = if (first.hasNext) first.getNext else second.getNext
     }
   }
+  
+  def filter(p: A => Boolean) = {
+    val i = this
+    new Iterator[A] {
+      /** stores the next element */
+      private var next: Option[A] = None
+      /** iterates through i until an element satisfies p, then stores that element in next */
+      private def advanceToNext {
+         if (next.isEmpty && i.hasNext) {
+           val a = i.getNext
+           if (p(a)) {
+             next = Some(a)
+           } else {
+             advanceToNext
+           }
+         }
+      }
+      def hasNext = {
+        advanceToNext
+        next.isDefined
+      }
+      def getNext = {
+        advanceToNext
+        next.get
+      }
+    }
+  }
 
 }
 
@@ -67,6 +104,8 @@ abstract class Iterable[A] {
    def length = iterator.length
    def get(n: Int) = iterator.get(n)
    def find(p: A => Boolean) = iterator.find(p)
+   def contains(x: A) = iterator.contains(x)
+   def indexOf(x: A) = iterator.indexOf(x)
    def forall(p: A => Boolean) = iterator.forall(p)
    def exists(p: A => Boolean) = iterator.exists(p)
    def foreach(f: A => Unit) = iterator.foreach(f)
