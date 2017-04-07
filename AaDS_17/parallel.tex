@@ -1,0 +1,109 @@
+\section{Concepts}
+
+\paragraph{Multi-Threading}
+Multi-threading executes multiple parts of a program at the same on the same machine.
+These parts are called \textbf{threads}.
+
+Ideally, this uses a separate CPU for each thread to maximize the speed-up.
+But there can also be more threads running in parallel than there are CPUs.
+In that case, the threads must be scheduled.
+
+\paragraph{Speed-Up}
+The speed up is the gain in time complexity if parallel execution is taken into account.
+
+Formally, let $C^k(n)$ is the time complexity for input of size $n$ if $k$ CPUs are available for parallel execution.
+In particular, $C^1(n)=C(n)$.
+Then the speedup for $k$ machines is defined by $C^k(n)/C(n)$.
+
+\paragraph{Blocking}
+If multiple threads are present, a thread may block, i.e., it waits until a certain condition is fulfilled.
+This gives a thread the ability to yield CPU access to other threads.
+
+\paragraph{Fairness}
+Usually there is no guarantee when or in which order threads gain access to a CPU.
+In extreme cases, a thread may be finished completely before the next thread is started.
+
+Fairness refers to a scheduling that gives each thread some guarantee on getting CPU access eventually.
+
+Parallel algorithms are usually designed independent of fairness: they have to yield correct results no matter how the threads are scheduled.
+
+\paragraph{Distributed Algorithm}
+If the parts of a program are executed on completely different machines, we speak of a distributed algorithm.
+
+\section{Parallelization Operators}
+
+\subsection{Threads}
+
+Most mainstream programming languages offer multi-threading.
+The details vary a lot.
+
+But typically a thread is a class with a method $run():\Unit$.
+When $run$ is called, it returns immediately, and the program continues normally.
+But from now on, the body of the method $run$ is executed in parallel with the remainder of the program.
+
+\subsection{Parallel List Operations}
+
+List-like data structures are great for parallelization because we often apply the same operation to all elements in a list.
+
+We specify two new operations:
+
+\begin{ctabular}{|l|l|l|}
+\hline
+function & returns & effect \\
+\hline
+\multicolumn{3}{|c|}{below, let $l\in A^*$ be of the form $[a_0,\ldots,a_{l-1}]$} \\
+$parMap[B](l\in A^*, f:A\to B)\in B^*$ & nothing & $[f(a_0),\ldots,f(a_{l-1})]$ computed in parallel\\
+$parForeach(l\in A^*, f:A\to \Unit)\in \Unit$ & $f(a_0),\ldots,f(a_{l-1}$ run in parallel & nothing\\
+\hline
+\end{ctabular}
+
+\subsection{Parallel Composition}
+
+Let $C$ and $D$ be functions that take no arguments.
+Then $C|D$ is the command that runs $C()$ and $D()$ in parallel.
+
+This can be seen as a special case of a $parForeach$ using the list $[C,D]$.
+
+\section{Examples}
+
+\subsection{Parallel Depth-First Search}
+
+Often we can turn a normal algorithm into a parallel algorithm by replacing $map$ with $parMap$ or $foreach$ with $parForeach$.
+
+For example, we obtain a parallel DFS traversal of a tree as follows:
+\begin{acode}
+\afun{DFS[A]}{n: Tree[A], f:Tree[A]\to \Unit}{
+  f(n)\\
+  parForeach(n.children, x \mapsto DFS[A](x,f))
+}
+\end{acode}
+
+This executes $f(n)$ in parallel for every node $n$.
+Of course, the actual order in which nodes are visited is not entirely predicable anymore.
+It is still guaranteed that $f(n)$ terminates before $f(c)$ begins for any child of $n$.
+But it is unpredictable in which order the children are processed.
+
+
+\subsection{Associative Folding}\label{sec:ad:monoidfold:parallel}
+
+Consider the associative folding problem from Sect.~\ref{sec:ad:monoidfold:divide}.
+The divide-and-conquer algorithm did not lower the complexity.
+
+But if we obtain a speedup if we recurse in parallel:
+
+\begin{acode}
+\afun[A]{monoidFold[A]}{mon: Monoid[A], x: List[A]}{
+ \aifelse{empty(x)}{mon.e}{
+   n := length(x)\\
+   i := n \divop 2\\
+   lower := [x_0,\ldots,x_{i-1}]\\
+   upper := [x_i,\ldots,x_{n-1}]\\
+   lowerFold := monoidFold(mon,lower) \tb | \tb upperFold := monoidFold(mon,upper)\\
+   mon.op(lowerFold, upperFold)
+ }
+}
+\end{acode}
+
+If we have more CPUs than $n=length(x)$, this runs in $\Theta(\log n)$.
+
+%More generally, we have $C^k(n)\in \Theat(\log n)+\Theta(n/k)
