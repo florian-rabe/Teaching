@@ -3,6 +3,8 @@
 \section{History}
 
 % caesar etc.
+\input{crypto_history}
+
 
 \section{Preliminaries}
 
@@ -38,6 +40,7 @@ Another important concept is the so called Pseudo-random generator (PRG or PRNG)
  \end{itemize}
 \end{definition}
 
+%This part should probably be moved to the appendix
 It can be shown that given any OWF, we can build a PRG. %TODO: Insert a proof for at least OWPs using hard core bits
 \begin{definition}[hard-core bit]
  Let $f$ be a one-way function. Now the function $b:\{0,1\}^*\to\{0,1\}$ is called a \emph{hard-core bit} for $f$ if $b$ is computable in polynomial time and there exists a negligible function $neg(n)$ such that for any $n\in\\mathbb{N}$ and any PPT $A$:
