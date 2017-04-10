@@ -1,0 +1,77 @@
+\section{Overview}
+
+A divide-and-conquer algorithm consists of $3$ steps:
+\begin{compactenum}
+ \item the input is divided into parts,
+ \item each part is processed recursively,
+ \item the results of the parts are aggregate into the result of the whole.
+\end{compactenum}
+Divide-and-conquer works whenever a problem of size $n$ can be reduced to multiple smaller subproblems of the same kind.
+
+The simplest special case arises when working on a list that is divided into two parts.
+$mergesort$ from Sect.~\ref{sec:ad:sort:merge} is a typical example.
+Here the $merge$ function is the aggregation of the results. 
+
+A more difficult example is Strassen's multiplication algorithm from Sect.~\ref{sec:ad:matrix:strassen}.
+It splits the arguments matrices into $4$ parts each.
+Then it recurses $7$ times and aggregates the results.
+
+\section{General Structure}
+
+\subsection{Design}
+
+A rather general class of divide-and-conquer algorithms is described as follows:
+\begin{compactenum}
+ \item create $k$ subproblems of size $n/d$ in $D(n)$ time,
+ \item 
+\end{compactenum}
+
+% example: Karatsuba Multiplication
+% Karatsuba: multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication
+
+\subsection{Complexity}
+% Master theorem
+
+\section{Examples}
+
+\subsection{Binary Search}
+
+Binary search checks whether a sorted list of length $n$ contains a certain value.
+This takes $\Theta(\log n)$ if divide-and-conquer is used.
+
+\subsection{Associative Folding}\label{sec:ad:monoidfold:divide}
+
+Consider folding over a monoid from Sect.~\ref{sec:ad:monoidfold}.
+
+We can give a divide-and-conquer algorithm for it:
+
+\begin{acode}
+\afun[A]{monoidFold[A]}{mon: Monoid[A], x: List[A]}{
+ \aifelse{empty(x)}{mon.e}{
+   n := length(x)\\
+   i := n \divop 2\\
+   lower := [x_0,\ldots,x_{i-1}]\\
+   upper := [x_i,\ldots,x_{n-1}]\\
+   lowerFold := monoidFold(mon,lower) \\
+   upperFold := monoidFold(mon,upper) \\
+   mon.op(lowerFold, upperFold)
+ }
+}
+\end{acode}
+
+\paragraph{Correctness}
+The correctness is straightforward.
+The key insight is that associativity allows us to bracket the monoid operations any way we want, e.g.,
+\[x_0 \;mon.op\;\ldots \;mon.op\; x_{i-1} \;mon.op\; x_i \;mon.op\; \ldots mon.op\; x_{n-1} =\]
+\[(x_0 \;mon.op\; \ldots \;mon.op\; x_{i-1}) \;mon.op\; (x_i \;mon.op\; \ldots mon.op\; x_{n-1}) \]
+
+\paragraph{Complexity}
+Let us assume that we use arrays to split the lists in constant time.
+Then the recurrence for the complexity is
+ \[C(n)=2\cdots C(n/2)+O(1) \tb\mand\tb C(0)=C(1)= O(1)\]
+Working out the recursion yields $\Theta(n)$, which is the same as in the naive case.
+
+Thus, not every divide-and-conquer algorithm yields an improvement.
+
+This is not surprising because all we do is change the bracketing.
+The number of occurrences of $mon.op$ remains the same, i.e., we have to compute the monoid operation the same number of times.

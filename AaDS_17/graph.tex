@@ -8,12 +8,26 @@ That is because choosing the more complex data structure (i.e., a tree instead o
 
 Data structures for graphs on the other hand are almost exclusively used to represent graphs.
 That is because they are rather difficult to work with.
-But they are needed because graph-like data occurs very frequently.
+But they are needed because graph-structured data occurs very frequently.
+
+Practical examples of graph-structured data include
+\begin{compactitem}
+ \item Social networks: nodes are given by people and edges by the social connection relation.
+  These relations may be symmetric (e.g., the follows-relation of twitter), which leads to directed graphs, or asymmetric (e.g., the are-friends-with-each-other relation of facebook), which leads to undirected graphs.
+ \item Roads: nodes are given by cities and intersections and edges by roads between them. Flight routes, subway systems, etc. work accordingly.
+ \item Utilities supply networks for water, electricity, internet, etc.: nodes are given by power plants/switchboards/hubs/etc. and households and edges by pipes/cables/etc.
+ \item Mazes and other explorable territories: nodes are given by intersections and edges by paths.
+ \item Games: generalizing the tree intuition from Sect.~\ref{sec:ad:minmax}, nodes are given by states and edges by steps/moves/developments.
+ \item Neighborhood relations: nodes are given by countries or other territories and edges by the share-a-border-with-each-other relation.
+\end{compactitem}
+
+In fact, binary function and binary relations are the most ubiquitous complex mathematical objects.
+Algorithms are our primary representation method for the former and graphs for the latter.
 
 \section{Specification}
 
 \begin{definition}[Graph]
-A \textbf{graph} consists is a pair $G=(N,E)$ such that $E$ is a binary relation on $N$.
+A \textbf{graph} is a pair $G=(N,E)$ such that $E$ is a binary relation on $N$.
 
 If $E$ is symmetric, $G$ is called \textbf{undirected}, otherwise \textbf{directed}.
 \end{definition}
@@ -32,7 +46,7 @@ It is also called an \textbf{incoming edge} of $n$ and an \textbf{outgoing edge}
 For every node $n$, the number of incoming edges is called the \textbf{in-degree} of $n$, and the number of outgoing edges is called the \textbf{out-degree} of $n$.
 If $G$ is undirected graph, incoming and outgoing edges are the same, and we simply speak of the \textbf{degree} of $n$.
 
-A \textbf{path} from $a_0$ to $a_n$ is a list $[a_0,\ldots,a_n]\in N^*$ such that there is an edge from $a_{i-1}$ to $a_i$ for $i=1\,ldots,n$.
+A \textbf{path} from $a_0$ to $a_n$ is a list $[a_0,\ldots,a_n]\in N^*$ such that there is an edge from $a_{i-1}$ to $a_i$ for $i=1,\ldots,n$.
 
 $n$ is called the \textbf{length} of the path.
 If $n=0$ (and thus $a_0=a_n$), the path is called \textbf{empty}.
@@ -50,7 +64,7 @@ $G$ is called \textbf{complete} if $N$ is a clique.
 
 
 \paragraph{Visualization}
-A good intuition to think of graph is to imagine the nodes as places and the edges as streets between them.
+A good intuition to think of graphs is to imagine the nodes as places and the edges as streets between them.
 In a directed graph, all edges are one-way streets.
 
 All concepts about graphs also have very intuitive visual aspects:
@@ -66,7 +80,7 @@ incoming edge of $a$ & &  arrow pointing at $a$ \\
 outgoing edge of $a$ & &  arrow pointing away from $a$ \\
 $b$ reachable from $a$ & we can walk from $a$ to $b$ along edges & \ldots in arrow direction \\
 path from $a$ to $b$ of length $n$ & a walk from $a$ to $b$ in $n$ steps & \ldots in arrow direction \\
-weight\footnotemark of an edge & \multicolumn{2}{c|}{cost intuition: length of the line}\\ 
+{weight\footnotemark} of an edge & \multicolumn{2}{c|}{cost intuition: length of the line}\\ 
                                & \multicolumn{2}{c|}{capacity intuition: width of the line}\\ 
 complete & we can walk everywhere in $1$ step &  \ldots in arrow direction \\
 cycle & we can walk in a circle & \ldots in arrow direction \\
@@ -92,7 +106,7 @@ Exercise.
 \end{proof}
 
 \paragraph{Labeled Graphs}
-Like for trees, graphs are only useful for compuation, if we can store data in them.
+Like for trees, graphs are only useful for computation, if we can store data in them.
 Contrary to trees, we often need to store data in the nodes \emph{and} the edges.
 
 \begin{definition}[Labeled Graph]
@@ -108,11 +122,12 @@ $Graph[A,B]$ is the set of $A$-$B$-labeled graphs.
 The most important special case arises when the nodes are not labeled (i.e., we put $A=\Unit$) and the edges are labeled with numbers, i.e., $B=\Z$:
 
 \begin{definition}
-A \textbf{weighted} graph is a $\Unit$-$\N$-labeled graph.
-The label of an edge from is called its \textbf{weight}.
+A \textbf{weighted} graph is a $\Unit$-$B$-labeled graph where $B$ is any set of numbers.
+The label of an edge is called its \textbf{weight}.
 \end{definition}
+Most often $B$ is $\N$, but $\Z$, $\R$, or $\Z^\infty$, etc. are also common.
 
-There are two important applications of weigthed graphs that use different interpreations of the weights:
+There are two important applications of weighted graphs that use different interpretations of the weights:
 \begin{itemize}
  \item Cost intuition: The weight of an edge is the cost of moving along the edge.
  For example, if the nodes represent cities and the edges flight routes, the weight can be the distance.
@@ -136,80 +151,413 @@ In a cost-weighted graph, the \textbf{cost of a path} is the sum of the weights 
 In a capacity-weighted graph, the \textbf{capacity of a path} is the minimal weight of any edge in it.
 \end{definition}
 
+The intuition behind the default values is that if there is no edge from $i$ to $j$,
+\begin{compactitem}
+ \item cost intuition: it is impossible to go from $i$ to $j$, i.e., which corresponds to infinite cost,
+ \item capacity intuition: it is impossible to move objects from $i$ to $j$, which corresponds to empty capacity.
+\end{compactitem}
+
 \section{Data Structures}
 
-Graphs $G=(N,E)$ are among the trickiest data structures to design.
-It is straightforward to represent $N$ as a set, e.g., the set $\Z_m$ if there are $m$ nodes.
+We consider only graphs $G=(N,E)$ where $|N|=m$, i.e., is finite.
+We number the elements of $N$ (in any order) so that we can assume $N=\Z_m$.
 
-But there are many options to represent $E$, all with different advantages:
-For example,
+Moreover, we consider only graphs whose edges are labeled with weights from set $B$.
+Note that an unlabeled graph can be seen as the special case where $B=\Unit$.
+
+Graphs are among the trickiest data structures to design because it is difficult to represent the set $E$ efficiently.
+There are a number of frequently-needed operations, whose complexity depends on the data structure.
+We may want to obtain
 \begin{compactitem}
- \item a function $N\times N\to Bool$\\
- This makes it easy to check whether an edge exists but very hard to enumerate all edges.
- \item a set $e$ with functions $from: e\to N$ and $out:e\to N$\\
- This makes it easy to enumerate all edges but hard to navigate in the graph.
- \item a function $outgoing:N\to Set[N]$ or $incoming:N\to Set[N]$\\
- The former makes it easy to navigate forwards (in arrow direction) but hard to navigate backwards.
- The latter has the dual problem.\\
- \item two functions $outgoing:N\to Set[N]$ and $incoming:N\to Set[N]$ \\
- This makes navigation easy in both directions. But the representation is redundant: Every time we add/remove an edge, we have to update both $outgoing$ and $incoming$.
+ \item $edge(G,i,j)$: for two nodes $i$, $j$, the edge from $i$ to $j$ (if any),
+ \item $outgoing(G,i)$: for a node $i$, the list of outgoing edges,
+ \item $incoming(G,i)$: for a node $i$, the list of incoming edges,
+ \item $edges(G)$: an iterator over all edges.
 \end{compactitem}
+
+If we have one of those operations, we can compute the others---but not necessarily efficiently.
 
 \subsection{Adjacency Matrix}
 
+\paragraph{Design}
 An often useful representation is via a matrix, called the \textbf{adjacency matrix} of $G$.
+It stores the entire function that maps two nodes to their edge in a single object.
 
 \begin{definition}[Adjacency Matrix]
-Given a graph $G=(N,E)$ with $|N|=m$.
-The adjacency matrix of $G$ is the matrix $A\in \Bool^{mm}$ where $A_{ij}==\true$ iff there is an edge from $i$ to $j$ in $G$.
+The adjacency matrix of an unlabeled graph $G$ is the matrix $Adj\in \Bool^{mm}$ where $Adj_{ij}==\true$ iff there is an edge from $i$ to $j$ in $G$.
 \end{definition}
 
 Adjacency matrices have the nice property that we can multiply them.
 Here matrix multiplication is computed using conjunction and disjunction instead of multiplication and addition:
 \begin{definition}
-$A,B\in \Bool^{mm}$, we define $(A\cdot B)_{ik}:= \bigvee_{j=0,\ldots,m-1}A_{ij}\wedge B_{jk}$.
+For $X,Y\in \Bool^{mm}$, we define $(X\cdot Y)_{ik}:= \bigvee_{j=0,\ldots,m-1}X_{ij}\wedge Y_{jk}$.
 \end{definition}
 This is useful because:
 \begin{theorem}
-If $A$ is the adjacency matrix of $G$, then $(A^n){ij}$ iff there is a path of length $n$ from $i$ to $j$ in $G$.
+If $Adj$ is the adjacency matrix of $G$, then $(Adj^n)_{ij}$ iff there is a path of length $n$ from $i$ to $j$ in $G$.
 \end{theorem}
 
-This is advantageous because it lets us compute all paths of a given length efficiently $A^n$ using square-and-multiply (Sect.~\ref{sec:ad:exp:sqmult}).
+This is advantageous because it lets us compute all paths of length $n$ efficiently by computing $Adj^n$, e.g., using square-and-multiply (Sect.~\ref{sec:ad:exp:sqmult}).
+Moreover, in an acyclic graph, there are only finitely many paths.
+Thus, we eventually have $Adj^n=Adj^{n+1}=\ldots$, at which point we have computed all paths.
 
-Moreover, in acyclic graph, there are only finitely many paths.
-Thus, we eventually have $A^n=A^{n+1}=\ldots$, at which point we have computed all paths.
+If the edges are labeled with weights from $B$, we can use an adjacency matrix $W\in B^{mm}$ such that $W_{ij}$ is the weight of the edge from $i$ to $j$.
+If there is no edge, we use a default value, e.g., $\infty$, $0$, or $null$.
 
-A drawback of the adjacency matrix is that its size $m^2$.
-In particular, for a undirected graph, half the space is wasted because we always have $A_{ij}=A_{ji})$.
+\paragraph{Complexity}
+A drawback of the adjacency matrix is that its size $|N|^2$.
+Moreover, for an undirected graph, half the space is wasted because we always have $Adj_{ij}=Adj_{ji}$.
+
+$edge(G,i,j)$ takes $\Theta(1)$ (assuming we store the matrix efficiently using arrays).
+
+$outgoing(G,i)$ and $incoming(G,i)$ must pull out a row or column from the adjacency matrix.
+That takes $\Theta(1)$ or $\Theta(m)$, depending on how we store the arrays.
+
+$edges(G)$ takes $\Theta(1)$ because we can use the iterator of the array.
 
 \subsection{Adjacency Lists}
 
-For graphs with many nodes and few edges, it is better to store adjacency lists:
+\paragraph{Design}
+For graphs with many nodes and few edges, it is better to store adjacency lists.
+Those are the lists of outgoing edges for each node:
 
 \begin{definition}[Adjacency List]
-Given a graph $G=(N,E)$ with $|N|=m$.
-The adjacency list of a node $i$ is the sorted list $A_i$ of all $j$ such that there is an edge from $i$ to $j$ in $G$.
+For an unlabeled graph, the adjacency list of a node $i$ is the sorted list $L_i\in List[\Z_m]$ of all $j$ such that there is an edge from $i$ to $j$ in $G$.
 
-The adjacency list--representation of $G$ consists of an list $[(0,A_0),\ldots,(m-1,A_{m-1})]$ pairing every node with its adjacency list.
+The adjacency list--representation of $G$ consists of an list $[(0,L_0),\ldots,(m-1,L_{m-1})]$ pairing every node with its adjacency list.
 \end{definition}
 
+If the edges are labeled with weights from $A$, the adjacency list $L_i\in List[\Z_m\times A]$ contains pairs $(j,w)$ where $W$ is the weight of the edge from $i$ to $j$.
+We do not need default values because we can simply omit those $j$ for which there is no edge.
+
+\paragraph{Complexity}
 The size of the adjacency list--representation is $|N|+|E|$, which is usually much smaller than $|N|^2$.
 
-%\subsection{Adjacency Matrix for Weighted Graphs}
-%
-%For a weighted graph, the adjacency matrix $W\in (\N^\infty)^{mm}$ of a weighted graph is the matrix such that $W_{ij}=weight(i,j)$.
-%
-%By picking appropriate operations for matrix multiplication, we can use $W^n$ to compute the capacity between two nodes.
-%We use minimum instead of addition, and addition instead of multiplication.
-%% semi-ring on \N
+$edge(G,i,j)$ takes $\Theta(d)$ where $d$ is the maximal number of outgoing edges of any node.
+$d$ is usually much smaller than $|E|$.
+
+$outgoing(G,i)$ takes $\Theta(1)$.
+
+$incoming(G,i)$ is inefficient. We have to check each node for an edge into $i$ and collect the results.
+
+$edges(G)$ takes $\Theta(m)$ because we have to concatenate $m$ iterators.
+
+\subsection{Opposite Adjacency List}
+
+\paragraph{Design}
+The adjacency list stores for every node the list of \emph{outgoing} edges.
+
+For directed graphs, we can alternatively store the list of incoming edges.
+That is the same as storing the adjacency lists for the graph in which all edges are flipped.
+
+\paragraph{Complexity}
+All results are opposite to the previous case.
+
+\subsection{Redundant Adjacency Lists}
+
+\paragraph{Design}
+
+If we want to be able to do both, it is best to store both adjacency lists for each node.
+
+\paragraph{Complexity}
+The size of the representation is now twice as big as when using a single adjacency list.
+
+$edge(G,i,j)$ takes $\Theta(d)$ as before.
+
+$outgoing(G,i)$ and $incoming(G,i)$ take $\Theta(1)$.
+
+$edges(G)$ takes $\Theta(m)$ because we have to concatenate $m$ iterators.
+
+The main drawback of this data structure is that it is more difficult to implement because we have to keep the adjacency lists in sync.
+Every time we add or remove an edge from $i$ to $j$, we have to change two lists, namely $incoming(G,j)$ and $outgoing(G,i)$.
 
 \section{Important Algorithms}
 
-\subsection{Search}
+Unless mentioned otherwise, we use a connected finite directed graph $G=(N,E)$, whose edges are labeled with natural numbers.
+We assume $N=\Z_m$.
 
-\subsection{Minimal Spanning Tree}
+\subsection{Reachability}\label{sec:ad:reachability}
 
-\subsection{Shortest Path}
+We work with unlabeled graphs in this section.
 
-\subsection{Maximal Flow}
+\paragraph{Problem}
+Given a start node $n\in N$, our goal is to explore all nodes that are reachable from $n$.
 
+This problem of exploring all reachable nodes comes up all the time in practice.
+In a maze, it is a way to find the exit.
+In a game, it means to analyze a particular situation in the game.
+
+\paragraph{Algorithm}
+We use a data structure for which $outgoing$ is efficient.
+Then we start at $n$ are recursively call $outgoing$ until we reach no further nodes.
+
+Like for trees, there are two typical options: DFS and BFS.
+Contrary to trees, we have to watch for cycles: if $G$ has a cycle and we do not keep track of which nodes we have found already, we would never terminate.
+Therefore, we use two auxiliary data structures:
+\begin{compactitem}
+ \item a set $reachable:List[N]$ where we store all nodes in the order in which we found them and which we return eventually
+ \item a queue $horizon:List[N]$ where we store all nodes that we have found already but whose outgoing edges we have not yet looked at
+\end{compactitem}
+
+For BFS, the algorithm looks as follows:
+
+\begin{acode}
+\afun[{List[N]}]{BFS}{G:Graph,start:N}{
+	reachable: List[N] = Nil\\
+	horizon: Queue[N] = \anew{Queue[N]}{}\\
+	enqueue(horizon, start)\\
+	\awhile{!empty(horizon)}{
+	  i = dequeue(horizon)\\
+	  reachable = prepend(i, reachable)\\
+	  foreach(outgoing(G,i), \alam{j}{\ablock{
+	    \aif[the critical check to avoid cycles]{!contains(reachable,j) \wedge !contains(horizon,j)}{
+	      enqueue(horizon,j)
+	    }
+	  }}\\)
+	}\\
+	reverse(reachable)
+}
+\end{acode}
+
+Like for trees, we obtain a DFS exploration algorithm if we use a stack instead of a queue.
+
+\paragraph{Correctness}
+The postcondition is that $BFS$ return the nodes reachable from $start$.
+As a loop invariant we use that
+\begin{compactitem}
+ \item every node reachable from $start$ or from a node in $reachable$ is
+		\begin{compactitem}
+		 \item an element of $reachable$ or
+		 \item reachable from some element of $horizon$,
+		\end{compactitem}
+	and
+ \item all nodes in $reachable$ or $horizon$ are reachable from $start$.
+\end{compactitem}
+
+As a termination ordering we use $|N|-length(reachable)$.
+Indeed, reachable grows in every iteration of the loop and (because it never contains duplicates) becomes at most $|N|$.
+
+\paragraph{Complexity}
+Let $r<|N|$ be the number of reachable nodes and $e$ be the number of edges between reachable nodes.
+Then $BFS$ takes $\Theta(r+e)$ because every reachable node is visited once and every edge is traversed once.
+
+\subsection{Minimal Spanning Tree}\label{sec:ad:spanningtree}
+
+We work with undirected graphs in this section.
+
+\paragraph{Problem}
+A \textbf{spanning tree} for a graph $G$ is a subgraph of $G$ that is a tree and includes all nodes of $G$.
+In other words, it is a subset of edges of $G$ such that $G$ becomes a tree.
+
+Spanning trees are closely related to the exploration of reachable nodes: they provide a minimal set of edges needed to reach all reachable nodes.
+For example, when planning to roads or laying cables a spanning tree can provide the minimal amount of connections needed to reach all households.
+
+We can capture the minimality condition with the following observations.
+A spanning tree has $|N|-1$ edges because every node but the root has exactly one incoming edge.
+It is not possible to use fewer edges because any connected subgraph of $G$ that includes all nodes must have at least $|N|-1$ edges: $1$ edge can connect two nodes; any additional edge can connect only one additional node.
+
+The problem becomes more interesting if the edges of $G$ are cost-weighted.
+Then the \textbf{weight of a subgraph} $T$ of $G$ is the sum of the weights of the edges in $T$.
+Then our goal is not only to find \emph{some} spanning tree but a minimal one, i.e., a spanning tree with the least possible weight.
+
+For example, when planning roads, the cost of an edge could be the distance (more generally: the financial cost of building the road) between two points.
+A minimal spanning tree minimizes the overall cost of building the roads.
+
+\paragraph{Algorithm}
+The BFS and DFS exploration algorithms immediately yield algorithms to find \emph{some} spanning tree.
+All we have to do is to store the nodes we find in a $reachable: Tree[N]$ instead of $reachable:List[N]$.
+
+It is less obvious how to find a minimal spanning tree of a cost-weighted graph.
+One of the most well-known solutions is Kruskal's algorithm:
+
+\begin{acode}
+\afun[{Array[N]}]{Kruskal}{G:Graph}{
+  edges := \text{list of edges $e\in E$, sorted by increasing weight}\\
+  sot := \anew{Set[E]}{}\\
+  foreach(edges, \alam{e}{\aifI{isSetOfTrees(sot,\cup\{e\})}{insert(tree,e)}})\\
+  sot
+}
+\end{acode}
+
+Here the function $isSetOfTrees$ has the following postcondition: if $S\sq E$ is a set of edges of $G$, then $isSetOfTrees(S)$ is true if the subgraph of $G$ containing only the edges in $S$ is a set of trees.\footnote{Such a graph is called a \textbf{forest}.}
+
+\paragraph{Correctness and Complexity}
+This is an example of a greedy algorithm.
+We discuss its correctness and complexity in Ch.~\ref{sec:ad:greedy}.
+
+\subsection{Cheapest Path}\label{sec:ad:shortestpath}
+
+In this section, we interpret all edge weights as costs.
+We think of it as the cost of moving along the edge, where the cost represents the physical distance or any kind of resource (money, gas, effort, amount of material, etc.) that must be expended.
+Recall that the cost of a path is the sum of the costs of its edges.
+
+When comparing paths, the literature often uses the words length/short/long, whereas we will use the words cost/cheap/expensive.
+We do that to avoid confusing the cost of a path with its number of edges, both of which are often called the \emph{length}.
+The cheapest path does not necessarily contain the least number of edges: a detour along cheap edges can lead to lower cost than the direct path along expensive edges.
+For example, direct flights usually cost more money than multi-leg flights, and the cheapest flight route is usually not a direct flight.
+
+\paragraph{Problem}
+We are interested in finding the cheapest paths.
+This has obvious applications in logistics, navigation, and similar situations.
+Whenever we move in any kind of network, we prefer taking the cheapest path.
+
+Note there may be multiple different paths with the same cost. So technically, we are looking for \emph{a} cheapest path, not \emph{the} cheapest path.
+
+We write $Cost(p)$ for the cost of a path and $Cost(i,j)$ for the cost of the lowest cost of any path from $i$ to $j$.
+
+There are multiple variants of the cheapest path problem:
+\begin{compactitem}
+ \item for fixed nodes $i$ and $j$, find a cheapest path from $i$ to $j$,
+ \item for a fixed start node $i$, find cheapest paths to any node $j$,
+ \item for a fixed end node $j$, find cheapest paths from any node $i$,
+ \item find cheapest paths for all pairs of node $i$ and $j$.
+\end{compactitem}
+
+Clearly, all variants can be reduced to each other.
+But that might not be efficient: finding the cheapest paths for all pairs at once can be much faster than the total time of doing so individually for each pair.
+That is because cheapest paths are related, especially:
+\begin{compactitem}
+  \item if $p$ is a cheapest path, then so is any sub-path of $p$
+  \item if $p$ and $q$ are cheapest paths from $i$ to $j$ and $j$ to $k$, then $Cost(i,k)\leq Cost(p)+Cost(q)$.
+\end{compactitem}
+
+\paragraph{Algorithm}
+We look at the special case where we have a fixed start node $i$ and want to find the cheapest path to every node.
+It is easy to see that these paths from a spanning tree of $G$ with root $i$.
+
+One well-known solution is Dijkstra's algorithm.
+It is also a greedy algorithm: we start with the root only, and each iteration adds to the tree whichever node is cheapest to reach.
+
+\begin{acode}
+\afun[{Array[List[N]]}]{Dijkstra}{G:Graph,start:N}{
+  cheapest := \anew{Array[List[N]]}{m} \acomment{$cheapest[j]$ is the cheapest known path from $start$ to $j$}\\
+  foreach(nodes(G), \alam{n}{cheapest[n] :=  null}) \acomment{no path known yet}\\
+  cheapest[start] := [start] \acomment{empty path}\\
+  \\
+  cost := \anew{Array[\N^\infty]}{m} \acomment{$cost[j]$ is the cost of $cheapest[j]$}\\
+  foreach(nodes(G), \alam{n}{cost[n] := \infty}) \acomment{no path known yet}\\
+  cost[start] := 0 \acomment{cost of empty path}\\
+  \\
+  rest := \anew{Set[N]}{}\\
+  foreach(nodes(G), \alam{n}{insert(rest,n)}) \acomment{remaining nodes to add to spanning tree}\\
+  \awhile{!empty(rest)}{
+    i := \text{a node $i\in rest$ with minimal value of $cost[i]$}\\
+    delete(rest,i)\\
+    foreach(outgoing(G,i), \alam{j}{\ablock{
+      \acomment{check where we can go next after going to $i$}\\
+      c := cheapest[i] + weight(i,j) \acomment{cost if we go to $j$ via $i$}\\
+      \aif[cheaper than best known path]{c < cost[j]}{
+        cheapest[j] := append(cheapest[i], j) \acomment{use the path via $i$}\\
+        cost[j] := c
+      }
+    }}\\)
+  }\\
+  cheapest
+}
+\end{acode}
+
+\paragraph{Correctness}
+Termination is straightforward using the termination order $length(rest)$.
+\medskip
+
+Partial correctness is harder.
+We can easily establish the loop invariant that $cheapest[j]$ (if not $null$) is a path from $start$ to $j$ whose cost is $cost[j]$.
+That is easy to see.
+
+Moreover, with a little thinking we see that for every node that is reachable from $start$, $cheapest[j]$ will not be $null$ at the end.
+
+It remains to show that these paths are in fact the cheapest paths.
+The following additional loop invariant is the key:
+\begin{compactitem}
+ \item for nodes $n\nin rest$: $cheapest[j]$ is a cheapest path from $start$ to $j$
+ \item for nodes $n\in rest$: $cheapest[j]$ is cheapest among those paths from $start$ to $j$ whose intermediate nodes are not in $rest$.
+\end{compactitem} 
+Because $rest$ is empty at the end, this yields the desired result.
+
+Because $rest$ contains all nodes initially, the invariant trivially holds before the loop.
+
+It remains to show that it is indeed a loop invariant.
+
+\paragraph{Complexity}
+It is easy to see that everything outside the while-loop takes $\Theta(|N|)$.
+
+The while-loop is run $|N|$ times.
+But it is not so obvious how long the body of the while-loop takes:
+\begin{compactitem}
+ \item The algorithm does not clarify how to find $i$. To find it efficiently, we can use a priority queue, which takes at most $O(\log|rest|)\sq O(\log|N|)$.\\
+ So the first part of the while-loop takes $|N|O(\log|N|)$.
+ \item We need a special priority queue where we change the priorities (the values $cost[i]$) from time to time.
+  We know that takes at most $O(\log |rest|)\sq O(\log|N|)$ each time.
+ \item The body of the $foreach$ command is run once for every outgoing edge of $i$.
+ It is unclear how many such edges there are.
+ But we can merge the analysis with the while-loop: Overall the body of the $foreach$ is run once for every outgoing edge of every node, i.e., once for every edge.\\
+ Every time we have to allow for $O(\log|N|)$ because we may change a priority.\\
+ Thus, the second part of the while-loop takes $|E|O(\log|N|)$ overall.
+\end{compactitem}
+
+Adding everything up, we obtain $O((|N|+|E|)\log|N|)$ as an upper bound for the worst case time complexity.
+The average time complexity is lower because of the if-statement: we do not have to change a priority every time.
+
+The worst-case time complexity becomes lower if we use better-optimized data structures for the priority queue.
+
+
+\paragraph{Other Algorithms}
+There are also important algorithms for finding all cheapest paths between any nodes at once.
+For example, the Floyd-Warshall algorithm.
+
+\subsection{Greatest Flow}\label{sec:ad:maximalflow}
+
+In this section, we interpret all edge weights as capacities.
+We assume that $G=(N,E)$ has two distinguished nodes $source$ and $sink$.
+Such a graph is called a \textbf{flow network}.
+
+Intuitively, we think of the edges as pipes, and our goal is to make a liquid flow from the source to the sink.
+
+\paragraph{Flows}
+Intuitively, a flow says how much is flowing along an edge.
+
+A flow \textbf{from} $source$ to $sink$ maps every $e\in E$ to a number $f(e)\in \{0,\ldots,weight(e)\}$ such that
+\begin{compactitem}
+ \item Nothing flows into the start node: $f(e)=0$ for incoming edges of $source$.
+ \item Nothing flows out of the end node: $f(e)=0$ for outgoing edges of $sink$.
+ \item What flows into a node must flow out of it and vice versa: for all nodes $n$ except for $source$ and $sink$
+  \[\Sigma_{e\in incoming(n)} f(e) = \Sigma_{e\in outgoing(n)} f(e)\]
+\end{compactitem}
+
+From that we can prove that
+ \[\Sigma_{e\in outgoing(source)} f(e) = \Sigma_{e\in incoming(sink)} f(e)\]
+and that number is called the capacity $Cap(f)$ of $f$.
+It describes how much is flowing through the network from the source to the sink.
+
+\paragraph{Problem}
+Now our goal is to find $f$ such $Cap(f)$ is as big as possible.
+This is called the greatest flow, maximal flow, or max-flow problem.
+
+For example, the flow network describes goods that have to be shipped from one place to another via a variety of paths, the maximal flow maximizes the amount of goods that are shipped.
+Similar examples abound in logistics.
+
+\paragraph{Correspondence between Paths and Flows}
+Recall that paths from $start$ to $end$ are lists of nodes $[p_0,\ldots,p_n]$ such that
+\begin{compactitem}
+ \item The path begins at $start$: $p_0=e$.
+ \item The path ends at $end$: $p_n=end$.
+ \item There are edges that connect each node to is successor: for each $i=0,\ldots,n-1$, there is an edge from $p_i$ to $p_i+1$.
+\end{compactitem}
+
+Then the definitions of paths from $start$ to $end$ and flows from $start$ to $end$ are elegantly similar.
+Moreover, the cost of a path corresponds to the capacity of path, and the cheapest path problem corresponds to the greatest flow problem.
+
+\paragraph{Algorithm}
+A well-known algorithm for the greatest flow is the Ford–Fulkerson algorithm.
+It is also a greedy algorithm.
+
+The basic idea is to
+\begin{compactitem}
+\item start with the empty flow where $f(e)=0$ for all edges $e$,
+\item repeatedly look for some path from $source$ to $sink$ along which every edge still has free capacity and increase the flow accordingly.
+\end{compactitem}
+However, the algorithm also uses a subtle trick to allow for reducing the flow along some edge.
+
+That has the effect of adjusting sub-optimal choices from previous iterations.
+
+We omit the details.

@@ -554,7 +554,7 @@ In those situations, if DFS picks the wrong cild of the root early on, it may ha
 BFS is more balanced and predictable.
 If we know the probability of finding a solution becomes smaller at greater depths, BFS makes sure that we explore the most promising nodes first.
 
-\subsubsection{Depth-First Search}
+\subsubsection{Depth-First Search}\label{sec:ad:dfs}
 
 DFS can be realized quite easily with a recursive function, especially if we use the data structure from Sect.~\ref{sec:ad:listtree}.
 We use an arbitrary function $f$ as the payload, i.e., a function that is to be called at every node $n$.
@@ -570,7 +570,7 @@ For example, $f$ can check if $n$ is the needed solution or do some other work o
 In this variant of DFS, $f$ acts on every node $n$ before it recurses into the children.
 It is also possible to switch those two, i.e., first recurse into the children, then call $f(n)$.
 
-\subsubsection{Breadth-First Search}
+\subsubsection{Breadth-First Search}\label{sec:ad:bfs}
 
 BFS is a bit more complicated.
 One way to do it is to use a queue that stores all nodes that we have already seen but not acted on yet.
@@ -595,7 +595,7 @@ That way all children of $n$ are guaranteed to be processed before any grandchil
 The above BFS-algorithm is interesting because we can easily turn it into a DFS-algorithm: all we have to do is use a stack instead of a queue.
 That way all descendants of $n$ are processed before anything else.
 
-\subsection{Min-Max Algorithm}
+\subsection{Min-Max Algorithm}\label{sec:ad:minmax}
 
 Many games can be represented as trees.
 Consider a $2$-player game in which the players alternate taking turns.
