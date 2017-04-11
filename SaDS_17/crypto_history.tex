@@ -1,0 +1,34 @@
+One of the oldest known encryption algorithms is the so called Caesar cipher. It is said that he used it for communication with his army. It is a very simple character-wise substitution cipher. The idea is to substitute letters for each others. In this very simple case the alphabet has been shifted by 3 letters in a cyclic way. Thus, an a would be encrypted to an e, b would be f, c would be g, d would be h,\ldots, w becomes a, x becomes b and z becomes d. 
+\begin{example}\ 
+  \begin{lstlisting}
+  	meet me after the toga party
+  	phhw ph diwhu wkh wrjd sduwb
+  \end{lstlisting}
+\end{example}
+Let us make this algorithm mathematically a bit more precise. Firstly, we represent each letter by a number $1, 2, 3,\ldots , 26$ and the key $k$ another number from 1 to 26. Now for each letter $l$, we can compute its image $\phi(l)$ under the cipher $\phi$ as $phi(l):\Equiv l+3\modop 26$.
+
+In general the alphabet can be shifted by any arbitrary number $k$ of letters from 1 to 26 (or whatever the size of the alphabet is). This is obviously, a very weak cipher. Here, an attacker can easily try out all 26 possible combinations and thus find the key and break the cipher (brute-force-attack). 
+
+We can generalize this approach of substituting the letters individually by different letters in the alphabet. This is called a monoalphabetic cipher. The key now contains the images of each individual letter in our alphabet i.e. it is the ciphertext of the plaintext ``abcdefghijklmnopqrstuvwxyz''. In order to be able to unambiguously decrypt a ciphertext, we require every letter to have a different image. There are still $26!\approx 4\times 10^{26}\approx 2^{88}$ possible keys, so a brute force attack seems very hard and this looks like a very strong cipher, at first sight. 
+
+Monoalphabetic substitution ciphers can however be attacked very efficiently. This is because, they don't obfuscate certain patterns in the plain-text, since they encrypt the same plaintext with the same ciphertext every time. In particular the same letter is always encrypted with the same letter in the ciphertext. 
+Thus, the frequencies of occurrences of letters in the ciphertext can be correlated to the expected frequencies of occurrences of the plaintext. Then, the substitution can be guessed. This attack works for all monoalphabetic ciphers. 
+
+So it is useful, to look at polyalphabetic ciphers i.e. cipher that encrypt entire blocks of plaintext. One very simple polyalphabetic cipher is the so called Vigin\`e{}re-cipher, a generalisation of Caesar's cipher, where blocks of subsequent letters are encrypted using Ceasar's cipher for each letter in the block using a different sub-key. 
+
+This can be attacked by first looking for repetitive patterns in the ciphertext (in order to guess the length of the key) and attacking the decomposed Caesar encrypted subsequences individually. 
+This works well if the length of the message is significantly longer than the length of the key. 
+
+One notable special case arises, when the length of the key equals the length of the message. In this case we call the cipher a one-time-pad. Then the encryption is absolutely secure, since any ciphertext can be decrypted to any arbitrary plaintext of same length, given the right key. It is vital now that the key is never used twice, otherwise the encryption can be broken by encrypting one ciphertext with the other yielding the encryption of the first \emph{plain}-text with the second. This already gives an attacker potentially very useful information (especially as parts of the plaintext might be known or guessed easily) and might also allow attacks recovering the key. Therefore, this encryption is known as one-time-pad. In practice however, this algorithm is not very useful itself, since it requires the secure transfer of a key as long as the message itself. This can however, occasionally be useful. 
+
+A different approach to encrypt a message is to rearrange the letters of the message instead of substituting them. Such a cipher is called a transposition cipher. One very old example is the rail-fence transposition cipher. Here a message is spelled out diagonally over a fence. Then, the ciphertext is read of row-by-row. 
+\begin{example}\ 
+  \begin{lstlisting}
+    m e   e a t r t e t g   a t
+     e t m   f e   h   o a p r y
+  \end{lstlisting}
+\end{example}
+%Another interesting polyalphabetic cipher is the playfair cipher, probably beyond the scope of this class
+
+In any case, transposition ciphers don't really obfuscate plaintext patterns either, for instance the number of occurrences of the letters remain unchanged by the cipher. 
+We can now try to compose ciphers, to make them more secure. These ciphers (resulting from composition of other ciphers) are called product ciphers. If we compose a substitution cipher with a substitution cipher, we obtain a substitution cipher again, leaving the same structural weaknesses. If we compose two transposition ciphers, we will again yield a transposition cipher. If however, we compose a substitution and a transposition, we will yield a much harder cipher. This is the key idea of modern (symmetric) cryptography. 
