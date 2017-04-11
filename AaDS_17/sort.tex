@@ -289,7 +289,7 @@ For example, we can implement deleting by:
 \begin{acode}
 \afun{delete}{x:Array[A],n:\N}{
   \afor{i}{n}{length(x)-1}{
-    x[n] := x[n+1]
+    x[i] := x[i+1]
   }
 }
 \end{acode}
