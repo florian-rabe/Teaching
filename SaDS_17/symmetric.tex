@@ -17,8 +17,8 @@ computational indistinguishability (comp. ind.) and security against a chosen Pl
 % \[\exists neg.\,\mathrm{Pr}\left[A(e_i)=1\right],\] where $e_1:=E(m_1), i\in\{0,1\}$, uniformly random. 
 %\end{definition}
 \begin{definition}[computational indistinguishable]
- We will call an encryption scheme $(E,D,k)$ guess indistinguishable iff for any PPT $A$, for any two messages $m_1, m_2$ of length $n$ and $i\in \{0,1\}$, uniformly random chosen, there is a negligible function $neg.$ s.t.:
- \[(\mathrm{Pr}\left[A(E(m_0))=1\right]-\mathrm{Pr}\left[A(E(m_1))=1\right])\leq \frac{1}{2}+neg(n), \] where $neg(n)$ is a negligible function.
+  We will call an encryption scheme $(E,D,k)$ guess indistinguishable iff for any PPT $A$, for any two messages $m_1, m_2$ of length $n$ and $i\in \{0,1\}$, uniformly random chosen, there is a negligible function $neg.$ s.t.:
+  \[(\mathrm{Pr}\left[A(E(m_0))=1\right]-\mathrm{Pr}\left[A(E(m_1))=1\right])\leq \frac{1}{2}+neg(n), \] where $neg(n)$ is a negligible function.
 \end{definition}
 %TODO: Insert the definition of IND_CPA
 
@@ -40,8 +40,8 @@ For this we can use a so called Feistel network.
  \end{itemize}
  Now we can define the corresponding decryption algorithm $D_k$ just like $e_k$, but with the reversed order of round keys:
  \begin{itemize}
- 	\item Fix a ciphertext $c=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
- 	\item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_{k-n}}(R_n)$. Finally define $D_k:x_1\circ x_2\to L_k\circ R_k$. 
+   \item Fix a ciphertext $c=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
+   \item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_{k-n}}(R_n)$. Finally define $D_k:x_1\circ x_2\to L_k\circ R_k$. 
  \end{itemize}
 \end{definition}
 Feistel ciphers have been shown to fulfill several notions of security assuming that the round function is actually pseudo random. For instance Feistel networks with at least $3$ rounds are ind. CPA secure and for more rounds they fulfill even stronger notions of security. %TODO: Check and clearify the exact model (3 seems sufficient under some assumptions, but 4 is definitely better (and already fulfills stronger notions)) and perhaps mention some other results. %see \url{https://link.springer.com/chapter/10.1007/978-3-540-45146-4\_30}
@@ -55,6 +55,46 @@ Feistel ciphers have been shown to fulfill several notions of security assuming 
  Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar, but there are also some noticeable differences. Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo random function (for instance any one-way function) and is therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
 %TODO:Insert some additional material about block modes.
 
-\subsubsection{AES}
-AES is in principle a relatively simple substitution-permutation network based on simple matrix operation. There exist three versions of AES for different key-sizes a 128 -bit version, a 196-bit version and the strongest 256-bit version. They differ mainly by the key size and some parameters (for instance the number of rounds). In the following we will focus on 256-bit AES. 
-AES encryption uses four basic operations that are run in every round: 
+\subsubsection{AES} %Using the wikipedia article
+AES is in principle a relatively simple substitution-permutation network based on simple matrix operation. There exist three versions of AES for different key-sizes a 128 -bit version, a 192-bit version and the strongest 256-bit version. They differ mainly by the key size and the number of rounds. They all encrypt 128-bit block of data using a substitution-permutation network.\par
+\begin{table}[ht]\centering
+  \begin{tabular}{|c|c|c|c|}
+  	\hline key size & 128-bit & 192-bit & 256-bit \\ 
+  	\hline round number & 10 & 12 & 14 \\ 
+  	\hline 
+  \end{tabular}
+  \caption{AES versions and their number of rounds}
+\end{table} 
+In the following, let $n$ denote the number of rounds of the AES cipher. 
+AES consists of the key expansion, where the key is expanded into 128-bit subkeys that are used in the individual rounds of the substitution-permutation network of AES. The block of data to be encrypted is represented as a \emph{state}, a $4\times 4$ matrix of bytes.  
+AES encryption uses four basic operations that are run in every round. They iteratively change the \emph{state} based on the \emph{round key}, the subkey for that specific round. In every round, the following operations are applied in this order (except for the last round, where mix-columns is omitted):
+\begin{compactenum}
+  \item Sub-bytes: Here every byte of the state is substituted according to the 8-bit S-box. 
+  \item Shift-row: Now the bytes in every row of the state are cyclically left-shifted. The $i$-th row is shifted by $i-1$ bytes. 
+  \item Mix-columns: This is the most interesting of the permutation steps. This time the columns of the state are transformed. The columns, are interpreted as a column-vector. The entries of this vector (the bits inside the columns) are viewed as polynomials of degree $7$ with bits as coefficients. These polynomials can be added using component-wise xor and can be multiplied using polynomail multiplicatin modulo the polynomial $x^8+x^4+x^3+x+1$. Now the transformation of each column can be represented as a left-multiplication with the matrix $$\left(\begin{matrix}
+    2&3&1&1\\1&2&3&1\\1&1&2&3\\3&1&1&2
+  \end{matrix}\right).$$
+  \item Add-round-key: Finally the state is xored with the round-key   
+\end{compactenum}
+We can see that AES is a substitution-permutation-network, where the first step is the applied substitution and the second, third and fourth step are permutation, so is their composition. Hence, any round of AES is a substitution followed by a permutation. 
+
+Now we already mostly understand how AES works, except for the key-expansion algorithm. The final algorithm is now: 
+\begin{compactenum}
+  \item Key expansion: Expand the key to $n+1$ subkeys or round-keys. 
+  \item Initial round:  Apply Add-round-key to the state using the first subkey
+  \item Rounds: Run $n-1$ rounds on the state, where each $i$-th round consists of:
+  \begin{compactenum}
+  	\item Sub-bytes
+  	\item Shift-row
+  	\item Mix-columns
+  	\item Add-round-key using the next ($i+1$-th) round-key
+  \end{compactenum}
+  \item The final round (without mix-columns)
+  \begin{compactenum}
+  	\item Sub-bytes
+  	\item Shift-rows
+  	\item Add-round-key using the last $n+1$-th round-key
+  \end{compactenum}
+\end{compactenum}
+
+Since each of the operations applied to the state vector can be inverted, it is clear how AES encrypted ciphertext can be decrypted again: Firstly, the key is expanded to the round-keys. Then, the rounds are inverted one by one, using the round-keys in inverse order. The rounds can be inverted by applying the inverse operation of the operation in any round in reverse order. In case of add-round-key, the inverse operation is the same operation (xor is inverse to itself). In case mix-columns, the inverse linear transformation must be applied, in case of shift rows, we use a right-shift instead of a left-shift and sub-bytes can be inverted using the inverse substitution table. 
