@@ -385,40 +385,142 @@ Here the function $isSetOfTrees$ has the following postcondition: if $S\sq E$ is
 This is an example of a greedy algorithm.
 We discuss its correctness and complexity in Ch.~\ref{sec:ad:greedy}.
 
-\subsection{Shortest Path}\label{sec:ad:shortestpath}
+\subsection{Cheapest Path}\label{sec:ad:shortestpath}
 
 In this section, we interpret all edge weights as costs.
-We think of the cost as the \emph{distance} between nodes.
+We think of it as the cost of moving along the edge, where the cost represents the physical distance or any kind of resource (money, gas, effort, amount of material, etc.) that must be expended.
+Recall that the cost of a path is the sum of the costs of its edges.
+
+When comparing paths, the literature often uses the words length/short/long, whereas we will use the words cost/cheap/expensive.
+We do that to avoid confusing the cost of a path with its number of edges, both of which are often called the \emph{length}.
+The cheapest path does not necessarily contain the least number of edges: a detour along cheap edges can lead to lower cost than the direct path along expensive edges.
+For example, direct flights usually cost more money than multi-leg flights, and the cheapest flight route is usually not a direct flight.
 
 \paragraph{Problem}
-Recall that the cost of a path is the sum of the costs of its edges.
-We can think of it as the \emph{length} of the path.
-
-Our goal is to find, for nodes $i$, $j$, the shortest path from $i$ to $j$.
+We are interested in finding the cheapest paths.
 This has obvious applications in logistics, navigation, and similar situations.
-Whenever we move in a network, we prefer taking the shortest path.
+Whenever we move in any kind of network, we prefer taking the cheapest path.
 
-\paragraph{Algorithms}
-Forthcoming.
-% single-source: Dijkstra, greedy
-% all-pairs: matrix powers for min-+ or Floyd Warshall, dynamic programming
+Note there may be multiple different paths with the same cost. So technically, we are looking for \emph{a} cheapest path, not \emph{the} cheapest path.
 
-\subsection{Maximal Flow}\label{sec:ad:maximalflow}
+We write $Cost(p)$ for the cost of a path and $Cost(i,j)$ for the cost of the lowest cost of any path from $i$ to $j$.
+
+There are multiple variants of the cheapest path problem:
+\begin{compactitem}
+ \item for fixed nodes $i$ and $j$, find a cheapest path from $i$ to $j$,
+ \item for a fixed start node $i$, find cheapest paths to any node $j$,
+ \item for a fixed end node $j$, find cheapest paths from any node $i$,
+ \item find cheapest paths for all pairs of node $i$ and $j$.
+\end{compactitem}
+
+Clearly, all variants can be reduced to each other.
+But that might not be efficient: finding the cheapest paths for all pairs at once can be much faster than the total time of doing so individually for each pair.
+That is because cheapest paths are related, especially:
+\begin{compactitem}
+  \item if $p$ is a cheapest path, then so is any sub-path of $p$
+  \item if $p$ and $q$ are cheapest paths from $i$ to $j$ and $j$ to $k$, then $Cost(i,k)\leq Cost(p)+Cost(q)$.
+\end{compactitem}
+
+\paragraph{Algorithm}
+We look at the special case where we have a fixed start node $i$ and want to find the cheapest path to every node.
+It is easy to see that these paths from a spanning tree of $G$ with root $i$.
+
+One well-known solution is Dijkstra's algorithm.
+It is also a greedy algorithm: we start with the root only, and each iteration adds to the tree whichever node is cheapest to reach.
+
+\begin{acode}
+\afun[{Array[List[N]]}]{Dijkstra}{G:Graph,start:N}{
+  cheapest := \anew{Array[List[N]]}{m} \acomment{$cheapest[j]$ is the cheapest known path from $start$ to $j$}\\
+  foreach(nodes(G), \alam{n}{cheapest[n] :=  null}) \acomment{no path known yet}\\
+  cheapest[start] := [start] \acomment{empty path}\\
+  \\
+  cost := \anew{Array[\N^\infty]}{m} \acomment{$cost[j]$ is the cost of $cheapest[j]$}\\
+  foreach(nodes(G), \alam{n}{cost[n] := \infty}) \acomment{no path known yet}\\
+  cost[start] := 0 \acomment{cost of empty path}\\
+  \\
+  rest := \anew{Set[N]}{}\\
+  foreach(nodes(G), \alam{n}{insert(rest,n)}) \acomment{remaining nodes to add to spanning tree}\\
+  \awhile{!empty(rest)}{
+    i := \text{a node $i\in rest$ with minimal value of $cost[i]$}\\
+    delete(rest,i)\\
+    foreach(outgoing(G,i), \alam{j}{\ablock{
+      \acomment{check where we can go next after going to $i$}\\
+      c := cheapest[i] + weight(i,j) \acomment{cost if we go to $j$ via $i$}\\
+      \aif[cheaper than best known path]{c < cost[j]}{
+        cheapest[j] := append(cheapest[i], j) \acomment{use the path via $i$}\\
+        cost[j] := c
+      }
+    }}\\)
+  }\\
+  cheapest
+}
+\end{acode}
+
+\paragraph{Correctness}
+Termination is straightforward using the termination order $length(rest)$.
+\medskip
+
+Partial correctness is harder.
+We can easily establish the loop invariant that $cheapest[j]$ (if not $null$) is a path from $start$ to $j$ whose cost is $cost[j]$.
+That is easy to see.
+
+Moreover, with a little thinking we see that for every node that is reachable from $start$, $cheapest[j]$ will not be $null$ at the end.
+
+It remains to show that these paths are in fact the cheapest paths.
+The following additional loop invariant is the key:
+\begin{compactitem}
+ \item for nodes $n\nin rest$: $cheapest[j]$ is a cheapest path from $start$ to $j$
+ \item for nodes $n\in rest$: $cheapest[j]$ is cheapest among those paths from $start$ to $j$ whose intermediate nodes are not in $rest$.
+\end{compactitem} 
+Because $rest$ is empty at the end, this yields the desired result.
+
+Because $rest$ contains all nodes initially, the invariant trivially holds before the loop.
+
+It remains to show that it is indeed a loop invariant.
+
+\paragraph{Complexity}
+It is easy to see that everything outside the while-loop takes $\Theta(|N|)$.
+
+The while-loop is run $|N|$ times.
+But it is not so obvious how long the body of the while-loop takes:
+\begin{compactitem}
+ \item The algorithm does not clarify how to find $i$. To find it efficiently, we can use a priority queue, which takes at most $O(\log|rest|)\sq O(\log|N|)$.\\
+ So the first part of the while-loop takes $|N|O(\log|N|)$.
+ \item We need a special priority queue where we change the priorities (the values $cost[i]$) from time to time.
+  We know that takes at most $O(\log |rest|)\sq O(\log|N|)$ each time.
+ \item The body of the $foreach$ command is run once for every outgoing edge of $i$.
+ It is unclear how many such edges there are.
+ But we can merge the analysis with the while-loop: Overall the body of the $foreach$ is run once for every outgoing edge of every node, i.e., once for every edge.\\
+ Every time we have to allow for $O(\log|N|)$ because we may change a priority.\\
+ Thus, the second part of the while-loop takes $|E|O(\log|N|)$ overall.
+\end{compactitem}
+
+Adding everything up, we obtain $O((|N|+|E|)\log|N|)$ as an upper bound for the worst case time complexity.
+The average time complexity is lower because of the if-statement: we do not have to change a priority every time.
+
+The worst-case time complexity becomes lower if we use better-optimized data structures for the priority queue.
+
+
+\paragraph{Other Algorithms}
+There are also important algorithms for finding all cheapest paths between any nodes at once.
+For example, the Floyd-Warshall algorithm.
+
+\subsection{Greatest Flow}\label{sec:ad:maximalflow}
 
 In this section, we interpret all edge weights as capacities.
-We assume that $G=(N,E)$ has two distinguished nodes $source$ with only outgoing and $sink$ with only incoming edges.
+We assume that $G=(N,E)$ has two distinguished nodes $source$ and $sink$.
 Such a graph is called a \textbf{flow network}.
 
 Intuitively, we think of the edges as pipes, and our goal is to make a liquid flow from the source to the sink.
 
 \paragraph{Flows}
-A flow is a mapping $f:E\to \N$ such that the conditions below hold.
-
 Intuitively, a flow says how much is flowing along an edge.
-To make sense, a flow must satisfy the following conditions:
+
+A flow \textbf{from} $source$ to $sink$ maps every $e\in E$ to a number $f(e)\in \{0,\ldots,weight(e)\}$ such that
 \begin{compactitem}
- \item No edge is used beyond capacity: $f(e)\leq w(e)$ for all $e\in E$.
- \item Nothing gets lost or created along the way, i.e., as much flows into a node as flows out: for all nodes $n$ except for $source$ and $sink$
+ \item Nothing flows into the start node: $f(e)=0$ for incoming edges of $source$.
+ \item Nothing flows out of the end node: $f(e)=0$ for outgoing edges of $sink$.
+ \item What flows into a node must flow out of it and vice versa: for all nodes $n$ except for $source$ and $sink$
   \[\Sigma_{e\in incoming(n)} f(e) = \Sigma_{e\in outgoing(n)} f(e)\]
 \end{compactitem}
 
@@ -428,12 +530,34 @@ and that number is called the capacity $Cap(f)$ of $f$.
 It describes how much is flowing through the network from the source to the sink.
 
 \paragraph{Problem}
-Now our goal is to find $f$ such $Cap(f)$ is maximal.
+Now our goal is to find $f$ such $Cap(f)$ is as big as possible.
+This is called the greatest flow, maximal flow, or max-flow problem.
 
 For example, the flow network describes goods that have to be shipped from one place to another via a variety of paths, the maximal flow maximizes the amount of goods that are shipped.
 Similar examples abound in logistics.
 
+\paragraph{Correspondence between Paths and Flows}
+Recall that paths from $start$ to $end$ are lists of nodes $[p_0,\ldots,p_n]$ such that
+\begin{compactitem}
+ \item The path begins at $start$: $p_0=e$.
+ \item The path ends at $end$: $p_n=end$.
+ \item There are edges that connect each node to is successor: for each $i=0,\ldots,n-1$, there is an edge from $p_i$ to $p_i+1$.
+\end{compactitem}
+
+Then the definitions of paths from $start$ to $end$ and flows from $start$ to $end$ are elegantly similar.
+Moreover, the cost of a path corresponds to the capacity of path, and the cheapest path problem corresponds to the greatest flow problem.
+
 \paragraph{Algorithm}
-Forthcoming.
-%It is straightforward to find the maximal flow once we understand greedy algorithms.
-%We get back to it in Ch.~\ref{sec:ad:greedy}.
+A well-known algorithm for the greatest flow is the Ford–Fulkerson algorithm.
+It is also a greedy algorithm.
+
+The basic idea is to
+\begin{compactitem}
+\item start with the empty flow where $f(e)=0$ for all edges $e$,
+\item repeatedly look for some path from $source$ to $sink$ along which every edge still has free capacity and increase the flow accordingly.
+\end{compactitem}
+However, the algorithm also uses a subtle trick to allow for reducing the flow along some edge.
+
+That has the effect of adjusting sub-optimal choices from previous iterations.
+
+We omit the details.

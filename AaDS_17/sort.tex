@@ -289,7 +289,7 @@ For example, we can implement deleting by:
 \begin{acode}
 \afun{delete}{x:Array[A],n:\N}{
   \afor{i}{n}{length(x)-1}{
-    x[n] := x[n+1]
+    x[i] := x[i+1]
   }
 }
 \end{acode}
@@ -459,7 +459,7 @@ For arrays, the time complexity of $swap$ is $\Theta(1)$.
 For linked lists, it is $\Theta(n)$.
 
 
-\subsection{Bubblesort}
+\subsection{Bubblesort}\label{sec:ad:sort:bubble}
 
 Bubblesort is a stable in-place sorting algorithm that closely follows the natural way how a human would sort.
 The idea is to find two elements that are not in order and swap them.
@@ -499,7 +499,7 @@ Thus, the complexity is $\Theta(n^2)$.
 In the best-case, when $x$ is already sorted initially, the complexity is $\Theta(n)$.
 That is already optimal because it requires $n-1$ comparisons to determine that a list is sorted.
 
-\subsection{Insertionsort}
+\subsection{Insertionsort}\label{sec:ad:sort:insertion}
 
 Insertion is also a stable in-place algorithm.
 
@@ -538,7 +538,7 @@ Thus, the worst-case complexity is $\Theta(n^2)$.
 
 In the best-case, if $x$ is already sorted, the while-loop never runs, and the complexity is $\Theta(n)$.
 
-\subsection{Mergesort}
+\subsection{Mergesort}\label{sec:ad:sort:merge}
 
 Mergesort is based on the observation that
 \begin{compactitem}
@@ -678,7 +678,7 @@ Therefore, if we added elements to the end of $res$ would become quadratic inste
 Then mergesort as a whole would also be quadratic.
 \end{remark}
 
-\subsection{Quicksort}
+\subsection{Quicksort}\label{sec:ad:sort:quick}
 
 Quicksort is similar to mergesort in that two sublists are sorted recursively.
 The main differences are:
