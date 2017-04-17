@@ -16,9 +16,18 @@ computational indistinguishability (comp. ind.) and security against a chosen Pl
 % We will call an encryption scheme $(E,D,k)$ random indistinguishable iff for any PPT $A$, for any message $m$ of length $n$ and $e_2\in \{0,1\}^n$ chosen uniformly random:
 % \[\exists neg.\,\mathrm{Pr}\left[A(e_i)=1\right],\] where $e_1:=E(m_1), i\in\{0,1\}$, uniformly random. 
 %\end{definition}
-\begin{definition}[computational indistinguishable]
-  We will call an encryption scheme $(E,D,k)$ guess indistinguishable iff for any PPT $A$, for any two messages $m_1, m_2$ of length $n$ and $i\in \{0,1\}$, uniformly random chosen, there is a negligible function $neg.$ s.t.:
+\begin{definition}[guess indistinguishable]
+  We will call an encryption scheme $(E,D,k)$ guess indistinguishable iff for any PPT $A$, for any two messages $m_1, m_2$ of length $n$ and $i\in \{0,1\}$, chosen uniformly random, there is a negligible function $neg.$ s.t.:
   \[(\mathrm{Pr}\left[A(E(m_0))=1\right]-\mathrm{Pr}\left[A(E(m_1))=1\right])\leq \frac{1}{2}+neg(n), \] where $neg(n)$ is a negligible function.
+\end{definition}
+\begin{definition}[indistinguishability under chosen-plaintext attack (IND\_CPA)]\ \\
+  This is a stronger condition than guess indistinguishability. 
+  Let again $(E, D, k)$ denote our encryption scheme. 
+  Now the attacker $A$ is allowed to query an oracle with arbitrary (finite) many pairs of messages $(p_0, p_1)$ and receives $E(m_i)$, for $i$ uniformly random in $\{0,1\}$. Then $A$ is asked to distinguish the real message from a faked one, given the ciphertext of one of them (chosen uniformly random). If this can only be done with a probability that is negligibly greater than $\frac{1}{2}$, the encryption scheme $(E, D, k)$ is called indistinguishable under chosen-plaintext attack or secure against a chosen-plaintext attack (IND\_CPA secure). 
+  
+  In other words an encryption scheme $(E, D, k)$ is IND\_CPA secure iff it is guess indistinguishable against an attacker that can additionally query the above oracle, before having to break the cipher. 
+  
+  Since the attacker could simply chose to not use the oracle, it follows that any encryption scheme that is IND\_CPA secure is also guess indistinguishable, so this is indeed a stronger condition. 
 \end{definition}
 %TODO: Insert the definition of IND_CPA
 
