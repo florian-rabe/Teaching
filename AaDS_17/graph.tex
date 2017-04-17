@@ -371,7 +371,8 @@ It is less obvious how to find a minimal spanning tree of a cost-weighted graph.
 One of the most well-known solutions is Kruskal's algorithm:
 
 \begin{acode}
-\afun[{Array[N]}]{Kruskal}{G:Graph}{
+\acomment{$G=(N,E)$}\\
+\afun[{Set[E]}]{Kruskal}{G:Graph}{
   edges := \text{list of edges $e\in E$, sorted by increasing weight}\\
   sot := \anew{Set[E]}{}\\
   foreach(edges, \alam{e}{\aifI{isSetOfTrees(sot\cup\{e\})}{insert(sot,e)}})\\
@@ -429,17 +430,18 @@ One well-known solution is Dijkstra's algorithm.
 It is also a greedy algorithm: we start with the root only, and each iteration adds to the tree whichever node is cheapest to reach.
 
 \begin{acode}
+\acomment{$G=(N,E)$}\\
 \afun[{Array[List[N]]}]{Dijkstra}{G:Graph,start:N}{
   cheapest := \anew{Array[List[N]]}{m} \acomment{$cheapest[j]$ is the cheapest known path from $start$ to $j$}\\
-  foreach(nodes(G), \alam{n}{cheapest[n] :=  null}) \acomment{no path known yet}\\
+  foreach(N, \alam{n}{cheapest[n] :=  null}) \acomment{no path known yet}\\
   cheapest[start] := [start] \acomment{empty path}\\
   \\
   cost := \anew{Array[\N^\infty]}{m} \acomment{$cost[j]$ is the cost of $cheapest[j]$}\\
-  foreach(nodes(G), \alam{n}{cost[n] := \infty}) \acomment{no path known yet}\\
+  foreach(N, \alam{n}{cost[n] := \infty}) \acomment{no path known yet}\\
   cost[start] := 0 \acomment{cost of empty path}\\
   \\
   rest := \anew{Set[N]}{}\\
-  foreach(nodes(G), \alam{n}{insert(rest,n)}) \acomment{remaining nodes to add to spanning tree}\\
+  foreach(N, \alam{n}{insert(rest,n)}) \acomment{remaining nodes to add to spanning tree}\\
   \awhile{!empty(rest)}{
     i := \text{a node $i\in rest$ with minimal value of $cost[i]$}\\
     delete(rest,i)\\
@@ -548,7 +550,7 @@ Then the definitions of paths from $start$ to $end$ and flows from $start$ to $e
 Moreover, the cost of a path corresponds to the capacity of path, and the cheapest path problem corresponds to the greatest flow problem.
 
 \paragraph{Algorithm}
-A well-known algorithm for the greatest flow is the Ford–Fulkerson algorithm.
+A well-known algorithm for the greatest flow is the Ford-Fulkerson algorithm.
 It is also a greedy algorithm.
 
 The basic idea is to
