@@ -374,12 +374,12 @@ One of the most well-known solutions is Kruskal's algorithm:
 \afun[{Array[N]}]{Kruskal}{G:Graph}{
   edges := \text{list of edges $e\in E$, sorted by increasing weight}\\
   sot := \anew{Set[E]}{}\\
-  foreach(edges, \alam{e}{\aifI{isSetOfTrees(sot,\cup\{e\})}{insert(tree,e)}})\\
+  foreach(edges, \alam{e}{\aifI{isSetOfTrees(sot\cup\{e\})}{insert(sot,e)}})\\
   sot
 }
 \end{acode}
-
-Here the function $isSetOfTrees$ has the following postcondition: if $S\sq E$ is a set of edges of $G$, then $isSetOfTrees(S)$ is true if the subgraph of $G$ containing only the edges in $S$ is a set of trees.\footnote{Such a graph is called a \textbf{forest}.}
+The algorithm returns the set of edges that make up a minimal spanning tree.
+Here the function $isSetOfTrees(S: Set[E]):\Bool$ has the following postcondition: if $S\sq E$ is a set of edges of $G$, then $isSetOfTrees(S)$ is true if the subgraph of $G$ containing only the edges in $S$ is a set of trees.\footnote{Such a graph is called a \textbf{forest}.}
 
 \paragraph{Correctness and Complexity}
 This is an example of a greedy algorithm.
