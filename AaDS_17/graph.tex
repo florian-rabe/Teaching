@@ -430,7 +430,7 @@ One well-known solution is Dijkstra's algorithm.
 It is also a greedy algorithm: we start with the root only, and each iteration adds to the tree whichever node is cheapest to reach.
 
 \begin{acode}
-\acomment{$G=(N,E)$}\\
+\acomment{$G=(N,E)$, $m=|N|$}\\
 \afun[{Array[List[N]]}]{Dijkstra}{G:Graph,start:N}{
   cheapest := \anew{Array[List[N]]}{m} \acomment{$cheapest[j]$ is the cheapest known path from $start$ to $j$}\\
   foreach(N, \alam{n}{cheapest[n] :=  null}) \acomment{no path known yet}\\
@@ -447,7 +447,7 @@ It is also a greedy algorithm: we start with the root only, and each iteration a
     delete(rest,i)\\
     foreach(outgoing(G,i), \alam{j}{\ablock{
       \acomment{check where we can go next after going to $i$}\\
-      c := cheapest[i] + weight(i,j) \acomment{cost if we go to $j$ via $i$}\\
+      c := cost[i] + weight(i,j) \acomment{cost if we go to $j$ via $i$}\\
       \aif[cheaper than best known path]{c < cost[j]}{
         cheapest[j] := append(cheapest[i], j) \acomment{use the path via $i$}\\
         cost[j] := c
@@ -471,8 +471,8 @@ Moreover, with a little thinking we see that for every node that is reachable fr
 It remains to show that these paths are in fact the cheapest paths.
 The following additional loop invariant is the key:
 \begin{compactitem}
- \item for nodes $n\nin rest$: $cheapest[j]$ is a cheapest path from $start$ to $j$
- \item for nodes $n\in rest$: $cheapest[j]$ is cheapest among those paths from $start$ to $j$ whose intermediate nodes are not in $rest$.
+ \item for nodes $j\nin rest$: $cheapest[j]$ is a cheapest path from $start$ to $j$
+ \item for nodes $j\in rest$: $cheapest[j]$ is cheapest among those paths from $start$ to $j$ whose intermediate nodes are not in $rest$.
 \end{compactitem} 
 Because $rest$ is empty at the end, this yields the desired result.
 
