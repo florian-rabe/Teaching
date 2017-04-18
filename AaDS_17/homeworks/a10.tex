@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=10,date=2017-04-18,duedate=2017-05-02,duetime=8:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=10,date=2017-04-18,duedate=2017-05-02,duetime=8:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -13,7 +13,7 @@
 % extra lecture, two weeks
 
 \begin{problem}{Records}{8}
-Represent the record type and ... the record value ... in the following languages
+Represent the record type $\{name:\String,\, age:\Int,\, profession:\String\}$ and the record value $\{name="Alice",\, profession="Teacher",\, age=30\}$ in the following languages
 \begin{compactitem}
  \item using structs in C
  \item using records in SML
@@ -26,20 +26,24 @@ Naturally, untyped languages cannot handle record \emph{types}. So you can skip 
 \end{problem}
 
 \begin{problem}{Monoids}{8}
-Implement the data structure of monoids over a type $A$., e.g., as a class
+Implement
+\begin{compactitem}
+ \item the type $Matrix22$ of $2\times 2$ matrices of (arbitrary-precision) integers,
+ \item the matrix $F:Matrix22=\begin{pmatrix}1&1\\1&0\end{pmatrix}$,
+ \item the data structure $Monoid[A]$ of monoids over a type $A$
+ \item a concrete instance $Matrix22Multtiplication$ of type $Monoid[Matrix22]$
+\end{compactitem}
+e.g., as indicated in the lecture.
 
-Implement the concrete instance $Matrix22Multtiplication$ (as given in the lecture).
-
-Write a test program that computes the matrix $(F\cdot F)\cdot F$ by applying $(\anew{Matrix22Multtiplication}{}).op$ twice.
-(Note that $F$ is the matrix for Fibonacci numbers.)
+Write a test program that computes the matrix $(F\cdot F)\cdot F$.
 \end{problem}
 
-\begin{problem}{Square-and-Multiply}{8}
+\begin{problem}{Square-and-Multiply}{10}
 Implement the square-and-multiply algorithm to compute powers in an arbitrary monoid (as specified in the lecture notes).
 
 Test your function by computing large Fibonacci numbers logarithmically using
-\[(1,0)\cdot sqmult(Matrix22Multtiplication, F, n)\]
-where $F$ is as in the previous problem and $n$ is large.\footnote{You will probably want to use arbitrary-precision arithmetic for the integer operations to truly appreciate how efficient this algorithm is.}
+\[fib(n)=(1,0)\cdot sqmult(Matrix22Multtiplication, F, n)\]
+for large $n$.
 \end{problem}
 
 \end{document}
