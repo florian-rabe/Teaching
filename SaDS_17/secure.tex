@@ -3,12 +3,14 @@
 \section{History}
 
 % caesar, one-time pad, substitution + transpostions + products thereof, etc.
+This section is based mainly on \cite{cryptoNetworkSlides}. 
 \input{crypto_history}
 
 \section{Preliminaries}
+These definitions are based on \cite{PuMaC2016}. 
 
 \begin{definition}[polynomial-time algorithm]
- An algorithm $A$ is called polynomial time algorithm iff there exists $k\in \mathbb{N}$ such that the maximum number $t$ of operations $A$ has to perform for input of length $n$ satisfies $t(n)\in O(n^k)$.
+ An algorithm $A$ is called polynomial time algorithm iff there exists $k\in \mathbb{N}$ such that the maximum number $t$ of operations $A$ has to perform for input of length $n$ satisfies $t(n)\in O(n^k)$ (some people also conveniently use $O((n\log(n))^k$ for this definition).
 \end{definition}
 
 \begin{definition}[A probabilistic polynomial-time algorithm]
@@ -16,7 +18,7 @@
 \end{definition}
 
 \begin{definition}
- A function $f:\,\mathbb{N}\to\mathbb{R}$ is called negligible iff $$\forall k\in\mathbb{N}.\,\exists N_k\in\mathbb{N}.\,\forall n\geq N_k:\,n\left|f(n)\right|<1.$$
+ A function $f:\,\mathbb{N}\to\mathbb{R}$ is called negligible iff $$\forall k\in\mathbb{N}.\,\exists N_k\in\mathbb{N}.\,\forall n\geq N_k:\,n^k\left|f(n)\right|<1.$$
 \end{definition}
 
 One important cryptographic primitive is the so called one-way function (OWF). Using these one-way-functions one can build provably secure symmetric encryption algorithms. However, it is currently not known whether there exist any one-way function. In the following we will especially consider one-way permutations (OWP), bijective OWFs with identical input and output length. 
