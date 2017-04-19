@@ -1,109 +1,197 @@
-\subsection{General Definition}
+\subsection{Schemes}
 
-%\vdots polynomial time algorithm\\\vdots\ \\probabilistic algorithm\\\vdots\ \\negligible functions\\\vdots \\encryption scheme\\\vdots
-\begin{definition}
- An encryption scheme is an ordered triple $(G, E, D)$, where $G$ and $E$ are PPT algorithms and $D$ is a polynomial time algorithm iff for any \emph{security parameter} $n\in\mathbb{N}$:
- \begin{itemize}
-  \item The \emph{key generation algorithm} $G$, takes as input $1$ and uses randomness to chose a \emph{key $k$} from a set of possible keys $K_n$ (the key space)
-  \item The \emph{encryption algorithm} $E$, takes as input a \emph{message} $m\in P_n$ ($P_n$ is called the \emph{plaintext space} for the security parameter $n$) and uses $k$ to compute an encrypted message $c\in C_n$ ($C_n$ is called the \emph{ciphertext space} for $n$). If $E$ uses the key $k$ on the message $m$ and outputs $s$, we write $E_k(m)=c$.
-  \item The \emph{decryption algorithm} $D$, takes an encrypted message and uses the key $k$ to decipher it (deterministically). So we have $$\forall n\in\mathbb{N},\,\forall m\in P_n,\,\forall k \in K_n.\,D_k(E_k(m))=m.$$
- \end{itemize}
+We now expand on the ideas developed in Sect.~\ref{sec:sd:crypto:hist} systematically.
+
+\begin{definition}[Encryption Scheme]
+ An \textbf{encryption scheme} is a tuple $(\Sigma,K,G, E, D)$, where
+  \begin{compactitem}
+   \item $\Sigma$ is a set (the \textbf{alphabet}),
+   \item $K=(K_n)_{n\in \N}$ is a family of sets (the \textbf{key space}),
+   \item $G:(n\in \N)\to K_n$ is a PPT algorithm (the \textbf{key generation} function)
+   \item $E=(E_k)_{n\in\N,k\in K_n}$ is a family of polynomial algorithms $E_k:\Sigma^n\to\Sigma^*$ (the \textbf{encryption} functions)
+   \item $D=(D_k)_{n\in\N,k\in K_n}$ is a family of (possibly partial) polynomial algorithms $D_k:\Sigma^*\to\Sigma^n$ (the \textbf{decryption} functions)
+  \end{compactitem}
+  such that for all $n\in N$, $k\in K_n$, and $x\in \Sigma^n$, we have $D_k(E_k(x))=x$.
+
+  For $x\in\Sigma^n$, we write $E(x)$ for the probabilistic result of computing $E_{G(n)}(x)$.
 \end{definition}
 
-There are various different notions of ``security'' of encryption. We will discuss the notions of %guess indistinguishability (guess ind.), 
-computational indistinguishability (comp. ind.) and security against a chosen Plain-text attack (ind. CPA). 
-%\begin{definition}[guess indistinguishable]
-% We will call an encryption scheme $(E,D,k)$ random indistinguishable iff for any PPT $A$, for any message $m$ of length $n$ and $e_2\in \{0,1\}^n$ chosen uniformly random:
-% \[\exists neg.\,\mathrm{Pr}\left[A(e_i)=1\right],\] where $e_1:=E(m_1), i\in\{0,1\}$, uniformly random. 
+To encrypt a message $x$ of length $n$, we choose a key $G(n)\in K_n$ and call $c=E_k(x)$ to obtain the cipher $c$.
+To decrypt an encrypted message, we call $D_k(c)$.
+
+\subsection{Security of a Scheme}
+
+There are various concepts of security of an encryption scheme.
+The general idea is to assume an adversary that picks two messages $x_0,x_1\in\Sigma^n$ and randomly receives either $E(x)$ or $E(x')$.
+The encryption scheme is consider secure if the adversary cannot distinguish between the two situations with a probability that is non-negligibly better than $1/2$.
+In other words, even if the adversary already knows that a given ciphertext $c$ is either the encryption of $x$ or of $x'$, he has no better chance of decrypting $c$ than guessing.
+
+In all cases, the adversary is restricted to polynomial computations.
+But we obtain different notions of security depending on how we model what else the adversary is allowed to do.
+
+In the simplest case, the adversary may do nothing else:
+
+\begin{definition}[Guess-indistinguishable]\label{def:sd:ind}
+  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{guess-indistinguishable} if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
+  \[\Prob{i\in\{0,1\}}{A(E(x_i))=i}<\frac{1}{2}+neg(n)\]
+  for a negligible function $neg$.
+\end{definition}
+
+Here $\Prob{i\in\{0,1\}}{A(E(x_i))=i}$ formalizes the probability that the adversary correctly guessed whether $x_0$ or $x_1$ is the decryption of its input.
+
+\begin{example}
+A substitution cipher is not secure in the sense of Def.~\ref{def:sd:ind}.
+We define an adversary $A$.
+Given the encryption $c$ of $x_0$ or $x_1$, $A$ collects the frequencies of all characters in $c$.
+If those frequencies match the frequencies in $x_0$ or $x_1$, $A$ guesses $0$ or $1$, respectively.
+Clearly, $A$ is a polynomial algorithm.
+\end{example}
+
+Guess-indistinguishability is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
+If the adversary has access to the encryption function $E(-)$, we speak of a \textbf{chosen-plaintext-attack} (CPA).
+The analog of Def.~\ref{def:sd:ind} where the adversary $A$ may conduct CPAs is called CPA-ind.
+If the adversary additionally has access to the decryption function $D(-)$, we speak of \textbf{chosen-ciphertext-attack} (CCA).
+The analog of Def.~\ref{def:sd:ind} where the adversary $A$ may conduct CCAs as well is called CCA-ind.
+
+\begin{example}
+Let $\Sigma=\{0,1\}$.
+We consider every natural number to be an element of $\{0,1\}^*$ by using its binary representation.
+
+Given a PRG $R$, we can iterate it on its own output to get an arbitrarily long pseudo-random sequence in $\{0,1\}^*$.
+Now we can construct an encryption scheme by simply defining the key to be $G(n)=R(n)$ and defining $E_k(x)$ by xoring every bit in $x$ with the corresponding bit in $k$.
+The decryption can be done in the same way, i.e., $D_k=E_k$.
+
+The resulting encryption scheme is computationally indistinguishable but not necessarily CPA-ind.
+\end{example}
+
+\subsection{Schemes Based on Block Ciphers}
+
+\subsubsection{Block Ciphers and Modes of Operation}
+
+Block ciphers are a common method to obtain more secure encryption schemes.
+
+A \textbf{block cipher} is a function that maps keys to bijections of the set $\{0,1\}^N$ for some $N$.
+The elements of $\{0,1\}^N$ are called \textbf{blocks}.
+
+The idea of block cipher--based schemes is to split the plaintext into blocks that are translated individually by applying the block cipher.
+The last block may have to be \textbf{padded} to length $N$ by adding random data.
+
+However, the naive approach would not yield secure schemes---if the same block is always encrypted in the same way, the scheme would be easy to attack.
+Overcoming this is the role of the \textbf{block cipher mode of operation}.
+
+There are various modes.
+A commonly used mode is Cipher Block Chaining (CBC).
+Here every block is xor-ed with a certain element from $\{0,1\}^N$.
+For the first block, this is an arbitrary number called the \textbf{initialization vector}.
+For every subsequent, it is the previous cipher block.
+
+The initialization vector must be random but does not have to be secret (which is good because the recipient needs to know it to decrypt).
+To maintain security, the same pair of initialization and key must never be used twice, i.e., the initialization vector should be a \textbf{nonce} (a number only used once).
+For example, it could be derived from the number of the current message in the overall sequence of exchanged messages.
+
+%\subsubsection{Feistel Ciphers}
+%
+%For this we can use a so called Feistel network.
+%%Improving a comp. ind. encryption scheme to an ind. CPA secure scheme using a Feistel-network.
+%\begin{definition}[A Feistel cipher]
+% Let $k$ be any natural number (the number of \emph{rounds}). Let $f_{k_i}$ be a family of functions\protect\footnote{If possible pseudorandom functions and possibly one-way functions.} ($f$ is the so called \emph{round function}) of output length $n$ indexed by the sequence of \emph{round keys} $k_1, k_2, \ldots, k_n$. 
+% Then the following encryption algorithm $E_k$ is called Feistel cipher. %network with $k$ iterations (for some odd $k$) based on a pseudo random generator $f_{k_i}$ and round keys $k_1, k_2, \ldots, k_n$ is an encryption scheme $(G,E,D)$, defined by:
+% %For any odd $k\in\mathbb{N}$ we call an encryption scheme $(G, E, D)$ a Feistel network with $k$ iterations and $P$-Box $f$, iff for some \emph{round keys} $k_1, k_2, \ldots, k_n$ used as input for the pseudo random generator $f_{k_i}$. 
+% \begin{itemize}
+%  \item Fix a message $m=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
+%  \item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_n}(R_n)$. Finally define $E_k:x_1\circ x_2\to L_k\circ R_k$. 
+% \end{itemize}
+% Now we can define the corresponding decryption algorithm $D_k$ just like $e_k$, but with the reversed order of round keys:
+% \begin{itemize}
+%   \item Fix a ciphertext $c=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
+%   \item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_{k-n}}(R_n)$. Finally define $D_k:x_1\circ x_2\to L_k\circ R_k$. 
+% \end{itemize}
 %\end{definition}
-\begin{definition}[guess indistinguishable]
-  We will call an encryption scheme $(E,D,k)$ computationally indistinguishable iff for any PPT $A$, for any two messages $m_1, m_2$ of length $n$ and $i\in \{0,1\}$, chosen uniformly random, there is a negligible function $neg.$ s.t.:
-  \[(\mathrm{Pr}\left[A(E(m_0))=1\right]-\mathrm{Pr}\left[A(E(m_1))=1\right])\leq \frac{1}{2}+neg(n), \] where $neg(n)$ is a negligible function.
-\end{definition}
-\begin{definition}[indistinguishability under chosen-plaintext attack (IND\_CPA)]\ \\
-  This is a stronger condition than guess indistinguishability. 
-  Let again $(E, D, k)$ denote our encryption scheme. 
-  Now the attacker $A$ is allowed to query an oracle with arbitrary (finite) many pairs of messages $(p_0, p_1)$ and receives $E(m_i)$, for $i$ uniformly random in $\{0,1\}$. Then $A$ is asked to distinguish the real message from a faked one, given the ciphertext of one of them (chosen uniformly random). If this can only be done with a probability that is negligibly greater than $\frac{1}{2}$, the encryption scheme $(E, D, k)$ is called indistinguishable under chosen-plaintext attack or secure against a chosen-plaintext attack (IND\_CPA secure). 
-  
-  In other words an encryption scheme $(E, D, k)$ is IND\_CPA secure iff it is computationally indistinguishable against an attacker that can additionally query the above oracle, before having to break the cipher. 
-  
-  Since the attacker could simply chose to not use the oracle, it follows that any encryption scheme that is IND\_CPA secure is also computationally indistinguishable, so this is indeed a stronger condition. 
-\end{definition}
-%TODO: Insert the definition of IND_CPA
+%Feistel ciphers have been shown to fulfill several notions of security assuming that the round function is actually pseudo random. For instance Feistel networks with at least $3$ rounds are ind. CPA secure and for more rounds they fulfill even stronger notions of security. %  TODO: Check and clearify the exact model (3 seems sufficient under some assumptions, but 4 is definitely better (and already fulfills stronger notions)) and perhaps mention some other results. %see \url{https://link.springer.com/chapter/10.1007/978-3-540-45146-4\_30}
 
-\subsection{Specific Schemes}
+\subsubsection{Substitution-Permutation Networks}
 
-Given a PRG, we can iterate it on its own output to get an arbitrarily long pseudo-random output. Now we can construct an encryption scheme by simply taking the key as input to a pseudo random generator and xoring the message with the output of the pseudo-random generator. The decryption can be done by simply encrypting the ciphertext a second time. The resulting encryption scheme can already be shown to be computational indistinguishable, although not necessarily ind. CPA secure. We will now try to improve the security to also reach at least ind. CPA security. 
+A substitution-permutation network is a block ciphers that arises by composing a sequence of substitutions (\emph{$S$-Boxes}) and permutations (\emph{$P$-Boxes}) of blocks containing $N$ bits.
+Each block is divided into $b$ chunks, which are consisting of $n=N/b$ bits each.
 
-\subsubsection{Feistel Ciphers}
+Let $B=\{0,1\}$.
+The network consists of three different kinds of steps.
+Each step defines a bijection $B^N\to B^N$.
 
-For this we can use a so called Feistel network.
-%Improving a comp. ind. encryption scheme to an ind. CPA secure scheme using a Feistel-network.
-\begin{definition}[A Feistel cipher]
- Let $k$ be any natural number (the number of \emph{rounds}). Let $f_{k_i}$ be a family of functions\protect\footnote{If possible pseudorandom functions and possibly one-way functions.} ($f$ is the so called \emph{round function}) of output length $n$ indexed by the sequence of \emph{round keys} $k_1, k_2, \ldots, k_n$. 
- Then the following encryption algorithm $E_k$ is called Feistel cipher. %network with $k$ iterations (for some odd $k$) based on a pseudo random generator $f_{k_i}$ and round keys $k_1, k_2, \ldots, k_n$ is an encryption scheme $(G,E,D)$, defined by:
- %For any odd $k\in\mathbb{N}$ we call an encryption scheme $(G, E, D)$ a Feistel network with $k$ iterations and $P$-Box $f$, iff for some \emph{round keys} $k_1, k_2, \ldots, k_n$ used as input for the pseudo random generator $f_{k_i}$. 
- \begin{itemize}
-  \item Fix a message $m=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
-  \item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_n}(R_n)$. Finally define $E_k:x_1\circ x_2\to L_k\circ R_k$. 
- \end{itemize}
- Now we can define the corresponding decryption algorithm $D_k$ just like $e_k$, but with the reversed order of round keys:
- \begin{itemize}
-   \item Fix a ciphertext $c=:x_1\circ x_2$, where $\left|x_1\right|=\left|x_2\right|=n$
-   \item Define the sequences $L_1, L_2, \ldots, L_n$ and $R_1, R_2, \ldots, R_n$ by $L_1:=x_1, R_1:=x_2$ and $L_{n+1}:=R_n, R_{n+1}:=L_n\oplus f_{k_{k-n}}(R_n)$. Finally define $D_k:x_1\circ x_2\to L_k\circ R_k$. 
- \end{itemize}
-\end{definition}
-Feistel ciphers have been shown to fulfill several notions of security assuming that the round function is actually pseudo random. For instance Feistel networks with at least $3$ rounds are ind. CPA secure and for more rounds they fulfill even stronger notions of security. %TODO: Check and clearify the exact model (3 seems sufficient under some assumptions, but 4 is definitely better (and already fulfills stronger notions)) and perhaps mention some other results. %see \url{https://link.springer.com/chapter/10.1007/978-3-540-45146-4\_30}
+A \textbf{substitution step} consists of \textbf{S-boxes} $S_1,\ldots,S_b$ each defining a bijective function $B^n\to B^n$.
+The substitution step maps each chunk by applying the corresponding S-box.
+The S-boxes could be substitution ciphers.
+However, it is desirable to have every output bit of an S-box depend on \emph{every} input bit.
+Then changing one input bit maximally \textbf{confuses} the output.
 
+A \textbf{permutation step} consists of one \textbf{P-box} defining a bijection of $\{0,\ldots,N-1\}$.
+The permutation step rearranges the input bits according to the bijection.
+It is desirable that the bits of one box are rearranged to as many different boxes as possible.
+That maximizes the \textbf{diffusion} of bits among the boxes.
 
- In practice many symmetric encryption schemes are based either on Feistel networks or on substitution-permutation-networks. 
- \begin{definition}[Substitution-permutation-network]
-  A substitution-permutation-networks is a series of linked substitutions (\emph{$S$-Boxes}) and permutations \emph{$P$-Boxes} of blocks in an encryption algorithm. 
-  The corresponding encryption algorithm splits the message into several boxes, which are typically fed into the $S$-Boxes, then the result is fed into the $P$-Box (and at some point the round key is used, for instance xored with the result as is AES). The later mentioned AES-encryption algorithm is one example of an encryption algorithm build around a substitution-permutation-network.
- \end{definition}
- Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar, but there are also some noticeable differences. Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo random function (for instance any one-way function) and is therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
-%TODO:Insert some additional material about block modes.
+A \textbf{key step} consists of one element $k\in B^N$ and xors its input with $k$.
 
-\subsubsection{AES} %Using the wikipedia article
-AES is in principle a relatively simple substitution-permutation network based on simple matrix operation. There exist three versions of AES for different key-sizes a 128 -bit version, a 192-bit version and the strongest 256-bit version. They differ mainly by the key size and the number of rounds. They all encrypt 128-bit block of data using a substitution-permutation network.\par
-\begin{table}[ht]\centering
+A \textbf{round} is a bijection of $B^N$ that consists of a substitution step, followed by a permutation step, followed by a key step.
+
+The \textbf{network} is a sequence of rounds.
+Often the substitution and permutation steps are the same for each round, and only the key step changes between rounds.
+
+%Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar.
+%Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo-random function (for instance any one-way function) and are therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
+
+\subsubsection{AES}
+
+\paragraph{Overview}
+AES (Advanced Encryption Standard) was chosen by NIST (the US institute of standards and technology) in 2001 as an encryption standard after an open call in 1997 and extensive analysis of the submitted schemes.
+Before being adopted as AES, it was called Rijndael.
+It replaced DES, which was not secure anymore.
+
+AES is one of the most widely used block ciphers, approved by many government organizations.
+Implementations are available in many programming languages.
+
+AES essentially uses a substitution-permutation network for $N=128$, $b=16$, and $n=8$.
+
+\paragraph{Keys}
+There exist three versions of AES for different key-sizes.
+They differ mainly by the key size and the number of rounds:
+\begin{center}
   \begin{tabular}{|c|c|c|c|}
   	\hline key size & 128-bit & 192-bit & 256-bit \\ 
-  	\hline round number & 10 & 12 & 14 \\ 
-  	\hline 
+  	\hline number of rounds & 10 & 12 & 14 \\ 
+  	\hline
   \end{tabular}
-  \caption{AES versions and their number of rounds}
-\end{table} 
-In the following, let $n$ denote the number of rounds of the AES cipher. 
-AES consists of the key expansion, where the key is expanded into 128-bit subkeys that are used in the individual rounds of the substitution-permutation network of AES. The block of data to be encrypted is represented as a \emph{state}, a $4\times 4$ matrix of bytes.  
-AES encryption uses four basic operations that are run in every round. They iteratively change the \emph{state} based on the \emph{round key}, the subkey for that specific round. In every round, the following operations are applied in this order (except for the last round, where mix-columns is omitted):
+\end{center}
+In all three cases, one additional initial round is run that only xors the input with a round key.
+
+Thus, $11$, $13$, or $15$ round keys of $128$ bits each are needed.
+These are obtained from the overall key using the Rijndael key schedule, which we omit here.
+
+\paragraph{Details}
+In the following, let $n$ denote the number of rounds of the AES cipher.
+
+The $128$-bit block of data to be encrypted is represented as a \emph{state} consisting of $16$ chunks of $8$ bits arranged as a $4\times 4$ matrix.
+
+All rounds except for the initial and the final round consist of four basic operations followed by xor-ing with the round key: sub-bytes, shift-row, mix-columns, and xor-ing with the round key.
+The initial round skips the first three operations, i.e., only the round key is added.
+The final round skips the mix-columns operation.
+
+The operations are defined as follows:
 \begin{compactenum}
-  \item Sub-bytes: Here every byte of the state is substituted according to the 8-bit S-box. 
-  \item Shift-row: Now the bytes in every row of the state are cyclically left-shifted. The $i$-th row is shifted by $i-1$ bytes. 
-  \item Mix-columns: This is the most interesting of the permutation steps. This time the columns of the state are transformed. The columns, are interpreted as a column-vector. The entries of this vector (the bits inside the columns) are viewed as polynomials of degree $7$ with bits as coefficients. These polynomials can be added using component-wise xor and can be multiplied using polynomail multiplicatin modulo the polynomial $x^8+x^4+x^3+x+1$. Now the transformation of each column can be represented as a left-multiplication with the matrix $$\left(\begin{matrix}
+  \item Sub-bytes: This is a substitution step that applies a fixed S-Box (the Rijndael S-box, which we omit here) to every chunk of the state.
+  \item Shift-row: This is a permutation step that leaves the chunks as they are but rearranges them relative to each other.
+    Specifically, for $i=0,1,2,3$, the $i$-th row is left-shifted cyclically $i$ times.
+  \item Mix-columns: This is a more complex substitution step.
+    It applies the same fixed operation to each column of the state.
+    
+    This operation is defined as follows.
+    A column consists of $4$ bytes, which can be seen as elements of $F_{2^8}$ (see Sect.~\ref{sec:math:finfield} for finite fields).
+    Thus, a column can be seen as a $4$-dimensional vector over $F_{2^8}$.
+    This vector is multiplied with the fixed $4\times 4$ matrix over $F_{2^8}$ given by
+\[\left(\begin{matrix}
     2&3&1&1\\1&2&3&1\\1&1&2&3\\3&1&1&2
-  \end{matrix}\right).$$
-  \item Add-round-key: Finally the state is xored with the round-key   
-\end{compactenum}
-We can see that AES is a substitution-permutation-network, where the first step is the applied substitution and the second, third and fourth step are permutation, so is their composition. Hence, any round of AES is a substitution followed by a permutation. 
-
-Now we already mostly understand how AES works, except for the key-expansion algorithm. The final algorithm is now: 
-\begin{compactenum}
-  \item Key expansion: Expand the key to $n+1$ subkeys or round-keys. 
-  \item Initial round:  Apply Add-round-key to the state using the first subkey
-  \item Rounds: Run $n-1$ rounds on the state, where each $i$-th round consists of:
-  \begin{compactenum}
-  	\item Sub-bytes
-  	\item Shift-row
-  	\item Mix-columns
-  	\item Add-round-key using the next ($i+1$-th) round-key
-  \end{compactenum}
-  \item The final round (without mix-columns)
-  \begin{compactenum}
-  	\item Sub-bytes
-  	\item Shift-rows
-  	\item Add-round-key using the last $n+1$-th round-key
-  \end{compactenum}
+   \end{matrix}\right)\]
+  \item Add-round-key: The state is xored with the round-key.   
 \end{compactenum}
 
-Since each of the operations applied to the state vector can be inverted, it is clear how AES encrypted ciphertext can be decrypted again: Firstly, the key is expanded to the round-keys. Then, the rounds are inverted one by one, using the round-keys in inverse order. The rounds can be inverted by applying the inverse operation of the operation in any round in reverse order. In case of add-round-key, the inverse operation is the same operation (xor is inverse to itself). In case mix-columns, the inverse linear transformation must be applied, in case of shift rows, we use a right-shift instead of a left-shift and sub-bytes can be inverted using the inverse substitution table. 
+The inverse of AES is defined accordingly by inverting all operations in reverse order.
+
