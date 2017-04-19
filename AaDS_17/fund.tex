@@ -747,7 +747,7 @@ object Test {
 \end{lstlisting}
 
 \paragraph{Java}
-In Java, polymorphic data structures are called generics.
+In Java, polymorphic data structures are called \emph{generics}.
 It uses angular instead of square brackets and puts the parameter types of a polymorphic algorithm before the return type instead of after the name:
 
 \begin{lstlisting}
@@ -814,7 +814,7 @@ fun lessOrEqual(ord: 'a TotOrder): 'a * 'a -> bool = case ord of TotOrder(f) => 
 
 val IntSmaller: int TotOrder = TotOrder(fn (x,y) => x <= y)
 
-fun sort(ord: 'a TotOrder, x: 'a list) = x
+fun sort(ord: 'a TotOrder, x: 'a list) = ...
 
 fun test() = sort(IntSmaller, [3,5,4])
 \end{lstlisting}

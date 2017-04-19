@@ -54,3 +54,16 @@ abstract class HashSet[A](numBuckets: Int) extends Set[A] {
     iter
   }
 }
+
+// ***************************** implementation of sets via characteristic functions, not iterable because they may infinite
+
+class CharacteristicFunctionSet[A](charFun: A => Boolean) {
+   
+   def contains(x: A) = charFun(x)
+
+   def insert(a:A) = new CharacteristicFunctionSet[A](x => x == a || this.contains(x))
+   def delete(a:A) = new CharacteristicFunctionSet[A](x => x != a && this.contains(x))
+   
+   def union(that: CharacteristicFunctionSet[A]) = new CharacteristicFunctionSet[A](x => this.contains(x) || that.contains(x))
+   def intersect(that: CharacteristicFunctionSet[A]) = new CharacteristicFunctionSet[A](x => this.contains(x) && that.contains(x))
+}

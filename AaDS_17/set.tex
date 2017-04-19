@@ -215,3 +215,26 @@ One way to do that is to use red-black trees (see Sect.~\ref{sec:ad:redblacktree
 
 Red-black trees are a sophisticated variant of binary search trees.
 They guarantee $\Theta(\log n)$ cost for for insertion and deletion.
+
+\subsection{Characteristic Functions}\label{sec:ad:charfun}
+
+\footnote{This section was not part of the course.}
+
+For every set $x:Set[A]$, we can define its characteristic function $\mathtt{Char}_x:A\to\Bool$ by
+\[\mathtt{Char}_x(a) = contains(a,x)\]
+
+In mathematics, the inverse is true as well: for every function $f:A\to \Bool$, we can define the set $\{x: A|f(x)\}$.
+However, we can usually not implement that set in programming languages.
+That is easy to see: bit vectors, list sets, hash sets, or binary search trees can only ever represent \emph{finite} sets.
+But functions $f:A\to\Bool$ can easily represent \emph{infinite} sets as well.
+For example, \[\alam[\String]{x}{\true}\tb:\tb\String\to \Bool\] is the characteristic function of the infinite set of all strings.
+
+Therefore, characteristic functions are a representation of sets that is more expressive than all of the above.
+If we want to represent infinite sets, characteristic functions are the only option.
+
+All set operations on characteristic functions can be implemented in $O(1)$ with the following exceptions:
+\begin{compactitem}
+ \item $contains$ must call the characteristic function. There is no way to predict how long that will take.
+ \item It is impossible to implement $equal$ correctly if $A$ is infinite.
+ \item Operations that require finiteness such as computing the size of a set cannot be implemented.
+\end{compactitem}
