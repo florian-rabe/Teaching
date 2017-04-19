@@ -78,8 +78,8 @@ The last block may have to be \textbf{padded} to length $N$ by adding random dat
 
 However, the naive approach would not yield secure schemes---if the same block is always encrypted in the same way, the scheme would be easy to attack.
 Overcoming this is the role of the \textbf{block cipher mode of operation}.
+There are various modes that yield CPA-ind secure schemes if used with pseudo-random block ciphers.
 
-There are various modes.
 A commonly used mode is Cipher Block Chaining (CBC).
 Here every block is xor-ed with a certain element from $\{0,1\}^N$.
 For the first block, this is an arbitrary number called the \textbf{initialization vector}.
