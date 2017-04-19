@@ -1,3 +1,5 @@
+The basic principle of symmetric encryption is that encryption and decryption use the same key.
+
 \subsection{Schemes}
 
 We now expand on the ideas developed in Sect.~\ref{sec:sd:crypto:hist} systematically.
@@ -66,24 +68,26 @@ The resulting encryption scheme is computationally indistinguishable but not nec
 
 \subsection{Schemes Based on Block Ciphers}
 
+We fix the alphabet to be $B=\{0,1\}$.
+
 \subsubsection{Block Ciphers and Modes of Operation}
 
 Block ciphers are a common method to obtain more secure encryption schemes.
 
-A \textbf{block cipher} is a function that maps keys to bijections of the set $\{0,1\}^N$ for some $N$.
-The elements of $\{0,1\}^N$ are called \textbf{blocks}.
+A \textbf{block cipher} is a function that maps keys to bijections of the set $B^N$ for some $N$.
+The elements of $B^N$ are called \textbf{blocks}.
 
 The idea of block cipher--based schemes is to split the plaintext into blocks that are translated individually by applying the block cipher.
 The last block may have to be \textbf{padded} to length $N$ by adding random data.
 
 However, the naive approach would not yield secure schemes---if the same block is always encrypted in the same way, the scheme would be easy to attack.
-Overcoming this is the role of the \textbf{block cipher mode of operation}.
+Overcoming this is the role of the block cipher \textbf{mode of operation}.
 There are various modes that yield CPA-ind secure schemes if used with pseudo-random block ciphers.
 
-A commonly used mode is Cipher Block Chaining (CBC).
-Here every block is xor-ed with a certain element from $\{0,1\}^N$.
-For the first block, this is an arbitrary number called the \textbf{initialization vector}.
-For every subsequent, it is the previous cipher block.
+A commonly used mode of operation is \textbf{Cipher Block Chaining} (CBC).
+Here every plaintext block is xor-ed with a certain element from $B^N$ before applying the block cipher.
+For the first plaintext block, this is an arbitrary number called the \textbf{initialization vector}.
+For every subsequent plaintext block, it is the previous cipher block.
 
 The initialization vector must be random but does not have to be secret (which is good because the recipient needs to know it to decrypt).
 To maintain security, the same pair of initialization and key must never be used twice, i.e., the initialization vector should be a \textbf{nonce} (a number only used once).
@@ -111,30 +115,34 @@ For example, it could be derived from the number of the current message in the o
 
 \subsubsection{Substitution-Permutation Networks}
 
-A substitution-permutation network is a block ciphers that arises by composing a sequence of substitutions (\emph{$S$-Boxes}) and permutations (\emph{$P$-Boxes}) of blocks containing $N$ bits.
-Each block is divided into $b$ chunks, which are consisting of $n=N/b$ bits each.
+A substitution-permutation network is a block cipher whose bijections arise as products of substitutions and permutation ciphers.
 
-Let $B=\{0,1\}$.
-The network consists of three different kinds of steps.
-Each step defines a bijection $B^N\to B^N$.
+To process a block of $N$ bits, the block is divided into $b$ chunks of $n=N/b$ bits each.
+Each block is processed by a sequence of steps, each of which applies a bijection $B^N\to B^N$.
 
-A \textbf{substitution step} consists of \textbf{S-boxes} $S_1,\ldots,S_b$ each defining a bijective function $B^n\to B^n$.
+A \textbf{substitution step} consists of \textbf{S-boxes} $S_1,\ldots,S_b$.
+Each S-box is a bijection $B^n\to B^n$.
 The substitution step maps each chunk by applying the corresponding S-box.
 The S-boxes could be substitution ciphers.
 However, it is desirable to have every output bit of an S-box depend on \emph{every} input bit.
 Then changing one input bit maximally \textbf{confuses} the output.
 
-A \textbf{permutation step} consists of one \textbf{P-box} defining a bijection of $\{0,\ldots,N-1\}$.
-The permutation step rearranges the input bits according to the bijection.
-It is desirable that the bits of one box are rearranged to as many different boxes as possible.
-That maximizes the \textbf{diffusion} of bits among the boxes.
+A \textbf{permutation step} consists of one \textbf{P-box} $P$.
+A P-box is a permutation of $\{0,\ldots,N-1\}$.
+The permutation step maps the block by permuting its bits according to the P-box.
+It is desirable that the bits of one chunk are rearranged to as many different chunks as possible.
+That maximizes the \textbf{diffusion} of bits among the chunks.
 
-A \textbf{key step} consists of one element $k\in B^N$ and xors its input with $k$.
+A \textbf{key step} consists of one key $k\in B^N$.
+The key steps maps a block by xor-ing it with $k$.
 
-A \textbf{round} is a bijection of $B^N$ that consists of a substitution step, followed by a permutation step, followed by a key step.
+A \textbf{round} is a bijection of $B^N$ that is the product of a substitution step, a permutation step, and a key step.
 
-The \textbf{network} is a sequence of rounds.
+A \textbf{network} is a sequence of rounds.
 Often the substitution and permutation steps are the same for each round, and only the key step changes between rounds.
+In that case, the keys are called the \textbf{round keys}.
+
+The inverse of a network is defined by inverting all operations in reverse order.
 
 %Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar.
 %Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo-random function (for instance any one-way function) and are therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
@@ -171,11 +179,10 @@ In the following, let $n$ denote the number of rounds of the AES cipher.
 
 The $128$-bit block of data to be encrypted is represented as a \emph{state} consisting of $16$ chunks of $8$ bits arranged as a $4\times 4$ matrix.
 
-All rounds except for the initial and the final round consist of four basic operations followed by xor-ing with the round key: sub-bytes, shift-row, mix-columns, and xor-ing with the round key.
-The initial round skips the first three operations, i.e., only the round key is added.
-The final round skips the mix-columns operation.
+All rounds except for the initial and the final round are the product of four basic ciphers: sub-bytes, shift-row, mix-columns, and add-round-key.
+The initial round skips the first three operations, and the final round skips the mix-columns operation.
 
-The operations are defined as follows:
+The basic operations are defined as follows:
 \begin{compactenum}
   \item Sub-bytes: This is a substitution step that applies a fixed S-Box (the Rijndael S-box, which we omit here) to every chunk of the state.
   \item Shift-row: This is a permutation step that leaves the chunks as they are but rearranges them relative to each other.
@@ -187,11 +194,8 @@ The operations are defined as follows:
     A column consists of $4$ bytes, which can be seen as elements of $F_{2^8}$ (see Sect.~\ref{sec:math:finfield} for finite fields).
     Thus, a column can be seen as a $4$-dimensional vector over $F_{2^8}$.
     This vector is multiplied with the fixed $4\times 4$ matrix over $F_{2^8}$ given by
-\[\left(\begin{matrix}
+    \[\left(\begin{matrix}
     2&3&1&1\\1&2&3&1\\1&1&2&3\\3&1&1&2
    \end{matrix}\right)\]
   \item Add-round-key: The state is xored with the round-key.   
 \end{compactenum}
-
-The inverse of AES is defined accordingly by inverting all operations in reverse order.
-

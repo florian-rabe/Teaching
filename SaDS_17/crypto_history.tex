@@ -66,10 +66,10 @@ The security of course only holds if the key is only used once---otherwise, it i
 Therefore, one-time-pads have only limited use in practice: to send a second message, we have to transfer the new key secretly, which is as difficult as the original problem.
 The only practical way to use a one-time-pad is to pre-agree on an extremely long key that is used up gradually as messages are sent.
 
-\subsubsection{Transposition Ciphers}
+\subsubsection{Permutation Ciphers}
 
 A different approach is to \emph{rearrange} the letters of the message instead of substituting them.
-That is called a \textbf{transposition} cipher.
+That is called a \textbf{transposition} or \textbf{permutation} cipher.
 An old example is the rail-fence transposition cipher.
 Here a message is spelled out diagonally over a number of rows, and the ciphertext is read off row-by-row.
 The key $k$ is the number of rows.
@@ -98,7 +98,7 @@ For instance, the number of occurrences of the letters remain unchanged by the c
 A good way to improve more secure encryptions is to compose multiple ciphers.
 The resulting ciphers are called \textbf{product} ciphers.
 If we compose a substitution cipher with another substitution cipher, we obtain a substitution cipher again, which is useless.
-Similarly, if we compose two transposition ciphers, we get a transposition cipher again.
+Similarly, if we compose two permutation ciphers, we get a permutation cipher again.
 
-However, if we compose a substitution and a transposition, we get a new kind of cipher that is much harder to break.
+However, if we compose a substitution and a permutation, we get a new kind of cipher that is much harder to break.
 This is a key idea in modern (symmetric) cryptography. 
