@@ -7,7 +7,7 @@ We now expand on the ideas developed in Sect.~\ref{sec:sd:crypto:hist} systemati
 \begin{definition}[Encryption Scheme]
  An \textbf{encryption scheme} is a tuple $(\Sigma,K,G, E, D)$, where
   \begin{compactitem}
-   \item $\Sigma$ is a set (the \textbf{alphabet}),
+   \item $\Sigma$ is a (finite) set (the \textbf{alphabet}),
    \item $K=(K_n)_{n\in \N}$ is a family of sets (the \textbf{key space}),
    \item $G:(n\in \N)\to K_n$ is a PPT algorithm (the \textbf{key generation} function)
    \item $E=(E_k)_{n\in\N,k\in K_n}$ is a family of polynomial algorithms $E_k:\Sigma^n\to\Sigma^*$ (the \textbf{encryption} functions)
@@ -33,8 +33,8 @@ But we obtain different notions of security depending on how we model what else 
 
 In the simplest case, the adversary may do nothing else:
 
-\begin{definition}[Guess-indistinguishable]\label{def:sd:ind}
-  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{guess-indistinguishable} if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
+\begin{definition}[Computationally-indistinguishable]\label{def:sd:ind}
+  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{computationally-indistinguishable} if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
   \[\Prob{i\in\{0,1\}}{A(E(x_i))=i}<\frac{1}{2}+neg(n)\]
   for a negligible function $neg$.
 \end{definition}
@@ -49,7 +49,7 @@ If those frequencies match the frequencies in $x_0$ or $x_1$, $A$ guesses $0$ or
 Clearly, $A$ is a polynomial algorithm.
 \end{example}
 
-Guess-indistinguishability is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
+Computationally-indistinguishability is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
 If the adversary has access to the encryption function $E(-)$, we speak of a \textbf{chosen-plaintext-attack} (CPA).
 The analog of Def.~\ref{def:sd:ind} where the adversary $A$ may conduct CPAs is called CPA-ind.
 If the adversary additionally has access to the decryption function $D(-)$, we speak of \textbf{chosen-ciphertext-attack} (CCA).
@@ -63,7 +63,7 @@ Given a PRG $R$, we can iterate it on its own output to get an arbitrarily long 
 Now we can construct an encryption scheme by simply defining the key to be $G(n)=R(n)$ and defining $E_k(x)$ by xoring every bit in $x$ with the corresponding bit in $k$.
 The decryption can be done in the same way, i.e., $D_k=E_k$.
 
-The resulting encryption scheme is computationally indistinguishable but not necessarily CPA-ind.
+The resulting encryption scheme is computationally-indistinguishable but not necessarily CPA-ind.
 \end{example}
 
 \subsection{Schemes Based on Block Ciphers}

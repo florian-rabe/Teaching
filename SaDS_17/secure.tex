@@ -1,6 +1,8 @@
 \paragraph{Acknowledgments}This chapter contains contributions by Colin Rothgang.
 
 \section{History and Introduction}\label{sec:sd:crypto:hist}
+%The definitions are based on \cite{PuMaC2016}. 
+%This section is based mainly on \cite{cryptoNetworkSlides}. 
 \input{crypto_history}
 
 \section{Fundamental Concepts}
@@ -8,6 +10,7 @@
 No systems is perfectly secure---a brute-force attack is always possible.
 Therefore, a central idea of cryptography is that waiting for a polynomial amount of time (in the sense of complexity theory) is feasible but waiting for a super-polynomial time is not.
 Then a system is often defined as secure if it the best possible attack has super-polynomial complexity.
+
 
 \begin{definition}[Polynomial and Negligible Functions]
  A function $f:\N\to\R^+$ is called
@@ -18,9 +21,11 @@ Then a system is often defined as secure if it the best possible attack has supe
   \end{compactitem}
 \end{definition}
 
+
 Super-polynomial functions increase faster than any polynomial increases.
 Negligible functions are somewhat dual: they decrease faster than any polynomial increases.
 In cryptography, we can think of polynomial/super-polynomial/negligible functions as normal/infeasible/trivial.
+
 
 \begin{theorem}
 We have the following closure properties:
