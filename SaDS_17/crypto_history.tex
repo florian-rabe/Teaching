@@ -43,20 +43,31 @@ Thus, if the language of the message is known, the frequencies of occurrences of
 Then, if the ciphertext is long enough, only a few substitution remain likely and can be tried easily.
 
 This is why \textbf{polyalphabetic} ciphers were introduced.
-These encrypt entire blocks of the plaintext.
-A very simple polyalphabetic cipher is the so called Vigin\`ere-cipher, a generalization of Caesar's cipher.
-Here blocks of subsequent letters are encrypted using Ceasar's cipher using a different key for each letter in the block.
-Thus, the key is a tuple $k=(k_0,\ldots,k_{l-1})$ and every character $x$ in position $i$ of the plaintext is encrypted as $\phi_k(i,x)=(x+k_{i\modop l})\modop n$.
+These map the same character differently depending on the position in the message where it occurs.
+
+A simple polyalphabetic cipher is the Vigin\`ere cipher, a generalization of Caesar's cipher.
+It splits the plaintext into blocks of $l$ characters.
+So a text of length $l\cdot n$ would be split into $n$ blocks.
+Then all letters are encrypted using Ceasar's cipher but using a different key depending on where in the block a character occurs.
+Thus, the key is an $l$-tuple $k=(k_0,\ldots,k_{l-1})$.
+For example, using $l=3$ and the key $(1,2,3)$, the block "aaa" becomes "bcd". 
 
 \begin{example}[Vigin\`ere Cipher]
- Let use the key $k=(1,2,3)$.
+ We use blocks of length $l=3$ and the key $k=(1,2,3)$.
  Then we obtain the encryption
   \begin{lstlisting}
     meet me after the toga party
     nghu oh bhwft wig wpid qcuua
   \end{lstlisting}
 \end{example}
-This can be attacked by first looking for repetitive patterns in the ciphertext (in order to guess the length $l$ of the key) and attacking the decomposed Caesar encrypted subsequences individually. 
+
+\begin{exercise}
+Define the substitution function $\phi_k(i,x)$ of the Vigin\`ere cipher.
+Given a key $k=(k_0,\ldots,k_{l-1})$, $\phi_k(i,x)$ should be the character that substitutes the character $x$ in position $i$.
+\end{exercise}
+% answer: $\phi_k(i,x)=(x+k_{i\modop l})\modop n$
+
+This can be attacked by first looking for repetitive patterns in the ciphertext (in order to guess the length $l$ of the key) and attacking the decomposed Caesar-encrypted subsequences individually.
 This works well if the length of the message is significantly longer than the length of the key. 
 
 One notable special case arises when the length of the key equals the length of the message.
@@ -75,27 +86,33 @@ Here a message is spelled out diagonally over a number of rows, and the cipherte
 The key $k$ is the number of rows.
 
 \begin{example}[Rail-Fence Cipher]
- If we use $k=2$, we obtain the following encryption
+ If we use $k=3$, we obtain the following encryption
   \begin{lstlisting}
     meet me after the toga party
-    me eatrtetg atetm fe h oapry
+    mtefrhtaaye  t eo remaet gpt
   \end{lstlisting}
 which is computed using the following diagonal transposition
   \begin{lstlisting}
-    m e   e a t r t e t g   a t
-     e t m   f e   h   o a p r y
+    m  t  e  f  r  h  t  a  a  y
+     e        t     e  o     r
+      e  m  a  e  t     g  p  t
   \end{lstlisting}
 \end{example}
 Another interesting polyalphabetic cipher is the playfair cipher, which we omit here.
 
-Formally, a transposition cipher encrypts a plaintext $[x_0,\ldots,x_{m-1}]$ of as $[x_{k(0)},\ldots,x_{k(l-1)}]$ where the key $k$ is a bijection of the positions in the message.
+Formally, a transposition cipher maps a plaintext $[x_0,\ldots,x_{m-1}]$ to $[x_{\tau(0)},\ldots,x_{\tau(l-1)}]$ where $\tau$ is a bijection of the positions in the message.
+To make the cipher parametric in a key, we use a function $\tau_k$ that maps keys $k$ to bijections of $\{0,\ldots,l-1\}$.
+
+\begin{exercise}
+Define the rail-fence cipher as a parametric transposition cipher: for fixed message length $l$ and given key $k$ (the number of rows), define the bijection $\tau_k$ of $\{0,\ldots,l-1\}$.
+\end{exercise}
 
 Transposition ciphers do not really obfuscate plaintext patterns either.
 For instance, the number of occurrences of the letters remain unchanged by the cipher.
 
 \subsubsection{Product Ciphers}
  
-A good way to improve more secure encryptions is to compose multiple ciphers.
+A good way to produce more secure encryptions is to compose multiple ciphers.
 The resulting ciphers are called \textbf{product} ciphers.
 If we compose a substitution cipher with another substitution cipher, we obtain a substitution cipher again, which is useless.
 Similarly, if we compose two permutation ciphers, we get a permutation cipher again.

@@ -18,14 +18,14 @@ We now expand on the ideas developed in Sect.~\ref{sec:sd:crypto:hist} systemati
   For $x\in\Sigma^n$, we write $E(x)$ for the probabilistic result of computing $E_{G(n)}(x)$.
 \end{definition}
 
-To encrypt a message $x$ of length $n$, we choose a key $G(n)\in K_n$ and call $c=E_k(x)$ to obtain the cipher $c$.
+To encrypt a message $x$ of length $n$, we choose a key $k=G(n)\in K_n$ and call $c=E_k(x)$ to obtain the cipher $c$.
 To decrypt an encrypted message, we call $D_k(c)$.
 
 \subsection{Security of a Scheme}
 
 There are various concepts of security of an encryption scheme.
 The general idea is to assume an adversary that picks two messages $x_0,x_1\in\Sigma^n$ and randomly receives either $E(x)$ or $E(x')$.
-The encryption scheme is consider secure if the adversary cannot distinguish between the two situations with a probability that is non-negligibly better than $1/2$.
+The encryption scheme is considered secure if the adversary cannot distinguish between the two situations with a probability that is non-negligibly better than $1/2$.
 In other words, even if the adversary already knows that a given ciphertext $c$ is either the encryption of $x$ or of $x'$, he has no better chance of decrypting $c$ than guessing.
 
 In all cases, the adversary is restricted to polynomial computations.
@@ -34,7 +34,7 @@ But we obtain different notions of security depending on how we model what else 
 In the simplest case, the adversary may do nothing else:
 
 \begin{definition}[Computationally-indistinguishable]\label{def:sd:ind}
-  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{computationally-indistinguishable} if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
+  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{computationally-indistinguishable} (comp-ind) if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
   \[\Prob{i\in\{0,1\}}{A(E(x_i))=i}<\frac{1}{2}+neg(n)\]
   for a negligible function $neg$.
 \end{definition}
@@ -42,14 +42,14 @@ In the simplest case, the adversary may do nothing else:
 Here $\Prob{i\in\{0,1\}}{A(E(x_i))=i}$ formalizes the probability that the adversary correctly guessed whether $x_0$ or $x_1$ is the decryption of its input.
 
 \begin{example}
-A substitution cipher is not secure in the sense of Def.~\ref{def:sd:ind}.
+A monoalphabetic substitution cipher is not secure in the sense of Def.~\ref{def:sd:ind}.
 We define an adversary $A$.
 Given the encryption $c$ of $x_0$ or $x_1$, $A$ collects the frequencies of all characters in $c$.
 If those frequencies match the frequencies in $x_0$ or $x_1$, $A$ guesses $0$ or $1$, respectively.
 Clearly, $A$ is a polynomial algorithm.
 \end{example}
 
-Computationally-indistinguishability is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
+comp-ind is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
 If the adversary has access to the encryption function $E(-)$, we speak of a \textbf{chosen-plaintext-attack} (CPA).
 The analog of Def.~\ref{def:sd:ind} where the adversary $A$ may conduct CPAs is called CPA-ind.
 If the adversary additionally has access to the decryption function $D(-)$, we speak of \textbf{chosen-ciphertext-attack} (CCA).
@@ -60,10 +60,14 @@ Let $\Sigma=\{0,1\}$.
 We consider every natural number to be an element of $\{0,1\}^*$ by using its binary representation.
 
 Given a PRG $R$, we can iterate it on its own output to get an arbitrarily long pseudo-random sequence in $\{0,1\}^*$.
-Now we can construct an encryption scheme by simply defining the key to be $G(n)=R(n)$ and defining $E_k(x)$ by xoring every bit in $x$ with the corresponding bit in $k$.
-The decryption can be done in the same way, i.e., $D_k=E_k$.
+Now we can construct an encryption scheme by simply defining
+\begin{compactitem}
+ \item the key generator by $G(n)=R(n)$
+ \item $E_k(x)$ by xor-ing every bit in $x$ with the corresponding bit in $k$.
+ \item the decryption in the same way as encryption, i.e., $D_k=E_k$.
+\end{compactitem}
 
-The resulting encryption scheme is computationally-indistinguishable but not necessarily CPA-ind.
+The resulting encryption scheme is comp-ind but not necessarily CPA-ind.
 \end{example}
 
 \subsection{Schemes Based on Block Ciphers}
@@ -105,6 +109,7 @@ For every subsequent plaintext block, it is the previous cipher block.
 The initialization vector must be random but does not have to be secret (which is good because the recipient needs to know it to decrypt).
 To maintain security, the same pair of initialization vector and key must never be used twice, i.e., the initialization vector should be a number only used once (which is called a \textbf{nonce}).
 For example, the initialization vector could be derived from the number of the current message in the overall sequence of exchanged messages.
+However, for CBC, a fixed or predictable initialization vector opens the resulting scheme up to attacks; so a probabilistic algorithm must be used to generate it.
 
 %\subsubsection{Feistel Ciphers}
 %
@@ -156,7 +161,7 @@ That maximizes the \textbf{diffusion} of bits among the chunks.
 The key steps maps a block by xor-ing it with $k$.
 
 The key steps provide a way to parametrize the network.
-We can use the same network multiple by just switching to a different set of keys.
+We can use the same network multiple times by just switching to a different set of keys.
 \end{itemize}
 
 A \textbf{round} is a bijection of $B^N$ that is the product of a substitution step, a permutation step, and a key step.

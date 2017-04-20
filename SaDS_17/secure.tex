@@ -7,10 +7,9 @@
 
 \section{Fundamental Concepts}
 
-No systems is perfectly secure---a brute-force attack is always possible.
-Therefore, a central idea of cryptography is that waiting for a polynomial amount of time (in the sense of complexity theory) is feasible but waiting for a super-polynomial time is not.
-Then a system is often defined as secure if it the best possible attack has super-polynomial complexity.
-
+No system is perfectly secure---a brute-force attack is always possible.
+Therefore, a central idea of cryptography is that waiting for a polynomial amount of time (in the sense of complexity theory) is feasible but waiting for a super-polynomial amount of time is not.
+Then a system is often defined as secure if the best possible attack has super-polynomial complexity.
 
 \begin{definition}[Polynomial and Negligible Functions]
  A function $f:\N\to\R^+$ is called
@@ -21,11 +20,9 @@ Then a system is often defined as secure if it the best possible attack has supe
   \end{compactitem}
 \end{definition}
 
-
 Super-polynomial functions increase faster than any polynomial increases.
 Negligible functions are somewhat dual: they decrease faster than any polynomial increases.
 In cryptography, we can think of polynomial/super-polynomial/negligible functions as normal/infeasible/trivial.
-
 
 \begin{theorem}
 We have the following closure properties:
@@ -44,16 +41,24 @@ We have the following closure properties:
  A \textbf{probabilistic algorithm} is like an algorithm except that it may return different results when called multiple times for the same input.
 \end{definition}
 
-In most situations, an algorithm that may return different results is simply broken and not an algorithm at all.
+In most situations, an algorithm that may return different results for the same input is simply broken and not an algorithm at all.
 However, occasionally, probabilistic algorithms are very useful.
-Cryptography is an example because we often \emph{need} to make a random choic to prevent an attacker from predicting what we did.
+Cryptography is an example because we often \emph{need} to make a random choice to prevent an attacker from predicting what we did.
 For example, it is often unavoidable for the attacker to know what encryption scheme we use---but that is acceptable if we choose a random key.
+Therefore, encryption schemes often consist of a probabilistic key generation algorithm and deterministic encryption/decryption algorithms that take the key as input.
+Another application in cryptography is \emph{padding} a message: to prevent leaking the information how long a message is, we can pad every message to a fixed length by adding random data.
+In that case, the encryption algorithm is also probabilistic.
+
+Independent of applications in cryptography, probabilistic algorithms are also of great help in situations where (i) a deterministic algorithm has a large complexity but (ii) a probabilistic algorithm that sometimes returns false results is much faster.
+If it is easy to test whether a result is correct, we can simply re-run the probabilistic algorithm until it finds a correct result.
+That is sometimes used in key generation algorithms, e.g., to find a large prime number.
+%Alternatively, if we cannot test if a result is correct, we may be able to run the probabilistic algorithm multiple times in order to increase the probability that a result is correct.
 
 \begin{definition}[Probabilistic Polynomial Time]
  An algorithm is called \textbf{probabilistic polynomial time} (PPT) if it is probabilistic and polynomial.
 \end{definition}
 
-One-way-functions (OWF) are functions are easy to compute but hard to invert:
+One-way-functions (OWF) are functions that are easy to compute but hard to invert:
 
 \newcommand{\Prob}[2]{\mathop{\mathrm{Pr}}_{#1}[#2]}
 
