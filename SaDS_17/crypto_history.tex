@@ -16,7 +16,7 @@ One of the oldest known encryption algorithms is the so called Caesar cipher. It
 Let us make this algorithm mathematically a bit more precise.
 We usually represent all data as a number in $\Z_n$ so that encryption and decryption are functions $\Z_n\to\Z_n$.
 $\Z_n$ is called the \textbf{alphabet}.
-For the Latin alphabet, we have $n=26$, i.e., the letters are represented as the numbers $0, 2, 3,\ldots, 25$.
+For the Latin alphabet, we have $n=26$, i.e., the letters are represented as the numbers $0, 1, 2,\ldots, 25$.
 
 The length of the shift can be any number from $0$ to $25$.
 It is very typical that an encryption scheme has such an arbitrary parameter.
@@ -61,11 +61,10 @@ For example, using $l=3$ and the key $(1,2,3)$, the block "aaa" becomes "bcd".
   \end{lstlisting}
 \end{example}
 
-\begin{exercise}
+\begin{exercise}\label{exc:sd:viginere}
 Define the substitution function $\phi_k(i,x)$ of the Vigin\`ere cipher.
 Given a key $k=(k_0,\ldots,k_{l-1})$, $\phi_k(i,x)$ should be the character that substitutes the character $x$ in position $i$.
 \end{exercise}
-% answer: $\phi_k(i,x)=(x+k_{i\modop l})\modop n$
 
 This can be attacked by first looking for repetitive patterns in the ciphertext (in order to guess the length $l$ of the key) and attacking the decomposed Caesar-encrypted subsequences individually.
 This works well if the length of the message is significantly longer than the length of the key. 
@@ -73,7 +72,7 @@ This works well if the length of the message is significantly longer than the le
 One notable special case arises when the length of the key equals the length of the message.
 In this case we call the cipher a \textbf{one-time-pad}.
 Then the encryption is absolutely secure as every ciphertext can be decrypted to an arbitrary plaintext by choosing an appropriate key.
-The security of course only holds if the key is only used once---otherwise, it is effectively to used to encrypt one very long message.
+The security of course only holds if the key is only used once---otherwise, it is effectively used to encrypt one very long message.
 Therefore, one-time-pads have only limited use in practice: to send a second message, we have to transfer the new key secretly, which is as difficult as the original problem.
 The only practical way to use a one-time-pad is to pre-agree on an extremely long key that is used up gradually as messages are sent.
 
@@ -86,25 +85,30 @@ Here a message is spelled out diagonally over a number of rows, and the cipherte
 The key $k$ is the number of rows.
 
 \begin{example}[Rail-Fence Cipher]
- If we use $k=3$, we obtain the following encryption
+ We use $k=3$.
+ For simplicity, we pad the message to a multiple of $k$ characters by appending \lstinline|__|.
+ Then we obtain the following encryption
   \begin{lstlisting}
-    meet me after the toga party
-    mtefrhtaaye  t eo remaet gpt
+    meet me after the toga party__
+    mtefrhtaaye  t eo r_emaet gpt_
   \end{lstlisting}
-which is computed using the following diagonal transposition
+which is computed using the following visual aid (which we can see as a rail fence)
   \begin{lstlisting}
     m  t  e  f  r  h  t  a  a  y
-     e        t     e  o     r
-      e  m  a  e  t     g  p  t
+    
+    e        t     e  o     r  _
+    
+    e  m  a  e  t     g  p  t  _
   \end{lstlisting}
 \end{example}
 Another interesting polyalphabetic cipher is the playfair cipher, which we omit here.
 
-Formally, a transposition cipher maps a plaintext $[x_0,\ldots,x_{m-1}]$ to $[x_{\tau(0)},\ldots,x_{\tau(l-1)}]$ where $\tau$ is a bijection of the positions in the message.
-To make the cipher parametric in a key, we use a function $\tau_k$ that maps keys $k$ to bijections of $\{0,\ldots,l-1\}$.
+Formally, a transposition cipher maps a plaintext $[x_0,\ldots,x_{m-1}]$ to $[x_{\tau(0)},\ldots,x_{\tau(l-1)}]$ where $\tau$ is a bijection of the positions $\{0,\ldots,l-1\}$ in the message.
+To make the cipher parametric in a key, we use a function $\tau_k$ that maps keys $k$ to bijections.
 
-\begin{exercise}
-Define the rail-fence cipher as a parametric transposition cipher: for fixed message length $l$ and given key $k$ (the number of rows), define the bijection $\tau_k$ of $\{0,\ldots,l-1\}$.
+\begin{exercise}\label{exc:sd:railfence}
+Define the rail-fence cipher as a parametric transposition cipher: for fixed message length $l$ and given key $k$ (the number of rows) such that $k|l$, define the bijection $\tau_k$ of $\{0,\ldots,l-1\}$.
+Find the inverse of $\tau_k$ (which is needed for decryption).
 \end{exercise}
 
 Transposition ciphers do not really obfuscate plaintext patterns either.
