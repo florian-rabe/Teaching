@@ -102,6 +102,20 @@ For a more complex example, consider the monoid of $2\times 2$ matrices under mu
 \end{acode}
 where $\anew{Mat}{a,b,c,d}$ represents the matrix $\begin{pmatrix}a & b \\ c & d\end{pmatrix}$.
 
+There are many more monoids that come up all the time.
+Some examples are
+\begin{compactitem}
+ \item $\wedge$ and $\true$ yield a $Monoid[\Bool]$.
+ \item $\vee$ and $\false$ yield a $Monoid[\Bool]$.
+ \item Concatenation and empty list yield a $Monoid[List[A]]$ for every $A$.
+ \item Union and empty set yield a $Monoid[Set[A]]$ for every $A$.
+ \item If we can implement the set $Full[A]:Set[A]$ containing all elements of $A$, then intersection and $Full[A]$ yield a $Monoid[Set[A]]$ for every $A$.
+ \item Minimum and $\infty$ yield a $Monoid[\N^\infty]$.
+ \item $gcd$ and $0$ yield a $Monoid[\N]$.
+ \item Function composition and identity function yield a $Monoid[A\to A]$.
+ \item Concatenation of paths and empty path yield a monoid of paths in a graph. (See Ch.~\ref{sec:ad:graphs} for paths in a graph.)
+\end{compactitem}
+
 \subsection{Two Binary Functions}
 
 The types of, e.g., rings and fields are implemented accordingly.
@@ -134,9 +148,8 @@ If we additionally write $f$ as infix, i.e., write $x\,f\,y$ instead of $f(x,y)$
 
 In general, the bracketing matters.
 But if $f$ is associative, the bracketing becomes irrelevant.
-In that case, we usually want $e$ to be a neutral element for $f$.
-
-That yields
+If additionally $e$ is a neutral element for $f$, then $f$ and $e$ form a $Monoid[A]$.
+Then we can write $fold$ as
 \[monoidFold[A](mon:Monoid[A], x:List[A])\]
 \[monoidFold[A](mon, [a_1,\ldots,a_n])=a_1\,mon.op\,a_2\,\ldots\,a_{n-1}\,mon.op\,a_n\,mon.op\, mon.e\]
 In particular, we have

@@ -1,76 +1,122 @@
-   \footnote{This section is under development and should be considered unpublished.}
+\paragraph{Acknowledgments}This chapter contains contributions by Colin Rothgang.
 
-\section{History}
-
-% caesar, one-time pad, substitution + transpostions + products thereof, etc.
-This section is based mainly on \cite{cryptoNetworkSlides}. 
+\section{History and Introduction}\label{sec:sd:crypto:hist}
+%The definitions are based on \cite{PuMaC2016}. 
+%This section is based mainly on \cite{cryptoNetworkSlides}. 
 \input{crypto_history}
 
-\section{Preliminaries}
-These definitions are based on \cite{PuMaC2016}. 
+\section{Fundamental Concepts}
 
-\begin{definition}[polynomial-time algorithm]
- An algorithm $A$ is called polynomial time algorithm iff there exists $k\in \mathbb{N}$ such that the maximum number $t$ of operations $A$ has to perform for input of length $n$ satisfies $t(n)\in O(n^k)$ (some people also conveniently use $O((n\log(n))^k$ for this definition).
+No systems is perfectly secure---a brute-force attack is always possible.
+Therefore, a central idea of cryptography is that waiting for a polynomial amount of time (in the sense of complexity theory) is feasible but waiting for a super-polynomial time is not.
+Then a system is often defined as secure if it the best possible attack has super-polynomial complexity.
+
+
+\begin{definition}[Polynomial and Negligible Functions]
+ A function $f:\N\to\R^+$ is called
+  \begin{compactitem}
+   \item \textbf{polynomial} if $f\in O(p)$ for some polynomial $p$.
+   \item \textbf{super-polynomial} if $f\nin O(p)$ for every polynomial $p$ (i.e., if it is not polynomial).
+   \item \textbf{negligible} if $f\in O(1/|p(x)|)$ for every polynomial $p:\N\to\R^+$.
+  \end{compactitem}
 \end{definition}
 
-\begin{definition}[A probabilistic polynomial-time algorithm]
- A probabilistic polynomial-time algorithm (PPT) is a polynomial-time algorithm that might be non-deterministic. If it is deterministic we will just call it polynomial time algorithm.
-\end{definition}
 
-\begin{definition}
- A function $f:\,\mathbb{N}\to\mathbb{R}$ is called negligible iff $$\forall k\in\mathbb{N}.\,\exists N_k\in\mathbb{N}.\,\forall n\geq N_k:\,n^k\left|f(n)\right|<1.$$
-\end{definition}
+Super-polynomial functions increase faster than any polynomial increases.
+Negligible functions are somewhat dual: they decrease faster than any polynomial increases.
+In cryptography, we can think of polynomial/super-polynomial/negligible functions as normal/infeasible/trivial.
 
-One important cryptographic primitive is the so called one-way function (OWF). Using these one-way-functions one can build provably secure symmetric encryption algorithms. However, it is currently not known whether there exist any one-way function. In the following we will especially consider one-way permutations (OWP), bijective OWFs with identical input and output length. 
 
-\begin{definition}[One way function]
- A function $f:\{0,1\}^*\to \{0,1\}^*$, is called a one-way function iff, $f$ is a PPT and for any natural number $n$ and any PPT $A$, there is a negligible function $neg$ such that: $$\mathrm{Pr}\left[f(A(f(x),1^n))=f(x)\right]\leq neg,$$ where $x$ is chosen uniformly random.
-\end{definition}
-Intuitively, OWFs are simply hard to invert PPTs. Some functions that are commonly believed to be OWFs are modular exponentiation and the multiplication of big prime numbers. 
-%\vdots\ \\
-%One way permutations\\\vdots\ \\
-
-Another important concept is the so called Pseudo-random generator (PRG or PRNG). 
-\begin{definition}[PRGs]
- A function $H:\{0,1\}^*\to \{0,1\}^*$ is called PRG iff:
- \begin{itemize}
-  \item $H$ is a PPT
-  \item There exists a PPT the so called \emph{length extension function} $l:\mathbb{N}\to\mathbb{N}$, s.t. $\forall n\in\mathbb{N}.\,l(n)>n\land \left|H(x)\right|=l(\left|x\right|), \forall x\in\{0,1\}^*$
-  \item There is a negligible function $neg$ s.t. for any PPT $A$, we have:
-  $$\left|\mathrm{Pr}\left[A(H(U_n))=1\right]-\mathrm{Pr}\left[D(U_{l(n)})=1\right]\right|<neg(n),$$ where $U_k$ denotes a uniformly random element of $\{0,1\}^k$. 
- \end{itemize}
-\end{definition}
-
-It can be shown that given any OWF, we can build a PRG. %TODO: Insert a proof for at least OWPs using hard core bits
-%This part should probably be moved to the appendix
-\begin{definition}[hard-core bit]
- Let $f$ be a one-way function. Now the function $b:\{0,1\}^*\to\{0,1\}$ is called a \emph{hard-core bit} for $f$ if $b$ is computable in polynomial time and there exists a negligible function $neg(n)$ such that for any $n\in\\mathbb{N}$ and any PPT $A$:
- $$\mathrm{Pr}\left[A(f(x),1)=b(x)\right]\leq\frac{1}{2}+neg(n), $$ where $x\in\{0,1\}$ uniformly random. 
-\end{definition}
-
-The next step is to find one-way functions (assuming that there are one-way functions at all) for which we can build hard-core bits. 
 \begin{theorem}
- Let $f$ be a one-way function. Define $g:\{0,1\}^{2n}\to\{0,1\}^*$ as $g(x\circ y)=f(x)\circ y$, where $\left|x\right|=\left|y\right|=n$. Then $g$ is a one-way function with hard-core bit $$b(x,y)=\bigoplus_{i=1}^n x_i\land y_i=\sum_{i=1}^{n}x_iy_i (\mod 2).$$
+We have the following closure properties:
+\begin{compactitem}
+ \item The sum of super-polynomial/polynomial/negligible functions is super-polynomial/polynomial/negligible again.
+ \item The product of a super-polynomial/negligible function with a polynomial function is super-polynomial/negligible again.
+ \item A function that is greater/smaller than a super-polynomial/negligible function is super-polynomial/negligible again.
+\end{compactitem}
 \end{theorem}
-If now $f$ was a one-way permutation, we can use the above construction to get an additional pseudo-random bit, so we already have a pseudo-random generator.
 
+\begin{definition}[Polynomial Time]
+ An algorithm $A$ is called \textbf{polynomial time} if its worst-case time complexity of $A$ for input of size $n$ is a polynomial function.
+\end{definition}
 
-\section{Hashing}
+\begin{definition}[Probabilistic Algorithm]
+ A \textbf{probabilistic algorithm} is like an algorithm except that it may return different results when called multiple times for the same input.
+\end{definition}
 
-\subsection{MDx}
+In most situations, an algorithm that may return different results is simply broken and not an algorithm at all.
+However, occasionally, probabilistic algorithms are very useful.
+Cryptography is an example because we often \emph{need} to make a random choic to prevent an attacker from predicting what we did.
+For example, it is often unavoidable for the attacker to know what encryption scheme we use---but that is acceptable if we choose a random key.
 
-\subsection{SHA-x}
+\begin{definition}[Probabilistic Polynomial Time]
+ An algorithm is called \textbf{probabilistic polynomial time} (PPT) if it is probabilistic and polynomial.
+\end{definition}
 
+One-way-functions (OWF) are functions are easy to compute but hard to invert:
 
-\section{Symmetric Encryption}
+\newcommand{\Prob}[2]{\mathop{\mathrm{Pr}}_{#1}[#2]}
+
+\begin{notation}
+For a function $f:X\to\Bool$, we write $\Prob{x\in X}{f(x)}$ for the probability that $f(x)$ is true when $x$ is chosen uniformly from $X$.
+\end{notation}
+
+\begin{definition}[One-Way-Function]
+ A polynomial function $f:\Sigma^*\to \Sigma^*$, is a \textbf{one-way-function} if for every probabilistic algorithm $A(n\in\N,y\in \Sigma^*)\to\Sigma^*$, whose complexity is polynomial in $n$, the function
+ \[n\tb\mapsto\tb \Prob{x\in\Sigma^n}{f(A(n,f(x)))=f(x)}\]
+ is negligible.
+\end{definition}
+Intuitively, OWFs are super-polynomially hard to invert.
+More precisely, any $A$ that attempts to guess (i.e., it is probabilistic) an $x\in\Sigma^n$ such that $y$ and $A(n,y)$ behave the same way under $f$ succeeds with negligible probability.
+
+\begin{example}
+It is not known if one-way functions exist.
+
+Some functions that are commonly believed to be OWFs are discrete exponentiation and multiplication.
+For example, we do not know if there is a polynomial factoring algorithm.
+\end{example}
+
+Pseudo-random-generators (PRG) are functions that can be used to generate numbers that are essentially random:
+\begin{definition}[Pseudo-Randomness]
+ A polynomial function $R:\Sigma^*\to\Sigma^*$ is a \textbf{pseudo-randomness-generator}
+ \begin{compactitem}
+   \item $R$ maps input of the same length to output of the same length, i.e., there is an $l:\N\to\N$ such that $R$ maps $\Sigma^n\to\Sigma^{l(n)}$ for every $n$.
+   \item for every PPT $A(x\in\Sigma^*)\in\Bool$ the function
+  \[n \tb\mapsto \tb \left|\,\Prob{x\in\Sigma^n}{A(R(x))}-\Prob{x\in\Sigma^{l(n)}}{A(x)}\,\right|\]
+  is negligible.
+ \end{compactitem}
+\end{definition}
+
+Intuitively, $R$ is a PRG if it maps $\Sigma^*\to\Sigma^*$ such that no PPT $A$ can tell the difference between $R(x)$ and randomly chosen $x$ with non-negligible probability.
+The condition about the length of the output of $R$ is only needed so that we can take the probability on the right-hand side over a finite set.
+
+PRGs and OWFs are intricately linked together:
+\begin{theorem}[PRG Theorem]
+Given a PRG, we can define an OWF, and vice versa.
+\end{theorem}
+
+%  TODO: Insert a proof for at least OWPs using hard core bits
+%%This part should probably be moved to the appendix
+%\begin{definition}[hard-core bit]
+% Let $f$ be a one-way function. Now the function $b:\{0,1\}^*\to\{0,1\}$ is called a \emph{hard-core bit} for $f$ if $b$ is computable in polynomial time and there exists a negligible function $neg(n)$ such that for any $n\in\N$ and any PPT $A$:
+% $$\mathrm{Pr}\left[A(f(x),1)=b(x)\right]\leq\frac{1}{2}+neg(n), $$ where $x\in\{0,1\}$ uniformly random. 
+%\end{definition}
+%
+%The next step is to find one-way functions (assuming that there are one-way functions at all) for which we can build hard-core bits. 
+%\begin{theorem}
+% Let $f$ be a one-way function. Define $g:\{0,1\}^{2n}\to\{0,1\}^*$ as $g(x\circ y)=f(x)\circ y$, where $\left|x\right|=\left|y\right|=n$. Then $g$ is a one-way function with hard-core bit $$b(x,y)=\bigoplus_{i=1}^n x_i\land y_i=\sum_{i=1}^{n}x_iy_i (\mod 2).$$
+%\end{theorem}
+%If now $f$ was a one-way permutation, we can use the above construction to get an additional pseudo-random bit, so we already have a pseudo-random generator.
+
+\section{Symmetric Encryption}\label{sec:sd:crypto:sym}
 \input{symmetric}
 % substitution, one-time pad, DES
 
-\section{Asymmetric Encryption}
-
-The idea behind RSA is that if $N=p\cdot q$ for large prime numbers $p$ and $q$, it is very difficult to compute $p$ and $q$ from $n$.
+\section{Asymmetric Encryption}\label{sec:sd:crypto:asym}
 
 \subsection{RSA}
+
+The idea behind RSA is that if $N=p\cdot q$ for large prime numbers $p$ and $q$, it is very difficult to compute $p$ and $q$ from $n$.
 
 \paragraph{Setup}
 Choose two large primes $p$ and $q$ (typically of roughly equal size).
@@ -78,7 +124,7 @@ Put $N=p\cdot q$.
 
 Now put $n=(p-1)(q-1)$. (Actually, any common multiple of the two numbers is fine.)
 Note that $n=\phi(N)$.
-Pick $e\in Z_n$ such that there is a $d\in\Z_n$ with $e\cdot d\Equiv_n 1$.
+Pick $e\in \Z_n$ such that there is a $d\in\Z_n$ with $e\cdot d\Equiv_n 1$.
 Such a $d$ exists if $\gcd(e,n)=1$ and is easy to compute (see Thm.~\ref{thm:math:extendedeuclid}).
 
 The keys are defined as follows:
@@ -106,7 +152,7 @@ Encryption and decryption are functions $\Z_N\to \Z_N$ given by
 These are indeed inverse to each other:
 
 \begin{theorem}
-For all $x\in Z_N$, we have $(x^d)^e\Equiv_N (x^e)^d \Equiv_N x$.
+For all $x\in \Z_N$, we have $(x^d)^e\Equiv_N (x^e)^d \Equiv_N x$.
 \end{theorem}
 \begin{proof}
 In general, because $N=p\cdot q$ for prime numbers $p$ and $q$, we have that $x\Equiv_N y$ iff $x\Equiv_p y$ and $x\Equiv_q y$.
@@ -134,11 +180,11 @@ There are $3$ natural ways to do that:
 Currently these are believed to be equally hard.
 
 It is believed that there is no algorithm for factoring $N$ that is polynomial in the number of bits of $N$.
-That is no proved.
+That is not proved.
 There are hypothetical machines (e.g., quantum computers) that can factor $N$ polynomially.
 
-Note that checking if $N$ can be factored (without producing the factors) is polynomial, and practical algorithms exist (in particular, the AKS algorithms).
-That is important to find the large prime number $p$ and $q$ efficiently.
+Note that checking if $N$ can be factored (without producing the factors) is polynomial, and practical algorithms exist (in particular, the AKS algorithm).
+Incidentally, that is important to find the large prime number $p$ and $q$ efficiently.
 \medskip
 
 If there is indeed no polynomial algorithm, factoring relies on brute-force attacks that find all prime numbers $k<\sqrt{N}$ and test $k|N$.
@@ -150,7 +196,14 @@ Keys of size $1024$ are considered secure today, but because security is a relat
 %(see for instance https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29#Integer_factorization_and_RSA_problem or https: //www.schneier.com/blog/archives/2007/05/307digit_number.html).
 Larger keys are especially important if data is needed to remain secure far into the future, when faster hardware will be available.
 
-\section{Authentication}
+\section{Hashing}\label{sec:sd:crypto:hash}
+
+\subsection{MDx}
+
+\subsection{SHA-x}
+
+\section{Authentication}\label{sec:sd:crypto:auth}
+   % two-factor authentification
 
 \section{Key Generation and Distribution}
 

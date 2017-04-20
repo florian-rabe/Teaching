@@ -1,0 +1,59 @@
+\section{Social and Institutional Aspects}
+
+There are roughly two ways to protect sensitive systems and data.
+
+Firstly, the data can be stored in a way that it is only useful for the people meant to use it.
+This may involve obfuscation or intentional non-documentation. Doing this systematically leads to cryptography.
+
+Secondly, access to the data can be restricted.
+This may involve physical restrictions of people (e.g., locks and ID checks) and logical restrictions of user accounts (e.g., read and write access rights to files or databases).
+
+All aspects are interrelated.
+For example:
+\begin{compactitem}
+  \item Cryptography is only useful if access to the keys and passwords is restricted.
+  \item Logical restrictions still require physical restrictions to the system where the logical restrictions are maintained.
+\end{compactitem}
+\medskip
+
+For large institutions, major difficulties are
+\begin{compactitem}
+ \item maintaining consistent and well-understood policies for these aspects, e.g.,
+  \begin{compactitem}
+   \item employees may ignore a policy they do not understand or disagree with,
+  \end{compactitem} 
+ \item avoiding unrealistic policies that are circumvented in practice, e.g.,
+  \begin{compactitem}
+   \item employees start writing down their passwords if the password policies are too strict,
+   \item employees start buzzing in anybody if the door access policies are too strict
+  \end{compactitem}
+ \item avoiding routines that become predictable and easy to exploit, e.g.,
+  \begin{compactitem}
+   \item any encryption scheme becomes vulnerable if it is used for a long time by many people
+   \item widely sharing a well-documented security policy also helps an attacker who gets access to it
+  \end{compactitem}
+ \item training employees not to give up sensitive information due to social engineering
+  \begin{compactitem}
+   \item see \url{https://en.wikipedia.org/wiki/Social_engineering_(security)}) for a good overview
+  \end{compactitem} 
+ \item updating anti-malware software over a large computer network including multiple vendors and operating systems, company-issued phones, and home office computers.
+\end{compactitem}
+
+\section{Bug Bounty Programs}
+
+The legal situation for security professionals and researchers or simply users who stumble on a vulnerability is not always clear.
+As a rule of thumb, it is safest to consider illegal anything that a computer system that was not meant to allow.
+Depending on the country, gaining any kind of access to a computer system in an unintended way (even registering on Facebook with a fake name) may technically violate laws.
+
+Bug bounty programs are a way for companies to provide these people with a legal framework to find, report, and help fix security problems.
+In many cases, this is the only way how these people can do anything about security problems without violating laws.
+However, even then bug bounty programs contain a number of restrictions.
+
+A good overview of the legal situation is given in \url{https://www.srz.com/images/content/1/4/v2/149562/The-Cybersecurity-Law-Report-Proactive-Steps-to-Prevent-Legal-Pi.pdf}.
+
+\section{Common Criteria}
+
+The Common Criteria for Information Technology Security Evaluation (usually called Common Criteria) provide a framework for structured but informal specifications of the security properties of a computer system.
+It allows companies to claim certain security properties and certifiers to test these properties.
+
+Several government agencies use the Common Criteria to regulate the specification and certification processes when they are required by law.
