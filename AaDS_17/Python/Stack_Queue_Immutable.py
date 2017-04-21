@@ -9,7 +9,7 @@ from Iterator import Iterable
 class Stack(Iterable): #abstract class for stack
     __metaclass__ = ABCMeta
 
-    @abstractmethod:s/^M$//
+    @abstractmethod
     def push(self, el):
         pass
 
