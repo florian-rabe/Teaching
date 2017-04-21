@@ -70,5 +70,5 @@ L.~Paulson.
 \newblock {\em {Isabelle: A Generic Theorem Prover}}, volume 828 of {\em
   Lecture Notes in Computer Science}.
 \newblock Springer, 1994.
-
+\input{securitySources.bblp}
 \end{thebibliography}
