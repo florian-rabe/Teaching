@@ -1,0 +1,46 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Secure and Dependable Systems},number=6,date=2017-04-27,duedate=2017-05-04,unpublished]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Practice: Building an Encryption Scheme}{5}
+Implement abstract classes for
+\begin{compactitem}
+ \item symmetric encryption schemes
+ \item block ciphers
+\end{compactitem}
+
+Implement concrete classes for
+\begin{compactitem}
+ \item the block cipher from the example in the lecture
+ \item the encryption scheme that takes block cipher and uses the CBC mode of operation
+\end{compactitem} 
+
+Write a unit test that checks the inversion condition: randomly generates some blocks, encrypt and decrypt them, and check for equality.
+\end{problem}
+
+\begin{problem}{Practice: Relevance of Modes of Operation}{2}
+Use your implementation from the previous problem to encrypt a file.
+
+This should be a real file in an uncompressed format, e.g., a bitmap image.
+It should be big enough to consist of many blocks.
+
+Modify your implementation to use the trivial mode of operation (where no IV is used and each block is simply passed to the block cipher).
+Encrypt the same file with this mode and compare both results with the original.
+
+Note: This homeworks aims at reproducing the effect from the penguin image example at \url{https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29}.
+\end{problem}
+
+\begin{problem}{Theory}{3}
+
+\end{problem}
+
+
+\end{document}
