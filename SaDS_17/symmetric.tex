@@ -175,7 +175,7 @@ It substitutes each $n$-bit chunk by another chunk, and each chunk is substitute
 It is desirable to have every output bit of an S-box depend on \emph{every} input bit.
 Then changing one input bit maximally \textbf{confuses} the output.
 
-\item A \textbf{permutation step} consists of permutation of $\{0,\ldots,N-1\}$, called a \textbf{P-box}.
+\item A \textbf{permutation step} consists of a permutation of $\{0,\ldots,N-1\}$, called a \textbf{P-box}.
 
 The permutation step maps the entire block at once by permuting its bits according to the P-box.
 This corresponds to a transposition cipher from Sect.~\ref{sec:sd:crypto:hist}.
@@ -184,7 +184,7 @@ It is desirable that the bits of one chunk are rearranged to as many different c
 That maximizes the \textbf{diffusion} of bits among the chunks.
 
 \item A \textbf{key step} consists of a number $k\in B^N$, called a \textbf{key}.
-The key steps maps a block by xor-ing it with $k$.
+The key step maps a block by xor-ing it with $k$.
 
 The key steps provide a way to parametrize the network.
 We can use the same network multiple times by just switching to a different set of keys.
