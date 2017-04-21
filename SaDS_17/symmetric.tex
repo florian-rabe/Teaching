@@ -109,6 +109,8 @@ Here every plaintext block is xor-ed with an element from $B^N$ before applying 
 For the first plaintext block, this is an arbitrary number called the \textbf{initialization vector} (IV).
 For every subsequent plaintext block, it is the previous cipher block.
 
+Fig.~\ref{fig:sd:cbc} shows the data flow for $N=8$ and $3$ successive plaintext blocks (where $\oplus$ indicates bit-wise xor).
+
 \paragraph{Initialization Vector}
 The IV does not have to be secret (which is good because the recipient needs to know it to decrypt).
 For some modes of operation that use IVs, the IV can simply be a counter, e.g., the number of the current message in the overall sequence of exchanged messages.
@@ -122,8 +124,18 @@ There are several options:
 \begin{compactitem}
  \item The sender sends the IV (unencrypted) along with the first message. The IV can be public as long as it is random.
  \item Sender and recipient use the exact same PRG so that they can compute the IV separately.
- \item The recipient ignores the first ciphertext block. For CBC, the recipient does not need the IV anymore to decrypt later blocks.
+ \item The recipient ignores the first ciphertext block. As seen in Fig.~\ref{fig:sd:cbc}, in CBC mode, the recipient only needs the IV to decrypt the first block.
 \end{compactitem}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.5\textwidth]{Cbc_encryption.png}
+\includegraphics[width=.5\textwidth]{Cbc_decryption.png}
+\end{center}
+\caption{Data Flow in CBC Mode\protect\footnotemark}\label{fig:sd:cbc}
+\end{figure}
+\footnotetext{Images By WhiteTimberwolf (SVG version)---PNG version, Public Domain, \url{https://commons.wikimedia.org/w/index.php?curid=26434095} and \url{https://commons.wikimedia.org/w/index.php?curid=26434096}}
+
 
 %\subsubsection{Feistel Ciphers}
 %
@@ -186,6 +198,23 @@ In the simplest non-trivial case, the network consists of $b$ S-boxes (making up
 The more keys are available, the more rounds can be run, the more secure the network.
 
 The inverse of a network is defined by inverting all operations in reverse order.
+
+\begin{example}[Substitution-Permutation Network]
+Fig.~\ref{fig:sd:subpernet} shows a Substitution-Permutation Network.
+It uses $N=16$ and $b=n=4$.
+Its rounds consists of one substitution step (using $4$ S-boxes), one permutation step (using P-box $P$), and one key step.
+
+$4$ rounds are concatenated using keys $K_0,\ldots,K_3$ that are obtained from one overall key.
+The first round only uses the key step, and the last round skips the permutation step.
+\end{example}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.5\textwidth]{SubstitutionPermutationNetwork.png}
+\end{center}
+\caption{A simple Substitution-Permutation-Network\protect\footnotemark}\label{fig:sd:subpernet}
+\end{figure}
+\footnotetext{Image by GaborPete---Own work, CC BY-SA 3.0, \url{https://commons.wikimedia.org/w/index.php?curid=6420152}}
 
 %Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar.
 %Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo-random function (for instance any one-way function) and are therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
