@@ -58,7 +58,7 @@ class Queue(Iterable): #abstract class for queue
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def enqueue(self, el):
+     def enqueue(self, el):
         pass
 
     @abstractmethod
@@ -91,7 +91,7 @@ class IL_Queue(Queue): #queue with immutable list
         if self.isEmpty(): 
             op.setOp(False)
 
-       else:
+        else:
             op.setEl(self.__empty.getEl(0))
             self.__empty.deletFirst()
         return op #returns the value
