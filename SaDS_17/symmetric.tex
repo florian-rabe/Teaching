@@ -18,14 +18,14 @@ We now expand on the ideas developed in Sect.~\ref{sec:sd:crypto:hist} systemati
   For $x\in\Sigma^n$, we write $E(x)$ for the probabilistic result of computing $E_{G(n)}(x)$.
 \end{definition}
 
-To encrypt a message $x$ of length $n$, we choose a key $G(n)\in K_n$ and call $c=E_k(x)$ to obtain the cipher $c$.
+To encrypt a message $x$ of length $n$, we choose a key $k=G(n)\in K_n$ and call $c=E_k(x)$ to obtain the cipher $c$.
 To decrypt an encrypted message, we call $D_k(c)$.
 
 \subsection{Security of a Scheme}
 
 There are various concepts of security of an encryption scheme.
 The general idea is to assume an adversary that picks two messages $x_0,x_1\in\Sigma^n$ and randomly receives either $E(x)$ or $E(x')$.
-The encryption scheme is consider secure if the adversary cannot distinguish between the two situations with a probability that is non-negligibly better than $1/2$.
+The encryption scheme is considered secure if the adversary cannot distinguish between the two situations with a probability that is non-negligibly better than $1/2$.
 In other words, even if the adversary already knows that a given ciphertext $c$ is either the encryption of $x$ or of $x'$, he has no better chance of decrypting $c$ than guessing.
 
 In all cases, the adversary is restricted to polynomial computations.
@@ -34,7 +34,7 @@ But we obtain different notions of security depending on how we model what else 
 In the simplest case, the adversary may do nothing else:
 
 \begin{definition}[Computationally-indistinguishable]\label{def:sd:ind}
-  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{computationally-indistinguishable} if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
+  An encryption scheme $(\Sigma,K,G,E,D)$ is \textbf{computationally-indistinguishable} (comp-ind) if for any PPT $A:\Sigma^*\to\{0,1\}$, messages $x_0,x_1\in\Sigma^n$, and $n\in \N$
   \[\Prob{i\in\{0,1\}}{A(E(x_i))=i}<\frac{1}{2}+neg(n)\]
   for a negligible function $neg$.
 \end{definition}
@@ -42,14 +42,14 @@ In the simplest case, the adversary may do nothing else:
 Here $\Prob{i\in\{0,1\}}{A(E(x_i))=i}$ formalizes the probability that the adversary correctly guessed whether $x_0$ or $x_1$ is the decryption of its input.
 
 \begin{example}
-A substitution cipher is not secure in the sense of Def.~\ref{def:sd:ind}.
+A monoalphabetic substitution cipher is not secure in the sense of Def.~\ref{def:sd:ind}.
 We define an adversary $A$.
 Given the encryption $c$ of $x_0$ or $x_1$, $A$ collects the frequencies of all characters in $c$.
 If those frequencies match the frequencies in $x_0$ or $x_1$, $A$ guesses $0$ or $1$, respectively.
 Clearly, $A$ is a polynomial algorithm.
 \end{example}
 
-Computationally-indistinguishability is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
+comp-ind is still a relatively weak notion of security because a realistic adversary may have access to the encryption scheme and may try to reverse-engineer it in some way.
 If the adversary has access to the encryption function $E(-)$, we speak of a \textbf{chosen-plaintext-attack} (CPA).
 The analog of Def.~\ref{def:sd:ind} where the adversary $A$ may conduct CPAs is called CPA-ind.
 If the adversary additionally has access to the decryption function $D(-)$, we speak of \textbf{chosen-ciphertext-attack} (CCA).
@@ -59,11 +59,15 @@ The analog of Def.~\ref{def:sd:ind} where the adversary $A$ may conduct CCAs as 
 Let $\Sigma=\{0,1\}$.
 We consider every natural number to be an element of $\{0,1\}^*$ by using its binary representation.
 
-Given a PRG $R$, we can iterate it on its own output to get an arbitrarily long pseudo-random sequence in $\{0,1\}^*$.
-Now we can construct an encryption scheme by simply defining the key to be $G(n)=R(n)$ and defining $E_k(x)$ by xoring every bit in $x$ with the corresponding bit in $k$.
-The decryption can be done in the same way, i.e., $D_k=E_k$.
+Given a PRG $R$, we can iterate it on its own output to get an arbitrarily long pseudo-random element of $\{0,1\}^*$.
+Now we can construct an encryption scheme by simply defining
+\begin{compactitem}
+ \item the key generator by $G(n)=R(n)$
+ \item $E_k(x)$ by xor-ing every bit in $x$ with the corresponding bit in $k$.
+ \item the decryption in the same way as encryption, i.e., $D_k=E_k$.
+\end{compactitem}
 
-The resulting encryption scheme is computationally-indistinguishable but not necessarily CPA-ind.
+The resulting encryption scheme is comp-ind but not necessarily CPA-ind.
 \end{example}
 
 \subsection{Schemes Based on Block Ciphers}
@@ -74,11 +78,11 @@ Symmetric encryption is a wide field with a rich set of mathematical background 
 Therefore, we can only cover a small fragment of the topic.
 Concretely, we describe:
 \begin{compactitem}
- \item the general principle of building encryption schemes from block ciphers,
+ \item the general principle of building encryption schemes from block ciphers
  (see also \url{https://en.wikipedia.org/wiki/Block_cipher})
  \item substitution-permutation networks as an example of a general class of relatively simple block ciphers
  (see also \url{https://en.wikipedia.org/wiki/Substitution-permutation_network})
- \item the AES block cipher as an example of a sophisticated practical block cipher (which is essentially a substitution-permutation network)
+ \item the AES block cipher as an example of a sophisticated practical substitution-permutation network
  (see also \url{https://en.wikipedia.org/wiki/Advanced_Encryption_Standard})
 \end{compactitem}
 
@@ -87,24 +91,51 @@ Concretely, we describe:
 Block ciphers are a common method to obtain more secure encryption schemes.
 They pick up on the ideas from Sect.~\ref{sec:sd:crypto:hist}, specifically the use of product ciphers that combine substitutions and permutations, and develop them further.
 
+\paragraph{Block Ciphers}
 A \textbf{block cipher} is a function that maps keys to bijections of the set $B^N$ for some $N$.
 The elements of $B^N$ are called \textbf{blocks}.
 
-The idea of block cipher--based schemes is to split the plaintext into blocks that are translated individually by applying the block cipher.
-The last block may have to be \textbf{padded} to length $N$ by adding random data.
+The idea of block cipher--based schemes is to split the plaintext into blocks that are encrypted individually by applying the block cipher.
+The last block may have to be \textbf{padded} to length $N$ by adding, e.g., zeros or random data.
 
+\paragraph{Mode of Operation}
 However, the naive approach would not yield secure schemes---if the same block is always encrypted in the same way, the scheme would be easy to attack.
 Overcoming this is the role of the block cipher \textbf{mode of operation}.
 There are various modes that yield CPA-ind secure schemes if used with pseudo-random block ciphers.
 
+\paragraph{Cipher Block Chaining}
 A commonly used mode of operation is \textbf{Cipher Block Chaining} (CBC).
 Here every plaintext block is xor-ed with an element from $B^N$ before applying the block cipher.
-For the first plaintext block, this is an arbitrary number called the \textbf{initialization vector}.
+For the first plaintext block, this is an arbitrary number called the \textbf{initialization vector} (IV).
 For every subsequent plaintext block, it is the previous cipher block.
 
-The initialization vector must be random but does not have to be secret (which is good because the recipient needs to know it to decrypt).
-To maintain security, the same pair of initialization vector and key must never be used twice, i.e., the initialization vector should be a number only used once (which is called a \textbf{nonce}).
-For example, the initialization vector could be derived from the number of the current message in the overall sequence of exchanged messages.
+Fig.~\ref{fig:sd:cbc} shows the data flow for $N=8$ and $3$ successive plaintext blocks (where $\oplus$ indicates bit-wise xor).
+
+\paragraph{Initialization Vector}
+The IV does not have to be secret (which is good because the recipient needs to know it to decrypt).
+For some modes of operation that use IVs, the IV can simply be a counter, e.g., the number of the current message in the overall sequence of exchanged messages.
+
+However, for CBC, it is important that the IV is unpredictable to the adversary.
+So it is usually chosen randomly, which makes CBC encryption a probabilistic algorithm.
+Moreover, to maintain security, the same pair of initialization vector and key must never be used twice, i.e., the initialization vector should be a number only used once (which is called a \textbf{nonce}).
+
+Choosing the IV randomly raises the question how the recipient learns about the IV in order to decrypt.
+There are several options:
+\begin{compactitem}
+ \item The sender sends the IV (unencrypted) along with the first message. The IV can be public as long as it is random.
+ \item Sender and recipient use the exact same PRG so that they can compute the IV separately.
+ \item The recipient ignores the first ciphertext block. As seen in Fig.~\ref{fig:sd:cbc}, in CBC mode, the recipient only needs the IV to decrypt the first block.
+\end{compactitem}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.5\textwidth]{Cbc_encryption.png}
+\includegraphics[width=.5\textwidth]{Cbc_decryption.png}
+\end{center}
+\caption{Data Flow in CBC Mode\protect\footnotemark}\label{fig:sd:cbc}
+\end{figure}
+\footnotetext{Images By WhiteTimberwolf (SVG version)---PNG version, Public Domain, \url{https://commons.wikimedia.org/w/index.php?curid=26434095} and \url{https://commons.wikimedia.org/w/index.php?curid=26434096}}
+
 
 %\subsubsection{Feistel Ciphers}
 %
@@ -128,7 +159,7 @@ For example, the initialization vector could be derived from the number of the c
 
 \subsubsection{Substitution-Permutation Networks}
 
-A substitution-permutation network is a block cipher whose bijections arise as products of substitutions and permutation ciphers.
+A substitution-permutation network is a block cipher whose bijections arise as products of substitution and permutation ciphers.
 
 To process a block of $N$ bits, the block is divided into $b$ chunks of $n=N/b$ bits each.
 Each block is processed by a sequence of steps, each of which applies a bijection $B^N\to B^N$.
@@ -156,17 +187,34 @@ That maximizes the \textbf{diffusion} of bits among the chunks.
 The key steps maps a block by xor-ing it with $k$.
 
 The key steps provide a way to parametrize the network.
-We can use the same network multiple by just switching to a different set of keys.
+We can use the same network multiple times by just switching to a different set of keys.
 \end{itemize}
 
-A \textbf{round} is a bijection of $B^N$ that is the product of a substitution step, a permutation step, and a key step.
+A \textbf{round} is a bijection of $B^N$ that is the product of some substitution and permutation steps and usually one key step.
 
 A \textbf{network} is a sequence of rounds.
-Often the substitution and permutation steps are the same for each round, and only the key step changes between rounds.
-In that case, the network consists of $b$ S-boxes, one P-box, and one key per round.
+Often the substitution and permutation steps are the same for each round, and only the key of the key step changes between rounds.
+In the simplest non-trivial case, the network consists of $b$ S-boxes (making up one substitution step), followed by one P-box, followed by one key step.
 The more keys are available, the more rounds can be run, the more secure the network.
 
 The inverse of a network is defined by inverting all operations in reverse order.
+
+\begin{example}[Substitution-Permutation Network]
+Fig.~\ref{fig:sd:subpernet} shows a Substitution-Permutation Network.
+It uses $N=16$ and $b=n=4$.
+Its rounds consists of one substitution step (using $4$ S-boxes), one permutation step (using P-box $P$), and one key step.
+
+$4$ rounds are concatenated using keys $K_0,\ldots,K_3$ that are obtained from one overall key.
+The first round only uses the key step, and the last round skips the permutation step.
+\end{example}
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=.5\textwidth]{SubstitutionPermutationNetwork.png}
+\end{center}
+\caption{A simple Substitution-Permutation-Network\protect\footnotemark}\label{fig:sd:subpernet}
+\end{figure}
+\footnotetext{Image by GaborPete---Own work, CC BY-SA 3.0, \url{https://commons.wikimedia.org/w/index.php?curid=6420152}}
 
 %Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar.
 %Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo-random function (for instance any one-way function) and are therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
@@ -181,7 +229,7 @@ It replaced DES, which was not secure anymore.
 AES is one of the most widely used block ciphers, approved by many government organizations.
 Implementations are available in many programming languages.
 
-AES essentially uses a substitution-permutation network for $N=128$, $b=16$, and $n=8$.
+AES uses a substitution-permutation network for $N=128$, $b=16$, and $n=8$.
 
 \paragraph{Keys}
 While Rijndael is very flexible, NIST chose only three special cases for AES.
@@ -195,13 +243,11 @@ They differ mainly by the key size and the number of rounds:
 \end{center}
 In all three cases, one additional initial round is run that only xors the input with a round key.
 
-Thus, $11$, $13$, or $15$ round keys of $128$ bits each are needed.
+Thus, $11$, $13$, or $15$ $128$-bit round keys $k_0,\ldots,k_r$ for $r\in\{10,12,14\}$ are needed.
 These are obtained from the overall key using the Rijndael key schedule, which we omit here.
 
 \paragraph{Details}
-We can see AES as a (slightly generalized) substitution-permutation network as follows.
-First we compute the $128$-bit round keys $k_0,\ldots,k_r$ for $r\in\{10,12,14\}$.
-Then we apply the following steps:
+The substitution-permutation network of AES looks as follows:
 \begin{compactenum}
  \item Round 0: key step with $k_0$
  \item Round $i$ for $i=1,\ldots,r-1$:
@@ -214,7 +260,7 @@ Then we apply the following steps:
  \item Round $r$: as before but without the mix-columns step
 \end{compactenum}
 
-More concretely, the $128$-bit block to be mapped is represented as $16$ chunks of $8$ bits.
+The $128$-bit block to be mapped is represented as $16$ chunks of $8$ bits.
 The chunks are arranged as a $4\times 4$ matrix.
 The $4$ basic steps are defined as follows:
 \begin{compactitem}
