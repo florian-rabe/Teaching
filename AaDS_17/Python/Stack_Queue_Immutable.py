@@ -1,4 +1,4 @@
-from Immutable_List import Nil, Cons, Imm_L_I
+import Immutable_List import Nil, Cons, Imm_L_I
 from abc import ABCMeta, abstractmethod 
 from Option import Option, Unit
 from Iterator import Iterable
@@ -9,7 +9,7 @@ from Iterator import Iterable
 class Stack(Iterable): #abstract class for stack
     __metaclass__ = ABCMeta
 
-    @abstractmethod1
+    @abstractmethod                                                                                          
     def push(self, el):
         pass
 
