@@ -38,8 +38,31 @@ Encrypt the same file with this mode and compare both results with the original.
 Note: This homeworks aims at reproducing the effect from the penguin image example at \url{https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29}.
 \end{problem}
 
-\begin{problem}{Theory}{3}
+\begin{problem}{Theory: Analysing the security of a block cipher}{3}
+Suppose we are given a pseudo-random generator, that given $n\in\mathbb{N}$ produces a pseudo-random key of size $n$. %(this needs to be assumed, it is an open question, whether such a pseudo-random generator exists). 
+No we construct the following encryption algorithm $E_k$. We assume that the message $m$ to encrypt consists of $m$ blocks of $16$-bit each, otherwise we append $0$s to the message to fill up the last block. We ask the pseudo-random generator for a sequence $k_i$ of $m$ sub-keys of $16$-bit each. 
 
+Now we encrypt the $m_i$ with the following block cipher $E_{k_i}$ using the $i$-th sub-key:
+\begin{compactitem}
+  \item Define the substitution $S:\mathbb{Z}_{16}\to\mathbb{Z}_{16}, x\longmapsto (x+1)\cdot 7(\mod 17)-1$. It can be shown (you are allowed to simply assume that this is true) using standard arguments of number theory, that this is in fact a bijection. 
+  \item Define the permutation $P:\mathbb{Z}_{16}\to\mathbb{Z}_{16}, y\longmapsto P(y)$ as a simple cyclic left-shift of the binary representation of $y$ by $1$ bit.
+  \item Define the bijection $\mathrm{addKey}:\mathbb{Z}_{16}\to\mathbb{Z}_{16}, z\longmapsto z\otimes k_i(\mod 16)$.
+  \item Finally define $E_{k_i}:\mathbb{Z}_{16}\to\mathbb{Z}_{16}, m_i\longmapsto E_{k_i}(m_i):=\mathrm{addKey}\circ P \circ S(m_i)$.
+\end{compactitem}
+The block cipher $E_k$ is now simply the block cipher $E_{k_i}$ run on each individual block (ecb-mode). 
+\\
+
+Solve either of the following two problems about the security of $E_k$:
+\begin{enumerate}
+  \item Argue informally, why $E_{k}$ is computationally indistinguishable. 
+  \subsubsection*{Hint:}\begin{enumerate}
+  	\item[] It might help to first show that $\mathrm{addKey}$ applied to each individual block is already computationally indistinguishable. 
+  \end{enumerate}
+  \item (Challenging) Explain why $E_k$ is \textbf{not} IND\_CPA secure. 
+  \subsubsection*{Hint:}\begin{enumerate}
+  	\item[] $E_k$ can be broken deterministically using a chosen-plaintext attack. Since the security of $E_k$ is mainly based on $\mathrm{addKey}$ and thus directly on the randomness of the sub-key, it might be useful to think about recovering the key using a chosen-plaintext attack. 
+  \end{enumerate}
+\end{enumerate}
 \end{problem}
 
 
