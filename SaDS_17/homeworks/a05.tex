@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=5,date=2017-03-28,duedate=2017-04-06]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=5,date=2017-03-28,duedate=2017-04-06,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -12,6 +12,14 @@
 
 \begin{problem}{Verification: Class Invariants}{2}
 Argue informally but rigorously why the formula in the stack example from the notes is a class invariant.
+
+\begin{solution}
+For a fresh instance, the class invariant holds because both sides of the equation are $0$.
+
+Later, every assignment to the variable $elements$ is immediately followed by an assignment to the variable $size$.
+In both cases, $size$ changes by the same amount as the length of $elements$.
+Thus, the class invariant is preserved.
+\end{solution}
 \end{problem}
 
 \begin{problem}{Verification: Class Invariants}{3}
@@ -41,12 +49,38 @@ Implement the methods such that the class invariant is preserved.
 
 Implement $insert$ such that the class invariant is preserved.
 \end{enumerate}
+
+\begin{solution}
+\begin{compactitem}
+ \item The class invariant should be (or imply) $year!=0 \wedge 1\leq month\leq 12 \wedge 1\leq day\leq numDays(month)$ for a function $numDays(d:\Int):\Int$ that returns the number of days in the respective month.
+ 
+ The implementation part is straightforward.
+ \item Assuming that the priority queue should always return the greatest value, the class invariant should be (or imply) $\amatchI{data}{\acase{Nil}{\true},\acase{Cons(hd,tl)}{\afa{i}{0\leq i< length(tl)\impl hd\geq get(tl,i)}}}$, where $get$ retrieves an element from a list.
+
+ The implementation part is straightforward.
+\end{compactitem}
+\end{solution}
 \end{problem}
 
 \begin{problem}{Verification: Pure Functions}{3}
 Using the definitions from the notes, formally prove $m+n==n+m$ by induction.
 
 To discharge the subgoals, you may use the theorems $zero\_left$ etc.
+
+\begin{solution}
+We apply the induction rule to the proof goal $m+n==n+m$ to the variable $n$, which yields two subgoals:
+\[
+\rul{\iscons{}{m:nat}{}{m+zero==zero+m} \tb \iscons{}{m:nat, n:nat, p: \aproof{m+n==n+m}}{}{m+succ(n)==succ(n)+m}}
+    {\iscons{}{m:nat,n:nat}{}{m+n==n+m}}
+\]
+
+The left subgoal can be discharged by using $zero\_right$, $zero\_left$, and reflexivity of $==$ to evaluate
+\[m+zero==zero+m\tb\rewrites \tb m==m \tb\rewrites\tb \true.\]
+
+The right subgoal can be discharged by using $succ\_right$, $succ\_left$, $p$, and reflexivity of $==$ to evaluate
+ \[m+succ(n)==succ(n)+m\tb\rewrites \tb succ(m+n)==succ(n+m)\tb \rewrites\]
+ \[\tb succ(m+n)==succ(m+n)\tb\rewrites\tb \true.\]
+\end{solution}
 \end{problem}
 
 \begin{problem}{Proof Assistants: Practice}{4}
