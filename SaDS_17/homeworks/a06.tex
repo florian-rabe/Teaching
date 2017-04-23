@@ -20,7 +20,7 @@ Implement abstract classes for
 Implement concrete classes for
 \begin{compactitem}
  \item the block cipher from the example in the lecture
- \item the encryption scheme that takes block cipher and uses the CBC mode of operation
+ \item the encryption scheme that takes a block cipher and the IV and uses the CBC mode of operation (Every instance of the scheme should represent one session, i.e., subsequent calls of encrypt for the same block should return different results).
 \end{compactitem} 
 
 Write a unit test that checks the inversion condition: randomly generates some blocks, encrypt and decrypt them, and check for equality.
