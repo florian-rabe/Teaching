@@ -199,7 +199,7 @@ The more keys are available, the more rounds can be run, the more secure the net
 
 The inverse of a network is defined by inverting all operations in reverse order.
 
-\begin{example}[Substitution-Permutation Network]
+\begin{example}[Substitution-Permutation Network]\label{ex:sd:spn}
 Fig.~\ref{fig:sd:subpernet} shows a Substitution-Permutation Network.
 It uses $N=16$ and $b=n=4$.
 Its rounds consists of one substitution step (using $4$ S-boxes), one permutation step (using P-box $P$), and one key step.
@@ -215,6 +215,27 @@ The first round only uses the key step, and the last round skips the permutation
 \caption{A simple Substitution-Permutation-Network\protect\footnotemark}\label{fig:sd:subpernet}
 \end{figure}
 \footnotetext{Image by GaborPete---Own work, CC BY-SA 3.0, \url{https://commons.wikimedia.org/w/index.php?curid=6420152}}
+
+\begin{exercise}\label{exc:sd:spn}
+Consider the following network for $N=8$ and $b=2$:
+\begin{compactenum}
+ \item Substitution step consisting of the S-box $S=S_1=S_2$.
+  The substitution $S:B^4\to B^4$ is given by $x\longmapsto ((x+1)\cdot 7)\modop 17-1$.
+  This is a bijection of $4$-bit chunks seen as natural numbers via their binary encoding.
+ \item Permutation step consisting of the P-box $P:B^8\to B^8$, which does a cyclic $2$-bit left-shift of its argument.
+ \item Key step with $8$-bit key $k_i$ where $i$ is the number of the round.
+\end{compactenum}
+The network consists of two rounds using a $16$-bit key $k$, whose first $8$ bits are $k_1$ and whose last $8$ bits are $k_2$.
+
+We obtain an encryption scheme by using CBC mode with an IV that is generated randomly.
+
+Assume the key is $1001\,1000\,0010\,0110$.
+
+Manually encrypt the plaintext \texttt{abc} (seen as $3$ blocks of $8$ bits using ASCII encoding), assuming the IV is $1010\,1010$.
+
+Decrypt the ciphertext again.
+\end{exercise}
+
 
 %Substitution-permutation-network and Feistel networks using $S$-Boxes are quite similar.
 %Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo-random function (for instance any one-way function) and are therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).

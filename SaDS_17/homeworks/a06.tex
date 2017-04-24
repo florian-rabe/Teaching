@@ -19,12 +19,11 @@ Implement abstract classes for
 
 Implement concrete classes for
 \begin{compactitem}
- \item the block cipher from the example in the lecture
+ \item the block cipher from the exercise in Sect.~15.3.3 in the lecture notes
  \item the encryption scheme that takes a block cipher and the IV and uses the CBC mode of operation
 \end{compactitem} 
-Every instance of the encryption scheme should represent one session, i.e., multiple calls of encryption for the same block should return different results.
 
-Write a unit test that checks the inversion condition: randomly generates some blocks, encrypt and decrypt them, and check for equality.
+Write a unit test that checks the inversion condition: randomly generate a sequence of blocks, encrypt it, decrypt the ciphertext, and check for equality.
 \end{problem}
 
 \begin{problem}{Practice: Relevance of Modes of Operation}{2}
@@ -40,15 +39,9 @@ Note: This homeworks aims at reproducing the effect from the penguin image examp
 \end{problem}
 
 \begin{problem}{Theory: Security Analysis}{3}
-We define a block cipher that maps a $16$-bit key $k$ to a bijection $E_k:\Z_{16}\to\Z_{16}$ as follows:
-\begin{compactitem}
-  \item Let $S:\Z_{4}\to\Z_{4}$ be the substitution $x\longmapsto ((x+1)\cdot 3)\modop 5-1$ (which is a bijection).
-  \item Let $P:\Z_{16}\to\Z_{16}$ be the permutation that does a cyclic $1$-bit left-shift of the binary representation of its argument.
-  \item Let $\mathrm{addKey}_k:\Z_{16}\to\Z_{16}$ be the bijection $x\longmapsto x\oplus k$ (bit-wise xor).
-  \item Finally let $E_k$ by $\mathrm{addKey}_{k}\circ P \circ S^4$ where $S^4$ means that $S$ is applied separately to every $4$-bit chunk of its argument.
-\end{compactitem}
+Consider the block cipher from the exercise in Sect.~15.3.3 but using only $1$ round.
 
-No we define an encryption scheme using the trivial mode of operation that chooses a key $k$ and then encrypts every $16$-bit block $b$ as $E_k(b)$.
+We define an encryption scheme using the trivial mode of operation that chooses an $8$-bit key $k$ and then encrypts every $8$-bit block by applying the block cipher.
 
 Informally prove the following
 \begin{enumerate}
