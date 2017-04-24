@@ -35,8 +35,8 @@ A \textbf{plaintext} or \textbf{message} is an element of $\Z_n^*$, i.e., a list
 A plaintext is \textbf{encrypted} by applying $\phi$ to each element, which yields the \textbf{ciphertext}.
 
 More precisely, this is called a \textbf{monoalphabetic} cipher.
-There are $|\Sigma|!$ different permutations, e.g., $\approx 4\times 10^{26}$ for the Latin alphabet.
-So a brute force attack now seems very hard and this looks like a very strong cipher, at first sight. 
+There are $|\Sigma|!$ different bijections of a finite alphabet $\Sigma$, e.g., $26!\approx 4\times 10^{26}$ for the Latin alphabet.
+So a brute force attack now seems very hard, and this looks like a strong cipher at first sight. 
 However, monoalphabetic substitution ciphers can be attacked very efficiently because they do not obfuscate patterns in the plaintext---they encrypt the same plaintext with the same ciphertext every time.
 In particular the same letter is always encrypted with the same letter. 
 Thus, if the language of the message is known, the frequencies of occurrences of letters in the ciphertext can be correlated to the expected frequencies of occurrences of letters in the plaintext.
