@@ -217,11 +217,11 @@ The first round only uses the key step, and the last round skips the permutation
 \footnotetext{Image by GaborPete---Own work, CC BY-SA 3.0, \url{https://commons.wikimedia.org/w/index.php?curid=6420152}}
 
 \begin{exercise}\label{exc:sd:spn}
-Consider the following network for $N=8$ and $b=2$:
+Consider the network for $N=8$ and $b=2$, whose rounds consist of the following steps:
 \begin{compactenum}
  \item Substitution step consisting of the S-box $S=S_1=S_2$.
   The substitution $S:B^4\to B^4$ is given by $x\longmapsto ((x+1)\cdot 7)\modop 17-1$.
-  This is a bijection of $4$-bit chunks seen as natural numbers via their binary encoding.
+  This is a bijection of $B^4$, where $4$-bit chunks are seen as natural numbers via their binary encoding.
  \item Permutation step consisting of the P-box $P:B^8\to B^8$, which does a cyclic $2$-bit left-shift of its argument.
  \item Key step with $8$-bit key $k_i$ where $i$ is the number of the round.
 \end{compactenum}

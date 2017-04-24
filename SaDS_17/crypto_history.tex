@@ -80,33 +80,35 @@ The only practical way to use a one-time-pad is to pre-agree on an extremely lon
 
 A different approach is to \emph{rearrange} the letters of the message instead of substituting them.
 That is called a \textbf{transposition} or \textbf{permutation} cipher.
-An old example is the rail-fence transposition cipher.
+An old example is the rail-fence permutation cipher.
 Here a message is spelled out diagonally up and down over a number of rows, and the ciphertext is read off row-by-row.
 The key $k$ is the number of rows.
 
 \begin{example}[Rail-Fence Cipher]
+\footnotemark
  We use $k=3$.
  Then we obtain the following ciphertext:
   \begin{lstlisting}
     meet me after the toga party
     m aregaetm fe h oapryeettt t
   \end{lstlisting}
-which is computed using the following visual aid where spaces are indicated as dots.
+which is computed using the following visual aid where spaces are indicated as underscores.
   \begin{lstlisting}
-   m   .   a   r   e   g   a
+   m   _   a   r   e   g   a
 
-    e t m . f e . h _ o a p r y
+    e t m _ f e _ h _ o a p r y
 
-     e   e   t   t   t   .   t
+     e   e   t   t   t   _   t
   \end{lstlisting}
 \end{example}
+\footnotetext{A previous version of this example was wrong. It was fixed on Monday evening.}
 
 A similar, more general class of ciphers are the route ciphers.
 The plaintext is written out column-wise and then read back in a specific pattern (the route).
-The number of rows and the pattern are the key.
+Each route defines a route cipher, and the number of rows $k$ is the key.
 
 \begin{example}[Route Cipher]
-Using $4$ rows we writing out the plaintext column-wise yields
+Using $k=4$, writing out the plaintext column-wise yields
   \begin{lstlisting}
     m   a r e g a
     e m f     a r
@@ -114,14 +116,14 @@ Using $4$ rows we writing out the plaintext column-wise yields
     t   e h o p y
   \end{lstlisting}
 
-If we use the route ``first row, then alternate between second row and fourth row, then third row'', we obtain the rail-fence cipher for $k=3$.
+If we use the route ``top row, then alternating between second row and fourth row, then third row'', we obtain the same cipher as the rail-fence cipher for $k=3$.
 \end{example}
 
 Formally, a transposition cipher maps a plaintext $[x_0,\ldots,x_{m-1}]$ to $[x_{\tau(0)},\ldots,x_{\tau(l-1)}]$ where $\tau$ is a bijection of the positions $\{0,\ldots,l-1\}$ in the message.
 To make the cipher parametric in a key, we use a function $\tau_k$ that maps keys $k$ to bijections.
 
 \begin{exercise}\label{exc:sd:route}
-We use the route cipher for $k$ rows and a message length $l$ with $k|l$, and the route ``row-wise starting with top row''.
+Consider the route cipher for the route ``row-wise starting with top row''.
 Define the resulting bijection $\tau_k$ of $\{0,\ldots,l-1\}$ mathematically.
 Also give the inverse of $\tau_k$ (which is needed for decryption).
 \end{exercise}
