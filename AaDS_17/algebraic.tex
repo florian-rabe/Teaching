@@ -173,7 +173,7 @@ This should be a function
 \end{acode}
 that satisfies the specification
 \[sqmult(mon, x, 0)=mon.e\]
-\[sqmult(mon, x, n+1)=mon.op(power(mon, x, n), x)\]
+\[sqmult(mon, x, n+1)=mon.op(sqmult(mon, x, n), x)\]
 and whose time complexity is $\Theta(\log_2 n)$.
 
 % matrix multiplication for any semi-ring? use for flow?
