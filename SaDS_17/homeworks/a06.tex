@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=6,date=2017-04-27,duedate=2017-05-04,unpublished]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=6,date=2017-04-27,duedate=2017-05-04]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -45,10 +45,10 @@ We define an encryption scheme using the trivial mode of operation that chooses 
 
 Informally prove the following
 \begin{enumerate}
-  \item $E$ is comp-ind if $k$ is chosen with a PRG.\\
+  \item $E$ is comp-ind secure if $k$ is chosen with a PRG.\\
     Hint: This is already true for networks that use no substitution or permutation steps and only one key step.
   \item $E$ is \emph{not} CPA-ind secure.\\
-   Hint: To break $E$ with a chosen-plaintext attack, the adversary can try to recover the key by encrypting a self-chosen message.
+   Hint: The adversary can perform a chosen-plaintext attack to recover the key by encrypting a self-chosen message.
 \end{enumerate}
 \end{problem}
 
