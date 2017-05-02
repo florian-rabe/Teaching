@@ -1,6 +1,6 @@
 	\documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=11,date=2017-05-02,duedate=2017-05-11,duetime=11:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=11,date=2017-05-02,duedate=2017-05-11,duetime=11:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,22 +10,57 @@
 
 \header
 
-%extra lecture in this week
+\begin{problem}{Tail Recursion}{6}
+Give a tail-recursive definition of the function $map[A](x:List[A],f:A\to B):List[B]$ of lists.
 
-\begin{problem}{Tail Recursion}{8}
-\end{problem}
+The following partial solution may help:
+\begin{acode}
+\afun{map[A]}{x:List[A],f:A\to B}{
+  mapAux(x,f,\tb\tb)
+}\\
+\\
+\afun{mapAux[A]}{x:List[A],f:A\to B,result:List[B]}{
+\\
+}
+\end{acode}
 
-\begin{problem}{Mutual Recursion}{8}
+
+\begin{solution}
+\begin{acode}
+\afun{map[A]}{x:List[A],f:A\to B}{
+  mapAux(x,f,Nil)
+}\\
+\\
+\afun{mapAux[A]}{x:List[A],f:A\to B,result:List[B]}{
+  \amatch{x}{
+    \acase{Nil}{reverse(result)},
+    \acase{{Cons(hd,tl)}}{mapAux(tl, f, Cons(f(hd), result))}
+  }
+}
+\end{acode}
+
+The additional argument $result$ accumulates the argument, and the base case returns it.
+
+To be linear instead of quadratic, the accumulator collects the result in reverse order, and the base case undoes the reversal.
+\end{solution}
 \end{problem}
 
 \begin{problem}{Backtracking}{8}
-Write a program that finds a solution to the $8$-queens problems using a backtracking algorithm. 
+Write a program that finds a solution to the $n$-queens problems (on an $n\times n$ board) using the general backtracking algorithm.
 \end{problem}
 
 \begin{problem}{Divide and Conquer}{8}
+Implement Karatsuba's divide-and-conquer algorithm for the multiplication of two polynomials of degree $2^n-1$ as described in the notes.
 \end{problem}
 
-\begin{problem}{Master Theorem}{8}
+\begin{problem}{Master Theorem}{6}
+Use the master theorem to derive the $\Theta$-class of the time complexity of
+\begin{compactenum}
+  \item mergesort
+  \item binary search
+  \item Karatsuba multiplication of polynomials
+\end{compactenum}
+Show your work.
 \end{problem}
 
 \end{document}
