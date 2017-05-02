@@ -80,8 +80,8 @@ For example, we obtain a parallel DFS traversal of a tree as follows:
 
 This executes $f(n)$ in parallel for every node $n$.
 Of course, the actual order in which nodes are visited is not entirely predicable anymore.
-It is still guaranteed that $f(n)$ terminates before $f(c)$ begins for any child of $n$.
-But it is unpredictable in which order the children are processed.
+It is still guaranteed that $f(n)$ terminates before $f(d)$ begins for any proper descendant $d$ of $n$.
+But it is unpredictable in which order the children of $n$ are processed.
 
 
 \subsection{Associative Folding}\label{sec:ad:monoidfold:parallel}
@@ -89,7 +89,7 @@ But it is unpredictable in which order the children are processed.
 Consider the associative folding problem from Sect.~\ref{sec:ad:monoidfold:divide}.
 The divide-and-conquer algorithm did not lower the complexity.
 
-But if we obtain a speedup if we recurse in parallel:
+But we obtain a speedup if we recurse in parallel:
 
 \begin{acode}
 \afun[A]{monoidFold[A]}{mon: Monoid[A], x: List[A]}{

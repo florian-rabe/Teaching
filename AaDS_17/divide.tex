@@ -22,15 +22,39 @@ Then it recurses $7$ times and aggregates the results.
 
 A rather general class of divide-and-conquer algorithms is described as follows:
 \begin{compactenum}
- \item create $k$ subproblems of size $n/d$ in $D(n)$ time,
- \item 
+ \item input: problem of size $n$
+ \item divide: create $r$ subproblems of size $n/d$
+ \item conquer: solve the subproblems (usually recursively)
+ \item return: combine the solutions of the subproblems into the solution of the overall problem and return it
 \end{compactenum}
 
 % example: Karatsuba Multiplication
 % Karatsuba: multiply polynomials by using upper/lower coefficients (prelim: multiply linear polynomials with 3 multiplications), variant: n-bit int multiplication
 
 \subsection{Complexity}
-% Master theorem
+
+%Let $C(n)$ be the time complexity for input of size $n$.
+%Let $div(n)$ and $combine(n)$ be the costs of dividing and combining, and let $f(n)=div(n)+combine(n)$.
+%Then we have
+% \[C(n)=div(n) + r\cdot C(n/d) + combine(n)=r\cdot C(n/d) + f(n)\]
+%
+%By recursively substituting this formula into itself, we obtain
+% \[C(n)=r\cdot C(n/d) + f(n) = r(r\cdot C(n/d^2) + f(n/d)) + f(n)\]
+%\[= \ldots = r^k\cdot C(n/d^k) + r^{k-1}\cdot f(n/d^{k-1}) + \ldots + r\cdot f(n/b) + f(n)\]
+%where $k=roundup(\log_d n)$, i.e., $n/d^k\leq 1$.
+%Because the base cases $C(1)$ and $C(0)$ can always be solved in $O(1)$, we have $C(n/d^k)\in O(1)$.
+%
+%Such equations are called recurrences.
+%Solving them means giving a closed from for $C(n)$.
+%This is possible for many functions $f$, but the closed forms can become very complicated.
+%
+%If we are only interested in the $\Theta$-class of $C$ and $f$, the Master theorem handles most cases:
+%Let $f\in \Theta(n^c)$ for some $c>0$, e.g., $f$ could be a polynomial of degree $c$.
+%Then the recurrence becomes
+% \[C(n)\in r^k\cdot O(1) + r^{k-1}\cdot \Theta(n^c/d^{c(k-1)}) + \ldots + r\cdot n^c/d^c + n^c\]
+%We can now distinguish three cases:
+%
+%r^k=r^{\log_d n}=
 
 \section{Examples}
 

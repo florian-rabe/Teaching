@@ -6,6 +6,7 @@
 %\usepackage{bm} %% bold face math symbols
 \usepackage{listings}
 \usepackage{../macros/mytikz}
+\usepackage{multicol}
 %\usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
 %\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
 
@@ -24,6 +25,7 @@
 \tableofcontents
 \newpage
 
+% % % % % % % % % % % % % % % % % % % %
 \part{Introduction and Foundations}
 
 \chapter{Meta-Remarks}
@@ -41,6 +43,7 @@
 \chapter{Example: Lists and Sorting}\label{sec:ad:sort}
   \input{sort}
 
+% % % % % % % % % % % % % % % % % % % %
 \part{Important Data Structures}\label{sec:ad:ds}
 
 \chapter{Finite Data Structures}\label{sec:ad:finiteds}
@@ -78,47 +81,34 @@
 \chapter{Algebraic Data Structures}\label{sec:ad:theories}
  \input{algebraic}
 
-
+% % % % % % % % % % % % % % % % % % % %
 \part{Important Families of Algorithms}\label{sec:ad:algo}
 
-\chapter{Recursion}
-%\begin{acode}
-%\afun{foo}{n:\N, p:\N}{
-%\aifelse{n==0}{
-%  p
-%}{
-%  foo(n-1, p\cdot n)
-%}
-%}
-%\end{acode}
+\chapter{Recursion}\label{sec:ad:recurse}
+ \input{recurse}
 
-% min-max example?
+\chapter{Backtracking}\label{sec:ad:backtrack}
+ \input{backtrack}
 
-\chapter{Backtracking}
-% recursion, possibly exceptions
-% labyrinth, sudoku
-
-\chapter{Divide and Conquer}
+\chapter{Divide and Conquer}\label{sec:ad:divcon}
  \input{divide}
 
-\chapter{Parallelization and Distribution}
+\chapter{Parallelization and Distribution}\label{sec:ad:parallel}
  \input{parallel}
 
 \chapter{Greedy Algorithms}\label{sec:ad:greedy}
  \input{greedy}
 
-% homework: coin change problem, greedy vs. dynamic
-
-\chapter{Dynamic Programming}
+\chapter{Dynamic Programming}\label{sec:ad:dynprog}
  \input{dynamic}
 
-\chapter{Protocols}
+\chapter{Protocols}\label{sec:ad:prot}
  \input{protocol}
 
-\chapter{Randomization}
+\chapter{Randomization}\label{sec:ad:random}
  \input{random}
  
-\chapter{Quantum Algorithms}
+\chapter{Quantum Algorithms}\label{sec:ad:quantum}
  \input{quantum}
 
 %\part{Concrete Languages}
