@@ -1,0 +1,285 @@
+We speak of recursion if a function calls itself.
+More generally, a set of functions is recursive if they call each other in a cyclic way.
+
+A recursive algorithm is a good design choice if we can reduce the problem $P(x)$ to the problem $P(x')$ such that $x'$ is (in some sense) smaller than $x$.
+Usually, $x'$ is just a little smaller than $x$, e.g., we might have $x\in\N$ and $x'=x-1$.
+
+Recursive algorithms have been used in multiple places throughout these notes.
+In the following, we look at some frequent patterns of recursively algorithms.
+
+Here we only consider the case where $P(x)$ is reduced to slightly smaller instances, e.g., $P(x-1)$.
+There are other patterns, which we discuss in separate chapters, that may or may not be implemented using recursion.
+The following gives an overview:
+\begin{compactitem}
+  \item backtracking: $P(x)$ is reduced to some smaller instance, but we have to try multiple instances before finding the right one.
+  \item divide-and-conquer: $P(x)$ is reduced to multiple much smaller instances, e.g., $P(x/2)$.
+  \item dynamic programming: $P(x)$ is computed by first computing all smaller instances, e.g., $P(0),\ldots,P(x-1)$.
+  \item parallelization: $P(x)$ is reduced to multiple smaller instances, whose solutions are computed in parallel.
+\end{compactitem}
+
+\section{Induction}
+
+Induction is the special case of recursion that comes up in conjunction with inductive data types.
+
+For every inductive, a whole range of relevant It is used to define most operations  such as natural numbers or lists.
+We consider some examples.
+
+\subsection{Natural Numbers}
+
+Consider the data type of natural numbers:
+\begin{acode}
+\adata{nat}{zero,succ(pred: nat)}
+\end{acode}
+
+An inductive algorithm for $P(n:nat)$ employs a case split on $n$, usually using pattern-matching:
+\begin{compactitem}
+ \item if $n=zero$: return $P(zero)$ directly without recursion (the base case),
+ \item if $n=succ(n')$: recursively compute $y=P(n')$, then use $y$ to compute $P(succ(n'))$ without further recursion (step case).
+\end{compactitem}
+
+As an example, consider the inductive algorithm for the factorial on the left:
+\newpage
+\begin{multicols}{2}
+\begin{acode}
+\afun{fact}{n:nat}{
+  \amatch{n}{\acase{zero}{1}, \acase{succ(n')}{\ablock{y:=fact(n')\\ y\cdot succ(n')}}}
+}
+\end{acode}
+\columnbreak
+\begin{acode}
+\afun{fact}{n:\Int}{
+  \aifelse{n==0}{1}{y:=fact(n-1)\\ y\cdot n}
+}
+\end{acode}
+\end{multicols}
+
+Essentially the same algorithms can also be used if $nat$ is not defined as an inductive type.
+Instead of pattern-matching, this requires an if-statement.
+For example, if we use $\Int$ to represent natural numbers, we obtain the algorithm on the right above.
+\medskip
+
+Virtually all arithmetic operations can be elegantly defined as recursive algorithms along these lines.
+
+\subsection{Lists}
+
+Consider the inductive type of lists:
+\begin{acode}
+\adata{IndList[A]}{nil,{cons(head:A,tail:IndList[A])}}
+\end{acode}
+
+It is slightly more complicated than $nat$.
+But an inductive algorithm for $P(x:IndList[A])$ proceeds in essentially the same way:
+\begin{compactitem}
+ \item if $x=nil$: return $P(nil)$ directly without recursion (the base case),
+ \item if $x=cons(hd,tl)$: recursively compute $y:=P(tl)$, then use $hd$ and $y$ to compute $P(cons(hd,tl))$ without further recursion (step case).
+\end{compactitem}
+
+Some examples were already given elsewhere in these notes.
+The simplest example is the $length$ function:
+\begin{acode}
+\afun[\Int]{length}{x:IndList[A]}{\amatch{x}{\acase{nil}{0},\acase{cons(hd,tl)}{\ablock{y:=length(tl)\\y+1}}}}
+\end{acode}
+Here the $cons$-case ignores the value $hd$.
+
+Like for natural numbers, the corresponding recursive algorithms can also be used if lists are not defined as an inductive type.
+
+\subsection{Binary Trees}
+
+Full binary trees are often defined as the following inductive type.
+If all nodes are labeled with values from $A$, we obtain
+\begin{acode}
+\adata{BinTree[A]}{Leaf(label: A),{Node(label: A, left:BinTree[A], right:BinTree[A])}}
+\end{acode}
+
+It is more complicated than $IndList[A]$ because it uses two inductive arguments.
+But an inductive algorithm for $P(x:BinTree[A])$ proceeds in essentially the same way:
+\begin{compactitem}
+ \item if $x=Leaf(a)$: compute the result from $a$ directly without recursion,
+ \item if $x=Node(a,l,r)$: recursively compute $y:=P(l)$ and $y'=P(r)$, then use $a$, $y$, and $y'$  without further recursion.
+\end{compactitem}
+
+As an example, consider a function that returns the list of labels in DFS-order:
+\begin{acode}
+\afun[{List[A]}]{labels}{x:BinTree[A]}{
+  \amatch{x}{\acase{Leaf(a)}{{cons(a,nil)}},\acase{Node(a,l,r)}{\ablock{y:=labels(l) \\ y':=labels(r)\\ cons(a, concat(y,y'))}}}
+}
+\end{acode}
+Here the $cons$-case ignores the value $hd$.
+
+Like for other types, the corresponding recursive algorithms can also be used if trees are not defined as an inductive type.
+
+% min-max example?
+
+\section{Mutual Recursion}
+
+We speak of \emph{mutual recursion} if multiple functions call each other.
+
+A very simple non-trivial example is the $even$-$odd$ recursion:
+\begin{acode}
+\afun[\Bool]{even}{n:\N}{
+  \aifelse{n==0}{\true}{odd(n-1)}
+}\\
+\\
+\afun[\Bool]{odd}{n:\N}{
+  \aifelse{n==0}{\false}{even(n-1)}
+}
+\end{acode}
+
+Of course, that is very inefficient for large $n$ and only makes sense if the $n\modop 2$ function is not available.
+
+Termination arguments for sets of mutually recursive functions are more difficult than for single recursive functions.
+But the basic idea is the same: every recursive call should make the argument smaller in some sense.
+
+\section{Recursion vs. While-Loops}\label{sec:ad:recurse:while}
+
+Technically, recursion is redundant if the programming language allows for while-loops.
+But recursion is such a versatile concept that it is part of every practical programming language.
+
+The following example shows how a while-loop can be systematically replaced with a recursive function:
+
+\begin{multicols}{2}
+\begin{acode}
+x:=x_0\\
+y:=y_0\\
+z:=z_0\\
+\awhile{C(x,y,z)}{
+  (x,y,z):=Body(x,y,z)\\
+}
+\end{acode}
+\columnbreak
+\begin{acode}
+\afun{f}{x,y,z}{
+  \aifelse{C(x,y,z)}{
+    (x',y',z'):=Body(x,y,z)\\
+    f(x',y',z')
+  }{(x,y,z)}
+}\\
+f(x_0,y_0,z_0)
+\end{acode}
+\end{multicols}
+
+On the left, $x$, $y$, and $z$ are the variables, whose values may change during an iteration of the loop, and $C(x,y,z)$ is the loop condition.
+$Body$ is some piece of code that may use the current values of $x$, $y$, and $z$, and assign new values to them.
+This is indicated in the line $(x',y',z'):=Body(x,y,z)$, which treat $Body$ as a function that takes the old values, performs arbitrary additional operations, and eventually returns the new values of the variables.
+
+The right side shows the equivalent recursive function.
+
+Above we use three variables $x$, $y$, and $z$.
+Any other number works accordingly---the only critical aspect is that all variables whose value may be changed by $Body$ must become argument of the recursive function.
+
+The example below uses two mutable variables $result$ and $i$.
+It computes the factorial of $n$ in the variable $result$.
+$C(result,i)$ is the formula $i>0$.
+
+\newpage
+\begin{multicols}{2}
+\begin{acode}
+result:=1\\
+i:=n\\
+\awhile{i > 0}{
+  (result,i):=(result\cdot i, i-1)
+}
+\end{acode}
+\columnbreak
+\begin{acode}
+\afun{f}{result,i}{
+  \aifelse{i>0}{
+    (result',i'):=(result\cdot i, i-1)\\
+    f(result',i')
+  }{(result,i)}
+}\\
+f(1,n)
+\end{acode}
+\end{multicols}
+
+The example may look a bit odd because $Body$ is written in a way that emphasizes the correspondence between while-loops and recursions.
+If we rewrite them separately into more familiar styles, we obtain
+
+\begin{multicols}{2}
+\begin{acode}
+result:=1\\
+i:=n\\
+\awhile{i > 0}{
+  result := result\cdot i\\
+  i:=i-1
+}
+\end{acode}
+\columnbreak
+\begin{acode}
+\afun{f}{result,i}{
+  \aifelse{i>0}{
+    f(result\cdot i,i-1)
+  }{result}
+}\\
+f(1,n)
+\end{acode}
+\end{multicols}
+
+Note that the recursive functions that correspond to while-loops have some special properties:
+\begin{compactitem}
+ \item There is exactly one recursive call, and no other code is executed after it.
+ \item The return value (if any) is not used for further computations.
+ \item The base case returns all function arguments.
+  In order to return anything useful, at least one of the arguments must have the role of collecting the result.
+  In the example, the argument $result$ has that role: it is not used in $f$ except for building the result; therefore, the base case can simply return $result$.
+\end{compactitem}
+
+Thus, while-loops correspond to a very small class of recursive functions.
+It is also possible to translate \emph{any} recursive function (even any set of mutually recursive functions) into a while-loops.
+But the translation is a bit more complicated, and the two translations are not inverse to each other.
+
+\section{Tail-Recursion}\label{sec:ad:recurse:tail}
+
+\subsection{Tail-Recursive Functions}
+
+In Sect.~\ref{sec:ad:recurse:while}, we encountered a class of recursive functions with special properties.
+
+Concretely, a recursive function $f$ is called \textbf{tail-recursive}, if all its recursive calls occur in positions where the result of the recursive call directly becomes the result of the $f$.
+
+For example, the following is a tail-recursive implementation of the factorial of $n$:
+\begin{acode}
+\afun{f}{result,i}{
+  \aifelse{i>0}{
+    f(result\cdot i,i-1)
+  }{result}
+}\\
+f(1,n)
+\end{acode}
+
+\subsection{Optimization}
+
+If $f$ is tail-recursive, a interpreter/compiler may turn $f$ into the corresponding while-loop, which usually yields much more efficient code.
+Note that this is one of the rare situations, where the complexity of an algorithm depends on the interpreter/compiler.
+For example, Java does not do it; many C compilers do.
+
+The reason for the efficiency gain is the following.
+Both the recursive function and the while-loop must pass information from one iteration to the next.
+The while-loop uses assignments to mutable variables; because the mutable variables reside in the same memory location for the current and the next iteration, no physical passing of data is needed.
+But in a recursive function, the recursive function call (like any other function call) allocates new memory locations and then copies the function arguments into them.
+This overhead does not change the $\Theta$-class but can still be substantial.
+
+Moreover, many interpreters/compilers allocate only a fixed amount of memory for the stack (see Sect.~\ref{sec:ad:callstack}).
+For large function arguments, a recursive function may create so many nested function calls that it exhausts the available stack space (causing a \emph{stack overflow error}).
+Tail-recursive functions are a special case where this danger can be averted by optimizing them into while-loops.
+
+The exact way in which tail-recursion optimization happens is up to the interpreter/compiler.
+Usually no new stack frame is allocated for the recursive call---instead the current stack frame is reused.
+That works out because---due the call being tail-recursive---the variable values stored in the current stack frame will never be used again and can therefore be safely overridden.
+
+\subsection{The Call Stack and Stack Frames}
+
+Most interpreters/compilers use a stack to keep track of the nesting of function calls.
+This data structure is usually called the \textbf{call stack} (or just \emph{the stack}), and its elements are called \textbf{stack frames}.
+
+When a function call $f(t_1,\ldots,t_n)$ of a function $f(x_1,\ldots,x_n)$ is processed,
+\begin{compactitem}
+ \item a new stack frame is created containing at least
+   \begin{compactitem}
+     \item the variable definitions $x_1:=t_1, \ldots, x_n:=t_n$
+     \item the current program counter (i.e., the position of the next statement to be executed)
+   \end{compactitem}
+ \item the frame is pushed onto the stack
+ \item execution continues with the body of $f$.
+\end{compactitem}
+
+When $f$ returns, the stack frame of $f$ (which is at the top of the call stack now) is popped from the stack, and execution continues at the position where $f$ was called.

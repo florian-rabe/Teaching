@@ -1,0 +1,103 @@
+\section{Overview}
+
+Consider a problem that involves multiple successive choices.
+A backtracking algorithm always chooses one of the options and proceeds.
+If that leads to a situation where no further progress is possible, the algorithm reverts all steps since the most recent choice and chooses a different option.
+The reversal is called \textbf{backtracking}.
+
+The typical example is finding the exit of a maze: at any given intersection, we have to choose one of the possible paths.
+If we ever reach a dead end, we backtrack all steps since the most recent intersection and choose a different path.
+
+Backtracking algorithms make sense if
+\begin{compactitem}
+ \item we have little or no information to predict the best choice right away,
+ \item after making a choice, we can detect quickly that it was the wrong choice.
+\end{compactitem}
+If the first condition is not met, we can usually do better by finding the best choice instead of trying out a random choice.
+If the second condition is not met, the backtracking algorithm degenerates into DFS.
+
+For the maze example, we cannot detect early on that a path leads to a dead end.
+Therefore, we have to walk all the way to the dead end before we can backtrack.
+Thus, we end up performing a DFS of the maze (seen as a graph whose nodes are the intersections).
+
+\section{General Structure}
+
+Consider a problem whose solution involves a series of choices among finitely many options.
+We can represent this as finding a branch in a tree:
+\begin{compactitem}
+ \item the root is the starting point,
+ \item at every node $n$, we have to choose one out of the children of $n$,
+ \item at a leaf, we can test whether we have a solution or not.
+\end{compactitem}
+
+Thus, we obtain the following general problem: given a tree $T:Tree[A]$ and a property $solution:List[A]\to\Bool$, find a branch $b$ of $T$ such that $P(b)$.
+
+Backtracking works well if we additionally have a test $abort:List[A]\to\Bool$ such that $abort(b)$ implies that there is no solution that starts with $b$.
+
+To be efficient, we avoid ever building the entire tree $T$---otherwise, we would waste the cost-saving effect of $abort$.
+Then we can give a general backtracking algorithm as
+\begin{acode}
+\afun[{Option[List[A]]}]{search}{state:List[A]}{
+  \aifI{abort(state)}{\areturn{None}}\\
+  \aifI{solution(state)}{\areturn{Some(state)}}\\
+  foreach(choices(state), \alam{c}{\ablock{
+    x := search(state+[c])\\
+    \aifI{x \neq None}{\areturn{x}}
+   }}\\)\\
+   \areturn{None}
+}
+\end{acode}
+
+Here the argument $state$ represents the path from the root to the current node, and $choices(state)$ yields its children.
+The algorithm is essentially a DFS-algorithm in the tree $T$ that
+\begin{compactitem}
+ \item never builds $T$ as a whole,
+ \item stops as soon as the first solution has been found,
+ \item uses $abort$ to avoid traversing a subtree.
+\end{compactitem}
+
+\begin{example}
+A standard example is the $8$-queens problem: place $8$ queens on a chess-board such that none threatens the other.
+
+Clearly, there has to be exactly one queen in each row.
+Thus, we can represent every solution as a list $[c_1,\ldots,c_8]$ such that $c_i$ is the column coordinate of the queen in row $i$.
+
+The possible choices are defined by
+\[choices(state) \cas{[1,2,3,4,5,6,7,8] \mifc length(state)<8 \\ [] \mifc length(state)=8}\]
+i.e., in every row we have to choose one out of $8$ columns, and we reach possible solutions after making $8$ choices.
+
+The function $abort(state)$ return $\true$ if any two queens threaten each other.
+Because this can be tested efficiently already if $length(state)<8$, we can use it to backtrack early.
+\end{example}
+
+\section{Constraint Satisfaction Problems}
+
+A constraint satisfaction problem (CSP) consists of a set $x_1:A_1,\ldots,x_m:A_m$ of variables and a set $C_1(\vec{x}),\ldots,C_n(\vec{x	})$ of boolean expressions (called the \textbf{constraints}) about the variables.
+
+A typical example is a system of $n$ linear equations in $m$ variables.
+But it is not required that the constraints are equations.
+
+Many practical problems can be captured as CSPs.
+This includes many games and puzzles:
+
+\begin{example}[Sudoku]
+The Sudoku game is a CSP with $m=81$ variables $x_{ij}\in\{1,\ldots,9\}$ for $i,j=1,\ldots,9$.
+It has at least the $27$ constraints of the form $\{x_{i1},\ldots,x_{i9}\}=\{1,\ldots,9\}$ for each row $i$ and correspondingly for each column and each of the $9$ $3x3$ squares.
+
+Additionally, each instance of Sudoku has a few constraints of the form $x_{ij}=c$, which fix the values of certain variables.
+\end{example}
+
+Some CSPs can be solved efficiently using backtracking algorithms.
+Step $i$ tries to fill in a value for $x_i$.
+After $i$ steps $state$ is the list $[v_1,\ldots,v_i]$ of currently tried values for $x_1,\ldots,x_i$.
+$choices(state)=A_{i+1}$ returns the possible values for the next variable $x_{i+1}$.
+$abort(state)$ checks if there is some $C_j$ such that $C_j(v_1,\ldots,v_i,x_{i+1},\ldots,x_n)$ is false no matter which values are used for $x_{i+1},\ldots,x_n$.
+$solution(state)$ evaluates the conjunction of all constraints.
+
+\begin{example}[SAT]
+The SAT problem is the special case of CSP where $A_i=\Bool$ for all $i$ and all $C_i$ are boolean expressions (i.e., using only $\neg$, $\wedge$, and $\vee$).
+Because there are only $2$ choices for each variable and boolean expressions can be evaluated very easily, it can be solved relatively quickly using a backtracking algorithm.
+
+However, even with a good $abort$ function, the fastest known SAT algorithms are exponential.
+\end{example}
+

@@ -4,99 +4,270 @@ A divide-and-conquer algorithm consists of $3$ steps:
 \begin{compactenum}
  \item the input is divided into parts,
  \item each part is processed recursively,
- \item the results of the parts are aggregate into the result of the whole.
+ \item the results of the parts are combined into the result of the whole.
 \end{compactenum}
 Divide-and-conquer works whenever a problem of size $n$ can be reduced to multiple smaller subproblems of the same kind.
 
 The simplest special case arises when working on a list that is divided into two parts.
 $mergesort$ from Sect.~\ref{sec:ad:sort:merge} is a typical example.
-Here the $merge$ function is the aggregation of the results. 
+Here the $merge$ function combines the partial results into the result of the whole.
 
 A more difficult example is Strassen's multiplication algorithm from Sect.~\ref{sec:ad:matrix:strassen}.
-It splits the arguments matrices into $4$ parts each.
-Then it recurses $7$ times and aggregates the results.
+It splits the arguments matrices into $4$ parts each and recurses $7$ times.
+Both the inputs of the recursions and the combination of the results are obtained by substantial computations.
 
 \section{General Structure}
 
 \subsection{Design}
 
-A rather general class of divide-and-conquer algorithms is described as follows:
+Consider a problem with a size parameter $n\in \Z$ (e.g., the length of a list or the dimension of a square matrix).
+
+The following is the rough general shape of a divide-and-conquer algorithm using two constants $d$ and $r$:
 \begin{compactenum}
- \item input: problem of size $n$
- \item divide: create $r$ subproblems of size $n/d$
- \item conquer: solve the subproblems (usually recursively)
- \item return: combine the solutions of the subproblems into the solution of the overall problem and return it
+ \item argument/input: problem of size $n$
+ \item if $n<d$, solve the problem directly
+ \item otherwise:
+ \begin{compactenum}
+  \item divide: create $r$ subproblems of size $n/d$
+  \item conquer: recursively solve the subproblems
+  \item return/output: combine the solutions of the subproblems into the solution of the overall problem
+ \end{compactenum}
 \end{compactenum}
+
+Here $d$ stands for \emph{division}: every iteration reduces the size of the problem from $n$ to $n/d$.
+Technically, the size of the subproblems is $n \divop d$.
+But we gloss over this problem here and assume that $n$ is a power of $d$, i.e., $n=d^k$.
+All results of this section apply to the general case as well.
+
+$r$ stands for \emph{recursion}: every iteration recurses $r$ times.
+The value of $r$ varies between algorithms:
+\begin{compactitem}
+ \item Very often we have $r=d$, i.e., every subproblem is solved separately.
+   For example, for mergesort $r=d=2$.
+ \item But sometimes we do not have to recurse for every subproblem.
+   A common case is $r=1$, i.e., we can identify a specific subproblem that is sufficient to solve.
+   For example, for binary search, we know which sublist has the needed value and recurse into that one.
+ \item In some algorithms, the subproblems are not \emph{parts} of the original problem.
+   For example, in Strassen's algorithm, the smaller matrices that get multiplied recursively are not submatrices of the original matrix.
+   Here we have $d=2$ (if we consider the dimension of the matrices to be the size of the problem) and $r=7$.
+\end{compactitem}
+
+\subsection{Correctness}
+
+The correctness must be argued separately in each case.
+
+However, this is usually easy by induction:
+\begin{compactitem}
+ \item check that the base cases are handled correctly
+ \item assuming the recursive calls yield correct result, check that the divide-and-conquer steps are correct.
+\end{compactitem}
 
 \subsection{Complexity}
 
-%Let $C(n)$ be the time complexity for input of size $n$.
-%Let $div(n)$ and $combine(n)$ be the costs of dividing and combining, and let $f(n)=div(n)+combine(n)$.
-%Then we have
-% \[C(n)=div(n) + r\cdot C(n/d) + combine(n)=r\cdot C(n/d) + f(n)\]
-%
-%By recursively substituting this formula into itself, we obtain
-% \[C(n)=r\cdot C(n/d) + f(n) = r(r\cdot C(n/d^2) + f(n/d)) + f(n)\]
-%\[= \ldots = r^k\cdot C(n/d^k) + r^{k-1}\cdot f(n/d^{k-1}) + \ldots + r\cdot f(n/b) + f(n)\]
-%where $k=roundup(\log_d n)$, i.e., $n/d^k\leq 1$.
-%Because the base cases $C(1)$ and $C(0)$ can always be solved in $O(1)$, we have $C(n/d^k)\in O(1)$.
-%
-%Such equations are called recurrences.
-%Solving them means giving a closed from for $C(n)$.
-%This is possible for many functions $f$, but the closed forms can become very complicated.
-%
-%If we are only interested in the $\Theta$-class of $C$ and $f$, the Master theorem handles most cases:
-%Let $f\in \Theta(n^c)$ for some $c>0$, e.g., $f$ could be a polynomial of degree $c$.
-%Then the recurrence becomes
-% \[C(n)\in r^k\cdot O(1) + r^{k-1}\cdot \Theta(n^c/d^{c(k-1)}) + \ldots + r\cdot n^c/d^c + n^c\]
-%We can now distinguish three cases:
-%
-%r^k=r^{\log_d n}=
+In many cases the time complexity of a divide-and-conquer algorithm can be obtained using a general method.
+Let $C(n)$ be the time complexity for input of size $n$.
+
+\paragraph{Substitution Method}
+Let $div(n)$ and $combine(n)$ be the costs of dividing and combining, and let $f(n)=div(n)+combine(n)$.
+Then we have
+ \[C(n)=div(n) + r\cdot C(n/d) + combine(n)=r\cdot C(n/d) + f(n)\]
+
+By recursively substituting this formula into itself, we obtain
+ \[C(n)=r\cdot C(n/d) + f(n) = r(r\cdot C(n/d^2) + f(n/d)) + f(n)\]
+\[= \ldots = r^k\cdot C(n/d^k) + r^{k-1}\cdot f(n/d^{k-1}) + \ldots + r\cdot f(n/d) + f(n)\]
+
+Because the cost of the base cases does not depend on $n$, we have $C(n)\in O(1)$ for $n<d$.
+Recalling that $n=d^k$, we get
+\[C(n)=r^k\cdot O(1) + r^{k-1}\cdot f(n/d^{k-1}) + \ldots + r\cdot f(n/d) + f(n)\]
+
+\paragraph{Tree Intuition}
+We can visualize the execution of a divide-and-conquer algorithm as a tree:
+\begin{compactitem}
+ \item the root is the original call
+ \item for each node, the children are the recursive calls
+ \item the leafs are the base cases
+\end{compactitem}
+Then we get a tree of height $k$ in which every non-leaf node has $r$ children.
+In total there are $r^i$ nodes at depth $i$ and in particular $r^k$ leafs.
+
+The terms in the above complexity formula now have an intuitive interpretation:
+\begin{compactitem}
+\item The terms $r^i\cdot f(n/d^i)$ are the cost of dividing and combining in the $r^i$ nodes at depth $i$, which process problems of size $n/d^i$.
+\item In particular, the term $f(n)=r^0\cdot f(n/d^0)$ is the cost of dividing and combining at the root.
+\item The term $r^k\cdot O(1)$ is the cost of base cases at the $r^k$ leafs.
+\end{compactitem}
+Thus, the conquering cost at each node is given by its subtrees.
+The total cost of each node is obtained by summing the values in its subtree, and the overall cost of executing the algorithm is the sum of the costs at all nodes.
+
+\paragraph{Mathematical Preliminaries}
+Before we continue we recall two general formulas that we will use:
+\begin{compactitem}
+ \item the geometric series for $q\neq 1$
+  \[\sum_{i=0}^{k-1} q^i=\frac{1-q^k}{1-q}\]
+ \item the following logarithm swap
+  \[x^{\log_y z}=z^{\log_y x}\]
+\end{compactitem}
+
+\paragraph{Solving the Formula}
+It remains to simplify the clunky formula
+\[C(n)=r^k\cdot O(1) + r^{k-1}\cdot f(n/d^{k-1}) + \ldots + r\cdot f(n/d) + f(n)\]
+into something nicer.
+
+Clearly that depends on $f$.
+Let us assume that $f$ is polynomial, i.e., $f\in\Theta(n^c)$ for some $c>0$.
+(If $f$ is super-polynomial, the algorithm is probably not very useful anyway.)
+
+Then we get
+ \[C(n)\in r^k\cdot O(1) + r^{k-1}\cdot \Theta(n^c/d^{c(k-1)}) + \ldots + r\cdot \Theta(n^c/d^c) + \Theta(n^c)\]
+ \[=\Theta\left(r^k + n^c\cdot \sum_{i=0}^{k-1}\left(\frac{r}{d^c}\right)^i\right)\] 
+After abbreviating $q=r/d^c$, assuming $q\neq 1$ (We treat the case $q=1$ below.) and applying the geometric series, and recalling that $k=\log_d n$, that becomes
+ \[=\Theta\left(r^{\log_d n} + n^c\cdot \frac{1-q^{\log_d n}}{1-q}\right)\]
+After applying the logarithm swap twice and using $\log_d q=\log_d r - \log_d d^c$, that becomes
+ \[=\Theta\left(n^{\log_d r} + \frac{n^c-n^{c+\log_d q}}{1-q}\right)=\Theta\left(n^{\log_d r} + \frac{n^c-n^{\log_d r}}{1-q}\right)\]
+Now we want to drop the constant factor $1-q$ from inside $\Theta$.
+But that is only allowed if $1-q>0$.
+
+So we eventually have to distinguish three cases:
+\begin{itemize}
+\item $r=d^c$ and thus $q=1$ and $\log_d r=c$.\\
+Then we cannot apply the formula for the geometric series.
+Instead the $\Sigma$-sum reduces to $k-1=\log_d n -1$.
+Overall we get
+\[C(n)\in\Theta\left(n^{\log_d r} + n^c(\log_d n - 1)\right)=\Theta(n^c\log_d n)\]
+\item $r<d^c$ and thus $0<q<1$ and $\log_d r < c$.\\
+Then we can drop $1-q>0$ from inside $\Theta$, and we obtain
+\[C(n)\in \Theta(n^c)\]
+\item $r>d^c$ and thus $q>1$ and $\log_d r > c$.\\
+ Then $1-q$ is negative and we can drop it only if we also flip the sign. That yields
+ \[C(n) \in \Theta\left(n^{\log_d r}-n^c+n^{\log_d r}\right)=\Theta\left(n^{\log_d r}\right)\]
+\end{itemize}
+
+The so-called Master theorem collects these three cases into a handy cheat sheet:
+
+\begin{theorem}[Master theorem]
+For the time complexity $C(n)$ of a divide-and-conquer algorithm that
+\begin{compactitem}
+ \item requires $f(n)\in\Theta(n^c)$ time for dividing and combining
+ \item recurses into $r$ subproblems of size $n/d$ whenever $n\geq d$
+\end{compactitem}
+we have
+\begin{center}
+\begin{tabular}{ll}
+if $r<d^c$: & $C(n)\in\Theta(n^c)$ \\
+if $r=d^c$: & $C(n)\in\Theta(n^c\log_d n)$ \\
+if $r>d^c$: & $C(n)\in\Theta(n^{\log_d r})=\Theta(r^{\log_d n})$ \\
+\end{tabular}
+\end{center}
+\end{theorem}
+
+The theorem holds independent of our assumption that even if $n$ is not a power of $d$.
+
+Not surprisingly, all cases require at least $\Theta(n^c)$, which is already the cost of dividing and combining at the root.\\
+If $c>\log_d r$, that is the entire cost, and the cost of the recursions and the base cases can be neglected.\\
+If $c=\log_d r$, the recursion cost yields a logarithmic factor corresponding to the depth of the recursion.\\
+If $c<\log_d r$, the cost of dividing and combining can be neglected and the cost of the $r^{\log_d n}$ base cases dominates the overall cost.
 
 \section{Examples}
 
+\subsection{Mergesort}
+
+For mergeseort from Sect.~\ref{sec:ad:sort:merge}, we have $r=d=2$.
+Dividing and combining requires linear time, i.e., $c=1$.
+
+The Master theorem indeed yields $\Theta(n\log_2 n)$ for the time complexity of mergesort.
+
 \subsection{Binary Search}
 
-Binary search checks whether a sorted list of length $n$ contains a certain value.
-This takes $\Theta(\log n)$ if divide-and-conquer is used.
+Binary search checks whether a sorted list $x$ of length $n$ contains the value $a$.
+The algorithm uses $d=2$ and $r=1$.
 
-\subsection{Karatsuba's Multiplication}
+The base case for $n<d$ is easy.
+The divide steps splits $x$ into two parts of length $n/2$.
+The conquer step uses the property of being sorted to determine whether $x$ is the lower or the upper half and recurses only for that one.
+No combination of results is needed.
 
-We want to multiply two polynomials $p(x)=p_dX^d+\ldots+p_1X+p_0$ and $q(x)=q_dX^d+\ldots+q_1X+q_0$ with integer coefficients $p_i,q_i$.
+The overall time complexity is $\Theta(\log_2 n)$.
 
-Without loss of generality, we assume that $d=2^n-1$.
-(If $d$ is not of this form, we can simply add $0$-terms to increase $d$.)
-Thus, each polynomial can be seen as a list $[p_d,\ldots,p_0]$ of length $d+1=2^n$.
+\subsection{Karatsuba's Multiplication of Polynomials}
 
-From now on, we represent polynomials as lists in this way.
+\subsubsection{Problem}
 
-\subsubsection{Base Cases}
+We want to multiply two polynomials $p(x)=p_mX^m+\ldots+p_1X+p_0$ and $q(x)=q_mX^m+\ldots+q_1X+q_0$ with integer coefficients $p_i,q_i\in \Z$.
+The size $n$ of the problem is the number of coefficients per polynomial, i.e., $n=m+1$.
 
-If $n=0$, the lists have length $1$, i.e., the polynomials are constant integers.
-Here we use normal integer multiplication: $pq=[p_0 q_0]$.
-
-If $n=1$, we have $pq=[p_1 q_1, p_1 q_0 + p_0 q_1, p_0 q_0]$.
-The naive computation takes $4$ multiplications and $1$ addition.
-But we can compute it using only $3$ multiplications and $4$ additions as follows:
-\[pq=[a, b-a-c, c] \tb\mwhere a=p_1q_1, \;b=(p_1+p_0)(q_1+q_0),\;c=p_0 q_0\]
+Without loss of generality, we assume that $n=2^k$, i.e., $m=2^k-1$.
+(If the polynomials have a different degree, we can simply add $0$-coefficients to increase $m$.)
 
 \subsubsection{Algorithm}
 
-Karatsuba designed the following divide-and-conquer algorithm:
-\begin{compactenum}
- \item Let $k=(d+1)/2=2^{n-1}$.
- \item Split $p$ into two lists $p^u=[p_d,\ldots,p_k]$ and $p^l=[p_{k-1},\ldots,p_0]$ of length $k$. Split $q$ into $q^u$ and $q^l$ accordingly.\\
- Now (as polynomials) $p(X)=p^u X^k+p^l$ and $q(X)=q^u X^k+q^l$.
- \item Using the same trick as in the base case, compute $pq$ using $3$ multiplications of polynomials of lists of length $k$.
-\end{compactenum}
+Karatsuba's divide-and-conquer algorithm uses $d=2$ and $r=3$.
+
+\paragraph{Data Structure}
+For the implementation, we need a data structure for polynomials.
+The easiest choice is to use the list of coefficients.
+So we assume that every polynomial is a list $[p_m,\ldots,p_0]\in List[\Z]$.
+
+Addition/subtraction of two polynomials can be implemented easily as component-wise addition of the elements in the lists.
+
+Note that two polynomials are equal if they only differ in initial $0$-coefficients.
+We have two options:
+\begin{compactitem}
+\item forbid lists that start with $0$
+\item make two polynomials equal if they only differ in initial $0$s
+\end{compactitem}
+Neither option is essential for the algorithm.
+However, it is convenient to pick the second option: that way we can easily add initial $0$s to adjust the size of a polynomial.
+
+\paragraph{Base Case}
+If $n=0$, both polynomials are the $0$-polynomial, and their product is again the $0$-polynomial.
+If $n=1$, both polynomials are integers, and we use plain integer multiplication: $pq=[p_0][q_0]=[p_0 q_0]$.
+
+\paragraph{Idea}
+To understand the key idea, let us first look at the special case $n=2$.
+Then we have $pq=[p_1,p_0][q_1,1_0]=[p_1 q_1, p_1 q_0 + p_0 q_1, p_0 q_0]$.
+
+The naive computation takes $4$ multiplications and $1$ addition.
+But we can compute the result cleverly using only $3$ multiplications and $4$ additions:
+\[pq=[a, b-a-c, c] \tb\mwhere a=p_1q_1, \;b=(p_1+p_0)(q_1+q_0),\;c=p_0 q_0\]
+Because multiplication is much more complex than addition (addition is linear, multiplication is not), this is preferable even though we need additional additions.
+
+\paragraph{Divide}
+Let $n'=n/2=(m+1)/2$, i.e., $m=2n'-1$.
+
+We split $p$ into two lists $p^u=[p_m,\ldots,p_{n'}]$ and $p^l=[p_{n'-1},\ldots,p_0]$ of length $n'$.
+We split $q$ into $q^u$ and $q^l$ accordingly.\\
+
+Now (as polynomials) $p(X)=p^u X^{n'}+p^l$ and $q(X)=q^u X^{n'}+q^l$.
+
+\paragraph{Conquer}
+We recursive multiply $3$ pairs of polynomials of size $n'$:
+  \[a=p^u q^u \tb\tb b=(p^u+p^l)(q^u+q^l) \tb\tb c=p^l q^l\]
+
+\paragraph{Combine}
+We combine the results $a$, $b$, and $c$ as follows:
+ \[pq=a X^{2n'} + (a-b-c)X^{n'} + c\]
+
+\subsubsection{Correctness}
+
+The correctness follows immediately from the construction of the algorithm.
+
+We just have to check the mathematics of the divide and the combine step.
+
+\subsubsection{Complexity}
+
+This is left as an exercise.
 
 % variant: n-bit int multiplication
 
 \subsection{Associative Folding}\label{sec:ad:monoidfold:divide}
 
+\subsubsection{Problem}
+
 Consider folding over a monoid from Sect.~\ref{sec:ad:monoidfold}.
 
-We can give a divide-and-conquer algorithm for it:
+\subsubsection{Algorithm}
+
+We give a divide-and-conquer algorithm for it using $d=r=2$.
 
 \begin{acode}
 \afun[A]{monoidFold[A]}{mon: Monoid[A], x: List[A]}{
@@ -112,19 +283,24 @@ We can give a divide-and-conquer algorithm for it:
 }
 \end{acode}
 
-\paragraph{Correctness}
+\subsubsection{Correctness}
+
 The correctness is straightforward.
 The key insight is that associativity allows us to bracket the monoid operations any way we want, e.g.,
 \[x_0 \;mon.op\;\ldots \;mon.op\; x_{i-1} \;mon.op\; x_i \;mon.op\; \ldots mon.op\; x_{n-1} =\]
 \[(x_0 \;mon.op\; \ldots \;mon.op\; x_{i-1}) \;mon.op\; (x_i \;mon.op\; \ldots mon.op\; x_{n-1}) \]
 
-\paragraph{Complexity}
+\subsubsection{Complexity}
+
 Let us assume that we use arrays to split the lists in constant time.
-Then the recurrence for the complexity is
- \[C(n)=2\cdots C(n/2)+O(1) \tb\mand\tb C(0)=C(1)= O(1)\]
-Working out the recursion yields $\Theta(n)$, which is the same as in the naive case.
+Combining only requires one monoid operation.
+So the complexity of dividing and combining is in $O(1)$ and thus $c=0$.
 
-Thus, not every divide-and-conquer algorithm yields an improvement.
+Using $r=d=2$ and $c=0$, we have $r>d^c$ and $\log_d r=1$.
+Thus, the Master theorem yields $C(n)\in\Theta(n)$.
 
+Thus, the divide-and-conquer algorithm has the same complexity as the naive algorithm.
 This is not surprising because all we do is change the bracketing.
-The number of occurrences of $mon.op$ remains the same, i.e., we have to compute the monoid operation the same number of times.
+The number of occurrences of $mon.op$ remains the same, i.e., we have to apply the monoid operation the same number of times.
+
+So not every divide-and-conquer algorithm yields an improvement.
