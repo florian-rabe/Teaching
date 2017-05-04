@@ -1,0 +1,147 @@
+The basic idea of asymmetric encryption is that different keys are used for encryption and decryption.
+An important requirement for security is that the decryption key cannot be computed from the encryption key.
+
+This has the practical advantage that the---not security-critical---encryption key can be made public.
+
+\subsection{Schemes}
+
+We only need to make a minor modification to the Def.~\ref{def:sd:symscheme}:
+
+\begin{definition}[Asymmetric Encryption Scheme]\label{def:sd:asymscheme}
+ An \textbf{asymmetric encryption scheme} is an encryption scheme $(\Sigma,K, G, E, D)$, where
+  \begin{compactitem}
+   \item $K_n=K^e_n\times K^d_n$
+   \item if $k=(k^e,k^d)$, then $E_k$ depends only on $k^e$ and $D_k$ depends only $k^d$
+  \end{compactitem}
+\end{definition}
+Intuitively, the keys are pairs of an encryption and a decryption key.
+
+\subsection{Schemes based on Modular Arithmetic}
+
+We fix the alphabet to be $\Sigma=\{0,1\}$ and identify the elements of $\Sigma^n$ and with natural numbers in binary representation.
+
+\subsubsection{Modular Arithmetic as a Cipher}
+
+To encrypt plaintexts from $\Sigma^n$, we proceed in two steps:
+\begin{compactenum}
+ \item We embed the plaintext into $\Z_N$ for certain $N>2^n$.
+ \item We apply a cipher function $\Z_N\to\Z_N$.
+\end{compactenum}
+
+$N$ is part of the key.
+The number of bits in $N$ is usually seen as the size of the key.
+This size must be greater than $n$.
+
+The embedding introduces randomness to make sure that encrypting the same plaintext multiple times yields different ciphertexts.
+The cipher function is the main source of security.
+
+\subsubsection{Mode of Operation and Padding}
+
+\paragraph{No Mode of Operation}
+In principle, we could use the same modes of operation as for block ciphers.
+However, that is not common:
+\begin{compactitem}
+ \item Asymmetric encryption has the advantage that the encryption key can be made public.
+ To exploit that advantage, it is practical not to change the key very often.
+ In that case, using the same key for many blocks of many long message increases the chance of attacks.
+ \item Asymmetric encryption tends to be more complex than symmetric encryption.
+ Therefore, it is not practical to use asymmetric encryption for many long messages.
+\end{compactitem}
+Instead, it makes more sense to use \textbf{hybrid encryption}: use an asymmetric scheme only to transmit the key for a symmetric scheme.
+In that case, it is not necessary to be able to send arbitrarily long messages with the same fixed key.
+Instead, a fixed message length suffices as long as it can hold the symmetric key.
+
+\paragraph{Padding}
+For the same reason as with symmetric schemes, some randomness must be introduced into the encryption function to make sure that repeatedly mapping the same plaintext yields different ciphertexts.
+That is the role of the \textbf{padding}, which embeds the plaintext from $\Z_{2^n}$ into $\Z_N$.
+
+The basic idea is to pick $N>2^{n+i}$, append $i$ $0$s to the plaintext and then apply some cipher $\Z_{2^{n+i}}\to\Z_{2^{n+1}}$ (e.g., a substitution-permutation network with a randomly chosen parameter).
+
+The details of padding are very difficult and subject to active research.
+The most important example is Optimal Asymmetric Encryption Padding (OAEP).
+Multiple padding schemes based on OAEP have been standardized in RFC 447: Public-Key Cryptography Standards (PKCS) \#1.
+
+\subsubsection{RSA}
+
+\paragraph{Overview}
+RSA is a family of cipher functions based on modular arithmetic.
+
+It was developed in the 1970s inspired by ideas by Diffie and Hellman.
+It is named after the authors of the algorithm (Rivest, Shamir, Adleman).
+A related algorithm was developed earlier by the UK secrete service but remained classified until the 1990s.
+
+The basic ideas is to use $N=p\cdot q$ for large prime numbers $p$ and $q$.
+Becuase it is (assumed to be) very difficult to compute $p$ and $q$ from $N$, $p$ and $q$ remain private even if $N$ is public.
+
+\paragraph{Key Generation}
+To compute $G(n)$, we first randomly choose two large primes $p$ and $q$ (typically of roughly equal size) such that $p\cdot q>2^{n+i}$ where $i$ is the desired number of padding bits.
+We put $N=p\cdot q$.
+
+Secondly, we put $m=(p-1)(q-1)$. (Actually, any common multiple of $p-1$ and $q-1$ is fine.)
+Note that $m=\phi(N)$.
+Then we pick $e\in \Z_m$ such that there is a $d\in\Z_m$ with $e\cdot d\Equiv_m 1$.
+Such a $d$ exists if $\gcd(e,m)=1$ and is easy to compute (see Thm.~\ref{thm:math:extendedeuclid}).
+
+The keys are now defined as follows:
+\begin{compactitem}
+ \item public key (encryption key): $(N,e)$
+ \item private key (decryption key): $(N,d)$
+\end{compactitem}
+$m$, $p$, and $q$ are not needed for decryption but must remain private: $p$ (or $q$) is enough to compute $m$, and $m$ is enough to compute $d$.
+So $m$, $p$, and $q$ should be deleted after generating the key.
+
+Note that to choose $p$ and $q$ efficiently, it is important to have access to a fast primality test.
+
+\paragraph{Encryption and Decryption}
+The cipher function and its inverse are the functions $\Z_N\to \Z_N$ defined by
+\begin{compactitem}
+ \item encryption: $x\mapsto x^e\modop N$
+ \item decryption: $x\mapsto x^d\modop N$
+\end{compactitem}
+
+These are indeed inverse to each other:
+
+\begin{theorem}
+For all $x\in \Z_N$, we have $(x^d)^e\Equiv_N (x^e)^d \Equiv_N x$.
+\end{theorem}
+\begin{proof}
+In general, because $N=p\cdot q$ for prime numbers $p$ and $q$, we have that $x\Equiv_N y$ iff $x\Equiv_p y$ and $x\Equiv_q y$.
+
+So we have to show that $x^{de}\Equiv_p x$.
+(We also have to show the same result for $q$, but the proof is the same.)
+We distinguish two cases:
+\begin{compactitem}
+\item $p|x$: Then trivially $x^{de}\Equiv_p 0\Equiv_p x$.
+\item Otherwise. Then $p$ and $x$ are coprime.\\
+   By construction of $e$ and $d$ and using Thm.~\ref{thm:math:extendedeuclid}, we have $k\in\Z$ such that $e\cdot d+k\cdot m=1$.
+   Using $m=(p-1)(q-1)$, we obtain $x^{de}=x\cdot (x^{p-1})^{-k\cdot(q-1)}$.
+   That yields $x^{de}\Equiv_p x$ by using $x^{p-1}\Equiv_p 1$ as known from Thm.~\ref{thm:math:fermatlittle}.
+\end{compactitem}
+\end{proof}
+
+\paragraph{Attacks}
+To break RSA, $d$ has to be computed.
+There are $3$ natural ways to do that:
+\begin{compactitem}
+ \item Factor $N$ into $p$ and $q$. Then compute $d$ easily.
+ \item Compute $n$ using $n=\phi(N)$ (which may be easier than finding $p$ and $q$). Then compute $d$ easily.
+ \item Find $d$ such that $e\cdot d\Equiv_n 1$ (which may be easier than finding $n$).
+\end{compactitem}
+Currently these are believed to be equally hard.
+
+It is believed that there is no algorithm for factoring $N$ that is polynomial in the number of bits of $N$.
+That is not proved.
+There are hypothetical machines (e.g., quantum computers) that can factor $N$ polynomially.
+
+Note that checking if $N$ can be factored (without producing the factors) is polynomial, and practical algorithms exist (in particular, the AKS algorithm).
+Incidentally, that is important to find the large prime number $p$ and $q$ efficiently.
+\medskip
+
+If there is indeed no polynomial algorithm, factoring relies on brute-force attacks that find all prime numbers $k<\sqrt{N}$ and test $k|N$.
+Therefore, larger keys are harder than break to smaller ones.
+Because of improving hardware, the key size that is considered secure grows over time.
+
+Keys of size $1024$ are considered secure today, but because security is a relative term, keys of size $2048$ are often recommended. 
+%It is quetionable that 1024-bit rsa is really secure, even though it has not yet been publicly broken;
+%(see for instance https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29#Integer_factorization_and_RSA_problem or https: //www.schneier.com/blog/archives/2007/05/307digit_number.html).
+Larger keys are especially important if data is needed to remain secure far into the future, when faster hardware will be available.

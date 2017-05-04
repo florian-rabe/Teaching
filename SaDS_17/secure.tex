@@ -117,91 +117,9 @@ Given a PRG, we can define an OWF, and vice versa.
 
 \section{Symmetric Encryption}\label{sec:sd:crypto:sym}
 \input{symmetric}
-% substitution, one-time pad, DES
 
 \section{Asymmetric Encryption}\label{sec:sd:crypto:asym}
-
-\subsection{RSA}
-
-The idea behind RSA is that if $N=p\cdot q$ for large prime numbers $p$ and $q$, it is very difficult to compute $p$ and $q$ from $N$.
-
-\paragraph{Setup}
-Choose two large primes $p$ and $q$ (typically of roughly equal size).
-Put $N=p\cdot q$.
-
-Now put $n=(p-1)(q-1)$. (Actually, any common multiple of the two numbers is fine.)
-Note that $n=\phi(N)$.
-Pick $e\in \Z_n$ such that there is a $d\in\Z_n$ with $e\cdot d\Equiv_n 1$.
-Such a $d$ exists if $\gcd(e,n)=1$ and is easy to compute (see Thm.~\ref{thm:math:extendedeuclid}).
-
-The keys are defined as follows:
-\begin{compactitem}
- \item public information (encryption key): $N$ and $e$
- \item private information (decryption key): $n$, $d$, $p$, and $q$
-\end{compactitem}
-Among the private information, only $N$ and $d$ are needed later on.
-So $n$, $p$, and $q$ can be forgotten.
-But they have to remain private---$p$ (or $q$) is enough to compute $n$ and $d$.
-
-Different keys are often compared by their size.
-That size is the number of bits in $N$.
-
-\paragraph{Encryption}
-Messages are numbers $x\in F_N$.
-For example, we can choose the largest $k$ such that $2^k<N$ and use $k$-bit messages.
-
-Encryption and decryption are functions $\Z_N\to \Z_N$ given by
-\begin{compactitem}
- \item encryption: $x\mapsto x^e\modop N$
- \item decryption: $x\mapsto x^d\modop N$
-\end{compactitem}
-
-These are indeed inverse to each other:
-
-\begin{theorem}
-For all $x\in \Z_N$, we have $(x^d)^e\Equiv_N (x^e)^d \Equiv_N x$.
-\end{theorem}
-\begin{proof}
-In general, because $N=p\cdot q$ for prime numbers $p$ and $q$, we have that $x\Equiv_N y$ iff $x\Equiv_p y$ and $x\Equiv_q y$.
-
-So we have to show that $x^{de}\Equiv_p x$.
-(We also have to show the same result for $q$, but the proof is the same.)
-We distinguish two cases:
-\begin{compactitem}
-\item $p|x$: Then trivially $x^{de}\Equiv_p x\Equiv_p 0$.
-\item Otherwise. Then $p$ and $x$ are coprime.\\
-   By construction of $e$ and $d$ and using Thm.~\ref{thm:math:extendedeuclid}, we have $k\in\N$ such that $e\cdot d+k\cdot n=1$.
-   Thus, we have to show $x^{de}=x\cdot (x^{p-1})^{k\cdot(q-1)}\Equiv_p x$.
-   That follows from $x^{p-1}\Equiv_p 1$ as known from Thm.~\ref{thm:math:fermatlittle}.
-\end{compactitem}
-\end{proof}
-
-\paragraph{Attacks}
-To break RSA, $d$ has to be computed.
-There are $3$ natural ways to do that:
-\begin{compactitem}
- \item Factor $N$ into $p$ and $q$. Then compute $d$ easily.
- \item Compute $n$ using $n=\phi(N)$ (which may be easier than finding $p$ and $q$). Then compute $d$ easily.
- \item Find $d$ such that $e\cdot d\Equiv_n 1$ (which may be easier than finding $n$).
-\end{compactitem}
-Currently these are believed to be equally hard.
-
-It is believed that there is no algorithm for factoring $N$ that is polynomial in the number of bits of $N$.
-That is not proved.
-There are hypothetical machines (e.g., quantum computers) that can factor $N$ polynomially.
-
-Note that checking if $N$ can be factored (without producing the factors) is polynomial, and practical algorithms exist (in particular, the AKS algorithm).
-Incidentally, that is important to find the large prime number $p$ and $q$ efficiently.
-\medskip
-
-If there is indeed no polynomial algorithm, factoring relies on brute-force attacks that find all prime numbers $k<\sqrt{N}$ and test $k|N$.
-Therefore, larger keys are harder than break to smaller ones.
-Because of improving hardware, the key size that is considered secure grows over time.
-
-Keys of size $1024$ are considered secure today, but because security is a relative term, keys of size $2048$ are often recommended. 
-%It is quetionable that 1024-bit rsa is really secure, even though it has not yet been publicly broken;
-%(see for instance https://en.wikipedia.org/wiki/RSA_%28cryptosystem%29#Integer_factorization_and_RSA_problem or https: //www.schneier.com/blog/archives/2007/05/307digit_number.html).
-Larger keys are especially important if data is needed to remain secure far into the future, when faster hardware will be available.
+\input{asymmetric}
 
 \section{Hashing}\label{sec:sd:crypto:hash}
 
