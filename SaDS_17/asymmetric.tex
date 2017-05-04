@@ -79,16 +79,16 @@ We put $N=p\cdot q$.
 
 Secondly, we put $m=(p-1)(q-1)$. (Actually, any common multiple of $p-1$ and $q-1$ is fine.)
 Note that $m=\phi(N)$.
-Then we pick $e\in \Z_m$ such that there is a $d\in\Z_m$ with $e\cdot d\Equiv_m 1$.
-Such a $d$ exists if $\gcd(e,m)=1$ and is easy to compute (see Thm.~\ref{thm:math:extendedeuclid}).
+Then we pick $e\in \Z_m$ such that $\gcd(e,m)=1$ and compute the $d\in\Z_m$ with $e\cdot d\Equiv_m 1$.
+Such a $d$ exists because $\gcd(e,m)=1$ and is easy to compute (see Thm.~\ref{thm:math:extendedeuclid}).
 
 The keys are now defined as follows:
 \begin{compactitem}
  \item public key (encryption key): $(N,e)$
  \item private key (decryption key): $(N,d)$
 \end{compactitem}
-$m$, $p$, and $q$ are not needed for decryption but must remain private: $p$ (or $q$) is enough to compute $m$, and $m$ is enough to compute $d$.
-So $m$, $p$, and $q$ should be deleted after generating the key.
+$m$, $p$, and $q$ are not needed for encryption or decryption but must remain private: $p$ (or $q$) is enough to compute $m$ from $N$, and $m$ is enough to compute $d$ from $e$.
+So we delete $m$, $p$, and $q$ after generating the key.
 
 Note that to choose $p$ and $q$ efficiently, it is important to have access to a fast primality test.
 
@@ -98,6 +98,8 @@ The cipher function and its inverse are the functions $\Z_N\to \Z_N$ defined by
  \item encryption: $x\mapsto x^e\modop N$
  \item decryption: $x\mapsto x^d\modop N$
 \end{compactitem}
+
+Both can be computed efficiently, e.g., using square-and-multiply.
 
 These are indeed inverse to each other:
 
