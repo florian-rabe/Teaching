@@ -11,7 +11,7 @@
 \header
 
 \begin{problem}{Verification: Class Invariants}{2}
-Argue informally but rigorously why the formula in the stack example from the notes is a class invariant.
+Argue informally but rigorously why the formula in the stack example from the notes is a strong\footnote{I had forgotten to put the word \emph{strong} here. So that part was not required for the solution.} class invariant.
 
 \begin{solution}
 For a fresh instance, the class invariant holds because both sides of the equation are $0$.
@@ -51,14 +51,16 @@ Implement $insert$ such that the class invariant is preserved.
 \end{enumerate}
 
 \begin{solution}
-\begin{compactitem}
+\begin{compactenum}
  \item The class invariant should be (or imply) $year!=0 \wedge 1\leq month\leq 12 \wedge 1\leq day\leq numDays(month)$ for a function $numDays(d:\Int):\Int$ that returns the number of days in the respective month.
  
  The implementation part is straightforward.
  \item Assuming that the priority queue should always return the greatest value, the class invariant should be (or imply) $\amatchI{data}{\acase{Nil}{\true},\acase{Cons(hd,tl)}{\afa{i}{0\leq i< length(tl)\impl hd\geq get(tl,i)}}}$, where $get$ retrieves an element from a list.
+ The solution that always returns the least value is also correct.
 
  The implementation part is straightforward.
-\end{compactitem}
+\end{compactenum}
+Other class invariants were possible. Their usefulness is judged based on whether invalid instances are eliminated. Depending on the usefulness, partial credit was given.
 \end{solution}
 \end{problem}
 
