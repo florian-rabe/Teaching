@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=12,date=2017-05-09,duedate=2017-05-18,duetime=11:00,unpublished]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=12,date=2017-05-09,duedate=2017-05-18,duetime=11:00]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -10,26 +10,51 @@
 
 \header
 
-\begin{problem}{Parallelization}{8}
-% associative folding
+\begin{problem}{Greedy Algorithms}{12}
+Using the structure of the generic greedy algorithm, implement the greedy algorithm for problem from Ex.~21.4.
+%
+%For example, you could use
+%\begin{acode}
+%\aclassA{WeightedMatroid}{size:\Int}{}{
+%\afunI[\Int]{weight}{x:\Int}{}\\
+%\afunI[\Bool]{acceptable}{x:Set[\Int]}{}
+%}\\
+%\\
+%\afun[{Set[\Int]}]{greedy}{mat: WeightedMatroid}{
+%  elements := \text{sort $[1,\ldots,mat.size]$ by $mat.weight$}\\
+%  \ldots
+%}
+%\end{acode}
+%where we assume that the set $M$ is given by $\{1,\ldots,mat.size\}$.
+%
+%Implement the matroids used for the scheduling algorithm (21.4.3).
+%For example, you could use
+%\begin{acode}
+%\aclass{Task}{deadline:\Int, penalty: \Int}{}{}\\
+%\aclassA{SchedulingMatroid}{n:\Int, tasks: List[Task]}{Matroid(n)}{
+%\afunI[\Int]{weight}{x:\Int}{tasks[x].penalty}\\
+%\afunI[\Bool]{acceptable}{x:Set[\Int]}{
+%  \text{use criterion from Thm.~21.4}
+%}
+%}
+%\end{acode}
 \end{problem}
+
+\begin{problem}{Matroids}{6}
+Prove that the structure used in the scheduling algorithm (21.4.3) is indeed a matroid.
+\end{problem}
+
 
 % homework: coin change problem, greedy vs. dynamic
 
-\begin{problem}{Dynamic Programming}{8}
-\begin{acode}
-\end{acode}
+\begin{problem}{Dynamic Programming}{}
+TBD
 \end{problem}
 
-\begin{problem}{Greedy Algorithms}{8}
-\begin{acode}
-\end{acode}
-\end{problem}
+\begin{problem}{Parallelization}{6}
+Consider the parallel associative folding algorithm from the notes.
 
-\begin{problem}{Matroids}{8}
-\begin{acode}
-\end{acode}
+Determine the time complexity $C^k(n)$ for runing it on a list of length $n$ using $k$ machines.
 \end{problem}
-
 
 \end{document}

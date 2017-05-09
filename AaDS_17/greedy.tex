@@ -158,6 +158,78 @@ Because the term \emph{greedy algorithm} is not defined precisely, not every alg
 
 A counter-example is Dijkstra's algorithm from Sect.~\ref{sec:ad:shortestpath}.
 
+\subsection{Scheduling with Deadlines and Penalties}
+
+\paragraph{Problem}
+We are given $n$ tasks.
+Each task takes the same amount of time (e.g., $1$ day), and all tasks have to be done separately without overlap (e.g., it takes $n$ days in total).
+We want to find the best order in which to do all tasks.
+
+Each task has a deadline: Task $i$ must be completed by time $D(i)\in \N$ for $0<D(i)\leq n$.
+Otherwise, we have to pay a penalty $w(i)$ for $w(i)>0$.
+
+Our goal is to minimize the total penalty we have to pay (i.e., the sum of all $w(i)$ for all $i$ that are done after $D(i)$).
+Equivalently, we want to maximize the total penalty that we do not have to pay (i.e., the sum of all $w(i)$ for all $i$ that are done by $D(i)$).
+
+\paragraph{Design}
+We define a matroid as follows:
+\begin{compactitem}
+ \item $M$ is the set $\{1,\ldots,n\}$ representing the $n$ tasks.
+ \item A set $S\sq M$ is acceptable if it is possible to do all tasks in $S$ on time.
+\end{compactitem}
+
+%Note that we have the following:
+%\begin{theorem}
+%A set $S$ is acceptable if and only if for every $0\leq t\leq n$ there are at most $t$ tasks whose deadline is at or before $t$.
+%\end{theorem}
+%\begin{proof}
+%Exercise.
+%\end{proof}
+
+We instantiate the generic greedy algorithm using this matroid and weight function $w$.
+The algorithm returns the optimal set $S_{opt}$.
+
+We now schedule the tasks as follows: First we schedule all tasks in $S_{opt}$ in some way that they are all done on time. (This is possible because the greedy algorithm returns an acceptable set.)
+Then we schedule all other tasks (all of which will be late because the greedy algorithm returns a maximally big acceptable set) arbitrarily.
+
+\begin{example}
+Consider $5$ tasks as follows
+\begin{center}
+\begin{tabular}{c|ccccc}
+task $i$ & 1 & 2 & 3 & 4 & 5 \\
+\hline
+deadline $D(i)$ & 3 & 1 & 3 & 2 & 2 \\
+penalty $w(i)$ & 10 & 20 & 5 & 25 & 15
+\end{tabular}
+\end{center}
+
+Ordered by decreasing penalty the tasks are $[4,2,5,1,3]$.
+The greedy algorithm proceeds as follows:
+\begin{center}
+\begin{tabular}{|lll|}
+\hline
+considered task & decision & known schedule \\
+\hline
+4 & insert & $?4???$ \\
+2 & insert & $24???$ \\
+5 & skip   & $24???$ \\
+1 & insert & $241??$ \\
+3 & skip   & $241??$ \\
+\hline
+\end{tabular}
+\end{center}
+Here the right column tracks not only the set $solution$ but also the best schedule for its element.
+That makes it easy to implement $acceptableWith$ by checking decide whether there is still a slot available before the deadline.
+
+The algorithm return $S_{opt}=\{1,2,4\}$.
+Finally, we insert the remaining tasks at the end obtaining the schedule $24135$.
+We have to pay the penalty $w(3)+w(5)=20$.
+\end{example}
+
+
+\paragraph{Correctness}
+We only have to show that the above structure is indeed a matroid.
+This is left as an exercise.
 
 %\subsection{Greatest Flow}
 %
