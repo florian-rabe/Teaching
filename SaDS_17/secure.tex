@@ -43,6 +43,30 @@ We have the following closure properties:
  A \textbf{probabilistic algorithm} is like an algorithm except that it may return different results when called multiple times for the same input.
 \end{definition}
 
+\begin{example}[Fermat Primality Test]
+Many prime number tests are derived from Fermat's Little Theorem \ref{thm:math:fermatlittle}.
+A states that a necessary but not sufficient property for $p$ being prime is that $x^p\Equiv_p x$ for all $a\in \Z$.
+
+To use this as a primality test, we randomly choose $3$ numbers $1<x<p-1$ and test the relation.
+If it holds for all three $x$, we return true.
+
+$x^p\Equiv_p x$ is unlikely to hold for random $x$.
+So if it succeeds three times, $p$ is probably but not definitely a prime number.
+
+This algorithm is probabilistic in the following sense:
+\begin{compactitem}
+ \item It needs randomness to work and may return different values for the same input.
+ \item Its result is not necessarily correct.
+\end{compactitem}
+
+The reason why we choose $1<x<p-1$ is that
+\begin{compactitem}
+ \item Values outside of $\Z_p$ are irrelevant because we take them modulo $p$ anyway.
+ \item The values $x=0$ and $x=1$ are useless because the property anyway holds for them.
+ \item The value $x=p-1$ (which is congruent to $-1$) is useless because the property anyway holds if $p$ is odd. (And if $p$ is not odd, we already know it is not a prime.)
+\end{compactitem}
+\end{example}
+
 In most situations, an algorithm that may return different results for the same input is simply broken and not an algorithm at all.
 However, occasionally, probabilistic algorithms are very useful.
 Cryptography is an example because we often \emph{need} to make a random choice to prevent an attacker from predicting what we did.

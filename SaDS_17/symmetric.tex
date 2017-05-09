@@ -24,9 +24,9 @@ To decrypt an encrypted message, we call $D_k(c)$.
 \subsection{Security of a Scheme}
 
 There are various concepts of security of an encryption scheme.
-The general idea is to assume an adversary that picks two messages $x_0,x_1\in\Sigma^n$ and randomly receives either $E(x)$ or $E(x')$.
+The general idea is to assume an adversary that picks two messages $x_0,x_1\in\Sigma^n$ and randomly receives either $E(x_0)$ or $E(x_1)$.
 The encryption scheme is considered secure if the adversary cannot distinguish between the two situations with a probability that is non-negligibly better than $1/2$.
-In other words, even if the adversary already knows that a given ciphertext $c$ is either the encryption of $x$ or of $x'$, he has no better chance of decrypting $c$ than guessing.
+In other words, even if the adversary already knows that a given ciphertext $c$ is either the encryption of $x_0$ or of $x_1$, he has no better chance of decrypting $c$ than guessing.
 
 In all cases, the adversary is restricted to polynomial computations.
 But we obtain different notions of security depending on how we model what else the adversary is allowed to do.
@@ -102,6 +102,9 @@ The last block may have to be \textbf{padded} to length $N$ by adding, e.g., zer
 However, the naive approach would not yield secure schemes---if the same block is always encrypted in the same way, the scheme would be easy to attack.
 Overcoming this is the role of the block cipher \textbf{mode of operation}.
 There are various modes that yield CPA-ind secure schemes if used with pseudo-random block ciphers.
+
+\paragraph{Electronic Code Book}
+The fancy name of the naive mode that encodes the same plaintext as the same ciphertext every time is \textbf{electronic code book} (ECB).
 
 \paragraph{Cipher Block Chaining}
 A commonly used mode of operation is \textbf{Cipher Block Chaining} (CBC).
@@ -241,6 +244,8 @@ Decrypt the ciphertext again.
 %Ciphers based on substitution-permutation-networks can be better parallelized, but Feistel ciphers can use any pseudo-random function (for instance any one-way function) and are therefore limited to invertible ($P$-Boxes). %Also the Feistel networks can be adapted to ciphers not using blocks (for instance it is used in OAEP).
 
 \subsubsection{AES}
+
+% https://www.tutorialspoint.com/cryptography/images/aes_structure.jpg
 
 \paragraph{Overview}
 AES (Advanced Encryption Standard) was chosen by NIST (the US institute of standards and technology) in 2001 as an encryption standard after an open call in 1997 and extensive analysis of the submitted schemes.
