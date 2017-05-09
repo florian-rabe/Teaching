@@ -126,8 +126,8 @@ To break RSA, $d$ has to be computed.
 There are $3$ natural ways to do that:
 \begin{compactitem}
  \item Factor $N$ into $p$ and $q$. Then compute $d$ easily.
- \item Compute $n$ using $n=\phi(N)$ (which may be easier than finding $p$ and $q$). Then compute $d$ easily.
- \item Find $d$ such that $e\cdot d\Equiv_n 1$ (which may be easier than finding $n$).
+ \item Compute $m$ using $m=\phi(N)$ (which may be easier than finding $p$ and $q$). Then compute $d$ easily.
+ \item Find $d$ such that $e\cdot d\Equiv_m 1$ (which may be easier than finding $m$).
 \end{compactitem}
 Currently these are believed to be equally hard.
 
