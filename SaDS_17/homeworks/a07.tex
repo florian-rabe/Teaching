@@ -1,0 +1,51 @@
+\documentclass[a4paper]{article}
+
+\usepackage[course={Secure and Dependable Systems},number=7,date=2017-05-10,duedate=2017-05-19]{../../myhomeworks}
+
+\newcounter{chapter} % needed for dependencies of mylecturenotes
+\usepackage[root=../..]{../../mylecturenotes}
+\usepackage{../../macros/algorithm}
+
+\begin{document}
+
+\header
+
+\begin{problem}{Asymmetric Encryption}{4}
+Implement an asymmetric encryption scheme based on RSA.
+
+It should have the following
+\begin{compactitem}
+ \item a key generation function that, given $n\in \N$, randomly chooses primes $p,q$ such that $p\cdot q\geq 2^n$, and then picks a random $e$ for which $d$ can be found,
+ \item encryption and decryption functions that use RSA.
+\end{compactitem}
+
+Write a unit test that checks the inversion condition: pick an $n$ and an $n$-bit message, encrypt and decrypt it, and compare the result for equality.
+\end{problem}
+
+\begin{problem}{Hash Collisions}{4}
+% $p=99961$ and $q=99971$.
+% lcm(p-1,q-1)=999300120
+% Let $N=9993201131$.
+
+Consider the following (weak) hash function $hash:\{0,1\}^*\to \Z_N$ for $N=9993201131$: $hash(x)$ is obtained as follows
+\begin{compactenum}
+ \item append $0$s to $x$ such that its length is a multiple of $32$, and split the result into $32$-bit blocks $w_1,\ldots, w_n$
+ \item put $h:=0$
+ \item for each $i=1,\ldots,n$, put $h:=(h+w_i)^{1234567}\modop 9993201131$
+ \item return $h$
+\end{compactenum}
+
+Using theory and/or brute force, find a collision of $hash$.
+Show your work (theory and/or program).
+\end{problem}
+
+\begin{problem}{Password Hashing}{4}
+Implement $hash$ from the previous problem as a function that hashes strings by using the ASCII codes of the characters as the values $w_1,\ldots,w_n$.
+
+Assume $hash$ is (foolishly) used to hash passwords without any salting or stretching, and we expect to have access to some hashes in the future.
+In order to prepare a break-in, build a table for pairs $(hash(s),s)$ for as many strings $s$ as you can so that you can lookup passwords once you have obtained the hashes.
+
+You may work in groups to build larger tables.
+\end{problem}
+
+\end{document}
