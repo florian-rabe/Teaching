@@ -1,1 +1,260 @@
-%matrix powers for min-+ or Floyd Warshall for shortest path
+\section{Overview}
+
+As indicated in the introduction to Ch.~\ref{sec:ad:recurse}, there is a certain duality between induction and dynamic programming.
+For example,
+\begin{compactitem}
+ \item An inductive algorithm for $P(n)$ recurses into $P(n-1)$, \ldots, $P(0)$ (in that order), then propagates the results back.
+  All $n+1$ function calls are open at the same time.
+ \item A dynamic programming algorithm computes the results in the order $P(0)$,\ldots, $P(n-1)$, $P(n)$ and stores them in a table.
+  This is usually done with a for-loop or similar construct.
+\end{compactitem}
+
+Dynamic programming can be superior to induction in multiple situations:
+\begin{compactitem}
+ \item $P(n)$ needs multiple previous results.
+ For example, for the Fibonacci numbers we need $P(n-1)$ and $P(n-2)$.
+ An inductive algorithm would be exponential because we compute the same values multiple times.
+ A dynamic programming algorithm remains linear because all results for smaller inputs are available in a table.
+ \item Recursion causes overhead.
+ Especially for large inputs and non-tail-recursive functions, induction requires the creation and removal of many stack frames.
+ A dynamic programming algorithm in a for-loop can be much faster even if both solutions are linear.
+ \item For functions that are called a lot on many different inputs, it may make sense anyway to store the entire table of results.
+\end{compactitem}
+
+But dynamic programming has the disadvantage of storing all results for smaller inputs in a table.
+That increases the space complexity, whereas induction usually only requires constant space.\footnote{This comparison is not quite fair though: recursion (unless tail-recursive) also requires linear space in practice, namely for the frames on the stack. But that space is hidden by the programming language.}
+This can be substantial overhead if only $P(n)$ is needed or if $n$ is large.
+
+\section{General Structure}
+
+\subsection{Design}
+
+In the simplest case a dynamic programming algorithm looks like this:
+
+\begin{acode}
+\afun[B]{dynamic}{n:\N}{
+	results := \anew{Array}{B}(n)\\
+	\aforin{i}{0,\ldots,n}{
+	  r := P(i) \acomment{may use $results[0], \ldots, results[i-1]$} \\
+	  results[i]:= r
+	}\\
+	results[n]
+}
+\end{acode}
+
+Here $x$ is the result of computing $P(i)$ using all results for lower values.
+In this variant of dynamic programming, the table $results$ is thrown away after each call to $dynamic$.
+Alternatively, the table could be kept for later function calls.
+
+However, this is not particularly powerful.
+A much more powerful class of algorithms arises if the table-variable is not part of the input.
+Instead of solving the problem $P(n)$ with a table variable $i=0,\ldots,n$, we use an input $a\in A$ and generalize the problem $P(a)$ to a problem $Q(a,i)$ for an auxiliary variable $i=0,\ldots, k$.
+The dynamic program then iterates over $i$ and eventually returns $P(a)=Q(a,k)$.
+
+Very often this design allows for elegant iteration formulas that compute $Q(x,i)$ from the values $Q(y,j)$ for all $y\in A$ and $j=0,\ldots,i-1$.
+Consequently, this requires a two-dimensional table storing $Q(x,i)$ for all possible inputs $x\in A$ and all $i=0,\ldots, k$.
+
+The general algorithm becomes
+\begin{acode}
+\afun[B]{dynamic}{a:A}{
+	results := \anew{Array}{B}(|A|, k)\\
+	\aforin{i}{0,\ldots,k}{
+	  \aforin{x}{A}{
+   	  r := Q(x,i) \acomment{may use $results[y,0], \ldots, results[y,i-1]$ for any $y\in A$} \\
+	    results[x,i]:= r
+	  }
+	}\\
+	results[a,k]
+}
+\end{acode}
+
+\subsection{Correctness}
+The main condition for correctness is that $P(x)=Q(x,k)$ for all $x\in A$.
+Then we only have to verify that we correctly compute $Q(x,i)$ from all values $Q(y,j)$ with $j<i$.
+
+\subsection{Complexity}
+The time complexity is $\Theta(|A|\cdot k\cdot f(|A|,k))$ where $f(|A|,k)$ is the complexity of computing $Q(x,i)$ for $x\in A$ and $i\leq k$.
+
+The space complexity is $\Theta(|A|\cdot k)$.
+
+\section{Examples}
+
+\subsection{Coin Change}
+
+\paragraph{Problem}
+Consider a currency whose coins have the denominations $D=\{d_1,\ldots,d_n\}$.
+For example, for Euros, we have $D=\{1,2,5,10,20,50,100,200\}$ (giving all denominations in cents).
+Our goal is to find the minimum number $P(n)$ of coins whose denominations add up to $n$.
+For example, $P(0)=0$ (using no coins), $P(1)=P(2)=1$, $P(3)=2$, and so on.
+
+\paragraph{Design}
+We do not need an auxiliary variable.
+We compute $P(i)$ directly from all $P(j)$ for $j<i$ as follows:
+ \[P(0)=0 \tb\mand\tb P(i)=1+\min \{P(i-d)\,|\,d\in D,\,d<i\}\]
+Here $1+P(i-d)$ is the minimum number of coins adding up to $n$ if one of the coins has denomination $d$.
+
+Plugging this into the general algorithm, we obtain
+
+\begin{acode}
+\afun[\N]{coinChange}{n:\N}{
+	results := \anew{Array}{\N}(n)\\
+	\aforin{i}{0,\ldots,n}{
+	  r := \aifelseI{i==0}{0}{1+\min \{results[i-d]\,|\,d\in D,\,d<i\}} \\
+	  results[i]:= r
+	}\\
+	results[n]
+}
+\end{acode}
+
+\paragraph{Correctness}
+The correctness follows immediately from the correctness of the formula for $P(i)$.
+
+\paragraph{Complexity}
+The complexity for the minimum operation is $\Theta(|D|)$.
+So the overall complexity is $\Theta(n\cdot |D|)$.
+
+\subsection{Cheapest Path}
+
+\paragraph{Problem}
+We revisit the problem of finding the cheapest path in a directed, cost-weighted graph $G=(N,E)$.
+As before, we write $weight(x,y)$ for the weight of the edge from $x$ to $y$, using $0$ if there is no edge.
+We assume $weight(x,y)>0$ so that the cheapest can have at most length $k=|E|$.
+
+\paragraph{Design}
+We use $A=N\times N$, and for $x=(x_1,x_2)$, we want to find the cost of the cheapest path $P(x)$ from $x_1$ to $x_2$.
+Using dynamic programming, we will compute $P(x)$ for all $x\in N\times N$ in one go.
+
+We use the following generalized problem: for $x=(x_1,x_2)$ and $i=0,\ldots,k$, we say that $Q(x,i)$ is the cost of the cheapest path from $x_1$ to $x_2$ that has length at most $i$.
+Thus, the length of the path is our auxiliary variable.
+
+This lets us use the following formula for $Q(x,i)$:
+\[Q((x_1,x_2),0)=E_{x_1x_2}:=\cas{\infty \mifc x_1\neq x_2\\ 0\mifc x_1=x_2}\]
+\[Q((x_1,x_2),i)=\min \{Q((x_1,y),i-1)+weight(y,x_2)\,|\,y\in N\} \tb\mfor i>0\]
+
+Here $Q((x_1,y),i-1)+weight(y,x_2)$ is the cost of
+\begin{compactitem}
+ \item a path $p$ from $x_1$ to $y$ of length at most $i-1$
+ \item the edge from $y$ to $x_2$.
+\end{compactitem}
+Because $p$ is chosen optimally each time, the cheapest path from $x_1$ to $x_2$ of length at most $i$ is the minimum of over all possible choices for $y$.
+
+The general dynamic programming algorithm becomes:
+
+\begin{acode}
+\afun[B]{cheapestPath}{a_1:N, a_2: N}{
+	results := \anew{Array}{\N^\infty}(|N|, |N|, k)\\
+	\aforin{i}{0,\ldots,k}{
+	  \aforin{(x_1,x_2)}{N\times N}{
+   	  r := \aifelseI{i==0}{E_{x_1x_2}}{\min \{results[x_1,y,i-1]+weight(y,x_2)\,|\,y\in N\}}\\
+	    results[x_1,x_2,i]:= r
+	  }
+	}\\
+	results[a_1,a_2,k]
+}
+\end{acode}
+
+\paragraph{Correctness}
+The correctness follows immediately from the correctness of the formula for $Q((x_1,x_2),i)$.
+
+\paragraph{Complexity}
+The complexity of the minimum operation is $\Theta(|N|)$.
+Thus, the overall complexity is $\Theta(|A|\cdot k\cdot |N|)= \Theta(|N|^3\cdot |E|)$.
+
+\paragraph{Matrix Formulation}
+We can simplify the dynamic program further by using a smarter technique for computing $Q$.
+
+Let $N=\{1,\ldots,n\}$ and let $Adj\in(\N^\infty)^{n\times n}$ be the adjacency matrix of $G$, i.e., $weight(x,y)=Adj_{xy}$.
+
+For $A,B\in (\N^\infty)^{n\times n}$, we write $A\odot B \in (\N^\infty)^{n\times n}$ for the matrix product computed with
+\begin{compactitem}
+ \item $\min$ instead of $+$
+ \item $+$ instead of $\cdot$
+\end{compactitem}
+Formally, we have
+\[(A\odot B)_{ik}=\min \{A_{ij}+B_{jk}\,|\,j=1,\ldots,n\}\]
+
+Like normal matrix multiplication, $\odot$ is associative.
+It also has a neutral element, namely the matrix $E$ from above with $0$s along the diagonal and $\infty$ everywhere else.
+
+We can now see that the dynamic program becomes
+\begin{acode}
+\afun[B]{cheapestPath}{a_1:N, a_2: N}{
+	results := \anew{Array}{(\N^\infty)^{n\times n}}(k)\\
+	\aforin{i}{0,\ldots,k}{
+	  results[i]:=\aifelseI{i==0}{E}{results[i-1]\odot Adj}
+	}\\
+	results[k]_{a_1,a_2}
+}
+\end{acode}
+which we can further simplify to
+\begin{acode}
+\afun[B]{cheapestPath}{a_1:N, a_2: N}{(Adj^k)_{a_1,a_2}}
+\end{acode}
+
+Because $((\N^\infty)^{n\times n},\odot,E)$ is a monoid, we can apply square-and-multiply to compute $Adj^k$ in $\log_2 k$ steps.
+$\odot$ takes $O(|N|^3)$. So the overall complexity becomes $\Theta(|N|^3\cdot \log_2 |E|)$.
+
+Similar to Strassen's algorithm, we can further improve the algorithm by computing $\odot$ in less than $\Theta(|N|^3)$.
+
+\subsection{Floyd Warshall Algorithm for the Cheapest Path}
+
+An alternative dynamic programming solution is the Floyd-Warshall algorithm.
+
+Given a graph $G=(N,E)$ with $N=\{1,\ldots,k\}$, it uses the following related problem: $Q((x_1,x_2), i)$ is the cheapest path from $x_1$ to $x_2$ whose intermediate nodes are chosen from $\{1,\ldots,k\}$ only.
+
+Dijkstra's algorithm is closely related to this.
+
+%\subsection{Maximum Segment Sum}
+%
+%\paragraph{Problem}
+%The following is a problem that has received a lot of attention in the study of algorithms.
+%Given a list $a\in List[\Z]$ of length $n$, let $P(a)$ be the greatest possible sum of a segment (i.e., a sublist) of $a$.
+%
+%For example, the sublists of $[1,-2,4]$ are $[]$, $[1]$, $[-2]$, $[4]$, $[1,-2]$, $[-2,4]$, and $[1,-2,4]$, and $P([1,-2,4])=4$.
+%
+%Because there are $\Theta(n^2)$ possible sublists and summing is linear, the naive algorithm has time complexity $\Theta(n^3)$.
+%
+%\paragraph{Design}
+%We construct a dynamic program using an auxiliary variable $i=0,\ldot,n$ and defining $Q(x,i)$ to be the maximum sum among all sublists $x$ of $a$ that end at index $i$.
+%
+%Then we obtain the following formula for $Q$
+% \[Q(a,0)=0\tb\mand\tb Q(x,i)=\max\{Q(x,i-1)+a_i, a_i\}\]
+%This is because a sublist that ends at $i$ either has length $1$ (in which case its sum is $a_i$ or 
+
+\subsection{Knapsack Problem}\label{sec:ad:dynamic:knapsack}
+
+\paragraph{Problem}
+We revisit the knapsack problem from Sect.~\ref{sec:ad:greedy:knapsack}.
+
+For simplicity, we only want to compute the total value of the optimal set of objects, not the set itself.
+Given a set $S\sq O=\{1,\ldots,k\}$, we write $s(S)$ for its total size and $v(S)$ for its total value.
+We want to compute the maximal total value of any set of objects whose total size is below or equal to $n$, i.e.,
+\[K(n)=\max \{v(S) \,|\, S\sq O,\,s(S)\leq n\}\]
+
+\paragraph{Design}
+We simplify the problem even further: Let
+\[P(n)=\max \{v(S) \,|\, S\sq O,\,s(S) = n\}\]
+It is sufficient to solve $P(n)$ because we can compute
+\[K(n)=\max \{P(i)\,|\,i=0,\ldots,n\}\]
+
+To solve $P(n)$, we use one auxiliary variable $i=0,\ldots,k$ and define $Q(x,i)$ to be the maximum total value of objects of total size $x$ that use only objects $1,\ldots, i$.
+Formally, we have
+\[Q(x,i)=\max \{v(S) \,|\, S\sq \{1,\ldots,i\},\,s(S) = x\}\]
+
+We obtain the following formula for $Q$:
+\[Q(x,0)=0 \tb\mand\tb Q(x,i)=\max \{Q(x, i-1), Q(x-s(i), i-1)+v(i)\}\]
+Here $Q(x,i-1)$ is the value if we do not use object $i$, and $Q(x-s(i))+v(i)$ is the value if we do.
+
+As usual, we have $P(n)=Q(n,k)$.
+
+\paragraph{Correctness}
+The correctness follows immediately from the formula for $Q$.
+
+\paragraph{Complexity}
+The formula for $Q$ takes constant time. So the overall complexity to compute $P(n)$ is $\Theta(n\cdot k)$.
+
+The complexity for $K(n)$ is the same because we can compute it from $P(n)$ in linear time.
+
+%\subsection{More Examples}
+%
+%A good collection of examples can be found at \url{https://people.cs.clemson.edu/~bcdean/dp_practice/}.

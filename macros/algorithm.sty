@@ -39,6 +39,7 @@
 \newcommand{\awhile}[3][]{\akey{while} #2 \acomment{#1} \ablock{#3}}
 % for{i}{m}{n}{code(i)} = code(m) ; ... ; code(n)
 \newcommand{\afor}[5][]{\akey{for} #2 \;\akey{from}#3 \;\akey{to} #4 \acomment{#1} \ablock{#5}}
+\newcommand{\aforin}[4][]{\akey{for} #2 \;\akey{in}#3 \acomment{#1} \ablock{#4}}
 \newcommand{\aif}[3][]{\akey{if} #2\acomment{#1} \ablock{#3}}
 \newcommand{\aifelse}[4][]{\aif[#1]{#2}{#3}\anewline\akey{else}\ablock{#4}}
 \newcommand{\aprint}[2][]{\akey{print} #2\acomment{#1}}

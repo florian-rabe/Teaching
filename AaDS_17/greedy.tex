@@ -1,3 +1,5 @@
+\section{Overview}
+
 Greedy algorithms are an informal grouping of algorithms characterized by the following property: We have to make a number of choices until we are done, and at each step we choose the most attractive option.
 
 A greedy algorithm emphasizes local optimization over global optimization: at each step it makes the optimal local choice.
@@ -63,9 +65,10 @@ Then, in a matroid, all bases have the same size.
 Exercise.
 \end{proof}
 
-\section{Greedy Algorithms for Matroids}
+\section{General Structure for Matroids}
 
-\paragraph{Correctness}
+\subsection{Correctness}
+
 Finding a base is always easy: start with the empty set and keep adding elements as long as the resulting set remains acceptable.
 
 Now the matroid property guarantees that all bases have the same size.
@@ -80,7 +83,8 @@ If $M$ and $Acceptable$ form a matroid, then the greedy algorithm finds a base w
 
 The corresponding theorem holds for finding the base with smallest possible weight.
 
-\paragraph{Complexity}
+\subsection{Complexity}
+
 The main structure of the greedy algorithm is linear in the number $|M|$ of elements.
 But we also have to sort the elements once and check $Acceptable$ at every step.
 We know sorting takes $\Theta(|M|\log |M|)$.
@@ -230,6 +234,37 @@ We have to pay the penalty $w(3)+w(5)=20$.
 \paragraph{Correctness}
 We only have to show that the above structure is indeed a matroid.
 This is left as an exercise.
+
+\subsection{Knapsack Problem}\label{sec:ad:greedy:knapsack}
+
+\paragraph{Problem}
+The knapsack problem is one of the most commonly studied algorithmic problems.
+%It can be seen as a generalization of the coin change problem.
+
+Fix a set $M=\{1,\ldots,k\}$ of objects.
+Each $i\in M$ has size $s(i)$ and value $w(i)$.
+Now given a knapsack of capacity $n$, we want to find the subset of $M$ with biggest total value that fits into the knapsack.
+
+\paragraph{Design}
+We call a subset of $S\sq M$ acceptable if it fits into the knapsack, i.e., if $\Sigma_{i\in S}s(i)\leq C$.
+
+Then we can instantiate the generic greedy algorithm.
+However, the greedy algorithm does not yield the optimal result.
+
+For example, consider $n=10$ and $k=3$ objects
+\begin{center}
+\begin{tabular}{c|ccc}
+object $i$   & 1 & 2 & 3\\
+\hline
+size $si)$   & 8 & 6 & 4 \\
+value $w(i)$ & 8 & 6 & 4
+\end{tabular}
+\end{center}
+The greedy algorithm takes object $1$ first even though the best fit is achieved by using objects $2$ and $3$.
+
+Indeed, the above structure does not satisfy the matroid properties:
+Consider the sets $A=\{2,3\}$ and $B=\{1\}$. Both are acceptable and $|A|>|B|$.
+But there is no $x\in A$ such that $B\cup\{x\}$ is acceptable.
 
 %\subsection{Greatest Flow}
 %
