@@ -1,0 +1,128 @@
+No system is perfectly secure---a brute-force attack is always possible.
+Therefore, a central idea of cryptography is that waiting for a polynomial amount of time (in the sense of complexity theory) is feasible but waiting for a super-polynomial amount of time is not.
+Then a system is often defined as secure if the best possible attack has super-polynomial complexity.
+
+\begin{definition}[Polynomial and Negligible Functions]
+ A function $f:\N\to\R^+$ is called
+  \begin{compactitem}
+   \item \textbf{polynomial} if $f\in O(p)$ for some polynomial $p$.
+   \item \textbf{super-polynomial} if $f\nin O(p)$ for every polynomial $p$ (i.e., if it is not polynomial).
+   \item \textbf{negligible} if $f\in O(1/|p(x)|)$ for every polynomial $p:\N\to\R^+$.
+  \end{compactitem}
+\end{definition}
+
+Super-polynomial functions increase faster than any polynomial increases.
+Negligible functions are somewhat dual: they decrease faster than any polynomial increases.
+In cryptography, we can think of polynomial/super-polynomial/negligible functions as normal/infeasible/trivial.
+
+\begin{theorem}
+We have the following closure properties:
+\begin{compactitem}
+ \item The sum of super-polynomial/polynomial/negligible functions is super-polynomial/polynomial/negligible again.
+ \item The product of a super-polynomial/negligible function with a polynomial function is super-polynomial/negligible again.
+ \item A function that is greater/smaller than a super-polynomial/negligible function is super-polynomial/negligible again.
+\end{compactitem}
+\end{theorem}
+
+\begin{definition}[Polynomial Time]
+ An algorithm $A$ is called \textbf{polynomial time} if its worst-case time complexity of $A$ for input of size $n$ is a polynomial function.
+\end{definition}
+
+\begin{definition}[Probabilistic Algorithm]
+ A \textbf{probabilistic algorithm} is like an algorithm except that it may return different results when called multiple times for the same input.
+\end{definition}
+
+\begin{example}[Fermat Primality Test]
+Many prime number tests are derived from Fermat's Little Theorem \ref{thm:math:fermatlittle}.
+A states that a necessary but not sufficient property for $p$ being prime is that $x^p\Equiv_p x$ for all $a\in \Z$.
+
+To use this as a primality test, we randomly choose $3$ numbers $1<x<p-1$ and test the relation.
+If it holds for all three $x$, we return true.
+
+$x^p\Equiv_p x$ is unlikely to hold for random $x$.
+So if it succeeds three times, $p$ is probably but not definitely a prime number.
+
+This algorithm is probabilistic in the following sense:
+\begin{compactitem}
+ \item It needs randomness to work and may return different values for the same input.
+ \item Its result is not necessarily correct.
+\end{compactitem}
+
+The reason why we choose $1<x<p-1$ is that
+\begin{compactitem}
+ \item Values outside of $\Z_p$ are irrelevant because we take them modulo $p$ anyway.
+ \item The values $x=0$ and $x=1$ are useless because the property anyway holds for them.
+ \item The value $x=p-1$ (which is congruent to $-1$) is useless because the property anyway holds if $p$ is odd. (And if $p$ is not odd, we already know it is not a prime.)
+\end{compactitem}
+\end{example}
+
+In most situations, an algorithm that may return different results for the same input is simply broken and not an algorithm at all.
+However, occasionally, probabilistic algorithms are very useful.
+Cryptography is an example because we often \emph{need} to make a random choice to prevent an attacker from predicting what we did.
+For example, it is often unavoidable for the attacker to know what encryption scheme we use---but that is acceptable if we choose a random key.
+Therefore, encryption schemes often consist of a probabilistic key generation algorithm and deterministic encryption/decryption algorithms that take the key as input.
+Another application in cryptography is \emph{padding} a message: to prevent leaking the information how long a message is, we can pad every message to a fixed length by adding random data.
+In that case, the encryption algorithm is also probabilistic.
+
+Independent of applications in cryptography, probabilistic algorithms are also of great help in situations where (i) a deterministic algorithm has a large complexity but (ii) a probabilistic algorithm that sometimes returns false results is much faster.
+If it is easy to test whether a result is correct, we can simply re-run the probabilistic algorithm until it finds a correct result.
+That is sometimes used in key generation algorithms, e.g., to find a large prime number.
+%Alternatively, if we cannot test if a result is correct, we may be able to run the probabilistic algorithm multiple times in order to increase the probability that a result is correct.
+
+\begin{definition}[Probabilistic Polynomial Time]
+ An algorithm is called \textbf{probabilistic polynomial time} (PPT) if it is probabilistic and polynomial.
+\end{definition}
+
+One-way-functions (OWF) are functions that are easy to compute but hard to invert:
+
+\newcommand{\Prob}[2]{\mathop{\mathrm{Pr}}_{#1}[#2]}
+
+\begin{notation}
+For a function $f:X\to\Bool$, we write $\Prob{x\in X}{f(x)}$ for the probability that $f(x)$ is true when $x$ is chosen uniformly from $X$.
+\end{notation}
+
+\begin{definition}[One-Way-Function]
+ A polynomial function $f:\Sigma^*\to \Sigma^*$, is a \textbf{one-way-function} if for every probabilistic algorithm $A(n\in\N,y\in \Sigma^*)\to\Sigma^*$, whose complexity is polynomial in $n$, the function
+ \[n\tb\mapsto\tb \Prob{x\in\Sigma^n}{f(A(n,f(x)))=f(x)}\]
+ is negligible.
+\end{definition}
+Intuitively, OWFs are super-polynomially hard to invert.
+More precisely, any $A$ that attempts to guess (i.e., it is probabilistic) an $x\in\Sigma^n$ such that $y$ and $A(n,y)$ behave the same way under $f$ succeeds with negligible probability.
+
+\begin{example}
+It is not known if one-way functions exist.
+
+Some functions that are commonly believed to be OWFs are discrete exponentiation and multiplication.
+For example, we do not know if there is a polynomial factoring algorithm.
+\end{example}
+
+Pseudo-random-generators (PRG) are functions that can be used to generate numbers that are essentially random:
+\begin{definition}[Pseudo-Randomness]
+ A polynomial function $R:\Sigma^*\to\Sigma^*$ is a \textbf{pseudo-randomness-generator}
+ \begin{compactitem}
+   \item $R$ maps input of the same length to output of the same length, i.e., there is an $l:\N\to\N$ such that $R$ maps $\Sigma^n\to\Sigma^{l(n)}$ for every $n$.
+   \item for every PPT $A(x\in\Sigma^*)\in\Bool$ the function
+  \[n \tb\mapsto \tb \left|\,\Prob{x\in\Sigma^n}{A(R(x))}-\Prob{x\in\Sigma^{l(n)}}{A(x)}\,\right|\]
+  is negligible.
+ \end{compactitem}
+\end{definition}
+
+Intuitively, $R$ is a PRG if it maps $\Sigma^*\to\Sigma^*$ such that no PPT $A$ can tell the difference between $R(x)$ and randomly chosen $x$ with non-negligible probability.
+The condition about the length of the output of $R$ is only needed so that we can take the probability on the right-hand side over a finite set.
+
+PRGs and OWFs are intricately linked together:
+\begin{theorem}[PRG Theorem]
+Given a PRG, we can define an OWF, and vice versa.
+\end{theorem}
+
+%%This part should probably be moved to the appendix
+%\begin{definition}[hard-core bit]
+% Let $f$ be a one-way function. Now the function $b:\{0,1\}^*\to\{0,1\}$ is called a \emph{hard-core bit} for $f$ if $b$ is computable in polynomial time and there exists a negligible function $neg(n)$ such that for any $n\in\N$ and any PPT $A$:
+% $$\mathrm{Pr}\left[A(f(x),1)=b(x)\right]\leq\frac{1}{2}+neg(n), $$ where $x\in\{0,1\}$ uniformly random. 
+%\end{definition}
+%
+%The next step is to find one-way functions (assuming that there are one-way functions at all) for which we can build hard-core bits. 
+%\begin{theorem}
+% Let $f$ be a one-way function. Define $g:\{0,1\}^{2n}\to\{0,1\}^*$ as $g(x\circ y)=f(x)\circ y$, where $\left|x\right|=\left|y\right|=n$. Then $g$ is a one-way function with hard-core bit $$b(x,y)=\bigoplus_{i=1}^n x_i\land y_i=\sum_{i=1}^{n}x_iy_i (\mod 2).$$
+%\end{theorem}
+%If now $f$ was a one-way permutation, we can use the above construction to get an additional pseudo-random bit, so we already have a pseudo-random generator.
