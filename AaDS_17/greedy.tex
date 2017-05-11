@@ -246,7 +246,7 @@ Each $i\in M$ has size $s(i)$ and value $w(i)$.
 Now given a knapsack of capacity $n$, we want to find the subset of $M$ with biggest total value that fits into the knapsack.
 
 \paragraph{Design}
-We call a subset of $S\sq M$ acceptable if it fits into the knapsack, i.e., if $\Sigma_{i\in S}s(i)\leq C$.
+We call a subset of $S\sq M$ acceptable if it fits into the knapsack, i.e., if $\Sigma_{i\in S}s(i)\leq n$.
 
 Then we can instantiate the generic greedy algorithm.
 However, the greedy algorithm does not yield the optimal result.
@@ -256,7 +256,7 @@ For example, consider $n=10$ and $k=3$ objects
 \begin{tabular}{c|ccc}
 object $i$   & 1 & 2 & 3\\
 \hline
-size $si)$   & 8 & 6 & 4 \\
+size $s(i)$   & 8 & 6 & 4 \\
 value $w(i)$ & 8 & 6 & 4
 \end{tabular}
 \end{center}
