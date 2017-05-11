@@ -31,7 +31,8 @@ Consider the following (weak) hash function $hash:\{0,1\}^*\to \Z_N$ for $N=9993
 \begin{compactenum}
  \item append $0$s to $x$ such that its length is a multiple of $32$, and split the result into $32$-bit blocks $w_1,\ldots, w_n$
  \item put $h:=0$
- \item for each $i=1,\ldots,n$, put $h:=(h+w_i)^{1234567}\modop 9993201131$
+ \item\footnote{The version I showed in the lecture used $h+w_i$ instead of $h+2+w_i$. I changed it to protect against attacks involving $w_1\in\{0,1\}$.}
+  for each $i=1,\ldots,n$, put $h:=(h+2+w_i)^{1234567}\modop 9993201131$
  \item return $h$
 \end{compactenum}
 
