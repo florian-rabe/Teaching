@@ -1,1 +1,22 @@
-   % two-factor authentification
+\subsection{Using Asymmetric Encryption}
+
+An important application of asymmetric encryption is authentication.
+
+For example, an agent $A$ who wants to prove her identity can generate a key and publish the public key.
+To authenticate $A$, we generate a random string, encrypt it with the public key, and ask for its decryption.
+Because only $A$ can decrypt, this is sufficient to authenticate.
+
+Another authentication scheme uses a digital signature.
+Here the private key is used for encryption and the public one for decryption. (Note that for RSA the distinction between encryption and decryption key is insubstantial anyway.)
+$A$ sends a message together with its encryption, and the recipient decrypts and compares.
+A better scheme arises if $A$ first applies a cryptographic hash to the message and sends the original message and the encrypted hash value.
+
+\subsection{Multi-Factor Authentication}
+
+The idea of multi-factor authentication is to use the conjunction of multiple authentication tests.
+This is particularly useful if two factors are used that depend on fundamentally different systems: in that case authentication is still safe even if one of the systems is compromised.
+
+The most common application is to authenticate a user via password first, then ask for a second one-time password.
+Usually the one-time password is sent to the user as a text message or (in older systems) as a list of one-time passwords on paper by mail.
+Even if the user's password is compromised, the authentication remains secure (and can be used to reset the original password).
+However, to be truly secure, the user must never type his password on the phone.
