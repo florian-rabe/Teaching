@@ -68,6 +68,20 @@ The general algorithm becomes
 }
 \end{acode}
 
+\begin{remark}
+The technique of changing a problem $P(a)$ to a problem $Q(a,i)$ by
+\begin{compactitem}
+ \item adding an auxiliary variable $i$ that makes the problem more general
+ \item using a fixed $k$ to recover the original problem as the special case $P(a)=Q(a,k)$
+\end{compactitem}
+is not specific to dynamic programming.
+
+We find it in many recursive algorithms as well.
+Examples are quicksort from Sect.~\ref{sec:ad:sort:quick} and tail-recursion from Sect.~\ref{sec:ad:recurse:tail}.
+
+In all cases, the more general problem is --- counter-intuitively --- easier to solve because the extra generality makes deep properties visible that can be used to reduce problems to smaller subproblems and then design efficient algorithms.
+\end{remark}
+
 \subsection{Correctness}
 The main condition for correctness is that $P(x)=Q(x,k)$ for all $x\in A$.
 Then we only have to verify that we correctly compute $Q(x,i)$ from all values $Q(y,j)$ with $j<i$.
