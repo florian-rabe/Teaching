@@ -107,13 +107,13 @@
        \begin{itemize}
          \itm In 2006 Cynthia Dwork proposed the following definition:
          \itm Assume a database $D$ consisting of $n$ Vectors of $m$-components over some set $\Set{F}$ represented as a $m\times n$ matrix over $\Set{F}$. 
-         \itm Define $\dist{D}{D_2}:=\card{\{i\in\upto{m}\st D_i\neq D_i\}}\linebreak \forall D,\; D_2\in (\Set{F}^m)^n$ as the number of entries in which the databases $D$ and $D_2$ differ. %Define $\Set{B}(D):=\{D_2\in(\Set{F}^m)^n\st \dist{D}{D_2}\leq 1\}$
+         \itm Define $\dist{D}{D'}:=\card{\{i\in\upto{m}\st D_i\neq D_i'\}}\linebreak \forall D,\; D'\in (\Set{F}^m)^n$ as the number of entries in which the databases $D$ and $D'$ differ. %Define $\Set{B}(D):=\{D_2\in(\Set{F}^m)^n\st \dist{D}{D_2}\leq 1\}$
          \itm Let $\Set{A}$ be an algorithm processing $D$ and $\img{\Set{A}}$ its image. 
        \end{itemize}
        \pause \begin{defn}[$\epsilon$-$\delta$-differential privacy]
        	 \label{defn:diff-privacy}
        	 Now $\Set{A}$ is called $\epsilon$-$\delta$-differentially private if $\forall \Set{S}\subset \img{\Set{A}}$:
-       	 $$\forall D_2\st \dist{D}{D_2}\leq 1\Rightarrow\Pr\left[\Set{A}(D)\in\Set{S}\right]\leq e^{\epsilon}\cdot \Pr\left[\Set{A}(D_2)\in\Set{S}\right]+\delta\ $$
+       	 $$\forall D'\st \dist{D}{D'}\leq 1\Rightarrow\Pr\left[\Set{A}(D)\in\Set{S}\right]\leq e^{\epsilon}\cdot \Pr\left[\Set{A}(D')\in\Set{S}\right]+\delta\ $$
        \end{defn}
       \end{frame}
       \begin{frame} %Intuition of diff. privacy
