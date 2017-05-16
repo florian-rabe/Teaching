@@ -1,0 +1,22 @@
+\newcommand{\rrvector}[2]{\matr{#1\\#2}}
+\newcommand{\rrrvector}[3]{\matr{#1\\#2\\#3}}
+\newcommand{\lrrvector}[2]{\lmatrix{#1\\#2}}
+\newcommand{\lrrrvector}[3]{\lmatrix{#1\\#2\\#3}}
+\newcommand{\lrrrrvector}[4]{\lmatrix{#1\\#2\\#3\\#4}}
+\newcommand{\lrrrsvector}[1]{\lmatrix{#1_1\\#1_2\\#1_3}}
+\newcommand{\lrrcccvector}[6]{\lmatrix{#1&#2&#3\\#4&#5&#6}}
+\newcommand{\lrrrccsvector}[6]{\lmatrix{#1&#2\\#3&#4\\#5&#6}}
+
+\newcommand{\lccvector}[2]{\lmatrix{#1&#2}}
+\newcommand{\lcccvector}[3]{\lmatrix{#1&#2&#3}}
+\newcommand{\lcccsvector}[1]{\lmatrix{#1_1, #1_1, #1_1}}
+\newcommand{\ccvector}[2]{\matr{#1, #2}}
+\newcommand{\cccvector}[3]{\matr{#1, #2, #3}}
+
+\newenvironment{lematrix}{\left(\begin{matrix}}{\end{matrix}\right)}
+\newcommand{\lmatrix}[1]{\begin{lematrix}#1\end{lematrix}}
+\newcommand{\matr}[1]{\begin{matrix}#1\end{matrix}}
+\newcommand{\lttmatrix}[4]{\lmatrix{#1&#2\\#3&#4}}
+\newcommand{\ltttmatrix}[9]{\lmatrix{#1&#2&#3\\#4&#5&#6\\#7&#8&#9}}
+\newcommand{\glttmatrix}[1]{\lttmatrix{#1_{11}}{#1_{12}}{#1_{21}}{#1_{22}}}
+\newcommand{\gltttmatrix}[1]{\ltttmatrix{#1_{11}}{#1_{12}}{#1_{13}}{#1_{21}}{#1_{22}}{#1_{23}}{#1_{31}}{#1_{32}}{#1_{33}}}

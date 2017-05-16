@@ -1,0 +1,230 @@
+% !TeX spellcheck = en_US
+% !TeX encoding = utf8
+% !TeX program = pdflatex
+\documentclass[xcolor=dvipsnames]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage[dvips]{epsfig}
+\usepackage{biblatex}
+
+\usepackage{url}
+
+%\setbeamertemplate{navigation symbols}{}
+%\usepackage{BeamerColor}
+\usetheme{Warsaw}
+%\usecolortheme[named=blue]{structure}
+\setbeamertemplate{footline}[3]
+
+\usepackage{csquotes}
+%\usepackage[backend = biber, style=authoryear-comp]{biblatex}
+%\DeclareLanguageMapping{american}{american-apa}
+%\addbibresource{bibliography.bib}
+
+
+\input{tools/math_commands}
+\newcommand{\itm}{\pause\item}
+
+\makeatletter
+    \newenvironment{withoutheadline}{
+        \setbeamertemplate{headline}[default]
+        \def\beamer@entrycode{\vspace*{-\headheight}}
+    }{}
+\makeatother
+\begin{document}
+  \title{Differential privacy -- Basic notions and methods}
+  \author{Colin Rothgang}
+  \frame{\titlepage}
+  \begin{frame}     %Table of content
+    \frametitle{Contents}
+    \tableofcontents
+  \end{frame}
+  \section{Motivation and Definition}
+    \subsection{Why is differential privacy important}
+      \begin{frame} %Basic challenge we want to address with diff. privacy
+        \frametitle{The idea of differential privacy}
+        \begin{itemize}
+          \itm The key idea behind differential privacy is to obfuscate one individual 's properties, but not the whole groups properties in a database
+          \itm So the probability for any individual in the database to have a property should barely differ from the base rate
+          \itm Then, analyzing the database an attacker can't reliably learn anything new about any individual in the database, no matter how much additional information he has
+        \end{itemize}
+      \end{frame}
+      \begin{frame} %Examples of lack of diff. privacy
+        \frametitle{Examples; Without differential privacy\ldots}
+        \begin{itemize}
+          \itm In 2007 Netflix offered a 1 million\$ prize to improve its recommdation system and published a ``anonymized'' training dataset\\
+          \begin{itemize}
+            \itm[$\hookrightarrow$] Later that database was linked with the internet movie database IMdB, allowing identification of some users
+          \end{itemize}
+          \itm Latanya Sweeney from Carnegie Mellon University linked the anonymized Massachusetts Group Insurance Commission (GIC) medical encounter database with voter's registration records identifying the medical records of the Governor of Massachusetts.
+        \end{itemize}
+      \end{frame}
+      
+    \subsection{$\epsilon$-$\delta$-differential privacy and its properties}
+      \begin{frame} %We need diff. privacy in queries
+      	\frametitle{We need surveys and databases, but also privacy}
+      	\begin{itemize}
+      	  \itm We want to be able to still use surveys and statistical studies, without compromising the privacy of our subjects. 
+      	    \begin{itemize}
+      		  \itm[$\hookrightarrow$] A standard example are medical records, having an obvious use. However, many people want their medical data to be safe.
+      		\end{itemize}
+      		\itm If we don't give people a proof of their privacy, they might not submit the surveys or lie
+      		\begin{itemize}
+      		  \itm[$\hookrightarrow$] This destroys the reliability of the obtained results.
+      		\end{itemize}
+      	\end{itemize}
+      \end{frame}
+      \begin{frame} %Query-release problem
+      	\frametitle{The query-release problem}
+      	\begin{itemize}
+      	  \itm A very useful formalization of our problem
+      	  \itm Given a database, we want to run a query on
+      	  \itm Want this differentially private as follows:
+      	  \begin{itemize}
+      	  	\itm Modify database, such that its release is differentially private
+      	  	\itm Now, we can run the query on it and publish the result
+      	  \end{itemize}
+      	  \itm[\textbf{Caveat:}] Depending on the query, the result of the query after the modification of the database, might not be very useful
+      	\end{itemize}
+      \end{frame}
+      \begin{frame} %Key Idea: Protect only against \emph{additional} harm
+      	\frametitle{What do we need, to feel safe submitting a survey?}
+      	\begin{itemize}
+      	  \itm When do we feel safe submitting a survey?
+      	  \itm If attacker looking at result of survey cannot learn anything new about us (individually).
+      	  \itm \textcolor{red}{However this is not possible:}
+      	  \begin{itemize}
+      	  	\itm[$\hookrightarrow$] If the survey shows that any human a certain property, then we also have that property (example: smoking Mary)
+      	  	\itm This holds even if we don't submit the survey at all!
+      	  \end{itemize}
+      	  \itm[$\hookrightarrow$] Can we at ensure that submitting the survey does not cause significant additional harm?
+      	  \itm \emph{This is the key idea of differential privacy}
+      	\end{itemize}
+      \end{frame}
+      \begin{frame} %Defn. of diff. privacy
+        \frametitle{Definition of $\epsilon$-$\delta$-differentially privacy}
+       \begin{itemize}
+         \itm In 2006 Cynthia Dwork proposed the following definition:
+         \itm Assume a database $D$ consisting of $n$ Vectors of $m$-components over some set $\Set{F}$ represented as a $m\times n$ matrix over $\Set{F}$. 
+         \itm Define $\dist{D}{D'}:=\card{\{i\in\upto{m}\st D_i\neq D_i'\}}\linebreak \forall D,\; D'\in (\Set{F}^m)^n$ as the number of entries in which the databases $D$ and $D'$ differ. %Define $\Set{B}(D):=\{D_2\in(\Set{F}^m)^n\st \dist{D}{D_2}\leq 1\}$
+         \itm Let $\Set{A}$ be an algorithm processing $D$ and $\img{\Set{A}}$ its image. 
+       \end{itemize}
+       \pause \begin{defn}[$\epsilon$-$\delta$-differential privacy]
+       	 \label{defn:diff-privacy}
+       	 Now $\Set{A}$ is called $\epsilon$-$\delta$-differentially private if $\forall \Set{S}\subset \img{\Set{A}}$:
+       	 $$\forall D'\st \dist{D}{D'}\leq 1\Rightarrow\Pr\left[\Set{A}(D)\in\Set{S}\right]\leq e^{\epsilon}\cdot \Pr\left[\Set{A}(D')\in\Set{S}\right]+\delta\ $$
+       \end{defn}
+      \end{frame}
+      \begin{frame} %Intuition of diff. privacy
+      	\frametitle{Intuitive meaning of $\epsilon$-$\delta$-differential privacy}
+      	What does $\epsilon$-$delta$-differential privacy tell us?
+      	\begin{itemize}
+      	  \itm Firstly, let us assume that $\delta=0$.
+      	  \begin{itemize}
+      	  	\itm[$\hookrightarrow$] This is also called $\epsilon$-differential privacy
+      	  	\itm[$\hookrightarrow$] Then, given the result of the survey, an attacker cannot learn any new property about us with a significant probability 
+      	  \end{itemize}  	
+      	\end{itemize}
+      \end{frame}
+
+  \section{Methods to archive differential privacy}
+    \subsection{Randomized response surveys}    
+      \begin{frame} %Randomized responce surveys
+      	\frametitle{Randomized response}
+      	A very old technique developed by social scientists to collect data about embarrassing or incriminating behaviour. \\
+      	\pause Participants are told to report as follows, whether or not they have property $P$
+      	\begin{itemize}
+      	  \itm Flip a coin
+      	  \itm If result is tails, report truthfully
+      	  \itm If result is heads, flip again and respond ``yes'' iff result is heads otherwise ``no''
+      	\end{itemize}
+      	This way, participants are guaranteed plausible deniability, \\\pause Even if participant has property $P$ and reports it, this is not incriminating.
+      \end{frame}
+      \begin{frame} %Randomized responce surveys are diff. private
+        \frametitle{Analysis of randomized responce surveys}
+        \begin{itemize}
+          \itm Assume participant $X$ reports having property $P$, what can we learn about $X$?
+          \itm We don't really know whether $X$ has the property 
+          \begin{itemize}
+          	\itm[$\hookrightarrow$] The probability, that a participant having property $P$ will answer ``yes'' is only $\frac{1}{2}+\frac{1}{4}=\frac{3}{4}$, whereas the probability that participant not having property $P$ answers ``yes'' is $\frac{1}{4}$
+          	\itm[$\hookrightarrow$] Therefore, the probability to identify participant based on reply is $3$-times as big as in the case, where question is not asked.
+          	\itm[$\hookrightarrow$] Hence, this method is $\ln(3)$-differentially private
+          	\itm[$\hookrightarrow$] Since, the $\epsilon$'s for different sub-surveys add up, a survey of $m$ such questions is $m\cdot \ln(3)$-differentially private
+          \end{itemize}
+    	\end{itemize}
+      \end{frame}
+      
+    \subsection{The Laplace mechanism}
+      \begin{frame} %The $l_1$-sensitivity
+      	\frametitle{The $l_1$-sensitivity}
+      	\pause \begin{defn}[$l_1$-norm]
+      	  \label{defn:l1-norm}
+      	  Define the \emph{$l_1$-norm} $\Norm{\cdot}_1:\RR^p\to\RR$ by $\Norm{v}_1:=\sum_{i=1}^{p}\abs{v_{i}}$.
+      	\end{defn}
+      	\begin{itemize}
+      	  \itm Let $A:(\NN^m)^n\to\RR^k$ be some numeric database query 
+      	  \pause \begin{defn}[$l_1$-sensitivity]
+      	  	\label{defn:l1-sensitivity}
+      	  	Define the \emph{$l_1$-sensitivity} $\triangle A$ of $A$ as \pause$$\triangle A:=\max_{X,Y\in(\NN^m)^n,\; \Norm{X-Y}_1=1}\Norm{A(X)-A(Y)}.$$
+      	  \end{defn}
+      	  \itm The $l_1$-sensitivity intuitively tells us how much a single individual's data can affect the result of our query.
+      	  \begin{itemize}
+      	    \itm[$\hookrightarrow$] This, gives upper bound, for amount of randomness we need to add to gain differential privacy
+      	  \end{itemize}
+      	\end{itemize}
+      \end{frame}
+      \begin{frame} %The Laplace-Distribution
+      	\frametitle{The Laplace-Distribution}
+      	\pause \begin{defn}
+      	  The \emph{probability density function of the Laplace-Distribution} is defined as the function $$Lap(x|b):=\frac{1}{2b}\exp\left(-\frac{\abs{x}}{b}\right).$$
+      	\end{defn}
+      	\pause \begin{defn}[Laplace-Distribution]
+      	  \label{defn:Lap}
+      	  The \emph{Laplace-Distribution} (centered at 0) and with scale $b$, is the distribution corresponding to $Lap(x|b)$.
+      	\end{defn}
+      	\pause \begin{rem}
+      	  We could also use the Gaussian-Distribution instead, but the Laplace-Distribution is a bit handier.
+      	\end{rem}
+      \end{frame}
+      \begin{frame} %The Laplace mechanism
+      	\frametitle{The Laplace mechanism}
+      	\pause Let $A:(\NN^m)^n\to\RR^k$ be any numeric database query.
+      	\pause \begin{defn}[Laplace mechanism]
+      	  \label{defn:Lap-mechanism}
+      	  The Laplace mechanism $\Set{M}_{L,f,\epsilon}(x)$ for $f$ and a given $\epsilon$ is defined as:
+      	  $$\Set{M}_{L,f,\epsilon}(x):=f(x)+(\Set{Y}_1,\Set{Y}_2,\ldots,\Set{Y}_k),$$
+      	  where the $\Set{Y}_j$ are random variables drawn from the Laplace-Distribution $Lap(\frac{\triangle f}{\epsilon})$.
+      	\end{defn}
+      \end{frame}  
+      \begin{frame} %The Laplace mechanism is diff. private
+      	\frametitle{The Laplace mechanism is $\epsilon$-differentially private}
+      	\pause \begin{thm}
+      	  The Laplace mechanism is $\epsilon$-differentially private.
+      	\end{thm}
+      	\pause Proving this theorem is beyond the scope of this talk. 
+      \end{frame}
+    \section*{References}
+      \begin{frame} %The Bibliography
+      	\frametitle{References}
+      	\begin{thebibliography}{9}
+      	  \bibitem{theBook}
+      	  	Cynthia Dwork and Aaron Roth,
+      	  	\emph{The Algorithmic Foundation of Differential Privacy}\\
+      	  	\url{https://www.cis.upenn.edu/~aaroth/Papers/privacybook.pdf},
+      	  	date = {2004},
+      	  
+      	  \bibitem{diffSlides}
+      	  	Wang Yuxiang
+      	  	\emph{Differential Privacy: a short tutorial},
+      	  	\url{https://www.cs.cmu.edu/~yuxiangw/docs/Differential\%20Privacy.pdf},
+      	    2012
+      	\end{thebibliography}
+      \end{frame}
+
+      \begin{frame} %That's it
+    	\frametitle{}
+    	\centering
+    	\Large{\textbf{Thank you for your attention}}
+      \end{frame}
+\end{document}
