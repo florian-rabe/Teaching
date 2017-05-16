@@ -1,0 +1,101 @@
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{marvosym}
+% Define some theorem kinds I frequently need. Have them share the same
+%counter and number them per-section for readability.
+\input{tools/theorems-art}
+% Declaring some math operators I needed at some point.
+\DeclareMathOperator{\Bil}{Bil}
+\DeclareMathOperator{\Fix}{Fix}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\Mat}{Mat}
+\DeclareMathOperator{\ggT}{ggT}
+\DeclareMathOperator{\kgV}{kgV}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\diam}{diam}
+\usepackage{mathtools}
+%\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\norm}{\langle}{\rangle}
+\DeclarePairedDelimiter{\Pairedsupnorm}{\lvert\lvert}{\rvert\rvert}
+% My own commands for convenience, mostly mathematics.
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\ABS}{\abs{\,}}
+\newcommand{\card}[1]{\lvert#1\rvert}
+\newcommand{\supNorm}[1]{\Pairedsupnorm{#1}}
+\newcommand{\Norm}[1]{\left\|#1\right\|}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\TT}{\mathbb{T}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\Q}{\mathcal{Q}}
+\newcommand{\R}{\mathcal{R}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\Z}{\mathcal{Z}}
+\newcommand{\st}{\colon}
+\newcommand{\dt}{\, \mathrm{d}t}
+\newcommand{\dx}{\, \mathrm{d}x}
+\newcommand{\dy}{\, \mathrm{d}y}
+\newcommand{\dz}{\, \mathrm{d}z}
+\newcommand{\nextIdea}{\Large{$\curvearrowright$}\normalsize\ }
+\newcommand{\Idea}[1]{\Large{$\overset{\text{#1}}{\curvearrowright}$}\normalsize\ }
+\newcommand{\nextlecture}{\hfill\addtocounter{lecture}{1}\subsection{Lecture \arabic{lecture}}}
+\newcommand{\inputNextLecture}[1]{\nextlecture\input{#1\arabic{lecture}}}
+\newcommand{\inPro}[2]{\left\langle #1\,\middle|\,#2\right\rangle}
+\newcommand{\Ball}[2]{\mathrm{B}(#1, #2)}
+
+% Some math macros for convienience
+%\newcommand{\dot}[1]{\overset{.}{#1}}
+\newcommand{\exe}{\begin{exc}\end{exc}}
+\renewcommand{\card}[1]{\left| #1\right|}
+\newcommand{\excN}[1]{\begin{exc}[#1]\end{exc}}
+\newcommand{\dotdot}[1]{\overset{..}{#1}}
+\newcommand{\img}[1]{\mathrm{Range}(#1)}
+\newcommand{\ord}{\mathrm{ord}}
+\newcommand{\Eig}{\mathrm{Eig}}
+\newcommand{\diag}{\mathrm{diag}}
+\newcommand{\Matrix}[1]{\underline{\underline{#1}}}
+\newcommand{\MatrixS}[1]{\Matrix{\Set{#1}}}
+\renewcommand{\phi}{\varphi}
+\newcommand{\nin}{\notin}
+\newcommand{\nequiv}{\not\equiv}
+\newcommand{\opint}[1]{\left]#1\right[}
+\newcommand{\Perm}{Perm}
+\newcommand{\dd}[1]{\, \mathrm{d}#1}
+\newcommand{\partDer}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\dist}[2]{\mathrm{dist}(#1,#2)}
+\newcommand{\dis}{\, \mathrm{dist}}
+\newcommand{\set}[1]{\mathcal{#1}}
+\newcommand{\Set}[1]{\set{#1}}
+\newcommand{\bra}[1]{\left[#1\right]}
+\newcommand{\field}[3]{(#1,#2,#3)}
+\newcommand{\fieldS}[1]{\field{#1}{+}{\cdot}}
+\newcommand{\ordSet}[2]{(#1,#2)}
+\newcommand{\ordS}[1]{\ordSet{#1}{<}}
+\newcommand{\ordField}[4]{(#1,#2,#3, #4)}
+\newcommand{\oF}[1]{\ordField{#1}{+}{\cdot}{<}}
+
+\newcommand{\x}{\times}
+\newcommand{\cont}{{\large \Lightning}}
+\newcommand{\follows}[1]{\overset{{\text{#1}}}{\implies}}
+\newcommand{\since}[1]{\overset{{\text{#1}}}{\Longleftarrow}}
+\newcommand{\lequiv}[1]{\overset{{\text{#1}}}{\iff}}
+\newcommand{\eqSince}[1]{\overset{{\text{#1}}}{=}}
+\newcommand{\leqSince}[1]{\overset{{\text{#1}}}{\leq}}
+\newcommand{\geqSince}[1]{\overset{{\text{#1}}}{\geq}}
+\newcommand{\eqExc}{\overset{!}{=}}
+\newcommand{\congSince}[1]{\overset{{\text{#1}}}{\cong}}
+\newcommand{\equivSince}[1]{\overset{{\text{#1}}}{\equiv}}
+\newcommand{\upto}[1]{\{1,2,\ldots,#1\}}
+\newcommand{\fseq}[2]{#1_1, #1_2, \ldots, #1_{#2}}
+\input{tools/matrices}
