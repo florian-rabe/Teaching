@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=6,date=2017-04-27,duedate=2017-05-04]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=6,date=2017-04-27,duedate=2017-05-04,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -50,6 +50,28 @@ Informally prove the following
   \item $E$ is \emph{not} CPA-ind secure.\\
    Hint: The adversary can perform a chosen-plaintext attack to recover the key by encrypting a self-chosen message.
 \end{enumerate}
+
+\begin{solution}
+For $x\in B^8$, we have $E_k(x)=C(x)\oplus k$ where $C:B^8\to B^8$ is the bijection of the substitution and the permutation step.
+Note that $C$ is fixed, non-random, and public.
+Thus, an adversary that knows $y=E_k(x)$ can recover the key via $k=y\oplus C(x)$ (*).
+
+\begin{enumerate}
+\item We proceed indirectly.
+Assume the scheme is not comp-ind secure, i.e., we have an adversary consisting of
+\begin{compactitem}
+ \item a pick $n \mapsto (x_1 \in\Sigma^n,x_2\in \Sigma^n)$ of messages,
+ \item a PPT $A(n\in\Sigma^*)\in\{1,2\}$ that guesses whether its input is the encryption of $x_1$ or $x_2$,
+\end{compactitem}
+such that the guess is correct with $1/2$-plus-non-negligible probability.
+
+The guess of $A$ can be used together with (*) to guess the key.
+Because the key is the output of the PRG, if we can guess the key with non-negligible probability, we can guess whether something is the output of the PRG with non-negligible probability.
+Thus, we can use $A$ to build an adversary $A'$ that disproves the PRG property.
+
+\item In a CPA-attack, the adversary can ask for the encryption $y=E_k(x_0)$ of some $x_0\in B^8$ and then use (*) to recover the key.
+\end{enumerate}
+\end{solution}
 \end{problem}
 
 \end{document}
