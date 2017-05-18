@@ -1,6 +1,6 @@
 	\documentclass[a4paper]{article}
 
-\usepackage[course={Algorithms and Data Structures},number=11,date=2017-05-02,duedate=2017-05-11,duetime=11:00]{../../myhomeworks}
+\usepackage[course={Algorithms and Data Structures},number=11,date=2017-05-02,duedate=2017-05-11,duetime=11:00,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -61,6 +61,18 @@ Apply the master theorem to derive the $\Theta$-class of the time complexity of
   \item Karatsuba multiplication of polynomials
 \end{compactenum}
 Show your work.
+
+\begin{solution}
+We use $d$, $r$, and $c$ as in the statement of the Master theorem.
+\begin{compactenum}
+  \item $d=2$ and $r=2$. We know dividing takes constant and merging liner time, so $c=1$. Then $r=d^c$, and we obtain $\Theta(n\log_2 n)$.
+  \item $d=2$ and $r=1$. We know dividing takes constant time and no merging is necessary, so $c=0$. Then $r=d^c$, and we obtain $\Theta(\log_2 n)$.
+  \item $d=2$ and $r=3$. We know dividing takes linear time (splitting and adding polynomials) and merging linear time (adding and shifting polynomials), so $c=1$.
+  Then $r>d^c$, and we obtain $\Theta(n^{\log_d r})=\Theta(n^{\log_2 3})\approx\Theta(n^{1.58})$.
+\end{compactenum}
+
+\end{solution}
+
 \end{problem}
 
 \end{document}
