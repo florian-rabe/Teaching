@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 
-\usepackage[course={Secure and Dependable Systems},number=7,date=2017-05-10,duedate=2017-05-19]{../../myhomeworks}
+\usepackage[course={Secure and Dependable Systems},number=7,date=2017-05-10,duedate=2017-05-19,solutions]{../../myhomeworks}
 
 \newcounter{chapter} % needed for dependencies of mylecturenotes
 \usepackage[root=../..]{../../mylecturenotes}
@@ -23,10 +23,6 @@ Write a unit test that checks the inversion condition: pick an $n$ and an $n$-bi
 \end{problem}
 
 \begin{problem}{Hash Collisions}{4}
-% $p=99961$ and $q=99971$.
-% lcm(p-1,q-1)=999300120
-% Let $N=9993201131$.
-
 Consider the following (weak) hash function $hash:\{0,1\}^*\to \Z_N$ for $N=9993201131$: $hash(x)$ is obtained as follows
 \begin{compactenum}
  \item append $0$s to $x$ such that its length is a multiple of $32$, and split the result into $32$-bit blocks $w_1,\ldots, w_n$
@@ -38,6 +34,23 @@ Consider the following (weak) hash function $hash:\{0,1\}^*\to \Z_N$ for $N=9993
 
 Using theory and/or brute force, find a collision of $hash$.
 Show your work (theory and/or program).
+
+\begin{solution}
+This was a vague problem where multiple different attacks could be tried (like in a real-life attacks).
+
+A good start was to recognize that $hash$ is similar to RSA and use factorization attack.
+This yields $N=p\cdot q$ with $p=99961$ and $q=99971$.
+We can then obtain $g:x\mapsto x^{454586863}\modop 9993201131$ as the inverse of $f:x\mapsto x^{1234567}\modop 9993201131$.
+
+Assume $h$ is the hash of input of $m$ blocks.
+For arbitrary $n$ with $n\neq m$ and arbitrary $w_1,\ldots,w_{n-1}$, we can try to find a $w_n$ such that $hash(w_1\ldots w_n)=h$.
+To do that, we put $h'=hash(w_1\ldots w_{n-1})$ and solve $h=f(h'+2+w_n)$ for $w_n$, i.e., $w_n=(g(h)-h'-2)\modop 9993201131$.
+Because $2^{33}<9993201131<2^{34}$, there is a small chance that $w_n$ is too big to be a $32$-bit number.
+In that case, we have to try again, e.g., with a different value for $w_{n-1}$.
+That eventually yields a collision.
+
+More generally, this construction allows inverting $hash$, which breaks it as a cryptographic hash function.
+\end{solution}
 \end{problem}
 
 \begin{problem}{Password Hashing}{4}
@@ -47,6 +60,23 @@ Assume $hash$ is (foolishly) used to hash passwords without any salting or stret
 In order to prepare a break-in, build a table for pairs $(hash(s),s)$ for as many strings $s$ as you can so that you can lookup passwords once you have obtained the hashes.
 
 You may work in groups to build larger tables.
+
+\begin{solution}
+Given that the previous solution allows constructing an inverse to $hash$, it is redundant for an attacker to table it.
+But the problem makes sense regardless.
+
+To table the function, it is critical to invest into an efficient implementation of $hash$.
+We should definitely use square-and-multiply for the exponentiation (divide-and-conquer!), and we can even use a precomputed binary representation of $1234567$.
+Moreover, the modulus should be taken after each step, not just once at the end.
+
+A number of further optimizations are possible.
+Most importantly $hash(s_1\ldots s_n)$ can be obtained from $hash(s_1\ldots s_{n-1})$ in one step.
+So if we have already tabled all hashes for strings of length $n-1$, we can reuse them to table all hashes for strings of length $n$ (dynamic programming!).
+
+To run one iteration of the dynamic program, we can write a function $d(h)$ that takes a hash $h$ for a string $s$ and returns the hashes for the strings $sc$ for all characters $c$.
+Because $d$ must be called on a large fixed set of values for $h$, it parallelizes with essentially no overhead.
+If run with $k$ CPUs, the parallelized run time decreases by essentially $1/k$.
+\end{solution}
 \end{problem}
 
 
@@ -57,6 +87,10 @@ Using $hash$ from above, find a meaningful English word/sentence that hashes to 
 
 I have not checked how difficult this is.
 If it is very easy, you have to find a very nice long sentence.
-If it is very difficult, you may also look for pronounceable words that hash to small numbers. 
+If it is very difficult, you may also look for pronounceable words that hash to small numbers.
+
+\begin{solution}
+Combining the ideas from the previous two problems may a good start here.
+\end{solution}
 \end{problem}
 \end{document}
