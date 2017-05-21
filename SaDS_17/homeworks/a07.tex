@@ -38,12 +38,12 @@ Show your work (theory and/or program).
 \begin{solution}
 This was a vague problem where multiple different attacks could be tried (like in a real-life attacks).
 
-A good start was to recognize that $hash$ is similar to RSA and use factorization attack.
+A good start was to recognize that $hash$ is similar to RSA and use a factorization attack.
 This yields $N=p\cdot q$ with $p=99961$ and $q=99971$.
 We can then obtain $g:x\mapsto x^{454586863}\modop 9993201131$ as the inverse of $f:x\mapsto x^{1234567}\modop 9993201131$.
 
-Assume $h$ is the hash of input of $m$ blocks.
-For arbitrary $n$ with $n\neq m$ and arbitrary $w_1,\ldots,w_{n-1}$, we can try to find a $w_n$ such that $hash(w_1\ldots w_n)=h$.
+Assume $h$ is the hash of some input.
+For arbitrary $n$ and arbitrary $w_1,\ldots,w_{n-1}$, we can try to find a $w_n$ such that $hash(w_1\ldots w_n)=h$.
 To do that, we put $h'=hash(w_1\ldots w_{n-1})$ and solve $h=f(h'+2+w_n)$ for $w_n$, i.e., $w_n=(g(h)-h'-2)\modop 9993201131$.
 Because $2^{33}<9993201131<2^{34}$, there is a small chance that $w_n$ is too big to be a $32$-bit number.
 In that case, we have to try again, e.g., with a different value for $w_{n-1}$.
@@ -63,9 +63,9 @@ You may work in groups to build larger tables.
 
 \begin{solution}
 Given that the previous solution allows constructing an inverse to $hash$, it is redundant for an attacker to table it.
-But the problem makes sense regardless.
+But as an exercise the problem makes sense regardless.
 
-To table the function, it is critical to invest into an efficient implementation of $hash$.
+To table $hash$, it is critical to invest into an efficient implementation of $hash$.
 We should definitely use square-and-multiply for the exponentiation (divide-and-conquer!), and we can even use a precomputed binary representation of $1234567$.
 Moreover, the modulus should be taken after each step, not just once at the end.
 
