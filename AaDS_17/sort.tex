@@ -1,6 +1,6 @@
 \section{Specification}\label{sec:ad:listsort:spec}
 
-Lists are the most important non-primitive data structure in computer science.
+Lists are the most important non-primitive data structure in computer science, and sorting is not only the most important problem about lists but also one of the historically most important algorithmic problems of computer science.
 
 \subsection{Lists}\label{sec:ad:list:spec}
 
@@ -22,13 +22,13 @@ $range(m\in\N,n\in\N)\in\N^*$ & $[m,\ldots,n-1]$ or $[]$ if $m\geq n$ & \\
 \multicolumn{3}{|c|}{below, let $l\in A^*$ be of the form $[a_0,\ldots,a_{l-1}]$ and assume $n<l$} \\
 $length[A](x\in A^*)\in \N$ & $l$ & \\
 $get[A](x\in A^*, n\in\N)\in A$ & $a_n$ & $x_n$ or $x[n]$\\
-$prepend[A](a\in A, x\in A^*)\in A^*$ & $[a,a_0,\ldots,a_{l-1}]$ &\\
-$append[A](x\in A^*, a\in A)\in A^*$ & $[a_0,\ldots,a_{l-1},a]$ &\\
-$revert[A](x\in A^*)\in A^*$ & $[a_{l-1},\ldots,a_0]$ & \\
 $concat[A](x\in A^*, y\in A^*)\in A^*$ & $[a_0,\ldots,a_{l-1},b_0,\ldots,b_{k-1}]$ if $y=[b_0,\ldots,b_{k-1}]$ &  $x+y$\\
 $map[A,B](x\in A^*, f\in A\to B)\in B^*$ & $[f(a_0),\ldots,f(a_{l-1})]$ & $l\;map\;f$\\
 $fold[A,B](x\in A^*, b\in B, f\in A\times B\to B)\in B$ & $f(a_1,f(a_2,\ldots,f(a_n,b))\ldots)$ & \\ 
 \hline
+$prepend[A](a\in A, x\in A^*)\in A^*$ & $[a,a_0,\ldots,a_{l-1}]$ &\\
+$append[A](x\in A^*, a\in A)\in A^*$ & $[a_0,\ldots,a_{l-1},a]$ &\\
+$revert[A](x\in A^*)\in A^*$ & $[a_{l-1},\ldots,a_0]$ & \\
 $delete[A](x\in A^*, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a_{n+1},\ldots,a_{l-1}]$ & \\
 $insert[A](x\in A^*, a\in A, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a,a_n,a_{n+1},\ldots,a_{l-1}]$ & \\
 $update[A](x\in A^*, a\in A, n\in\N)\in A^*$ & $[a_0,\ldots,a_{n-1},a,a_{n+1},\ldots,a_{l-1}]$ & \\ % $insert(delete(l,n),a,n)
@@ -41,7 +41,7 @@ $map$ and $fold$ even take a second type parameter for the return type of the fu
 These are split into three groups:
 \begin{compactitem}
 \item The first group contains functions to create new lists. These are important to have any lists.
-\item The second group contains functions that take a list $l\in A^*$ as their first argument and return data about $l$ or use $l$ to build new data.
+\item The second group contains functions that take a list $x\in A^*$ and return data about $l$ or use $l$ to build new data.
 \item The third group also takes a list $l\in A^*$ but also returns an element of $A^*$.
  This distinction is irrelevant in mathematics but critical in computer science: These functions may be implemented using in-place-updates.
  With in-place update, the list $l$ is changed to become the intended result. The original value of $l$ is lost in the process.
@@ -135,7 +135,10 @@ Note that normal sorting becomes a special case of sorting by property using $P=
 
 \subsection{Why Do We Care About Sorting?}
 
-Thus, a good, modern programmer might respond as follows:
+Nowadays, sorting is a solved problem.
+Computer scientists almost never need to implement sorting because all programming languages come with sophisticated ready-to-use solutions.
+
+This is captured in the following exchange where a good, modern programmer is quizzed on sorting:
 \begin{compactenum}
 \item How do you implement sorting a list? --- I call the $\mathit{sort}$ function of my programming language's basic library.
 \item OK, but what if there is no $\mathit{sort}$ function? --- I import a library that provides it.
@@ -151,9 +154,9 @@ In any case, sorting is an extremely good subject for an introductory computer s
  \item is an elementary problem that is easy to understand for students,
  \item is complex enough to exhibit many important general principles in interesting ways,
  \item is simple enough for all analysis to be doable manually,
- \item has multiple solutions, none of which is better than all the others,
+ \item has multiple, very different solutions, none of which is better than all the others,
  \item is extremely well-studied,
- \item is widely taught so that the internet is full of good visualizations that help learners.
+ \item is widely taught so that the internet is full of good tutorials, examples, and visualizations that help learners.
 \end{compactitem}
 
 
@@ -234,9 +237,9 @@ For example, the straightforward implementation of $length$ takes $\Theta(n)$.
 Similarly, $get(x,i)$ takes $i$ steps to find the element. This is $n$ in the worst case and $n/2$ on average.
 So it also takes $\Theta(n)$.
 
-In general, immutable lists require copying the list, whenever we insert, delete, or update elements.
+In general, immutable lists require copying the list whenever we insert, delete, or update elements.
 These algorithms must traverse the list.
-Therefore, they usually take $\Theta(n)$ time for the traversal \emph{and} $\Theta(n)$ memory for the result list.
+Therefore, they usually take $\Theta(n)$ time for the traversal \emph{and} $\Theta(n)$ space to store the result list.
 
 In the case of $map(x,f)$ and $fold(x,a,f)$, the complexity depends on the passed function $f$.
 However, in the typical case where the run time of $f$ does not depend on the length of the list, we can assume it takes constant time $c$.
@@ -249,10 +252,10 @@ Correspondingly, removing the first element takes $\Theta(1)$.
 \subsection{Mutable Lists}
 
 Mutable lists allow assignments to the individual elements of the list.
-This allows updating an element without copying the list, thus allowing for many operations with $\Theta(1)$ time or memory complexity.
+This allows updating an element without copying the list, thus allowing for many operations with $\Theta(1)$ time or space complexity.
 
 Because we can update the list in place, it becomes critical for efficiency how exactly the list is stored in memory.
-Three cases are of great importance, all with advantages and disadvantages:
+Several cases are of great importance, all with advantages and disadvantages:
 
 \begin{ctabular}{|l|l|p{6cm}|}
 \hline
@@ -294,7 +297,7 @@ For example, we can implement deleting by:
 }
 \end{acode}
 
-Inserting an element into an array is difficult though: The memory location behind the array may not be available because it was already used for something else.
+Inserting an element into an array is difficult though: The memory location behind the array may not be available because it may have already been used for something else.
 Therefore, arrays are often realized in such a way that the programmer chooses in advance the maximal length of the array.
 Thus, technically this data structure does not realize the set $A^*$ but the set $A^n$ for some length $n$.
 This may waste memory if $n$ is chosen too large.
@@ -302,7 +305,7 @@ But arrays are unbeatable in the common situation where we know that we will nev
 
 \subsubsection{Linked Lists}
 
-Mutable linked list consist of a reference to the first element.
+Mutable linked lists consist of a reference to the first element.
 Each element consists of a value and a reference to its successor.
 We can implement that using classes (or similar primitives like structs in C):
 \begin{acode}
@@ -354,7 +357,7 @@ However, they still perform better because changes can be done in-place.
 Moreover, many operations can be done in $\Theta(1)$ memory whereas immutable lists often require $\Theta(n)$ memory.
 
 An interesting exception is the following variant of $insert$:
-Instead of taking the position $n$ at which to insert (which takes linear time to find), it take the element after which to insert:
+Instead of taking the position $n$ at which to insert (which takes linear time to find), it takes the element after which to insert:
 \begin{acode}
 \afun{insert}{x:LinkedList[A],after:Elem[A],a:A}{
  after.next := \anew{Elem}{a, after.next}
@@ -362,7 +365,7 @@ Instead of taking the position $n$ at which to insert (which takes linear time t
 \end{acode}
 
 A similar trick for deleting does not work so well: We can implement $delete(x:LinkedList[A], after:Elem[A])$ in $\Theta(1)$ if we know after which element to delete.
-But a function $delete(x:LinkedList[A], e:Elem[A])$ where $e$ is to be deleted would be useful to delete---that still requires $\Theta(n)$ to find $e$ in the linked list.
+But a function $delete(x:LinkedList[A], e:Elem[A])$ where $e$ is to be deleted still requires $\Theta(n)$ to find $e$ in the linked list.
 
 \subsubsection{Doubly-Linked Lists}
 
@@ -398,9 +401,9 @@ Operations on doubly-linked lists are usually in the same complexity class as th
 
 A doubly-linked list has more memory overhead and thus copying and update operations have more time overhead.
 But doubly-linked lists can be traversed efficiently in \emph{both} directions.
-For example, processing the elements of a singly-linked list in reverse order requires two traversals: one to find the find element, one to process.
+For example, processing the elements of a singly-linked list in reverse order requires two traversals: one to find the last element, one to process.
 The same operation on a doubly-linked list requires only one traversal.
-Both are $\Theta(n)$ though, but the latter may be twice as fast.
+Both are $\Theta(n)$, but the latter may be twice as fast.
 
 In a double-linked list, we can also define nice constant-time variants for both $insert$ and $delete$.
 For example:
@@ -426,7 +429,7 @@ Doubly-linked List & $\Theta(l)$ & \multicolumn{2}{c|}{$\Theta(n)$} & \multicolu
 
 Growable arrays are a compromise between arrays and linked lists.
 Initially, they behave like an array with a fixed length $l$.
-However, when inserting an element that increases the length beyond $l$, we create a second array of length $l$ (elsewhere in memory) and connect the two.
+However, when inserting an element increases the length beyond $l$, we create a second array of length $l$ (elsewhere in memory) and remember their connection by storing a list containing the two elements.
 Thus, a growable array is a linked list of fixed-length arrays.
 The choice of $l$ is up to the data structure designer, who may allow the programmer to tweak it.
 
