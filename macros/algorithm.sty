@@ -55,6 +55,8 @@
 \newcommand{\awhileI}[3][]{\akey{while}\; #2\; \ablockI{#3} \acomment{#1}}
 \newcommand{\aifI}[3][]{\akey{if} (#2) \;\ablockI{#3}\acomment{#1}}
 \newcommand{\aifelseI}[4][]{\aifI{#2}{#3}\;\akey{else}\ablockI{#4}\acomment{#1}}
+\newcommand{\aforI}[5][]{\akey{for} #2 \;\akey{from}#3 \;\akey{to} #4\; \ablockI{#5} \acomment{#1}}
+\newcommand{\aforinI}[4][]{\akey{for} #2 \;\akey{in}#3\; \ablockI{#4} \acomment{#1}}
 
 % declarations
 \newcommand{\aclassH}[4][class]{\akey{#1} #2(#3)\ifnonempty{#4}{\;\akey{extends}#4}}
