@@ -360,7 +360,7 @@ The problem becomes more interesting if the edges of $G$ are cost-weighted.
 Then the \textbf{weight of a subgraph} $T$ of $G$ is the sum of the weights of the edges in $T$.
 Then our goal is not only to find \emph{some} spanning tree but a minimal one, i.e., a spanning tree with the least possible weight.
 
-For example, when planning roads, the cost of an edge could be the distance (more generally: the financial cost of building the road) between two points.
+For example, when planning to build roads, the cost of an edge could be the distance (more generally: the financial cost of building the road) between two points.
 A minimal spanning tree minimizes the overall cost of building the roads.
 
 \paragraph{Algorithm}
@@ -424,7 +424,7 @@ That is because cheapest paths are related, especially:
 
 \paragraph{Algorithm}
 We look at the special case where we have a fixed start node $i$ and want to find the cheapest path to every node.
-It is easy to see that these paths from a spanning tree of $G$ with root $i$.
+It is easy to see that these paths form a spanning tree of $G$ with root $i$.
 
 One well-known solution is Dijkstra's algorithm.
 It is also a greedy algorithm: we start with the root only, and each iteration adds to the tree whichever node is cheapest to reach.
@@ -532,7 +532,7 @@ and that number is called the capacity $Cap(f)$ of $f$.
 It describes how much is flowing through the network from the source to the sink.
 
 \paragraph{Problem}
-Now our goal is to find $f$ such $Cap(f)$ is as big as possible.
+Now our goal is to find $f$ such that $Cap(f)$ is as big as possible.
 This is called the greatest flow, maximal flow, or max-flow problem.
 
 For example, the flow network describes goods that have to be shipped from one place to another via a variety of paths, the maximal flow maximizes the amount of goods that are shipped.

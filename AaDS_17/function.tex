@@ -15,7 +15,7 @@ $apply[A,B](f\in A\to B,a\in A)\in B$ & $f(a)$\\
 
 \emph{Tabular functions} are finite sets of pairs $(a,b)\in A\times B$ indicating that $a$ should be mapped to $b$.
 They are usually partial functions (unless $A$ is finite and the function contains a pair for every $a\in A$).
-Apart from possible being partial, they are a special case of algorithmic functions: We can define $f(a)$ by searching for the pair $(a,b)$ in $f$ and returning $b$.
+Apart from possibly being partial, they are a special case of algorithmic functions: We can define $f(a)$ by searching for the pair $(a,b)$ in $f$ and returning $b$.
 
 Tabular functions can be mutable or immutable.
 We only give the mutable case, which is the most useful in practice.
@@ -57,7 +57,7 @@ In non-functional object-oriented languages, we can define the type $A\to B$ as 
 }
 \end{acode}
 
-Thus, object-oriented language are in some sense also functional, except that the syntax for $\lambda$-abstractions is very awkward.
+Thus, object-oriented languages are in some sense also functional, except that the syntax for $\lambda$-abstractions is very awkward.
 
 \section{Data Structures for Tabular Functions}
 
@@ -83,7 +83,7 @@ For a hash function $hash:A\to \Z_m$, the data structure $HashTable[A,B]=Array[L
 For a hash table $h:HashTable[A,B]$, each $h[i]$ holds the list of pairs $(a,b)$ for which $hash(a)=i$.
 
 \paragraph{Complexity}
-The complexity properties are essentially is the same as for $HashSet[A]$.
+The complexity properties are essentially the same as for $HashSet[A]$.
 
 \subsection{Binary Search Trees}
 

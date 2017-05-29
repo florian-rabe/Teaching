@@ -7,7 +7,7 @@ A recursive algorithm is a good design choice if we can reduce the problem $P(x)
 Usually, $x'$ is just a little smaller than $x$, e.g., we might have $x\in\N$ and $x'=x-1$.
 
 Recursive algorithms have been used in multiple places throughout these notes.
-In the following, we look at some frequent patterns of recursively algorithms.
+In the following, we look at some frequent patterns of recursive algorithms.
 
 Here we only consider the case where $P(x)$ is reduced to slightly smaller instances, e.g., $P(x-1)$.
 There are other patterns, which we discuss in separate chapters, that may or may not be implemented using recursion.
@@ -23,7 +23,7 @@ The following gives an overview:
 
 Induction is the special case of recursion that comes up in conjunction with inductive data types.
 
-For every inductive, a whole range of relevant It is used to define most operations  such as natural numbers or lists.
+It is used to define most operations  such as natural numbers or lists.
 We consider some examples.
 
 \subsection{Natural Numbers}
@@ -162,7 +162,7 @@ f(x_0,y_0,z_0)
 
 On the left, $x$, $y$, and $z$ are the variables, whose values may change during an iteration of the loop, and $C(x,y,z)$ is the loop condition.
 $Body$ is some piece of code that may use the current values of $x$, $y$, and $z$, and assign new values to them.
-This is indicated in the line $(x',y',z'):=Body(x,y,z)$, which treat $Body$ as a function that takes the old values, performs arbitrary additional operations, and eventually returns the new values of the variables.
+This is indicated in the line $(x',y',z'):=Body(x,y,z)$, which treats $Body$ as a function that takes the old values, performs arbitrary additional operations, and eventually returns the new values of the variables.
 
 The right side shows the equivalent recursive function.
 
@@ -266,7 +266,7 @@ Tail-recursive functions are a special case where this danger can be averted by 
 
 The exact way in which tail-recursion optimization happens is up to the interpreter/compiler.
 Usually no new stack frame is allocated for the recursive call---instead the current stack frame is reused.
-That works out because---due the call being tail-recursive---the variable values stored in the current stack frame will never be used again and can therefore be safely overridden.
+That works out because---due to the call being tail-recursive---the variable values stored in the current stack frame will never be used again and can therefore be safely overridden.
 
 \subsection{The Call Stack and Stack Frames}
 
