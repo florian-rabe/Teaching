@@ -40,8 +40,8 @@ But that can be disadvantageous because
 \begin{example}
 There is no data structure that is correct for $\R$.
 
-Therefore, the data structure $\Float$ used in practice as if it were a correct data structure for $\R$.
-This always leads to rounding errors so that all results about are only approximate.
+Therefore, the data structure $\Float$ is used in practice as if it were a correct data structure for $\R$.
+This always leads to rounding errors so that all results about $\Float$ are only approximate.
 
 $\Float$ is often also used as if it were a correct data structure for $\Q$.
 That is a bad habit because computations on $\Float$ are only approximate even if the inputs are exact.
@@ -91,7 +91,7 @@ We define:
 \begin{compactitem}
 \item A \textbf{precondition} for $A$ is a formula $Pre(x_1,\ldots,x_n)$ about the inputs.
 \item A \textbf{postcondition} for $A$ is a formula $Post(x_1,\ldots,x_n,r)$ about the inputs and the output.
-\item $A$ \textbf{terminates for} $v_1,\ldots,v_n$ if running $A$ with these inputs finishes in finitely many steps.
+\item $A$ \textbf{terminates} for $v_1,\ldots,v_n$ if running $A$ with these inputs finishes in finitely many steps.
 \item $A$ \textbf{terminates} if it terminates whenever $Pre(v_1,\ldots,v_n)$.
 \item $A$ is \textbf{partially correct} if for all $v_1,\ldots,v_n$
 \begin{compactitem}
@@ -565,7 +565,7 @@ For example:
 The dependency of exact complexity on programming language, implementation, and physical machine is awkward because it precludes analyzing an algorithm independent of its implementation.
 Therefore, it is common to work with asymptotic complexity instead.
 
-The ideas is these dependencies are usually harmless in the sense that they can be ``rounded away''.
+The idea is that dependencies are usually harmless in the sense that they can be ``rounded away''.
 For example, it does not matter much whether $\compl(x:=E)=\compl(E)+1$ or $\compl(x:=E)=\compl(E)+2$.
 It just means that every program takes a little longer.
 It would matter more if $\compl(x:=E)=2\cdot\compl(E)+1$, which is unlikely.
@@ -630,7 +630,7 @@ Similarly, if we use $\Omega$ instead of $\Theta$, we obtain the sets of \emph{a
 For example, $\Omega(n)$ includes the quadratic functions whereas $\Theta(n)$ does not.
 
 Of particular importance in complexity analysis is the set of polynomial functions:
-It includes all all functions whose shape is similar to a polynomial.
+It includes all functions whose shape is similar to a polynomial.
 
 The following table introduces a few more classes and arranges them by increasing size:
 \begin{ctabular}{|c|l|}
@@ -644,7 +644,7 @@ $O(n^2)$ & quadratic \\
 $O(n^3)$ & cubic \\
 \vdots & \vdots \\
 $\Poly=\bigcup_{k\in\N} O(n^k)$ & polynomial \\
-$\Exp=\bigcup_{f\in\Poly}O(c^{p(n)})$ & exponential \\
+$\Exp=\bigcup_{f\in\Poly}O(c^{f(n)})$ & exponential \\
 $\bigcup_{f\in\Exp}O(c^{f(n)})$ & doubly exponential \\
 \hline
 \end{ctabular}

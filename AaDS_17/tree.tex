@@ -240,8 +240,8 @@ The left tree below is a (binary) min-heap, the right one is neither a min-heap 
 \end{tikzpicture}
 \end{center}
 
-In a heap, the every node is smaller than all its descendants.
-The root is always the smallest element in the heap.
+In a min-heap, every node is smaller than all its descendants.
+The root is always the smallest element in the min-heap.
 That makes heaps practical for sorting.
 Applications are presented in Sect.~\ref{sec:ad:heaplists}.
 
@@ -436,7 +436,7 @@ This yields a discrete model of time where the past is linear (the path from the
 
 A prefix of the list $[x_0,\ldots,x_i]$ is any list $[x_0,\ldots,x_i]$ for $i\leq n$.
 A suffix is any list $[x_i,\ldots,x_n]$.
-Very often we have to a large set of lists that share common prefixes or suffixes.
+Very often we have a large set of lists that share common prefixes or suffixes.
 
 If we represent all lists such that the suffixes are shared, using immutable lists automatically leads to a tree structure.
 For example, consider the following lists:
@@ -453,7 +453,7 @@ g:=cons(6,d)
 \end{acode}
 Because $cons$ for immutable lists does not trigger copying the argument list, the seven lists form a tree in memory.
 Here the root is the empty list, and each list corresponds to the path from a node to the root.
-Note that, contrary to the usual data structure for trees, in this tree each node points to its parent instead of the other way round.
+Note that, contrary to the usual data structure for trees, in this tree each node points to its parent instead of the other way around.
 
 Such lists with shared suffixes occur a lot in hierarchic data structures and recursive functions for them.
 
@@ -552,7 +552,7 @@ For example, many games consist of an unlimited number of turns where at each tu
 In those situations, if DFS picks the wrong cild of the root early on, it may have to explore a huge subtree before coming back to pick the right child.
 
 BFS is more balanced and predictable.
-If we know the probability of finding a solution becomes smaller at greater depths, BFS makes sure that we explore the most promising nodes first.
+If we know that the probability of finding a solution becomes smaller at greater depths, BFS makes sure that we explore the most promising nodes first.
 
 \subsubsection{Depth-First Search}\label{sec:ad:dfs}
 

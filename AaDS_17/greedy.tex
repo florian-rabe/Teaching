@@ -36,7 +36,7 @@ We can also use the function $greedy$ to find an acceptable subset with \emph{mi
 
 \section{Matroids}
 
-To understand when the generic greedy algorithm yields an optimal results, we introduce matroids:
+To understand when the generic greedy algorithm yields optimal results, we introduce matroids:
 
 \begin{definition}[Matroid]
 A \textbf{matroid} consists of
@@ -90,7 +90,7 @@ But we also have to sort the elements once and check $Acceptable$ at every step.
 We know sorting takes $\Theta(|M|\log |M|)$.
 So if we can check $Acceptable(S)$ in $O(\log|S|)$, the overall run time (including sorting) is in $O(|M|\log|M|)$.
 
-To be efficient, we usually implement the acceptability check in a greedy algorithm slightly smarter:
+To be efficient, we usually implement the acceptability check in a greedy algorithm slightly smartly:
 \begin{acode}
 \aclass{Solution[M]}{}{}{
   \afun{insert}{m:M}{\ldots}\\
@@ -110,7 +110,7 @@ Here $S.acceptableWith(x)$ is specified as follows:
  \item precondition: $Acceptable(S)$
  \item postcondition: if $S.acceptableWith(x)$, then $Acceptable(S\cup\{x\})$
 \end{compactitem}
-This works because the greedy algorithm only every needs to check $Acceptable(S\cup\{x\})$ and only if $S$ is already known to be acceptable.
+This works because the greedy algorithm only needs to check $Acceptable(S\cup\{x\})$, and only if $S$ is already known to be acceptable.
 
 $S.acceptableWith(x)$ can often be implemented much faster than $Acceptable(S\cup\{x\})$ because:
 \begin{compactitem}
@@ -222,8 +222,8 @@ considered task & decision & known schedule \\
 \hline
 \end{tabular}
 \end{center}
-Here the right column tracks not only the set $solution$ but also the best schedule for its element.
-That makes it easy to implement $acceptableWith$ by checking decide whether there is still a slot available before the deadline.
+Here the right column tracks not only the set $solution$ but also the best schedule for its elements.
+That makes it easy to implement $acceptableWith$ by checking whether there is still a slot available before the deadline.
 
 The algorithm return $S_{opt}=\{1,2,4\}$.
 Finally, we insert the remaining tasks at the end obtaining the schedule $24135$.

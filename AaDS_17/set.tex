@@ -1,7 +1,7 @@
 \section{Specification}
 
 The set $Set[A]$ contains the finite subsets of $A$.
-It is countable if $A$.
+It is countable if $A$ is countable.
 
 Sets can be mutable or immutable.
 The main operations for immutable sets are:
@@ -68,7 +68,7 @@ A major drawback is the memory requirement: We need $\Theta(m)$ for each $x:Set[
 \subsubsection{Design}
 If $A$ is much larger than the sets to be represented, a better data structure for $Set[A]$ is $ListSet[A]$.
 It represents the set $\{a_1,\ldots,a_n\}$ as the list $[a_1,\ldots,a_n]$.
-Thus, it represent sets as lists without repetition.
+Thus, it represents sets as lists without repetition.
 
 The operations on $ListSet[A]$ are defined in the same way as for $List[A]$ with one exception: the $insert(x,a)$ operation does nothing if $x$ already contains $a$.
 
@@ -96,11 +96,11 @@ This is called the hash function.
 $hash$ has two purposes:
 \begin{compactitem}
  \item The set $A$ is supported by a finite, managably small set $\Z_m$.
-   That makes if feasible to use arrays of length $m$.
+   That makes it feasible to use arrays of length $m$.
  \item The equality operation on $A$ is supported by the $O(1)$ equality on $\Z_m$.
    To check $a=a'$, we first check $hash(a)=hash(a')$.
    If false, we know $a\neq a'$; otherwise, we call the usual equality on $A$.
-   That minimizes the number of equality on $A$ is called.
+   That minimizes the number of times equality on $A$ is called.
 \end{compactitem}
 
 Of course, the function $hash$ will usually not be injective.
@@ -123,7 +123,7 @@ Thus, the bucket for $i$ contains all elements of the set whose hash value is $i
 
 \subsubsection{Complexity}
 If $n$ is the size of the subset of $A$, the sets $h[0]$, \ldots, $h[m-1]$ have average size $n/m$.
-Thus, $contains$, $insert$ and $delete$ take $n/m$ on average.
+Thus, $contains$, $insert$, and $delete$ take $n/m$ on average.
 $equal$, $union$, $inter$, and $diff$ are similarly sped up.
 \medskip
 
@@ -214,7 +214,7 @@ One way to do that is to use red-black trees (see Sect.~\ref{sec:ad:redblacktree
 \subsection{Red-Black Trees}\label{sec:ad:redblacktree}
 
 Red-black trees are a sophisticated variant of binary search trees.
-They guarantee $\Theta(\log n)$ cost for for insertion and deletion.
+They guarantee $\Theta(\log n)$ cost for insertion and deletion.
 
 \subsection{Characteristic Functions}\label{sec:ad:charfun}
 

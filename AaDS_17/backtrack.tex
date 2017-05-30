@@ -30,7 +30,7 @@ We can represent this as finding a branch in a tree:
  \item at a leaf, we can test whether we have a solution or not.
 \end{compactitem}
 
-Thus, we obtain the following general problem: given a tree $T:Tree[A]$ and a property $solution:List[A]\to\Bool$, find a branch $b$ of $T$ such that $P(b)$.
+Thus, we obtain the following general problem: given a tree $T:Tree[A]$ and a property $solution:List[A]\to\Bool$, find a branch $b$ of $T$ such that $solution(b)$.
 
 Backtracking works well if we additionally have a test $abort:List[A]\to\Bool$ such that $abort(b)$ implies that there is no solution that starts with $b$.
 
