@@ -491,7 +491,7 @@ Thus, we obtain the loop invariant $F(x,sorted)=sorted==Sorted(x)$, which immedi
 Total correctness follows from the termination ordering
  \[T(x,sorted)=\text{number of pairs $i,j$ such that $! x_i\leq x_j$} + \cas{1\mifc sorted==\false\\ 0\mifc sorted==\true}\]
 Indeed, this number decreases in every iteration of the loop in which $x$ is not sorted.
-The second summand is necessary to make $T(x,sorted)$ decrease if $x$ is already sorted (which happens exactly once in the last iteration).
+The second summand is necessary to make sure $T(x,sorted)$ also decreases when $x$ is already sorted (which happens exactly once in the last iteration).
 
 \paragraph{Complexity}
 If $n$ is the length of $x$, each iteration of the while-loop has complexity $\Theta(n)$.

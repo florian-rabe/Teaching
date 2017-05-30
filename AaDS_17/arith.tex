@@ -108,7 +108,7 @@ Each time $n$ is reduced only by $1$ or $2$, so we have to double the number of 
 
 \subsection{Linear Algorithm}\label{sec:ad:fib:linear}
 
-It is straightforward to improve on the naive algorithm turning an exponential algorithm into a liner solution.
+It is straightforward to improve on the naive algorithm, turning an exponential into a linear solution.
 For example:
 \begin{acode}
 \afun[\N]{fib}{n:\N}{
@@ -145,7 +145,8 @@ Thus, the complexity is $O(n)$.
 It is tempting to compute $fib(n)$ directly using $fib(n)=round(\phi^n/\sqrt{5})$.
 Because we can precompute $1/\sqrt{5}$, that requires $n+1$ floating point multiplications, i.e., also $O(n)$.
 
-However, it is next to impossible to verify the correctness of the algorithm. While termination is trivial, partial correctness does not hold.
+However, it is next to impossible to verify the correctness of the algorithm.
+While termination is trivial, partial correctness does not hold.
 We know that the formula $fib(n)=round(\phi^n/\sqrt{5})$ is true, but that has no immediate use for floating point arithmetic.
 Rounding errors will accumulate over time and may eventually lead to a false result.
 
@@ -194,7 +195,7 @@ We define two operations on matrices:
 Vectors and matrices are best stored using arrays.
 We assume that
 \begin{compactitem}
- \item $Mat$ is the data structure of arrays of the same length of integers,
+ \item $Mat$ is the data structure of two-dimensional arrays of integers (i.e., arrays of arrays of the same length),
  \item if $x$ is an object of $Mat$, then $x.rows$ is the length of the array and $x.columns$ is the length of the inner arrays,
  \item $\anew{Mat}{m,n}$ produces a new array of length $m$ of arrays of length $n$ in which all fields are initialized as $0$.
 \end{compactitem}

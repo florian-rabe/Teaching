@@ -240,8 +240,8 @@ The left tree below is a (binary) min-heap, the right one is neither a min-heap 
 \end{tikzpicture}
 \end{center}
 
-In a min-heap, every node is smaller than all its descendants.
-The root is always the smallest element in the min-heap.
+In a heap, every node is smaller (with respect to $O$) than all its descendants.
+The root is always the smallest element in the heap.
 That makes heaps practical for sorting.
 Applications are presented in Sect.~\ref{sec:ad:heaplists}.
 
@@ -436,7 +436,7 @@ This yields a discrete model of time where the past is linear (the path from the
 
 A prefix of the list $[x_0,\ldots,x_i]$ is any list $[x_0,\ldots,x_i]$ for $i\leq n$.
 A suffix is any list $[x_i,\ldots,x_n]$.
-Very often we have a large set of lists that share common prefixes or suffixes.
+Very often we have to store a large set of lists that share common prefixes or suffixes.
 
 If we represent all lists such that the suffixes are shared, using immutable lists automatically leads to a tree structure.
 For example, consider the following lists:
