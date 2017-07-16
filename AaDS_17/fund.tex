@@ -268,19 +268,19 @@ Similarly, at best we can hope to give algorithms for all functions between deci
 Again that is not possible.
 Because countable sets have uncountably many functions between them, we cannot give algorithms for all functions between decidable sets.
 
-Therefore, we give the sets that have data structures a special name:
+Therefore, we give the functions that have algorithms a special name:
 
 \begin{definition}[Computable]
 A function between decidable sets is called \textbf{computable} if we can give an algorithm for it.
 \end{definition}
 
-At Jacobs University, decidability and computability are discussed in detail in a special course in the $2nd$ year.
+Decidability and computability are discussed in detail in---typically---a second year course in theoretical computer science.
 
 \subsubsection{The Role of Programming Languages}
 
 \paragraph{Vagueness of the Definitions}
 It is not possible to precisely define effective objects and methods---every definition eventually uses not-defined concepts like ``machine'' or ``instruction''.
-Thus, it impossible to precisely define data structures and algorithms are.
+Thus, it impossible to precisely define what data structures and algorithms are.
 Instead, we must assume those concepts to exist a priori.
 
 That may seem flawed---but it is actually very normal.
@@ -289,10 +289,10 @@ In fact, the question what space and time are is among the difficult of all of p
 \footnotetext{For example, even today physicists have no agreed-upon answer to the question why time moves forwards but not backwards.}
 
 Similarly, the question of what data structures and algorithms are is among the most fundamental of computer science.
-Every computer and evey programming language give their own answer to the question.
+Every machine and evey programming language give their own answers to the question.
 
 \paragraph{Data Description and Programming Languages}
-To make the definitions of \emph{data structure} and \emph{algorithm} precise, we have to choose a concrete formal language.
+The only way to have a precise definition of \emph{data structure} and \emph{algorithm} is to choose a concrete formal language.
 
 \begin{definition}[Languages]
 A \textbf{data description language} is a formal language for writing objects and data structures.
@@ -301,7 +301,7 @@ A \textbf{programming language} is a formal language for writing algorithms.
 \end{definition}
 
 Because algorithms require data structures, every programming language includes a data description language.
-And because all data structures usually come with specific algorithms, we are usually mostly interested in programming languages.
+And because all data structures usually come with specific algorithms, we are mostly interested in programming languages.
 
 But there are some languages that are pure data description languages.
 These are useful when storing data on hard drives or when exchanging data between programs and computers (e.g., on the internet).
@@ -310,14 +310,14 @@ Examples of pure data description languages are JSON, XML, HTML, and UML.
 \paragraph{Types of Programming Languages}
 Programming languages can vary widely in how they represent data structures.
 
-We can distinguish several groups:
+We can roughly distinguish the following groups:
 \begin{compactitem}
 \item Untyped languages avoid explicit definitions of data structures.
 Instead, they use algorithms such as $\mathit{isNat}$ to check, e.g., if an object is a natural number.\\
 Examples are Javascript and Python.
-\item Functional languages focus on using inductive data types.\\
+\item Functional languages primarily use inductive data types to write data structures and recursive functions to write algorithms.\\
 Examples are SML and Haskell.
-\item Object-oriented languages focus on using classes.\\
+\item Object-oriented languages primarily use classes to write data structures and imperative loops to write algorithms.\\
 Examples are Java and C++.
 \item Multi-paradigm languages combine functional and object-oriented features.\\
 Examples are Scala and F\#.
@@ -331,13 +331,13 @@ Thus, it seems that whether a set is decidable or a function computable also dep
 One of the most amazing and deepest results of theoretical computer science is that this is not the case:
 
 \begin{theorem}[Church-Turing Thesis]
-All known programming languages (including theoretical ones such as Turing machines)
+All known machines and programming languages (including theoretical ones such as Turing machines)
 \begin{compactitem}
 \item can define data structures for exactly the same sets,
 \item can define algorithms for exactly the same functions.
 \end{compactitem}
 
-Thus, it does not depend on the chosen programming language
+Thus, it does not depend on the chosen machine or programming language
 \begin{compactitem}
 \item whether a set is decidable,
 \item whether a function is computable.
@@ -353,7 +353,8 @@ However, this can be done (and has been done) for all languages.
 
 A related (stronger) theorem is that every programming language $P$ allows defining for every programming language $Q$ a program that executes $Q$-programs.
 
-It is generally believed but impossible to prove that there is no programming language that can define more data structures or algorithms than the known ones.
+We can only prove these theorems for all \emph{known} languages.
+It is generally believed to be true also for all \emph{possible} languages, but that is impossible to prove.
 
 \section{Specification vs. Design vs. Implementation}
 
