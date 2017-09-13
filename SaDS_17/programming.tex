@@ -5,6 +5,7 @@ In fact, we can systematically read off the implementation of a type checker and
 \section{Decidability vs. Soundness vs. Completeness}\label{sec:formsys:decsoucomp}
 
 \subsection{Definitions}
+
 Three properties are desirable for building formal systems:
 
 \textbf{Decidability} states that all well-formedness judgments (i.e., all judgments except possibly evaluation) are decidable.
@@ -14,16 +15,16 @@ That allows us to tell statically and algorithmically whether an object is well-
 The details of this can very across formal systems.
 But usually it subsumes the requirement that every term $t$ of type $A$ can be semantically interpreted as an element $\ov{t}$ of some set $\ov{A}$.
 \begin{compactitem}
- \item In logic, soundness means that all proofs give rise to valid formulas, i.e., theorems.
- \item In programming, it means that every \emph{function term} $f:A\to B$ should yield an actual function $\ov{t}$.
+ \item In logic, soundness means that every well-formed \emph{proof} gives rise to a valid formula, i.e., a theorem.
+ \item In programming, it means that every well-formed \emph{term} has a value, i.e., all computations must terminate without exceptions.
 \end{compactitem}
 
-\textbf{Completeness} states that every meaningful value can be obtained as the interpretation of some term of the formal system.
+\textbf{Completeness} states that every meaningful value can be obtained as the interpretation of some well-formed term of the formal system.
 Again the details vary.
 \begin{compactitem}
 \item In logic, completeness means that all valid formulas (i.e., all semantically possible theorems) can be obtained as the interpretation of a proof in the formal system, i.e., the formal system can prove every theorem.
-\item In programming, completeness means that all computable functions (i.e., all algorithmically possible function values) can be obtained as the interpretation of some function term in the formal system, i.e., the formal system can define all functions.
-That is usualyl called Turing-completeness.
+\item In programming, completeness means that all values can be represented, in particular all computable functions (i.e., all algorithmically possible function values) can be obtained as the interpretation of some function term in the formal system, i.e., the formal system can implement all functions.
+That is usually called Turing-completeness.
 \end{compactitem}
 
 \subsection{Mutual Exclusivity}
@@ -32,7 +33,7 @@ Unfortunately, the three properties cannot be realized at once (except in degene
 
 That is easy to prove:
 \begin{theorem}
-No formal system that interprets function terms as total functions is decidable, sound, and complete.
+No formal system that interprets every term as a value is decidable, sound, and complete.
 \end{theorem}
 \begin{proof}
 Assume such a system.
@@ -44,16 +45,23 @@ Due to soundness, all well-formed terms yield terminating functions. (Otherwise,
 Taking together, we could decide the halting problem, in violation of the known result that it is undecidable.
 \end{proof}
 
+\begin{remark}
+One way around the problem is to add the special value $\bot$ (which we can think of as undefinedness, non-termination, or throwing an exception).
+Then we can have well-formed expressions whose value is $\bot$.
+In particular, all functions are now \emph{partial}: if they are undefined, they simply return $\bot$.
+But it is debatable whether such a language should still be considered sound: after all $\bot$ is not really a value.
+\end{remark}
+
 Therefore, every formal system must sacrifice one of the three properties.
 This yields a somewhat rough but very intuitive classification of formal systems:
 \begin{itemize}
  \item Type theories sacrifice (Turing-)completeness. Thus, we can check and evaluate all terms but cannot implement all computable functions.
- \item Programming languages sacrifice soundness. Thus, we can implement and check all functions, but we have no guarantee whether a function terminates.
- \item Logics sacrifice decidability. We can describe every computable function (as a set of axioms). But we have no algorithm for checking whether such a specification actually defines a function.
+ \item Programming languages sacrifice soundness. Thus, we can implement and check all functions, but not every computation terminates.
+ \item Logics sacrifice decidability. We can describe every computable function by a formula. But it is undecidable whether a given formula actually defines a function.
 \end{itemize}
 
 Thus, to turn a type theory into a programming language, we have to allow writing well-formed terms whose evaluation does not terminate.
-The most commonly used features are recursion or while-loops.
+The most commonly used features with that effect are recursion and while-loops.
 
 \section{Programs as Terms}
 

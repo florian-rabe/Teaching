@@ -674,7 +674,7 @@ We have the following properties for all $f,g,h,f',g'$:
 	\begin{compactitem}
 	 \item reflexive: $\Oeq{f}{f}$
 	 \item transitive: if $\Oeq{f}{g}$ and $\Oeq{g}{h}$, then $\Oeq{f}{h}$
-	 \item symmetric: if $\Oeq{f}{g}$, then $\Oeq{f}{g}$
+	 \item symmetric: if $\Oeq{f}{g}$, then $\Oeq{g}{f}$
 	\end{compactitem}
   Thus, it is an equivalence relation.
  \item The following are equivalent:
@@ -707,7 +707,7 @@ Exercise.
 The community has gotten used to using $O(f(n))$ as if it were a function.
 If $f(n)-g(n)\in O(r(n))$, it is common to write $f(n)=g(n)+O(r(n))$.
 The intuition is that $f$ arises by adding some function in $O(r(n))$ to $g$.
-This is usually when $r$ is smaller than $g$, i.e., $r$ is a rest that can be discarded.
+This is usually done when $r$ is smaller than $g$, i.e., $r$ is a rest that can be discarded.
 
 Similarly, people often write $f=O(r(n))$ instead of $f\in O(r(n))$ to express that $f$ is equal to some function in $O(r(n))$.
 \medskip
@@ -753,26 +753,24 @@ Because $C(n)$ is at least linear, we can ignore them entirely.
 Note how all the subtleties described in Sect.~\ref{sec:ad:complex:general} are rounded away by looking at $\Theta$-classes.
 \medskip
 
-There are some subtle ambiguities when analyzing complexity:
+In many cases, the run time primarily depends on the \emph{size} of the input, i.e., the exact choice of input does not matter as long as we know its size.
+Therefore, complexity of an algorithm $A$ is usually measured as a function $C(n)$ that returns the number that $A$ will taken when called on input of size $n$.
 \begin{compactitem}
- \item In $C(n)$, we usually say that $n$ is the size of the input.
- But it is not always clear what the size is:
-  \begin{compactitem}
-  \item Is $n$ the size of a number $n\in N$? Or is it $\log n$, which is the number of bits needed to represent $n$?
-  \item If the input is a list, is $n$ just the length of the list? Or does it matter how big the elements of the list are?
-  \item If there are multiple inputs, do we simply add their sizes?
-  \end{compactitem}
-\item Sometimes the run time depends on the exact value, not just on its size.
- For example, Ex.~\ref{ex:ad:euclid} happens to terminate immediately if $m=n$, no matter what the size is.\\
- Thus, we have to distinguish between:
-  \begin{compactitem}
-  \item worst-case complexity: This is the maximal possible number of steps. If there is no additional information, this is usually what the author means.
-  \item average-case complexity: This may be more useful in practice. However, it is more difficult because we need a probabilistic analysis to compute the average.
-  \item best-case complexity: This is rarely useful but occasionally helps put a lower bound on the complexity.
-  \end{compactitem}
+  \item If the input is an integer $x\in \Z$, its size is $n=\log |x|$, which is the number of bits needed to represent $x$.
+  \item If the input is a list, its size is usually the length of the list. But sometimes it may matter how big the elements of the list are.
+  \item If there are multiple inputs, the size is often the sum of the sizes. But we may also use a function $C(m,n)$ that takes two sizes as arguments.
 \end{compactitem}
-There are no universal answers to these questions.
-Instead, we have to consider the context to understand what the author means.
+
+But sometimes different inputs of the same size make lead to very different run times.
+For example, Ex.~\ref{ex:ad:euclid} happens to terminate immediately if the inputs are equal (no matter what the size they have) but takes very long in other cases (specifically when they are consecutive Fibonacci numbers).\\
+Thus, we have to distinguish between:
+ \begin{compactitem}
+  \item worst-case complexity $C_w(n)$: This is the maximal possible number of steps for input of size $n$. If there is no additional information, this is usually what the author means.
+  \item average-case complexity $C_a(n)$: This is the average number of steps for input of size $n$. This is more useful in practice, but it is more difficult because we need a probabilistic analysis to compute the average.
+  \item best-case complexity: This is the minimal possible numbeer of steps for input of size $n$. This is rarely useful but occasionally helps put a lower bound on the complexity.
+\end{compactitem}
+There is no universal convention how these details are formalized.
+Instead, we often have to consider the context to understand what the author means.
 
 \begin{example}[Euclidean Algorithm]\label{ex:ad:euclid:complex}
 Consider the algorithm from Ex.~\ref{ex:ad:euclid}.

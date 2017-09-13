@@ -1,0 +1,25 @@
+Here's our list of the biggest security incidents involving the Internet's core routing protocol, the Border Gateway Protocol. Some of these incidents were attacks; others were accidental misconfigurations. But all of them disrupted traffic to Web sites or entire networks because of incorrect routing messages being propagated across the Internet through BGP. (Read the latest on U.S. government efforts to secure BGP, and about four open source BGP tools.)
+Pakistan Telecom blocks YouTube
+
+In February 2008, Pakistan Telecom inadvertently brought down the entire YouTube site worldwide for two hours as it was attempting to restrict local access to the site. When Pakistan Telecom tried to filter access to YouTube, it sent new routing information via BGP to PCCW, an ISP in Hong Kong that propagated the false routing information across the Internet. 
+ICANN puts root server at risk
+
+The Internet Corporation for Assigned Names and Numbers (ICANN) screwed up in November 2007 when it renumbered the DNS root server "L" that it operates. ICANN failed to notice several unauthorized L root servers operating across the Internet until six months later. By May 2008, ICANN had all the bogus L root servers turned off. 
+Malaysian ISP blocks Yahoo
+
+In May 2004, Yahoo's Santa Clara data-center prefix was hijacked by DataOne, a Malaysian ISP. Network security experts say the incident was malicious, with DataOne intentionally trying to block traffic from Yahoo. The Yahoo attack involved the hijacking of two of its in-use prefixes.
+Northrop Grumman hit by spammers
+
+In May 2003, a group of spammers hijacked an unused block of IP address space owned by Northrop Grumman and began sending out massive amounts of unwanted e-mail messages. It took two months for the military contractor to reclaim ownership of its IP addresses and get the rogue routing announcements blocked across the Internet. In the meantime, Northrop Grumman's IP addresses ended up on high-profile spam blacklists. 
+Turkish ISP takes over the Internet
+
+On Dec. 24, 2004, TTNet sent out a full table of Internet routes via BGP that routed most Internet traffic through Turkey for several hours that morning. TTNet's routing information claimed that the carrier was the best route to everything on the Internet, according to BGP experts Renesys. The mistake resulted in shifting all traffic from sites such as Amazon, Microsoft, Yahoo and CNN to TTNet.
+Brazilian carrier leaks BGP table
+
+In November 2008, Brazilian service provider CTBC leaked a full table of routes that could have resulted in an accidental hijacking of other carrier's routes. Thankfully, the BGPMon volunteer service noticed the problem and sent out alerts across the Internet, which minimized the impact of the mistake. Only a few local customers were affected. 
+Biggest-ever BGP threat unveiled
+
+If these real-world BGP incidents don't scare you, here's one that will. In August 2008, two security researchers demonstrated at DEFCON how an attacker could eavesdrop or change a company's unencrypted data by exploiting BGP. The attacker would reroute all of the company's traffic through their own network and then send it to its destination without the owner's knowledge. What we don't know yet is whether this type of BGP eavesdropping attack is happening on the Internet today.
+
+
+https://bgpmon.net/bgp-leak-causing-internet-outages-in-japan-and-beyond/
