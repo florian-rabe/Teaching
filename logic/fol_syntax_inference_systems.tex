@@ -1,0 +1,62 @@
+Logical languages are usually context-sensitive.
+Therefore, logic has developed a specific method for defining context-sensitive languages, which uses a pair of a grammar and an inference system.
+The inference system uses a context.
+
+As a first inference system, we give a supplementary definition to Def.~\ref{def:fol:grammar}.
+
+\begin{definition}\label{def:fol:syntax2}
+For the syntax of FOL, we use the following two judgments:
+\begin{itemize}
+\item If $\Gamma=\{x_1,\ldots,x_n\}$ is a $\Sigma$-context and $t$ is a term, the judgment
+ \[\istermSG{t} \tb\tb\tb\mor\tb\tb\tb \istermS{x_1,\ldots,x_n}{t}\]
+(intended to mean that $t$ is a well-formed $\Sigma$-term in context $\Gamma$).
+\item If $\Gamma=\{x_1,\ldots,x_n\}$ is a $\Sigma$-context and $F$ is a formula, the judgment
+ \[\isformSG{F} \tb\tb\tb\mor\tb\tb\tb \isformS{x_1,\ldots,x_n}{F}\]
+(intended to mean that $F$ is a well-formed $\Sigma$-formula in context $\Gamma$).
+\end{itemize}
+The inference rules are given in Fig.~\ref{fig:fol:syntax}.
+\end{definition}
+
+\begin{fignd}{fol:syntax}{Syntax of FOL}
+\icnc{\istermSG{t_1} \tb\ldots\tb \istermSG{t_n}}
+     {f\in\Sigma_f}
+     {\arit(f)=n}
+     {\istermSG{f(t_1,\ldots,f_n)}}
+     {}
+\tb\tb
+\ianc{x\in\Gamma}{\istermSG{x}}{}
+\\
+\icnc{\istermSG{t_1} \tb\ldots\tb \istermSG{t_n}}
+     {p\in\Sigma_p}
+     {\arit(p)=n}
+     {\isformSG{p(t_1,\ldots,f_n)}}
+     {}
+\tb\tb
+\ibnc{\istermSG{t_1}}
+     {\istermSG{t_2}}
+     {\isformSG{t_1 \doteq t_2}}
+     {}
+\\
+\ibnc{\isformSG{F}}{\isformSG{G}}{\isformSG{F \wedge G}}{}
+\tb\tb
+\ibnc{\isformSG{F}}{\isformSG{G}}{\isformSG{F \vee G}}{}
+\tb\tb
+\ibnc{\isformSG{F}}{\isformSG{G}}{\isformSG{F \arr G}}{}
+\\
+\ianc{\isformSG{F}}{\isformSG{\neg F}}{}
+\tb\tb
+\ianc{\isformS{\Gamma,x}{F}}{\isformSG{\forall x\;F}}{}
+\tb\tb
+\ianc{\isformS{\Gamma,x}{F}}{\isformSG{\exists x\;F}}{}
+\end{fignd}
+
+\begin{lemma}
+Assume a FOL-signature $\Sigma$ and a $\Sigma$-context $\Gamma$.
+\begin{itemize}
+  \item $\istermSG{t}$ holds \tb iff \tb $t$ is a well-formed term over $\Sigma$ with $\FV(t)\sq\Gamma$.
+	\item $\isformSG{F}$ holds \tb iff \tb $F$ is a well-formed formula over $\Sigma$ with $\FV(F)\sq\Gamma$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+Exercise.
+\end{proof}

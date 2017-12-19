@@ -1,0 +1,289 @@
+This chapter sketches some fundamental concepts from outside logic that are essential to make these notes self-contained.
+
+Throughout this chapter, we fix an alphabet: a finite set $\Sigma$ of symbols.
+Technically, it is perfectly sufficient to have a single symbol $\Sigma=\{0\}$.
+However, it is more convenient to use at least two symbols such as in $\Sigma=\{0,1\}$ for theoretical analyses.
+In practice, we use much bigger alphabets such as ASCII with $2^8$ symbols or Unicode with $2^{16}$ symbols (and more).
+
+We look at the two fundamental concepts of computer science:
+\begin{compactitem}
+ \item the static part: sets of data,
+ \item the dynamic part: functions between data.
+\end{compactitem}
+
+Both concepts are inherently infinitary.
+Sets must be infinite to allow working with arbitrary data (e.g., the set of numbers or strings).
+And functions on infinite sets must be infinite themselves because they must map infinitely many inputs.
+But we can only ever actually compute with finite objects.
+Therefore, we need effective representations of infinite sets and functions.
+
+\section{Effective Representation of Functions}\label{sec:comp:algo}
+
+\subsection{Computable Functions}\label{sec:comp:algo:def}
+
+Consider a function $f:\Sigma^*\to\Sigma^*$ mapping inputs $i$ to outputs $o=f(i)$.
+We want to define $f$ effectively, i.e., in a systematic way that allows other humans or machines to apply $f$ to $i$ and thus to compute $o$.
+
+Therefore, we define:
+
+\begin{definition}[Algorithm]\label{def:comp:algo}
+An \textbf{algorithm} is a precisely described procedure, whose execution transforms words $i\in\Sigma^*$ to words $o\in\Sigma^*$ such that $o$ only depends on $i$. (In particular $o$ may not depend on when, where, and by whom the procedure is executed).
+
+An algorithm $A$ \textbf{terminates for an input} $i$, if the execution finishes after finitely many steps.
+In that case, we write $A(i)$ for the resulting output.
+An algorithm $A$ \textbf{terminates}, if it terminates for all inputs.
+
+Thus, every (terminating) algorithm induces a partial (total) function $A(-):\Sigma^*\to\Sigma^*$.
+\end{definition}
+
+Algorithms allow representing function systematically and reliably.
+That makes them the basis of all mechanic computation.
+
+\begin{terminology}
+Instead of algorithm, people may also say \emph{(effective) method} or \emph{(effective) procedure}.
+Here the word \emph{effective} emphasizes that the descriptions must be systematically executable (by a human or a machine).
+\end{terminology}
+ 
+\begin{remark}[Vagueness of the Definition of Algorithm]
+Def.~\ref{def:comp:algo} is not precise: It uses the words ``precisely described procedure'' and ``execution'', which have not been defined previously.
+That is intentional.
+In retrospect, we can trace back the origin of computer science in the 1930s to this exact question: What is the description of a procedure, and what does it mean to execute it.
+
+Nowadays, we have many different possible definitions.
+In particularly, every single programming language yields a rigorous definition: The programs are the descriptions, and running a program is its execution.
+We also call the former the syntax and the latter the semantics of the programming language.
+
+Computer scientists have found many more possible definitions.
+These may use very diverse formalisms such as Turing machines, grammars, or automata.
+Even natural languages such as English or German are perfectly suitable for defining algorithms. (These descriptions are often called \emph{pseudo-code}.)
+\end{remark}
+
+Let us assume we have chosen one programming language or other formalism to make Def.~\ref{def:comp:algo} precise.
+The next question is whether we can give an algorithm for every function $\Sigma^*\to \Sigma^*$.
+We can immediately see that this is not the case: There are uncountably many such functions.
+But whatever formalism we use to define \emph{algorithm} precisely, there can only be countably many algorithms.
+The reason is that the algorithms must be described in some language (even it is English), and languages can only have countably many words.
+
+We call the functions that do have algorithms \emph{computable}:
+
+\begin{definition}[Computable Function]\label{def:comp:comp}
+A partial function $f:\Sigma^*\to\Sigma^*$ is \textbf{computable} if there is an algorithm $A$ such that $A$ terminates for $i$ iff $f(i)$ is defined and then $A(i)=f(i)$.
+\end{definition}
+
+One might expect that different definitions of algorithm yield different computable functions.
+This is not the case:
+
+\begin{theorem}[Church-Turing Thesis]
+Every rigorous definitions of algorithm makes the same functions computable.
+
+Thus, the property of being computable is well-defined even though Def.~\ref{def:comp:algo} is vague.
+\end{theorem}
+\begin{proof}
+Technically, we can never actually proof this because tomorrow someone might find a new definition of algorithm that is more powerful than everything we know.
+
+But computer scientists have examined any number of possible definitions and have proved them all to be equivalent.
+\end{proof}
+
+Therefore, it does not matter which formalism we use to define algorithms.
+For example, any programming language is fine.
+In particular, whatever functions we can program in one programming language, we can also program in any other programming language.
+
+\subsection{Generalizations}\label{sec:comp:algo:gen}
+
+It is easy to generalize computability to more general functions by choosing special alphabets.
+
+\paragraph{Different Alphabets}
+A functions $f:\Sigma^\to\Sigma'^*$ that uses multiple alphabets can be seen as a function $f'$ that uses only the alphabet $\Sigma\cup\Sigma'$:
+$f'(i)$ is defined whenever $i\in\Sigma^*$ and then $f'(i)=f(i)$.
+
+Therefore, we also speak of computable functions if the involved alphabets are different.
+
+\paragraph{Multiple Arguments}
+An $n$-ary function $f:\Sigma^*\times\ldots\Sigma^*\to\Sigma^*$ can be seen as a unary function $f'$ on $\Sigma\cup\{|\}$: We define $f'(i_1|\ldots|i_n)=f(i_1,\ldots,i_n)$.
+
+Therefore, we also speak of computable $n$-ary functions.
+
+\paragraph{Concrete Sets}
+Most mathematically relevant countable sets can be written as $\Sigma^*$ (or appropriate subsets).
+For example, we can consider $\N$ to be the set $\{|\}^*$ or an appropriate subset of $\{0,1\}^*$ or of $\{0,1,2,3,4,5,6,7,8,9\}^*$.
+Therefore, we also speak of computable functions on the natural numbers.
+
+Computable functions involving $\Z$ and $\Q$ are obtained similarly by adding symbols for $-$ and $/$.
+
+We can never represent compute with all of $\R$ or $\C$ though because they are not countable.
+
+\subsection{Closure Properties}\label{sec:comp:algo:prop}
+
+Most practically relevant functions are computable:
+
+\begin{theorem}\label{thm:comp:comp}
+The following functions are computable:
+\begin{compactitem}
+\item the identity function $x\mapsto x$
+\item for every $c\in\Sigma^*$, the constant function $x\mapsto c$
+\item for computable functions $f,g$, the composition $x\mapsto f(g(x))$
+\item for computable functions $f:\Sigma^*\to \{1,\ldots,n\}$ and $g_1,\ldots,g_n:\Sigma^*\to\Sigma^*$ the case-based function
+\[x\mapsto \cas{g_1(x) \mifc f(x)=1 \\ \vdots\\ g_n(x) \mifc f(x)=n}\]
+\item for computable functions $\mathrm{case}:\Sigma^*\to \{0,1\}$, $\mathrm{base}:\Sigma^*\to\Sigma^*$, $\mathrm{next}:\Sigma^*\to\Sigma^*$, and $\mathrm{step}:\Sigma^*\times\Sigma^*\to\Sigma^*$ the recursive function $r$ given by the following program
+ \[\mathtt{define}\; r(x) := \mathtt{if}\; \mathrm{case}(x)=0\; \mathtt{then}\; \mathrm{base}(x) \;\mathtt{else}\; \mathrm{step}(x,r(\mathrm{next}(x)))\]
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+It is easy to implement these functions in any programming language.
+\end{proof}
+
+\begin{theorem}\label{thm:comp:comp2}
+All computable functions can be obtained by combining the operations from Thm.~\ref{thm:comp:comp}.
+\end{theorem}
+\begin{proof}
+We only sketch the proof.
+
+First, we build a minimal programming language $M$ out of the operations: identity corresponds to variables $x$, constants to values $c\in \Sigma^*$, composition to sequential operation $;$, case-based function to case-split using an $\mathtt{if}$ or $\mathtt{switch}$ command, and recursion to recursive functions.
+
+Second, we show that every programming language $P$ can be reduced to $M$.
+We can do that by implementing an interpreter for $P$ in $M$.
+(Or, more realistically, we proceed step-wise: We implement $M_2$ in $M$, and $M_3$ in $M_2$, and so on until we reach $P$.)
+\end{proof}
+
+
+\section{Effective Representation of Sets}\label{sec:comp:dec}
+
+\subsection{Decidable and Enumerable Sets}\label{sec:comp:data:def}
+
+We can easily represent the set $\Sigma^*$: It is the set of words over $\Sigma$, i.e., the set of sequences of symbols.
+In a programming language, we usually call them strings.
+But we almost never need $\Sigma^*$ --- we usually need certain subsets of $\Sigma^*$.
+For example, the set of all well-formed $\FOL$-formulas is a subset of $\Sigma^*$ for $\Sigma=\{\wedge,\vee,\impl,\neg,\forall,\exists\}\cup\{a,\ldots,z\}\cup\{(,)\}\cup\{,\}$.
+Similarly, every programming language is a subset of the set of all strings.
+
+A set is defined by its elements.
+But there are two natural ways to represent effectively what the elements of a set are:
+
+\begin{definition}[Decidable Sets]\label{def:comp:dec}
+A set $S\sq\Sigma^*$ is called \textbf{decidable} if there is a computable total function $f$ such that $f(i)=1$ if $i\in S$ and $f(i)=0$ otherwise.
+(Here, $0$ and $1$ are two arbitrary different elements of $\Sigma^*$ serving as truth values.)
+\end{definition}
+
+\begin{definition}[Enumerable Sets]\label{def:comp:enum}
+A set $S\sq\Sigma^*$ is called \textbf{enumerable} if there is a computable total function $f$ such that $\mathrm{image}(f)=S$.
+\end{definition}
+
+If $S$ is decidable, we have an effective way to test for being an element of $S$: We can execute $f(i)$ to determine whether $i\in S$ or not.
+We also call $f$ a decision procedure for $S$.
+
+If $S$ is enumerable, we have an effective way to list all the elements of $S$: We can run $f$ on all possible inputs and list all the outputs.
+We also call $f$ an enumeration of $S$.
+
+\begin{terminology}
+Instead of enumerable, people may also say \emph{recursively enumerable} or \emph{semi-decidable}.
+(See Thm.~\ref{thm:comp:enumdec} and~\ref{thm:comp:enum} to understand why \emph{semi-decidable} makes sense.)
+
+Note that \emph{denumerable} (also called countable) is different from enumerable.%
+\footnote{In German, these words are also confusing: denumerable is \emph{abz\"ahlbar} and enumerable is \emph{aufz\"ahlbar}.}
+A set $S$ is denumerable if there is \emph{some} function with domain $\N$ and image $S$; a set is enumerable if there is a \emph{computable} function with domain $\N$ and image $S$.
+In particular, all subsets of $\Sigma^*$ are denumerable.
+\end{terminology}
+
+\subsection{Generalizations}\label{sec:comp:data:gen}
+
+Like in Sect.~\ref{sec:comp:algo:gen}, we extend the concepts to all sets that can be represented using an appropriate alphabet.
+Thus, we speak of decidable and enumerable subsets of $\N$, $\Z$, and $\Q$.
+
+It is easy to represent Cartesian products of sets by using an alphabet $\Sigma\cup\{|\}$.
+Therefore, we also speak of decidable and enumerable subsets of Cartesian products.
+
+An important special case is the set of computable functions.
+Because the computable functions can be represented as programs in some programming language, we can see each computable function as an element of $\Sigma^*$ where $\Sigma$ is the alphabet of the programming language.
+Consequently, we can speak of decidable and enumerable sets of computable functions.
+
+\subsection{Closure Properties}\label{sec:comp:data:prop}
+
+Enumerable and decidable are not equivalent.
+Being able to decide is stronger because it lets us enumerate both the elements that are in $S$ and those that are not in $S$:
+
+\begin{theorem}\label{thm:comp:enumdec}
+A set $S$ is decidable iff both $S$ and $\Sigma^*\sm S$ are enumerable.
+\end{theorem}
+\begin{proof}
+Left-to-right: Let $f$ be a decision procedure for $S$.
+To enumerate $S$, we return $i$ iff $f(i)=1$ and nothing otherwise.
+To enumerate $\Sigma^*\sm S$, we return $i$ iff $f(i)=0$ and nothing otherwise.
+
+Right-to-left: Let $f^+$ and $f^-$ be enumerations for $S$ and $\Sigma^*\sm S$, respectively.
+Let $x_1,x_2,\ldots$ be all the elements of $\Sigma^*$.
+To decide $S$, we take input $i$ and compute $f^+(x_1),f^-(x_1),f^+(x_2),f^-(x_2),\ldots$ until we find $i$. We return $1$ or $0$ depending on whether we found $i$ in $f^+$ or in $f^-$.
+\end{proof}
+
+If a set is enumerable, it is not necessarily decidable.
+Given an enumeration $f^+$, we might try to decide $i\in S$ by computing $f^+(x_1),f^+(x_2),\ldots$.
+If we find $i$ in this sequence, we can return $1$.
+But it would take infinitely long to determine that $i$ is not in this sequence.
+Therefore, we can never return $0$.
+The following theorem makes this more precise:
+
+\begin{theorem}\label{thm:comp:enum}
+The following are equivalent:
+\begin{compactitem}
+ \item There is a total computable function $f$ with whose image is $S$ (i.e., $S$ is enumerable).
+ \item There is a partial computable function $f$ with whose image is $S$.
+ \item There is a partial computable function $f$ such that $f(i)=1$ iff $i\in S$ and $f(i)$ is undefined otherwise.
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+It is straightforward to give the necessary enumerations.
+\end{proof}
+
+
+\begin{theorem}[Closure Properties of Decidable Sets]
+The following sets are decidable:
+\begin{compactitem}
+  \item $\es$ and $\Sigma^*$
+  \item all finite or cofinite\footnote{A set is cofinite if it contains all but finitely many elements.} sets
+  \item the intersection of decidable sets
+  \item the union of decidable sets
+  \item the complement of a decidable set
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+It is straightforward to give the necessary decision procedures.
+\end{proof}
+
+\begin{theorem}[Closure Properties of Enumerable Sets]
+The following sets are enumerable:
+\begin{compactitem}
+  \item $\es$ and $\Sigma^*$
+  \item all finite or cofinite sets
+  \item the union of enumerable sets
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+It is straightforward to give the necessary enumerations.
+\end{proof}
+
+It is easy to understand why the enumerable sets are not closed under intersection and complement.
+If we tried to enumerate them, we would run into the problem that we have to wait infinitely long to conclude anything.
+
+Note that neither decidable nor enumerable sets are closed under subsets.
+For example, a subset of a decidable set may be undecidable.
+
+\subsection{Counter-Examples}
+
+Some of the deepest results in computer science are about demonstrating that certain sets are not decidable or not enumerable.
+
+The most important ones are about computation itself:
+\begin{itemize}
+\item Halting problem: Consider pairs $(f,i)$ where $f$ is a computable function and $i$ an input for $f$.
+The set of all pairs $(f,i)$ such that $f(i)$ is defined (i.e., such that computation of $f(i)$ terminates) is enumerable but not decidable.
+\item The set of computable functions $f$ such that $f(i)$ is defined for all inputs (i.e., the set of terminating programs) is not enumerable.
+\end{itemize}
+
+In logic, we also encounter some critical examples:
+\begin{itemize}
+\item The set of theorems over a $\FOLEQ$-theory is enumerable but not necessarily decidable.
+For some special theories, decidability holds, but this is a very rare situation and usually non-trivial to prove.\\
+\item The set of consistent theories of $\FOLEQ$ is undecidable.
+\item The same applies to virtually any other logic with the exception of $\PL$.
+For $\PL$, consistency and theoremhood are decidable.
+\item The set of true sentences over the natural numbers is not enumerable. (See Thm.~\ref{thm:natincomplete}.)
+\item The same applies to most other interesting models.
+\end{itemize}

@@ -1,0 +1,95 @@
+Now we collect the definitions from Sect.~\ref{sec:folhol} and abstract from them. As before, we \advanced{distinguish} advanced material that can be ignored.
+
+\section{Translations}
+
+\begin{definition}[Syntax]
+Given two logic syntaxes $(\Sig,\Sen)$ and $(\Sig',\Sen')$, we define a logic syntax translation as a pair $(\Phi,\alpha)$ such that
+  \begin{itemize}
+    \item $\Phi$ is a mapping
+      \begin{itemize}
+        \item $\Sig\arr\Sig'$
+        \item \advanced{$\Sig(\Sigma_1,\Sigma_2)\arr\Sig'(\Phi(\Sigma_1),\Phi(\Sigma_2))$ for all $\Sigma,\Sigma'\in\Sig$}
+      \end{itemize}
+    \item $\alpha$ is a family of mappings $\alpha_\Sigma$ for $\Sigma\in\Sig$ such that
+      \begin{itemize}
+        \item $\alpha_\Sigma:\Sen(\Sigma)\arr\Sen'(\Phi(\Sigma))$
+        \item \advanced{for all $\sigma:\Sigma\arr\Sigma'$ in $\Sig$, we have $\ö{\alpha_\Sigma}{\Sen'(\Phi(\sigma))}=\ö{\Sen(\sigma)}{\alpha_{\Sigma'}}$}
+      \end{itemize}
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Proof Theory]
+Given two proof theoretical logics $(\Sig,\Sen,\Pf,\val)$ and $(\Sig',\Sen',\Pf',\val')$, and given a syntax translation $(\Phi,\alpha)$ between them, a proof theory translation $\gamma$
+  \begin{itemize}
+    \item is a family of mappings $\gamma_\Sigma$ for $\Sigma\in\Sig$ such that
+      \begin{itemize}
+        \item $\gamma_\Sigma$ is a mapping such that
+          \begin{itemize}
+            \item $\gamma_\Sigma:\Pf(\Sigma)\arr\Pf'(\Phi(\Sigma))$
+            \item $\gamma_\Sigma:\Pf(\Sigma)((J_1,\ldots,J_m),J) \;\arr \; \Pf'(\Phi(\Sigma))((\gamma_\Sigma(J_1),\ldots,\gamma_\Sigma(J_m)),\gamma_\Sigma(J))$
+          \end{itemize}
+        \item \advanced{for all $\sigma:\Sigma\arr\Sigma'$ in $\Sig$, we have $\ö{\gamma_\Sigma}{\Pf'(\Phi(\sigma))}=\ö{\Pf(\sigma)}{\gamma_{\Sigma'}}$}
+      \end{itemize}
+    \item \advanced{such that for all $\Sigma\in\Sig$ and all $F\in\Sen(\Sigma)$
+      \[\gamma_\Sigma(\val_\Sigma(F)) \;=\; \val'_{\Phi(\Sigma)}(\alpha_\Sigma(F))\]
+      }
+  \end{itemize}
+\end{definition}
+
+
+\begin{definition}[Model Theory]
+Given two model theoretical logics $(\Sig,\Sen,\Mod,\md)$ and $(\Sig',\Sen',\Mod',\md')$, and given a syntax translation $(\Phi,\alpha)$ between them, a model theory translation $\gamma$
+  \begin{itemize}
+    \item is a family of mappings $\beta_\Sigma$ for $\Sigma\in\Sig$ such that
+      \begin{itemize}
+        \item $\beta_\Sigma$ is a mapping such that
+          \begin{itemize}
+            \item $\beta_\Sigma:\Mod'(\Phi(\Sigma))\arr\Mod(\Sigma)$
+            \item \advanced{$\beta_\Sigma:\Mod'(\Phi(\Sigma))(M,N)\arr\Mod(\Sigma)(\beta_\Sigma(M),\beta_\Sigma(N))$}
+          \end{itemize}
+        \item \advanced{for all $\sigma:\Sigma\arr\Sigma'$ in $\Sig$, we have $\ö{\Mod'(\Phi(\Sigma))}{\beta_\Sigma}=\ö{\beta_\Sigma'}{\Mod(\sigma)}$}
+      \end{itemize}
+    \item \advanced{such that for all $\Sigma\in\Sig$ and all $F\in\Sen(\Sigma)$
+       \[\moda{\beta_\Sigma(M)}{\Sigma}{F} \tb\miff\tb \moda[']{M}{\Phi(\Sigma)}{\alpha_\Sigma(F)} \tb \mfor M\in\Mod'(\Phi(\Sigma))\]
+       }
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+Model theoretical logics are usually called \emph{institutions}. Model theory translations between institutions are usually called \emph{institution comorphisms}.
+Institution morphisms also exists. Arguably, the names of morphisms and comorphisms should have better been swapped in this case.
+\end{remark}
+
+
+\begin{definition}[Logics]\label{def:trans:absmor}
+Given two logics $L=(\Sig,\Sen,\Mod,\md,\Pf,\val)$ and $L'=(\Sig',\Sen',\Mod',\md',\Pf',\val')$, a \emph{logic translation} from $L$ to $L'$ consists of
+\begin{itemize}
+	\item a syntax translation $(\Phi,\alpha)$ from $(\Sig,\Sen)$ to $(\Sig',\Sen')$,
+	\item a model theory translation $\beta$ extending $(\Phi,\alpha)$,
+	\item a proof theory translation $\gamma$ extending $(\Phi,\alpha)$.
+\end{itemize}
+\end{definition}
+
+
+\section{Preservation of Consequence}
+
+In Sect.~\ref{sec:folhol:inv}, we proved two invariants about the logic translation from FOL to HOL. Both hold in general:
+
+\begin{theorem}[Preservation of Proof-Theoretical Consequence]
+Consider a proof theory translation $(\Phi,\alpha,\gamma):(\Sig,\Sen,\Pf,\val)\arr(\Sig',\Sen',\Pf',\val')$.
+Moreover, consider a theory $(\Sigma,\Theta)$ and a sentence $F\in\Sen(\Sigma)$.
+If $F$ is a proof theoretical theorem of $(\Sigma,\Theta)$, then $\alpha_\Sigma(F)$ is a proof theoretical theorem of $(\Phi(\Sigma),\alpha_\Sigma(\Theta))$.
+\end{theorem}
+\begin{proof}
+\end{proof}
+
+\begin{theorem}[Preservation of Model-Theoretical Consequence]
+Consider a model theory translation $(\Phi,\alpha,\beta):(\Sig,\Sen,\Mod,\md)\arr(\Sig',\Sen',\Mod',\md')$.
+Moreover, consider a theory $(\Sigma,\Theta)$ and a sentence $F\in\Sen(\Sigma)$.
+If $F$ is a model theoretical theorem of $(\Sigma,\Theta)$, then $\alpha_\Sigma(F)$ is a model theoretical theorem of $(\Phi(\Sigma),\alpha_\Sigma(\Theta))$.
+\end{theorem}
+\begin{proof}
+Assume $I\in\Mod'(\Phi(\Sigma))$ and $\moda[']{I}{\Phi(\Sigma)}{\alpha_\Sigma(A)}$ for all $A\in\Theta$. We need to show $\moda[']{I}{\Phi(\Sigma)}{\alpha_\Sigma(F)}$. By the properties of model theory translations, we obtain $\moda{\beta_\Sigma(I)}{\Sigma}{A}$ for all $A\in\Theta$. Therefore, using that $F$ is a model theoretical theorem of $(\Sigma,\Theta)$, we infer $\moda{\beta_\Sigma(I)}{\Sigma}{F}$. Using the properties of model theory translations again, we obtain the needed property.
+\end{proof}
+
+%theorems: borrowing of soundness, completeness; reflection of consequence for surjective translations

@@ -1,0 +1,138 @@
+As for FOL, for the proof theoretic semantics of HOL, we add a judgment of provability:
+\[\iscons{\Sigma}{\Gamma}{\Delta}{F}.\]
+The proof rules that define this judgment are given in Fig.~\ref{fig:hol:proofs}, where the less relevant parts are kept in gray. We use the abbreviations from Sect.~\ref{hol:syntax:abbrevs} and only give rules for $\doteq_A$; the usual rules for the other symbols are derived in Lem.~\ref{lem:hol:proofs}. Note that the rules are such that $\iscons{\Sigma}{\Gamma}{\Delta}{F}$ implies $\oftype{\Sigma}{\Gamma}{F}{o}$.
+
+\begin{fignd}{hol:proofs}{Proof Rules}
+%\ibnc{\iscons{\Sigma}{\Gamma}{\Delta,F}{G}}
+%     {\oftype{\Sigma}{\Gamma}{F}{o}}
+%     {\iscons{\Sigma}{\Gamma}{\Delta}{F\impl G}}
+%     {\impl I}
+%\tb\tb
+%\ibnc{\iscons{\Sigma}{\Gamma}{\Delta}{F\impl G}}
+%     {\iscons{\Sigma}{\Gamma}{\Delta}{F}}
+%     {\iscons{\Sigma}{\Gamma}{\Delta}{G}}
+%     {\impl E}
+%\\
+\ianc{\oftype{\gSigma}{\gGamma}{t}{A}}
+     {\isconsgSGD{t\doteq_A t}}
+     {eqrefl}
+\tb\tb
+\ianc{\isconsgSGD{s\doteq_A t}}
+     {\isconsgSGD{t\doteq_A s}}
+     {eqsym}
+\\
+\ibnc{\isconsgSGD{f\doteq_{A\arr B}f'}}
+     {\isconsgSGD{t\doteq_A t'}}
+     {\isconsgSGD{(f\;t)\doteq_B (f'\;t')}}
+     {eqapp}
+\tb\tb
+\ianc{\iscons{\gSigma}{\gGamma,\;x:A}{\gDelta}{t\doteq_B t'}}
+     {\isconsgSGD{(\lam{x}{A}t)\doteq_{A\arr B} (\lam{x}{A}t')}}
+     {eqlam}
+\\
+\ibnc{\oftype{\gSigma}{\gGamma,\;x:A}{t}{B}}
+     {\oftype{\gSigma}{\gGamma}{s}{A}}
+     {\isconsgSGD{(\lam{x}{A}t)\;s \doteq_B t[x/s]}}
+     {beta}
+\tb\tb
+\ibnc{\oftype{\gSigma}{\gGamma}{f}{A\arr B}}
+     {x\mnot\minn \Gamma}
+     {\isconsgSGD{f\doteq_{A\arr B} \lam{x}{A}(f\; x)}}
+     {eta}
+\\
+\ibnc{\iscons{\gSigma}{\gGamma}{\gDelta,F}{G}}
+     {\iscons{\gSigma}{\gGamma}{\gDelta,G}{F}}
+     {\isconsgSGD{F\doteq_o G}}
+     {\doteq_o I}
+\tb\tb
+\ibnc{\isconsgSGD{F\doteq_o G}}
+     {\isconsgSGD{F}}
+     {\isconsgSGD{G}}
+     {\doteq_o E}
+\\
+\ibnc{F\in\Delta}
+     {\oftype{\gSigma}{\gGamma}{F}{o}}
+     {\isconsgSGD{F}}
+     {axiom}
+\tb\tb
+\ianc{{\color{gray}\iscont{\Sigma}{\Gamma}}}
+     {\isconsgSGD{\forall x:o.(x\doteq_o\true\vee x\doteq_o \false)}}
+     {tnd}
+\\
+\ibnc{\iscons{\gSigma}{\gGamma,x:A}{\gDelta}{F}}
+     {x\nin\Gamma,\gDelta,F}
+     {\isconsgSGD{F}}
+     {nonempty}
+\tb\tb
+\ibnc{\isconsgSGD{F}}
+     {\iscons{\gSigma}{\gGamma}{\gDelta,F}{G}}
+     {\isconsgSGD{G}}
+     {cut}
+\end{fignd}
+
+The intuitions behind the rules are as follows.
+\begin{itemize}
+ %\item $\impl I$, $\impl E$: implication introduction and elimination as for FOL.
+ \item $eqrefl$, $eqsym$: These rules are reflexivity and symmetry and make equality an equivalence relation on terms. (Transitivity is derivable -- exercise.)
+ \item $eqapp$, $eqlam$: These rules make equality a congruence relation. $eqapp$ says that applying equal functions to equal arguments yields equal results. $eqlam$ says that $\lambda$-abstraction over equal terms yields equal results.
+ \item $beta$, $eta$: These rules axiomatize the meaning of functions. $beta$ says that function application means to substitute the argument for the $\lambda$-abstracted variable.
+ \item $\doteq_o I$, $\doteq_o E$: These rules express the intuition that equality between formulas is logical equivalence, i.e., $F\doteq_o G$ is the same as $(F\impl G) \wedge (G\impl F)$.
+ \item $tnd$: tertium non datur as for FOL.
+ \item $axiom$: axiom rule as for FOL.
+ \item $nonempty$: Similar to FOL, this rule makes sure that all types are non-empty.
+ \item $cut$: cut rule as for FOL.
+\end{itemize}
+\medskip
+
+As for FOL, we define proof-theoretic consequence.
+\begin{definition}
+We say that $F\in\Sen^{HOL}(\Sigma)$ is a proof-theoretical \emph{consequence} of the set of assumptions $\Delta\sq\Sen^{HOL}(\Sigma)$ if there is a derivation of $\es;\Delta\der F$ in the calculus above.
+\end{definition}
+
+\begin{lemma}\label{lem:hol:proofs}
+Using the abbreviations from Sect.~\ref{hol:syntax:abbrevs}, the natural deduction rules for introduction and elimination of truth, falsity, conjunction, disjunction, implication, and negation as given for FOL are derivable in HOL.
+
+Similarly, the following rules for universal and existential quantification are derivable in HOL:
+\[\rul{\gdseqa{\forall x:A.F}}{\gdseqc{x:A}{F}\tb x\nin\Gamma,\Delta}{\forall_A I}
+\tb\tb
+\rul{\gdseqa{F[\sub{x}{t}]}}{\gdseqa{\forall x:A.F \tb \oftype{\gSigma}{\gGamma}{t}{A}}}{\forall_A E}
+\]
+
+\[
+\rul{\gdseqa{\exists x:A.F}}{\gdseqa{F[\sub{x}{t}]} \tb \oftype{\gSigma}{\gGamma}{t}{A}}{\exists_A I}
+\tb\tb
+\rul{\gdseqa{C}}{\gdseqa{\exists x:A.F}\tb\gdseqbc{x:A}{F}{C}\tb x\nin\Gamma,\Delta,C}{\exists_A E}
+\]
+\end{lemma}
+\begin{proof}
+We show the case of negation introduction as an example and leave the rest as an exercise.
+
+Using the definition $\neg:=\lam{x}{o}(x\doteq_o \false)$, the rule for negation introduction is
+\[\rul{\iscons{\Sigma}{\Gamma}{\Delta}{(\lam{x}{o}(x\doteq_o \false))\; F}}{\iscons{\Sigma}{\Gamma}{\Delta,F}{\false}}{\neg I}\]
+To show that it is a derivable rule means to show that there is a derivation of $\iscons{\Sigma}{\Gamma}{\Delta}{(\lam{x}{o}(x\doteq_o \false))\;F}$ using an assumption $\iscons{\Sigma}{\Gamma}{\Delta,F}{\false}$. Such a derivation is this where we assume that we have derived the rule $\false E$ already:
+
+\[\hspace{-1cm}
+  \rul{\iscons{\Sigma}{\Gamma}{\Delta}{(\lam{x}{o}(x\doteq_o \false))\;F}}
+  {
+    \rul{\iscons{\Sigma}{\Gamma}{\Delta}{(F\doteq_o \false) \doteq_o ((\lam{x}{o}(x\doteq_o \false))\;F)}}
+    {
+      \rul{\iscons{\Sigma}{\Gamma}{\Delta}{((\lam{x}{o}(x\doteq_o \false))\;F) \doteq_o (F\doteq_o \false)}}
+      {}
+      {beta}
+    }
+    {eqsym}
+  \tb
+    \rul{\iscons{\Sigma}{\Gamma}{\Delta}{F\doteq_o \false}}
+    {
+      \iscons{\Sigma}{\Gamma}{\Delta,F}{\false}
+    \tb
+      \rul{\iscons{\Sigma}{\Gamma}{\Delta,\false}{F}}
+      {}
+      {\false E}
+    }
+    {\doteq_o I}
+  }
+  {\doteq_o E}
+\]
+\end{proof}
+

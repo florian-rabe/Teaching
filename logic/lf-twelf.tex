@@ -1,0 +1,76 @@
+\section{The Twelf Syntax for LF}
+
+Twelf is an implementation of LF (\cite{twelf}).
+
+
+\begin{figure}[ht]
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+LF & Twelf \\
+\hline
+$\TYPE$       & \verb|type|\\
+$\P{x}{A}B$   & \verb|{x:A}B|\\
+$A\arr B$     & \verb|A -> B|\\
+$\lam{x}{A}B$ & \verb|[x:A]B|\\
+$a:K$         & \verb|a:K.|\\
+$c:A$         & \verb|c:A.|\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Mathematical and ASCII Notation}\label{fig:lftwelfsyntax}
+\end{figure}
+
+\paragraph{Basic Declarations and Definitions}
+The ASCII-based syntax of Twelf for declarations is given in Fig.~\ref{fig:lftwelfsyntax}.
+Our listings of Twelf code will use some syntax highlighting and display \verb|->| as $\arr$.
+
+Twelf declarations may also give a definitions for a symbol as in \verb|c:A=t.| if $t$ is a term of type $A$. This means that $c$ is an abbreviation for $t$
+
+Furthermore, we group declarations into LF-signatures using \verb|%sig S = {...}.|. Signatures may include other signatures using \verb|%sig T = {%include S.}.|
+
+\paragraph{Fixities and Omitting Brackets}
+A symbol $c$ taking two arguments may be declared infix using \verb|%infix left 10 c.| where \verb|left| and \verb|10| handle the restoration of omitted brackets. The former is the associativity, i.e., $t_1\;c\;t_2\;c\;t_3$ is parsed as $(t_1\;c\;t_2)\;c\;t_3$. The alternatives are \verb|right| and \verb|none|. The latter is the precedence -- constants with higher precedence bind stronger and brackets of stronger-binding constants can be omitted. For example, if we also have \verb|%infix left 5 d.|, then $t_1\;c\;t_2\;d\;t_3$ is parsed as $(t_1\;c\;t_2)\;d\;t_3$. It is also possible to declare a constant that takes one argument to be prefix. For example, if we also have \verb|%prefix 0 e|, then $e\;t_1\;c\;t_2$ is parsed as $e\;(t_1\;c\;t_2)$.
+
+\paragraph{Type Reconstruction and Implicit Arguments}
+Type reconstruction means that Twelf can find out the types of variables when the types are not given. Thus, users can often omit types of bound variables (which is sometimes good and sometimes for bad for readability).
+
+Furthermore, we can omit outermost $\Pi$-binders altogether. For example, we can write $\doteq:\Term\;A\arr\Term\;A\arr\Term\;o$ rather than $\doteq:\P{A}{\Type}\Term\;A\arr\Term\;A\arr\Term\;o$. The omitted argument $A$ is called an implicit argument. To make a free variable an implicit argument, the variable name must start with an upper case letter. When using the constant $\doteq$, only the explicit arguments are given -- the value of the implicit arguments is computed automatically by Twelf. Together with an infix declaration, this has the effect that the equality of STT can be written intuitively as binary infix.
+
+\paragraph{Comments}
+Line comments start with \verb|%%| or \verb|% | (percent-space). Range comments are of the form \verb|%{   }%|. Commenting out everything that follows is done with \verb|%.|.
+
+\paragraph{Signatures and Signature Morphisms}
+Twelf can also handle named signatures and signature morphisms (\cite{RS:twelfmod:09}). For example, to define two signatures $A$ and $B$ and a signature morphism $c$ between them, we write
+\begin{lstlisting}
+%sig A = {
+  a : type.
+  c : a.
+}.
+%sig B = {
+  b : type.
+  d : b.
+}.
+%view c : A -> B = {
+  a := b -> b.
+  c := [x:b]d.
+}.
+\end{lstlisting}
+
+Signatures may include other signatures using \verb|%include B.|, after which all symbols \verb|s| of \verb|B| are availalbe as \verb|B..s|. If we use \verb|%include B %open.|, the qualification can be omitted.
+
+\section{Representing FOL in Twelf}
+
+The full encoding of FOL is given as follows, where we use some syntax highlighting to enhance readability. Note how precedences are used to make negation bind stronger than the other connectives and to make $\PROOF$ bind weakest. That makes many brackets redundant.
+
+\lstinputlisting[emph={[1]:,=,\{,\},[,]},emph={[2]term,form,proof}]{fol.elf}
+
+\section{Representing STT and HOL in Twelf}
+
+The full encoding of STT and HOL is given as follows. Note how abbreviations are used to define the connectives and quantifiers.
+
+\lstinputlisting[emph={[2]tm,tp,form,proof}]{hol.elf}
+
+Note how, e.g., equality is declared in two variants. First we declare the ``official'' equality, it is a family of constants $=='$ of STT-type $A\arr A\arr o$ (where $A$ is an implicit argument) and thus LF-type $\Term\;(A\Fun A\Fun o)$. The STT-term $s \doteq t$ is represented as the LF-term $\App{\App{=='}{s}}{t}$. This is of course awkward; therefore, we define $==$ of LF-type $\Term\;A\arr\Term\;A\;\arr\Term\;o$ as an abbreviation. Together with an infix declaration for $==$, we can represent said STT-term as the much nicer-looking LF-term $s == t$.
+
+Also note how proofs such a the one given in Lem.~\ref{lem:hol:proofs} is represented as an term: The LF-term can be read off from the proof by looking at the rule names. Because Twelf type-checks the definition, we are guaranteed that the proof is correct.

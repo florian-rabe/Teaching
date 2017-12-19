@@ -1,0 +1,300 @@
+LF is designed as a proof-theoretical logical framework. That means it is well-suited to represent the syntax and proof theory of logics. In that case, we call LF the meta-language and the encoded logic the object language. This distinction important to avoid confusion. The following is an overview how such an encoding works.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Object language & Meta-language LF \\
+\hline
+syntactic class & type (family) declaration \\
+logical symbol  & term declaration \\
+expression      & term \\
+well-formedness of expression & typing judgment \\
+\hline
+judgment        & type (family) declaration \\
+inference rule  & term declaration \\
+derivation/proof& term \\
+well-formedness of derivation & typing judgment \\
+\hline
+\end{tabular}
+\end{center}
+
+In particular, a whole logic $L$ is represented as a signature $\Sigma_L$ declaring syntactic classes, logical symbols, judgments, and inference rules. To actually have expressions to work with, we also need to represent signatures and contexts. This is done as follows:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Object language $L$ & Meta-language LF \\
+\hline
+non-logical symbol  & term declaration \\
+signature $\Sigma$  & signature $\Sigma_L,\Sigma$ \\
+signature morphism $\sigma:\Sigma\arr\Sigma'$
+  & signature morphism $\id{\Sigma_L},\sigma\;:\;\Sigma_L,\Sigma\;\arr\;\Sigma_L,\Sigma'$ \\
+\hline
+axiom                    & term declaration (typed by a judgment) \\
+theory $(\Sigma,\Theta)$ & signature $\Sigma_L,\Sigma,\Theta$ \\
+theory morphism          & signature morphism \\
+\hline
+variable        & variable \\
+assumption      & variable \\
+$\Sigma$-context and list of assumptions & $\Sigma_L,\Sigma$-context \\
+substitution     & substitution \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Representing FOL}
+
+\subsection{Syntax}
+
+For FOL, we have two syntactic classes: $\TERM$ and $\FORM$. We represent them as two LF type declarations:
+\[\TERM :\TYPE,\tb\tb \FORM : \TYPE\]
+
+We have a bunch of logical symbols, e.g., $\wedge$ and $\forall$. We represent them as LF constant declarations:
+\[\wedge : \FORM \arr \FORM \arr \FORM, \tb\tb \forall : (\TERM\arr\FORM)\arr \FORM\]
+The former declares $\wedge$ to take two arguments, both formulas, and to return a formula. We will write $\wedge$ infix, i.e., $F\wedge G$ abbreviates $(\wedge\;F)\;G$. The latter declares $\forall$ to take one argument, a formula with a free term variable, and to return a formula.
+
+The other connectives are declared in the same way where we use $\impl$ for implication:
+\[\mathll{
+ \true : \FORM \nl
+ \false : \FORM \nl
+ \impl : \FORM \arr \FORM \arr \FORM \nl
+ \vee : \FORM \arr \FORM \arr \FORM \nl
+ \neg : \FORM \arr \FORM \nl
+ \exists : (\TERM\arr\FORM)\arr \FORM
+}\]
+
+Let $\Sigma_{FOL}$ be the LF signature declaring all these symbols.
+
+The non-logical symbols are declared similarly. For function symbols $f$ and predicate symbols $p$ we put
+\[f : \TERM\arr\ldots\arr\TERM\arr\TERM, \tb\tb p : \TERM\arr\ldots\arr\TERM\arr\FORM\]
+where the dots indicate repetition according to the arity of the non-logical symbol.
+Let $\Sigma$ be the thus-obtained LF encoding of some fixed FOL-signature.
+
+FOL-variables are represented as LF-variables and FOL-contexts as LF-contexts. However, the LF-variables must be typed with their syntactic class. Thus, for all FOL-variables $x$ in the context, the corresponding LF-context contains $x:\TERM$.
+
+Now very FOL-expression -- a FOL-term or a FOL-formula -- can be written as an LF-term. The well-formedness of the  expression is expressed by the LF typing judgments
+\[\ofdtype{\Sigma_{\FOL},\;\Sigma}{\Gamma}{t}{\TERM}\]
+and
+\[\ofdtype{\Sigma_{\FOL},\;\Sigma}{\Gamma}{F}{\FORM}\]
+
+These judgments look very similar to the well-formedness judgments that we have introduced before for FOL. This has two reasons: Firstly, the notation of FOL in these notes was chosen to match the encoding in LF. Secondly, the type theory of LF was chosen so that encodings are as seamless as possible.
+
+\subsection{Proof Theory}
+
+To encode the proof theory, we need one more judgment, namely for provability. We use the type family
+\[\PROOF:\FORM\arr\TYPE\]
+to holds proofs and thus to represent provability.
+
+The intuition is that the LF typing judgment $p:\PROOF\;F$ represents the FOL-judgment ``$\der\;F$ holds, and $p$ is a derivation for it''. In particular, derivations are represented as terms. This methodology is often summarized with \emph{proofs-as-terms} or \emph{judgments-as-types}.
+Therefore, we have to declare one LF-constant for every FOL-proof rule.
+
+The rules for conjunction are represented like this:
+\[\wedge I:\P{F}{\FORM}\P{G}{\FORM}(\PROOF\;F\arr\PROOF\;G\arr \PROOF\;(F\wedge G))\]
+\[\wedge E_l:\P{F}{\FORM}\P{G}{\FORM}(\PROOF\;(F\wedge G)\arr\PROOF\;F)\]
+\[\wedge E_r:\P{F}{\FORM}\P{G}{\FORM}(\PROOF\;(F\wedge G)\arr\PROOF\;G)\]
+
+Intuitively, $\wedge I$ reads like this: ``For all formulas $F$, for all formulas $G$, if $p$ is a proof of $F$, and if $q$ is a proof of $G$, then $\wedge I\;F\;G\;p\;q$ is a proof of $F\wedge G$. Alternatively, we can ignore the proofs themselves and only care about whether there is a proof of a formula. Then $\wedge I$ reads ``For all formulas $F$, for all formulas $G$, if $F$ is provable, and if $G$ is provable, then $F\wedge G$ is provable. This corresponds exactly to the intended meaning of $\wedge I$.
+
+The rules for implication look like this
+\[\impl I:\P{F}{\FORM}\P{G}{\FORM}((\PROOF\;F\arr\PROOF\;G)\arr \PROOF\;(F\impl G))\]
+\[\wedge E:\P{F}{\FORM}\P{G}{\FORM}(\PROOF\;(F\impl G)\arr\PROOF\;F\arr\PROOF\;G)\]
+$\wedge E$ is straightforward. $\impl I$ uses a hypothetical judgment, i.e., an assumption that itself uses a local assumption; it reads ``For all formulas $F$, for all formulas $G$, if $f$ is a function transforming proofs of $F$ into proofs of $G$, then $\impl I\;F\;G\;f$ is a proof of $F\impl G$''. Alternatively, without proofs, it reads: ``For all formulas $F$, for all formulas $G$, if (if $F$ is provable, then $G$ is provable), then $F\impl G$ is provable.
+
+The rules for universal quantification look like this
+\[\forall I:\P{F}{\TERM\arr\FORM}((\P{x}{\TERM}\PROOF\;(F\;x))\arr \PROOF\;(\forall \lam{x}{\TERM}(F\;x)))\]
+\[\forall E:\P{F}{\TERM\arr\FORM}(\PROOF\;(\forall \lam{x}{\TERM}(F\;x))\arr\P{x}{\TERM}\PROOF\;(F\;x))\]
+$\forall I$ uses a parametric judgment, i.e., an assumption that depends on a free parameter (in this case $x$). It reads ``For all formulas $F$ with a free $\TERM$-variable, if (for all $\TERM$s $x$, $F(x)$ is provable), then $\forall x.F(x)$ is provable''. Note how the formula $F$ with a free variable is represented as a term of type $\TERM\arr\FORM$; the formula $F(x)$ is represented as $(F\;x)$. $\forall E$ reads ``For all formulas $F$ with a free $\TERM$-variable, if $\forall x.F(x)$ is provable, then for all $\TERM$s $x$, $F(x)$ is provable.
+
+A complete version of the encoding is given in Sect.~\ref{sec:twelf}.
+
+The essence of the judgments-as-types representation can be summarized as in the table below: The object level is comprised of the things we talk about: terms, types, kinds, formulas -- whatever syntactic classes the object language has. The judgment level contains how we talk about it: axioms, assumptions, proofs. In LF, the same formalism is used to represent both. This leads to an elegant unification of, e.g., signatures and theories.
+
+\begin{center}
+\begin{tabular}{|ll|l|}
+\hline
+\multicolumn{2}{|c|}{Object language $L$} & Meta-language LF \\
+object level & judgment level            & \\
+\hline
+syntactic class     & judgment           & type (family) declaration \\
+non-logical symbol  & axiom              & constant declaration \\
+signature           & theory             & signature \\
+\hline
+variable            & assumption         & variable declaration \\
+context             & list of assumptions& context \\
+\hline
+term/type/formula etc.& proof            & term \\
+well-formedness     & provability        & typing judgment \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{A General Recipe for the Representation of Inference Rules}\label{sec:recipe}
+
+In general, inference rules can be transformed into LF declarations using the following recipe.
+\begin{enumerate}
+	\item Drop the arbitrary context $\Gamma$ and the arbitrary list of assumption $\Delta$ -- both are represented by LF contexts.
+  \item The rule is represented as an LF-constant whose name is the name of the rule, and whose type is determined as given below.
+	\item Take all free parameters of the rule and bind them in a $\Pi$-binder.
+    \begin{enumerate}
+	    \item If the parameter may only use the variables from $\Gamma$, the type of the bound variable is the syntactic class of the parameter (which implies well-formedness of the parameter).
+	    \item If the free parameter may use an additional variable (i.e., one that is not in $\Gamma$), its type is a function type where the domain is the syntactic class of the variable.
+    \end{enumerate}
+    Drop all side conditions regarding variable occurrences.
+  \item The scope of the thus-obtained $\Pi$-binder is a function type $J_1\arr\ldots\arr J_n\arr J$ where
+     \begin{itemize}
+	     \item $J_1,\ldots,J_n$ represent the assumptions of the rule
+	     \item $J$ represents the conclusion of the rule.
+     \end{itemize}
+  \item Each judgment is represented as follows
+     \begin{enumerate}
+	     \item If the judgment only uses the variables from $\Gamma$ and the assumptions from $\Delta$, a base type, typically $\PROOF\;F$ for some $F$.
+	     \item If the judgment uses additional variables or assumptions, a function type $\P{x_1}{C_1}\ldots\P{C_n}{E_n}\PROOF\;F_1\arr\ldots\arr\PROOF\;F_n\arr J$ where $x_1:C_1,\ldots,x_n:C_n$ are the additional variables with their syntactic classes, $F_1,\ldots,F_n$ are the additional assumptions and $J$ is the main part of the judgment.
+    \end{enumerate}
+\end{enumerate}
+
+We apply this recipe systematically to represent the rule
+\[\rul{\iscons{\Sigma}{\Gamma}{\Delta}{G}}
+      {   \iscons{\Sigma}{\Gamma}{\Delta}{\exists x\;F}
+       \tb\iscons{\Sigma}{\Gamma,x}{\Delta,F}{G}
+       \tb x\nin\Gamma
+      }
+      {\exists E}
+\]
+\begin{enumerate}
+	\item $\rul{\iscons{\Sigma}{}{}{G}}
+      {   \iscons{\Sigma}{}{}{\exists x\;F}
+       \tb\iscons{\Sigma}{x}{F}{G}
+       \tb x\nin\Gamma
+      }
+      {\exists E}$
+  \item $\exists E:\ldots$
+  \item The free parameters are $F$ and $G$. We have the following conditions on variable occurrences: $x$ may not occur in $G$, so the type of $G$ is $\FORM$. $x$ may occur in $F$, so the type of $F$ is $\TERM\arr\FORM$. That yields
+  \[\exists E:\P{F}{\TERM\arr\FORM}\P{G}{\FORM}\ldots\]
+  \item We have two hypotheses $J_1$ and $J_2$ and one conclusion $J$. That yields:
+    \[\exists E:\P{F}{\TERM\arr\FORM}\P{G}{\FORM}J_1\arr J_2\arr J\]
+  \item We treat each judgment separately:
+    \begin{itemize}
+	    \item $J_1$ represents $\iscons{\Sigma}{}{}{\exists x F}$. That yields $\PROOF\;(\exists\;\lam{x}{\TERM}(F\;x))$. Note how $(F\;x)$ represents $F(x)$. Using the $\eta$-equality, we could also write $\PROOF\;(\exists F)$.
+	    \item $J_2$ represents $\iscons{\Sigma}{x}{F}{G}$ which uses one additional $\TERM$-variable $x$ and one additional assumption $F(x)$. That yields $\P{x}{\TERM}\PROOF\;(F\;x)\arr\PROOF\;G$.
+	    \item $J$ represents $\iscons{\Sigma}{}{}{G}$, which yields $\PROOF\;C$.
+    \end{itemize}
+\end{enumerate}
+
+Finally, we obtain
+\[\exists E:\P{F}{\TERM\arr\FORM}\P{G}{\FORM}
+            \PROOF\;(\exists\;\lam{x}{\TERM}(F\;x)) \arr
+            (\P{x}{\TERM}\PROOF\;(F\;x)\arr\PROOF\;G) \arr
+            \PROOF\;C
+\]
+
+\section{Inheriting Rules from LF}
+
+One of the powerful features of LF is that the whole maintenance of the context -- i.e., variables and assumptions -- is provided by LF. Therefore, logic encodings in LF do not have to worry about them at all. In particular, all rules dealing with contexts and assumptions are automatically present and do not have to be represented as constants. These are:
+\begin{itemize}
+  \item The rule saying that variables are well-formed terms. This rule is implied by the LF $termvar$.
+	\item The axiom rule: We always have the term $\lam{x}{\PROOF\;F}x$. So we do not need a rule $axiom:\P{F}{\FORM}\PROOF\;F\arr\PROOF\;F$.
+	\item The weakening rule: We always that $\ofdtype{\Sigma}{\Gamma}{t}{A}$ implies $\ofdtype{\Sigma}{\Gamma,x:A}{t}{A}$. Therefore, weakening rules such as
+	\[\rul{\iscons{\Sigma}{\Gamma,x}{\Delta}{G}}{\iscons{\Sigma}{\Gamma}{\Delta}{G}}{}\]
+	or
+	\[\rul{\iscons{\Sigma}{\Gamma}{\Delta,F}{G}}{\iscons{\Sigma}{\Gamma}{\Delta}{G}}{}\]
+	are always present in LF encodings.
+	\item The cut rule: In LF, we can prove the substitution property: If $\ofdtype{\Sigma}{\Gamma}{s}{A}$ and $\ofdtype{\Sigma}{\Gamma,x:A}{t}{B}$, then also $\ofdtype{\Sigma}{\Gamma}{t[x/s]}{B[x/s]}$. Therefore, we always have the cut rule: Just imagine $s$ to be the proof of the lemma $A$ that is used in the proof $t$ of $B$.
+\end{itemize}
+
+A small disadvantage is that LF is only appropriate for logics where these rules are actually sound. But this is the case for almost all important logics.
+
+\section{Representing STT and HOL}
+
+\subsection{STT}
+
+STT has two syntactic classes: terms and types. The syntactic class of terms is subdivided into a separate class for each type. Therefore, we represent them in LF as
+\[\Type:\TYPE,\tb\tb\Term:\Type\arr\TYPE\]
+
+Thus, we have the following correspondence of judgments
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Object language STT & Meta-language LF \\
+\hline
+well-formed type $A$ & term $A$ of type $\Type$ \\
+well-formed term $t$ of type $A$ & term $t$ of type $\Term\;A$ \\
+well-formed term $t$ of type $B$ with a free variable of type $A$ & term $t$ of type $\Term\;A\arr\Term\;B$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Then we can add term declaration for the STT-expressions. Just like for FOL, there is one LF-term declaration for (almost) every inference rule for well-formed expressions:
+
+\begin{itemize}
+	\item $tpbase$: Base types are declared explicitly as $a:\Type$
+	\item $tpfun$: The binary type constructor for function types is declared as
+	  \[\Fun:\Type\arr\Type\arr\Type\]
+	  where we write $\Fun$ for the arrow of STT to not confuse it with the $\arr$ of LF. We will write $\Fun$ infix.
+	\item $termcon$: Constants of type $A$ are declared as $c:\Term\;A$.
+	\item $termvar$: The rule for variables is inherited from LF.
+	\item $termapp$: We declare the binary application operator as
+	  \[\App{}{}:\Term\;(A\Fun B) \arr \Term\;A\arr\Term\;B\]
+	  We will write $\App{}{}$ infix.
+	\item $termlam$: We declare the $\lambda$-binder, which takes a term of type $B$ with a free variable of type $A$, as
+	  \[\Lam:(\Term\;A \arr \Term\;B)\arr\Term\;(A\Fun B)\]
+\end{itemize}
+
+\subsection{Syntax of HOL}
+
+To represent HOL, we have to add some LF-declarations to the LF-declarations that represent STT. Namely:
+\[o:\Type,\tb\tb \doteq:\P{A}{\Type}\Term\;A\arr\Term\;A\arr\;\Term\; o\]
+The polymorphism of $\doteq$ that presented difficulties when representing HOL in STT is easily handled in LF: $\doteq$ takes three arguments, one for the type and then two for the terms of that type.
+
+The representation of HOL gets more useful if we also represent all the abbreviations. This is not possible in core LF, but the Twelf implementation permits to give definitions to constants as well, see Sect.~\ref{sec:twelf}.
+
+\subsection{Proof Theory of HOL}
+
+For the proof theory, we start with the syntactic class of proofs or the provability judgment:
+\[\PROOF:\Term\;o\arr\TYPE\]
+
+Now we add the proof rules following the recipe from Sect.~\ref{sec:recipe}. As an example, we give the rule $eqlam$. The full encoding is given in Sect.~\ref{sec:twelf}.
+
+For the rule
+\[\ianc{\iscons{\Sigma}{\Gamma,\;x:A}{\Delta}{t\doteq_B t'}}
+     {\iscons{\Sigma}{\Gamma}{\Delta}{(\lam{x}{A}t)\doteq_{A\arr B} (\lam{x}{A}t')}}
+     {eqlam}\]
+we proceed as follows:
+
+\begin{enumerate}
+	\item Dropping $\Gamma$ and $\Delta$:
+    \[\ianc{\iscons{\Sigma}{\;x:A}{}{t\doteq_B t'}}
+     {\iscons{\Sigma}{}{}{(\lam{x}{A}t)\doteq_{A\arr B} (\lam{x}{A}t')}}
+     {eqlam}\]
+  \item The rule is a declaration $eqlam:\ldots$.
+  \item The free parameters are
+     \begin{itemize}
+	     \item $A$, which is an STT-type.
+	     \item $B$, which is an STT-type.
+	     \item $t$, which is an STT-term of STT-type $B$ with a free variable of STT-type $A$.
+	     \item $t'$, which is an STT-term of STT-type $B$ with a free variable of STT-type $A$.
+     \end{itemize}
+  That yields $eqlam:\P{A}{\Type}\P{B}{\Type}\P{t}{\Term\;A\arr\Term\;B}\P{t}{\Term\;A\arr\Term\;B}\ldots$.
+  \item The rule has one assumption $J_1$ and a conclusion $J$.
+  \item We treat the judgments separately:
+    \begin{itemize}
+	    \item $J_1$ represents $\iscons{\Sigma}{\;x:A}{}{t\doteq_B t'}$. To stress the occurrence of the variable $x$ in $t$ and $t'$, we might write $\iscons{\Sigma}{\;x:A}{}{t(x)\doteq_B t(x)'}$. Since the judgment uses an additional variable $x$ of STT-type $A$, it is represented as $\P{x}{\Term\;A}\PROOF((t\;x)\doteq(t'\;x))$.
+	    \item $J$ represents $\iscons{\Sigma}{}{}{(\lam{x}{A}t)\doteq_{A\arr B} (\lam{x}{A}t')}$. This becomes
+	    \[\PROOF(\Lam(\lam{x}{\Term\;A}t\;x) \doteq \Lam(\lam{x}{\Term\;A}t'\;x))\]
+	    Note how every occurrence of the STT-$\lambda$ is represented as $\Lam$, and the binding of the variable $x$ in an STT-expression as the LF-$\lambda$.
+    \end{itemize}
+\end{enumerate}
+
+Putting everything together, we obtain
+\[\mathll{eqlam:
+     \P{A}{\Type}\P{B}{\Type}\P{t}{\Term\;A\arr\Term\;B}\P{t}{\Term\;A\arr\Term\;B} \nl
+  \tb\tb\tb
+        \big(\P{x}{\Term\;A}\PROOF((t\;x)\doteq(t'\;x))\big)\arr
+        \PROOF(\Lam(\lam{x}{\Term\;A}t\;x) \doteq \Lam(\lam{x}{\Term\;A}t'\;x))
+}\]
+
+In Twelf, after defining all the other connectives and quantifiers as abbreviations, we can continue and define all their proof rules as abbreviations.
+
+\section{Representing Foundations}
+
+See the paper \cite{IR:foundations:10}.

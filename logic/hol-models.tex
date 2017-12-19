@@ -1,0 +1,99 @@
+\section{The Naive Semantics}
+
+The semantics of HOL is defined similarly to the semantics of FOL: We fix interpretations of the logical symbols, use models to interpret the constants, and use assignments to interpret the variables.
+
+However, because the definitions of types and signatures are mutually recursive, we cannot define models, assignments, and the interpretation function $\semm{-}{I,\alpha}$ separately anymore. Instead, we use a mutual induction.
+
+We start with an overview. For a $\Sigma$-model $I$ and an assignment $\alpha$ for a $\Sigma$-context $\Gamma$, the relation between syntax and semantics is as follows:
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Expression          & Syntax                           & Semantics \\ \hline
+type $A$            & $\istype{\Sigma}{A}$             & $\semm{A}{I}\in \Set$ \\
+term $t$            & $\oftype{\Sigma}{\Gamma}{t}{A}$  & $\semcm{\Gamma}{t}{I,\alpha}\in \semm{A}{I}$ \\
+formula $F$         & $\oftype{\Sigma}{\Gamma}{F}{o}$  & $\semcm{\Gamma}{F}{I,\alpha}\in \semm{o}{I}=\{0,1\}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Note that because variables do not occur in types, the semantics of types only depends on the model and not on the assignment.
+
+\begin{definition}[Models, Assignments, Semantics of STT]
+A \emph{model} $I$ of an STT-signature $\Sigma$ is defined as follows:
+\begin{itemize}
+	\item If $\Sigma=\cdot$, then $I$ is the empty tuple.
+	\item If $\Sigma=\Sigma_0,a:\TYPE$, then $I$ is a pair $(I_0,a^I)$ where $I_0$ is a model of $\Sigma_0$ and $a^I$ is a set.
+	\item If $\Sigma=\Sigma_0,c:A$, then $I$ is a pair $(I_0,c^I)$ where $I_0$ is a model of $\Sigma_0$ and $c^I\in \semm{A}{I}$.
+\end{itemize}
+
+An assignment $\alpha$ from a $\Sigma$-context $\Gamma$ into a $\Sigma$-model $I$ is defined as follows:
+\begin{itemize}
+	\item If $\Gamma=\cdot$, then $\alpha$ is the empty function.
+	\item If $\Gamma=\Gamma_0,x:A$, then $\alpha$ is a function $\alpha_0 \cup\{x/u\}$ where $\alpha_0$ is an assignment for $\Gamma_0$ and $u\in \semm{A}{I}$.
+\end{itemize}
+
+For a signature $\Sigma$, a context $\Gamma$, a model $I$, and an assignment $\alpha$, the semantics of types and terms in context $\Gamma$ is defined as follows:
+\begin{itemize}
+	\item $\semm{a}{I}=a^I$,
+	\item $\semm{A\arr B}{I}=(\semm{B}{I})^{\semm{A}{I}}$,
+	\item $\semcm{\Gamma}{c}{I,\alpha}=c^I$,
+	\item $\semcm{\Gamma}{x}{I,\alpha}=\alpha(x)$,
+	\item $\semcm{\Gamma}{f\;t}{I,\alpha}= \semcm{\Gamma}{f}{I,\alpha}(\semcm{\Gamma}{t}{I,\alpha})$,
+	\item $\semcm{\Gamma}{\lam{x}{A}t}{I,\alpha}= \{(u,\semcm{\Gamma,x:A}{t}{I,\alpha\cup\{x/u\}}) \;:\; u\in \semm{A}{I}\}$.
+\end{itemize}
+\end{definition}
+
+
+Then, to define the semantics of HOL, we only have to fix interpretations for the symbols in $\Sigma_{HOL}$. In Def.~\ref{def:hol:models}, we will only fix the interpretations of $o$ and $\doteq_A$; the interpretation of the remaining symbols is induced by the abbreviations from Sect.~\ref{hol:syntax:abbrevs}. Then we proof in Lem.~\ref{lem:hol:models} that these abbreviations do indeed yield the intended interpretations for them.
+
+\begin{definition}[Semantics of HOL]\label{def:hol:models}
+We abbreviate $\Boole=\{0,1\}$.
+A HOL-model of the HOL-signature $\Sigma$ is an STT-model of $\Sigma$ such that (i) all base types are interpreted as non-empty sets, and (ii) the symbols of $\Sigma_{HOL}$ are interpreted as follows:
+\begin{itemize}
+	\item $o^I=\Boole$,
+	\item $\doteq_A^I \;\in\; \big(\Boole^{\semm{A}{I}}\big)^{\semm{A}{I}} \tb\msuchthat\mforall a,b\in\semm{A}{I}\tb \doteq_A^I(a)(b)\;=\;\cas{1\mifc a=b\\ 0 \mothw}$
+\end{itemize}
+For $I\in\Mod^{HOL}(\Sigma)$ and $F\in\Sen^{HOL}(\Sigma)$, we put
+ \[I\md F \tb\miff\tb \semm{F}{I}=1.\]
+As for FOL, this induces the model-theoretic consequence.
+\end{definition}
+
+\begin{lemma}\label{lem:hol:models}
+Using the abbreviations from Sect.~\ref{hol:syntax:abbrevs}, we have for all $u,v\in\Boole$ and all $\phi:\semm{A}{I}\arr\Boole$:
+\begin{itemize}
+	\item $\true^I=1$,
+	\item $\false^I=0$,
+	\item $\neg^I(u)=1-u$,
+  \item $\wedge^I(u)(v)=\min\{u,v\}$,
+  \item $\vee^I(u)(v)=\max\{u,v\}$,
+	\item $\impl^I(u)(v)=\cas{1\mifc u\leq v \\ 0 \mothw,}$
+	\item $(\forall_A)^I(\phi)=\min\limits_{a\in \semm{A}{I}}\phi(a)
+	  = \cas{1\mifc \phi(a)=1 \mfor\mall a\in\semm{A}{I}\\ 0 \mothw,}$
+	\item $(\exists_A)^I(\phi) = \max\limits_{a\in \semm{A}{I}}\phi(a)
+	  = \cas{1\mifc \phi(a)=1 \mfor\msome a\in\semm{A}{I}\\ 0 \mothw.}$
+\end{itemize}
+\end{lemma}
+\begin{proof}
+We prove the case for $\neg$ as example and leave the rest as an exercise.
+
+Expanding the definition of $\neg$:
+\[\neg^I(u)=\semcm{\cdot}{\neg}{I}(u)=\semcm{\cdot}{\lam{x}{o}x\doteq_o \false}{I}(u)\]
+Applying the semantics of $\lambda$-abstraction:
+\[=\Bigg\{\Big(v,\semcm{x:o}{x\doteq_o\false}{I,x/v}\Big)\;:\;v\in \semm{o}{I}\Bigg\} \;(u)\]
+Applying the function $\Bigg\{\ldots\Bigg\}$ to the argument $u$:
+\[=\semcm{x:o}{x\doteq_o\false}{I,x/u}\]
+Applying the semantics of application twice:
+\[=\semcm{x:o}{\doteq_o}{I,x/u}\big(\semcm{x:o}{x}{I,x/u}\big)\big(\semcm{x:o}{\false}{I,x/u}\big)\]
+Applying the semantics of variables (to $x$) and constants (to $\doteq_o$ and $\false$):
+\[=\;\doteq_o^I(u,\false^I)\]
+Applying the semantics of $\doteq_o$ and assuming we have proved $\false^I=0$ already:
+\[=\bcas{1\mifc u=\false^I \\ 0 \mothw}=1-u\]
+\end{proof}
+
+\begin{remark}
+The restriction (i) in Def.~\ref{def:hol:models} implies that all types are interpreted as non-empty sets.
+\end{remark}
+
+\begin{remark}
+Just like for the syntax, we find that the semantics of HOL is conceptually more complicated as for FOL -- mutual recursion for models and semantics -- but technically simpler than FOL.
+\end{remark}

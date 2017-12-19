@@ -1,0 +1,453 @@
+Generally, the term \defemph{morphism} (or homomorphism) refers to a structure-preserving translation between formal languages or objects. Typically, there is a collection of objects with a certain structure, and then for each two objects $A,B$ there is a set of morphisms from $A$ to $B$. Morphism are a crucial tool to study relations between objects: Suitable morphisms can be used to represent translations, inclusions, encodings, or isomorphisms. Furthermore, often only the definition of morphism makes apparent what the common structure of the objects is -- namely that which is preserved by the morphisms.
+
+In this section, we define morphism between signatures and theories. These extend to translations between expressions, models, and proofs.
+
+Signature morphisms and substitutions are very similar. Their relation is summarized in the following table:
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Symbol & Declared in & Translated by \\ \hline
+logical symbol & logic $L$ & (logic translation) \\
+function/predicate symbol & $L$-signature $\Sigma$ & morphism $\ismorph[L]{\Sigma}{\Sigma'}{\sigma}$ \\
+variable & $\Sigma$-context $\Gamma$ & substitution $\issubs[L]{\Sigma}{\Gamma}{\Gamma'}{\gamma}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+%introductory section on subtheories here
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Translations between Signatures}
+
+\footnote{Remark for the 2011 lecture: These notes use $\isterm{\Sigma}{x_1,\ldots,x_n}{t}$ to say that $t$ is a well-formed term over the signature $\Sigma$ whose free variables are among $x_1,\ldots,x_n$. Similarly, they use $\isform{\Sigma}{x_1,\ldots,x_n}{F}$ to say that $F$ is a well-formed term over the signature $\Sigma$ whose free variables are among $x_1,\ldots,x_n$. These are defined in Def.~\ref{def:fol:syntax2}. They have the same meaning as the notations using $\mathit{wff}_\iota$ and $\mathit{wff}_o$.}
+
+\begin{definition}[FOL-Signature Morphisms]\label{def:fol:sigmorph}
+Let $\Sigma=(\Sigma_f,\Sigma_p,\arit)$ and $\Sigma'=(\Sigma'_f,\Sigma'_p,\arit')$ be two FOL-signatures. A \defemph{signature morphism} from $\Sigma$ to $\Sigma'$ is a function $\sigma$ mapping with domain $\Sigma_f\cup\Sigma_p$ such that
+\begin{itemize}
+ \item for every function symbol $f\in\Sigma_f$ with $\arit(f)=n$, we have \[\isterm{\Sigma'}{x_1,\ldots,x_n}{\sigma(f)}\]
+ \item for every predicate symbol $p\in\Sigma_p$ with $\arit(p)=n$, we have \[\isform{\Sigma'}{x_1,\ldots,x_n}{\sigma(p)}\]
+\end{itemize}
+In that case, we write $\sigma:\Sigma\arr\Sigma'$.
+\end{definition}
+
+Intuitively, every $n$-ary $\Sigma$-function symbol is mapped to an $n$-ary $\Sigma'$-function, and every $n$-ary $\Sigma$-predicate symbol is mapped to an $n$-ary $\Sigma'$-formula. For readers familiar with Sect.~\ref{sec:lffe:holes}, we can state this more precisely: A signature morphism maps each $n$-ary $\Sigma$-symbol to a $\Sigma'$-expression with $n$-holes.
+
+\begin{example}
+Consider the signatures of $\Sigma$ of monoids with $\circ$ and $e$ and $\Sigma'$ of groups with $\circ$, $e$, and $x^{-1}$. A morphism from $\Sigma$ to $\Sigma'$ maps $\sigma(\circ)=\circ$ and $\sigma(e)=e$.
+\end{example}
+
+\begin{example}\label{ex:fol:oppmonoid}
+We can define a signature morphism from the signature of monoids to itself that flips the operation: It maps $\op{e}$ to itself (as a term with $0$ free variables) and $\op{comp}$ to $\op{comp}(x_2,x_1)$.
+\end{example}
+
+\begin{remark}\label{rem:fol:sigmorph}
+Often a specialized, simpler definition than Def.~\ref{def:fol:sigmorph} is found in the literature. Then $\sigma$ maps $n$-ary function/predicate symbols to $n$-ary functions/predicate \emph{symbols}, i.e., it maps $\Sigma_f\arr\Sigma'_f$ and $\Sigma_p\arr\Sigma'_p$. If this definition is used, signature morphisms in the sense of Def.~\ref{def:fol:sigmorph} are called generalized or derived signature morphisms.
+\end{remark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Translating Syntax}
+
+Just like every signature $\Sigma$ gives us an inductive definition of the set of well-formed $\Sigma$-expressions (i.e., terms and formulas), every signature morphism $\sigma:\Sigma\arr\Sigma'$ gives us an inductive function that translates $\Sigma$-expressions to $\Sigma'$-expressions. This is a typical property of  morphisms.
+
+\begin{definition}[Expression Translation]\label{def:fol:morphexp}
+Assume $\sigma:\Sigma\arr\Sigma'$. $\sigma$ induces a map $\ov{\sigma}$ from $\Sigma$-terms to $\Sigma'$-terms and from $\Sigma$-formulas to $\Sigma'$-formulas as follows:
+\begin{itemize}
+\item terms:
+  \begin{itemize}
+    \item $\ov{\sigma}(x)=x$,
+    \item $\ov{\sigma}(f(t_1,\ldots,t_n))=\sigma(f)[\sub{x_1}{\ov{\sigma}(t_1)},\ldots,\sub{x_n}{\ov{\sigma}(t_n)}]$,
+  \end{itemize}
+\item formulas:
+   \begin{itemize}
+    \item $\ov{\sigma}(\true)=\true$,
+    \item $\ov{\sigma}(\false)=\false$,
+    \item $\ov{\sigma}(p(t_1,\ldots,t_n))=\sigma(p)[\sub{x_1}{\ov{\sigma}(t_1)},\ldots,\sub{x_n}{\ov{\sigma}(t_n)}]$,
+    \item $\ov{\sigma}(t_1\doteq t_2)=\ov{\sigma}(t_1)\doteq\ov{\sigma}(t_2)$,
+    \item $\ov{\sigma}(F\wedge G)=\ov{\sigma}(F)\wedge\ov{\sigma}(G)$ and similarly for the other connectives,
+    \item $\ov{\sigma}(\forall x\;F)=\forall x\;\ov{\sigma}(F)$ and similarly for the other quantifier.
+   \end{itemize}
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+$\ov{\sigma}$ is called the \emph{homomorphic extension} of $\sigma$.
+\end{remark}
+
+The structure that is preserved by signature morphisms is that of well-formed expressions, i.e., the syntax. More formally, we have the following lemma
+\begin{lemma}[Morphism Property]\label{lem:fol:morphexp}
+Assume $\sigma:\Sigma\arr\Sigma'$. Then
+\begin{itemize}
+ \item if $\isterm{\Sigma}{\Gamma}{t}$, then $\isterm{\Sigma'}{\Gamma}{\ov{\sigma}(t)}$,
+ \item if $\isform{\Sigma}{\Gamma}{F}$, then $\isform{\Sigma'}{\Gamma}{\ov{\sigma}(F)}$,
+\end{itemize}
+\end{lemma}
+\begin{proof}
+By an easy induction on $t$ or $F$, respectively.
+\end{proof}
+
+\begin{notation}
+We often write $\sigma$ instead of $\ov{\sigma}$.
+\end{notation}
+
+\begin{definition}[FOL-Sentence Translation]\label{def:fol:morphsen}
+Just like $\Sen(\Sigma)$ is the set of sentences for every $\Sigma\in\Sig^{\FOLEQ}$, we can specialize Def.~\ref{def:fol:morphexp} to obtain a sentence translation function $\Sen^{\FOLEQ}(\sigma):\Sen^{\FOLEQ}(\Sigma)\arr\Sen^{\FOLEQ}(\Sigma')$ for every signature morphism $\sigma:\Sigma\arr\Sigma'$: \[\Sen^{\FOLEQ}(\sigma)(F)=\overline{\sigma}(F).\]
+\end{definition}
+\medskip
+
+When dealing with sentence translations, the following notation is often useful to translate sets of sentences:
+\begin{notation}\label{not:mapsets}
+For $\Theta\sq\Sen(\Sigma)$ and a function $\phi:\Sen(\Sigma)\arr B$, we write $f(\Theta)$ for $\{\phi(F) : F\in\Theta\}$.
+\end{notation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Translating Proof-Theory}
+
+Signature morphisms also yield inductive translations of judgments and proofs. 
+
+\begin{definition}[Proof Translation]\label{def:fol:morphproof}
+Assume $\sigma:\Sigma\arr \Sigma'$. We define a map $\ov{\sigma}$ from $\Sigma$-judgments and $\Sigma$-proofs to $\Sigma'$-judgments and $\Sigma'$-proofs:
+\begin{itemize}
+ \item Every hypothesis of a proof is mapped to a hypothesis by translating every expression occurring in it along $\ov{\sigma}$.
+ \item Every application of a FOLEQ proof rule $r$ to proofs $P_1,\ldots,P_n$ is mapped to the proof obtained by applying $r$ to $\ov{\sigma}(P_1),\ldots,\ov{\sigma}(P_n)$. If $r$ takes -- term or formula -- parameters, these are translated along $\ov{\sigma}(-)$ as well.
+\end{itemize}
+We leave working out the details as an exercise.
+\end{definition}
+
+\begin{remark}
+Just like for sentences, $\ov{\sigma}$ is a \emph{homomorphic extension} of $\sigma$, and we often write $\sigma$ instead of $\ov{\sigma}$.
+\end{remark}
+
+The structure preserved by the proof theory translation is the proof-theoretical semantics: well-formed proofs are mapped to well-formed proofs:
+
+\begin{lemma}[Morphism Property]\label{lem:fol:morphproof}
+Assume $\sigma:\Sigma\arr \Sigma'$. Then:
+\begin{itemize}
+ \item if $p$ is a proof of $\iscons{\Sigma}{\Theta}{}{F}$, then $\ov{\sigma}(p)$ is a proof of $\iscons{\Sigma'}{\ov{\sigma}(\Theta')}{}{\ov{\sigma}(F)}$,
+ \item in particular: $\iscons{\Sigma}{\Theta}{}{F}$ implies $\iscons{\Sigma'}{\ov{\sigma}(\Theta')}{}{\ov{\sigma}(F)}$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+By induction $p$ and $\Gamma$, we prove that if $p$ is a proof of $\iscons{\Sigma}{\Theta}{\Gamma}{F}$, then $\ov{\sigma}(p)$ is a proof of $\iscons{\Sigma'}{\ov{\sigma}(\Theta')}{\Gamma}{\ov{\sigma}(F)}$. The details are left as an exercise.
+\end{proof}
+
+\begin{remark}
+Note the similarities between translating syntax and translating proof theory, specifically
+\begin{itemize}
+\item Def.~\ref{def:fol:morphexp} and \ref{def:fol:morphproof},
+\item Def.~\ref{lem:fol:morphexp} and \ref{lem:fol:morphproof}.
+\end{itemize}
+\end{remark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Translating Model Theory}
+
+\footnote{Remark for the 2011 lecture: These notes use the letter $I$ for models and write $\univ^I$ for the universe of the model $I$. See Def.~\ref{def:fol:model}.}
+
+Just like every signature yields a collection of models, every signature morphism $\sigma$ yields a map $\reduce{\sigma}{-}$ of $\Sigma'$-models to $\Sigma$-models:
+
+\begin{definition}[Model Translation]\label{def:fol:morphmod}
+Assume $\sigma:\Sigma\arr\Sigma'$. Consider a model $I\in\Mod(\Sigma')$; we define the model $\reduce{\sigma}{I}\in\Mod(\Sigma)$ as follows:
+\begin{itemize}
+\item $i^{\reduce{\sigma}{I}}=i^{I}$,
+\item $f^{\reduce{\sigma}{I}}(u_1,\ldots,u_n)=\semm{\sigma(f)}{I,[\sub{x_1}{u_1},\ldots,\sub{x_n}{u_n}]}$ for $f\in\Sigma_f$ with $\arit(f)=n$,
+\item $p^{\reduce{\sigma}{I}}(u_1,\ldots,u_n)=\semm{\sigma(p)}{I,[\sub{x_1}{u_1},\ldots,\sub{x_n}{u_n}]}$ for $p\in\Sigma_p$ with $\arit(p)=n$.
+\end{itemize}
+\end{definition}
+
+\begin{remark}\label{rem:fol:modelmorph}
+Def.~\ref{def:fol:morphmod} becomes a lot simpler and more intuitive if we consider the special case mentioned in Rem.~\ref{rem:fol:sigmorph}. Then we have $i^{\reduce{\sigma}{I}}=\univ^I$ and $f^{\reduce{\sigma}{I}}=\sigma(f)^I$ and $p^{\reduce{\sigma}{I}}=\sigma(p)^I$. In particular, recall that models like  $I$ and $\reduce{\sigma}{I}$ are just functions that map symbols to interpretation; then $\reduce{\sigma}{I}$ is just the restriction of $I$ to a smaller domain.
+\end{remark}
+
+Just like the translation of expression preserves the well-formedness, the translation of models preserves the semantics of expressions:
+
+\begin{lemma}\label{lem:fol:morphmod}
+Assume $\sigma:\Sigma\arr\Sigma'$, and a model $I\in\Mod(\Sigma')$. Then:
+\begin{itemize}
+\item for terms $\isterm{\Sigma}{\Gamma}{t}$ and an assignment $\alpha$:
+  \[\semm{t}{\reduce{\sigma}{I},\alpha} = \semm{\ov{\sigma}(t)}{I,\alpha}\]
+  in particular, if $t$ is closed:
+  \[\semm{t}{\reduce{\sigma}{I}} = \semm{\ov{\sigma}(t)}{I}\]
+\item for formulas $\isform{\Sigma}{\Gamma}{F}$ and an assignment $\alpha$:
+  \[\semm{F}{\reduce{\sigma}{I},\alpha} = \semm{\ov{\sigma}(F)}{I,\alpha}\]
+  in particular, if $F$ is closed:
+  \[\semm{F}{\reduce{\sigma}{I}} = \semm{\ov{\sigma}(F)}{I}\]
+  \[\moda{\reduce{\sigma}{I}}{\Sigma}{F} \tb\miff\tb \moda{I}{\Sigma'}{\ov{\sigma}(F)}\]
+\end{itemize}
+\end{lemma}
+\begin{proof}
+By induction on $\Gamma$ and $t$ or $F$, respectively.
+\end{proof}
+
+\begin{remark}
+Note the similarities between translating syntax and translating model theory, specifically
+\begin{itemize}
+\item Def.~\ref{def:fol:morphexp} and \ref{def:fol:morphmod} (except that the orientation is flipped),
+\item Def.~\ref{lem:fol:morphexp} and \ref{lem:fol:morphmod}.
+\end{itemize}
+\end{remark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{An Abstract Definition of a Logic, revisited}
+
+Recall Def.~\ref{def:syn:abs}, Def.~\ref{def:pt:abs}, and~\ref{def:mt:abs} of logic syntax, model theory, and proof theory, respectively. We can now refine these definitions by adding morphisms everywhere.
+
+In fact, our definitions are still not the final definitions because we will omit some advanced aspects. But the advanced aspects actually make the definitions more symmetric; therefore, we given them anyway but \advanced{distinguish} them from the rest.
+
+\begin{definition}[Logic Syntax]\label{def:syn:absmor}
+A \defemph{logic syntax} is a pair $(\Sig,\Sen)$ where
+\begin{itemize}
+  \item $\Sig$ is
+    \begin{itemize}
+      \item a collection of objects \\
+        \inlineremark{$\Sigma\in\Sig$ is called a \emph{signature}}
+      \item a family of sets such that $\Sig(\Sigma,\Sigma')$ is a set for all $\Sigma,\Sigma'\in\Sig$ \\
+        \inlineremark{$\sigma\in\Sig(\Sigma,\Sigma')$ is called a \emph{signature morphism} from $\Sigma$ to $\Sigma$, which we also write as $\sigma:\Sigma\arr\Sigma'$}
+    \end{itemize}
+  \item $\Sen$ is
+    \begin{itemize}
+      \item a mapping from $\Sig\arr\Set$, i.e., if $\Sigma\in\Sig$, then $\Sen(\Sigma)$ is a set \\
+        \inlineremark{$F\in\Sen(\Sigma)$ is called a $\Sigma$-\emph{sentence}}
+      \item a family of mappings $\Sen(\sigma):\Sen(\Sigma)\arr\Sen(\Sigma')$ for every $\sigma:\Sigma\arr\Sigma'$ \\
+        \inlineremark{$\Sen(\sigma)(F)$ is called the \emph{sentence translation} of $F$ along $\sigma$}
+    \end{itemize}
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+Note that a logic syntax has 2x2 components:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+signatures $\Sigma$ & signature morphisms $\sigma:\Sigma\arr\Sigma'$\\
+\hline
+sentences $F\in\Sen(\Sigma)$  & sentence translation $\Sen(\sigma):\Sen(\Sigma)\arr\Sen(\Sigma')$ \\
+\hline
+\end{tabular}
+\end{center}
+\end{remark}
+
+\begin{example}\label{ex:syn:absmor}
+FOLEQ from Ex.~\ref{ex:syn:abs} can be refined to an example of the refined definition of logic syntax:
+  \begin{itemize}
+   \item $\Sig^{\FOLEQ}$ is the collection of FOLEQ signatures as defined in Def.~\ref{def:fol:sig}.
+   \item $\Sig^{\FOLEQ}(\Sigma,\Sigma)$ is the set of FOLEQ signature morphisms as defined in Def.~\ref{def:fol:sigmorph}.
+   \item $\Sen^{\FOLEQ}(\Sigma)$ is the set of FOLEQ sentences over $\Sigma$ as defined in Def.~\ref{def:fol:context}.
+   \item $\Sen^{\FOLEQ}(\sigma)$ is the sentence translation as defined in Def.~\ref{def:fol:morphsen}.
+  \end{itemize}
+\end{example}
+\medskip
+
+\begin{definition}[Proof Theory]\label{def:pt:absmor}
+A proof theory for the logic syntax $(\Sig,\Sen)$ is a pair $(\Pf,\val)$ such that
+\begin{itemize}
+\item $\Pf$ is 
+  \begin{itemize}
+    \item a mapping such that for $\Sigma\in\Sig$
+		  \begin{itemize}
+		    \item $\Pf(\Sigma)$ is a collection of objects \\
+		    \inlineremark{$J\in\Pf{\Sigma}$ is called a $\Sigma$-\emph{judgment}}
+		    \item a family of sets such that $\Pf(\Sigma)((J_1,\ldots,J_m),J)$ is a set for all judgments of $J_1,\ldots,J_m,J\in\Pf(\Sigma)$
+		    \inlineremark{$p\in\Pf(\Sigma)((J_1,\ldots,J_m),J)$ is called a $\Sigma$-\emph{proof} of $J$ using hypotheses $J_1,\ldots,J_k$}
+		  \end{itemize}
+		\item a family of mapping such that for $\sigma:\Sigma\arr\Sigma'$
+		  \begin{itemize}
+		    \item $\Pf(\sigma):\Pf(\Sigma)\arr\Pf(\Sigma')$ is a mapping \\
+		     \inlineremark{$\Pf(\sigma)(J)$ is called the \emph{judgment translation} of $J$ along $\sigma$}
+		    \item $\Pf(\sigma):\Pf(\Sigma)((J_1,\ldots,J_m),J)\arr \Pf(\Sigma)((\Pf(\sigma)(J_1),\ldots,\Pf(\sigma)(J_m)),\Pf(\sigma)(J))$ \\
+		      \inlineremark{$\Pf(\sigma)(p)$ is called the \emph{proof translation} of $p$ along $\sigma$}
+      \end{itemize}
+  \end{itemize}
+\item $\val$ is
+  \begin{itemize}
+    \item a family of mappings $\val_\Sigma\;:\Sen(\Sigma) \arr \Pf(\Sigma)$ for every $\Sigma\in\Sig$ \\
+     \inlineremark{$\val_\Sigma F$ is called the \emph{validity judgment} for $F$}
+    \item \advanced{such that $\Pf(\sigma)(\val_\Sigma F) \;=\; \val_{\Sigma'} \Sen(\sigma)(F)$ for $\sigma:\Sigma\arr\Sigma'$ \\
+     \inlineremark{$\val$ commutes with $\Sen(\sigma)$/$\Pf(\sigma)$}}
+  \end{itemize}
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+Note that a proof theory has 2x2 components, 3 definitions and 1 property:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+judgments and proofs $\Pf(\Sigma)$ & judgment and proof translation $\Pf(\sigma):\Pf(\Sigma)\arr\Pf(\Sigma')$\\
+\hline
+validity judgment $\val_\Sigma:\Sen(\Sigma)\arr\Pf(\Sigma)$ & \advanced{commutation property for $\val$ wrt. $\Sen$ and $\Pf$} \\
+\hline
+\end{tabular}
+\end{center}
+\end{remark}
+
+\begin{example}\label{ex:pt:absmor}
+FOLEQ from Ex.~\ref{ex:pt:abs} can be refined to an example of the refined definition of proof theory:
+  \begin{itemize}
+   \item $\Pf^{\FOLEQ}(\Sigma)$ consists of the FOLEQ judgments and proofs as defined in Def.~\ref{def:fol:pf}.
+   \item $\Pf^{\FOLEQ}(\sigma)$ translates proofs structurally as defined in Def.~\ref{def:fol:morphproof}.
+   \item $\val_\Sigma F$ is defined as $\iscons{\Sigma}{\es}{\es}{F}$.
+   \item \advanced{We omit showing the commutation property.}
+  \end{itemize}
+\end{example}
+\medskip
+
+\begin{definition}[Model Theory]\label{def:mt:absmor}
+A model theory for the logic syntax $(\Sig,\Sen)$ is a pair $(\Mod,\md)$ such that
+\begin{itemize}
+\item $\Mod$ is 
+  \begin{itemize}
+    \item a mapping such that for $\Sigma\in\Sig$
+		  \begin{itemize}
+		    \item $\Mod(\Sigma)$ is a collection of objects \\
+		    \inlineremark{$M\in\Mod{\Sigma}$ is called a $\Sigma$-\emph{model}}
+		  \end{itemize}
+		\item a family of mapping such that for $\sigma:\Sigma\arr\Sigma'$
+		  \begin{itemize}
+		    \item $\Mod(\sigma):\Mod(\Sigma')\arr\Mod(\Sigma)$ is a mapping \\
+		     \inlineremark{$\Mod(\sigma)(M)$ is called the \emph{reduction} of $M$ along $\sigma$}
+      \end{itemize}
+  \end{itemize}
+\item $\md$ is
+  \begin{itemize}
+    \item a family of relations $\md_\Sigma\;\sq\;\Sen(\Sigma) \times \Mod(\Sigma)$ for every $\Sigma\in\Sig$ and $F\in\Sen(\Sigma)$ \\
+     \inlineremark{$\md_\Sigma$ is called the \emph{satisfaction relation}}
+    \item \advanced{such that $\moda{\Mod(\sigma)(M)}{\Sigma}{F}$ iff $\moda{M}{\Sigma'}{\Sen(\sigma)(F)}$ for $\sigma:\Sigma\arr\Sigma'$, $F\in\Sen(\Sigma)$, $M\in\Mod(\Sigma')$ \\
+     \inlineremark{$\md$ commutes with $\Sen(\sigma)$/$\Mod(\sigma)$}}
+  \end{itemize}
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+Note that a model theory has 2x2 components, 3 definitions and 1 property:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+models \advanced{and model morphisms} $\Mod(\Sigma)$& model \advanced{(morphism)} reduction $\Mod(\sigma):\Mod(\Sigma')\arr\Mod(\Sigma)$\\
+\hline
+satisfaction relation $\md_\Sigma\sq\Sen(\Sigma)\times\Mod(\Sigma)$ & \advanced{commutation property for $\md$ wrt. $\Sen$ and $\Mod$} \\
+\hline
+\end{tabular}
+\end{center}
+\end{remark}
+
+\begin{example}\label{ex:mt:absmor}
+FOLEQ from Ex.~\ref{ex:mt:abs} can be refined to an example of the refined definition of model theory:
+  \begin{itemize}
+   \item $\Mod^{\FOLEQ}(\Sigma)$ consists of the FOLEQ models as defined in Def.~\ref{def:fol:model} \advanced{and the FOLEQ model morphisms as indicated in Sect.~\ref{sec:fol:modelmorphisms}}.
+   \item $\Mod^{\FOLEQ}(\sigma)(I)=\reduce{\sigma}{I}$ is the model reduction as defined in Def.~\ref{def:fol:morphmod}.
+   \item $\md_\Sigma$ is defined as in Def.~\ref{def:fol:interpretation}.
+   \item \advanced{We omit showing the commutation property.}
+  \end{itemize}
+\end{example}
+\medskip
+
+Finally, we can extend Def.~\ref{def:logic:abs} appropriately:
+\begin{definition}[Logic]\label{def:logic:absmor}
+A \emph{logic} consists of
+\begin{itemize}
+	\item a logic syntax $(\Sig,\Sen)$,
+	\item a model theory $(\Mod,\md)$ for $(\Sig,\Sen)$,
+	\item a proof theory $(\Pf,\val)$ for $(\Sig,\Sen)$.
+\end{itemize}
+\end{definition}
+
+\begin{example}\label{ex:logic:absmor}
+FOLEQ is the logic $(\Sig^{\FOLEQ},\Sen^{\FOLEQ},\Mod^{\FOLEQ},\md^{\FOLEQ},\Pf^{\FOLEQ},\val^{\FOLEQ})$.
+\end{example}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theory Morphisms}
+
+We can extend the notion of signature morphisms to theory morphisms. Just like a signature morphism translates syntax, proof theory, and model theory between signatures, a theory morphism translates them between theories.
+
+\begin{definition}[Theory Morphisms]\label{def:fol:theomorph}
+$\sigma:\Sigma\arr\Sigma'$ is called a proof theoretical \defemph{theory morphism} from $(\Sigma,\Theta)$ to $(\Sigma',\Theta')$ if $\ov{\sigma}$ maps every $F\in\Theta$ to a proof theoretical theorem $\dera{\Theta'}{\Sigma'}{\sigma(F)}$.
+
+$\sigma:\Sigma\arr\Sigma'$ is called a model theoretical \defemph{theory morphism} from $(\Sigma,\Theta)$ to $(\Sigma',\Theta')$ if $\ov{\sigma}$ maps every $F\in\Theta$ to a model theoretical theorem $\moda{\Theta'}{\Sigma'}{\sigma(F)}$.
+\end{definition}
+
+\begin{notation}
+We usually do not distinguish proof and model theoretical theory morphisms and write both of them as $\sigma:(\Sigma,\Theta)\arr(\Sigma',\Theta')$.
+If a distinction is necessary, we speak of $P$-theory morphisms and $M$-theory morphisms. See also Not.~\ref{not:mod} and~\ref{not:pf}.
+\end{notation}
+
+\begin{remark}
+We know, of course, that in FOLEQ P- and M-theory morphisms are the same thing because FOLEQ is sound and complete. The definition is split into two parts here in order to apply to to arbitrary logics (including those where soundness or completeness do not hold).
+\end{remark}
+
+\begin{example}
+The signature morphism from monoids to groups is a FOLEQ-theory morphism. This is rather trivial because each $\sigma(F)$ is already an axiom of the theory of groups.
+\end{example}
+
+\begin{example}
+The signature morphism from Ex.~\ref{ex:fol:oppmonoid} is a FOLEQ-theory morphism. (Exercise!)
+\end{example}
+
+\begin{example}
+For a larger example of lots of FOLEQ theory morphisms (all represented in Twelf, see Sect.~\ref{sec:twelf}), see \cite{DHS:algebra:09}.
+\end{example}
+
+%\begin{remark}
+%Often, we do not care which particular proof an axiom is mapped to by $\theta$ -- we only care whether or not such a proof exists. Therefore, we often call a signature morphism $\sigma:\Sigma\arr\Sigma'$ a theory morphism from $(\Sigma,\Theta)$ to $(\Sigma',\Theta')$ if there is some $\theta$ such that $(\sigma,\theta):(\Sigma,\Theta)\arr(\Sigma',\Theta')$.
+%\end{remark}
+
+The basic intuition behind theory morphisms is that they are signature morphisms that preserve the semantics. Therefore, we can show additional properties of the proof theory and the model theory translation:
+
+\begin{lemma}[Proof Translation]\label{lem:fol:ptheomorph}
+Assume a $P$-theory morphism $\sigma:(\Sigma,\Theta)\arr(\Sigma',\Theta')$. Then:
+\begin{itemize}
+ \item if $p$ is a proof of $\iscons{\Sigma}{\Theta}{}{F}$, then there is also a proof of $\iscons{\Sigma'}{\Theta'}{}{\ov{\sigma}(F)}$,
+ \item in particular: $\dera{\Theta}{\Sigma}{F}$ implies $\dera{\Theta'}{\Sigma'}{\ov{\sigma}(F)}$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+We know $\ov{\sigma}(p)$ is a proof of $\iscons{\Sigma'}{\ov{\sigma}(\Theta)}{}{\ov{\sigma}(F)}$. Each reference to an axiom $A\in\ov{\sigma}(F)$ can be replaced with a proof of $\iscons{\Sigma'}{\Theta'}{}{A}$, which exists because $\sigma$ is a $P$-theory morphisms.
+\end{proof}
+
+\begin{lemma}[Model Translation]\label{lem:fol:mtheomorph}
+Assume an $M$-theory morphism $\sigma:(\Sigma,\Theta)\arr(\Sigma',\Theta')$. Then:
+\begin{itemize}
+ \item for every model $I\in\Mod(\Sigma')$: if $I\in\Mod(\Sigma';\Theta')$, then $\reduce{\sigma}{I}\in\Mod(\Sigma;\Theta)$.
+ \item in particular: $\moda{\Theta}{\Sigma}{F}$ implies $\moda{\Theta'}{\Sigma'}{\ov{\sigma}(F)}$.
+\end{itemize}
+\end{lemma}
+\begin{proof}
+\end{proof}
+
+We can summarize and extend the above lemmas in the following theorem:
+
+\begin{theorem}[Theory Morphisms]\label{thm:fol:theomorph}
+Consider a logic $L$, two theories $(\Sigma,\Theta)$ and $(\Sigma',\Theta')$, and $\sigma:\Sigma\arr\Sigma'$. Then:
+\begin{enumerate}
+	\item The following are equivalent:
+	\begin{enumerate}
+		 \item\label{enum:p} $\sigma$ is a P-theory morphism.
+		 \item\label{enum:pa} $\iscons{\Sigma'}{\Theta'}{}{\ov{\sigma}(F)}$ for every $F\in\Theta$.
+		 \item\label{enum:pt} $\iscons{\Sigma'}{\Theta'}{}{\ov{\sigma}(F)}$ for every $F\in\Thm(\Sigma;\Theta)$.
+	\end{enumerate}
+	\item The following are equivalent:
+	\begin{enumerate}
+		 \item\label{enum:m} $\sigma$ is an M-theory morphism.
+		 \item\label{enum:ma} $\moda{\Theta'}{\Sigma'}{\ov{\sigma}(F)}$ for every $F\in\Theta$.
+		 \item\label{enum:mt} $\moda{\Theta'}{\Sigma'}{\ov{\sigma}(F)}$ for every $F\in\Thm(\Sigma;\Theta)$.
+		 \item\label{enum:mm} For every model $I\in\Mod(\Sigma')$: if $I\in\Mod(\Sigma';\Theta')$, then $\reduce{\sigma}{I}\in\Mod(\Sigma;\Theta)$.
+	\end{enumerate}
+	\item\label{enum:p-m} if $L$ is sound and $\sigma$ is a P-theory morphism, then $\sigma$ is an M-theory morphism,
+	\item\label{enum:m-p} if $L$ is complete and $\sigma$ is an M-theory morphism, then $\sigma$ is an P-theory morphism.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+For the first equivalence, (\ref{enum:p}) is equivalent to (\ref{enum:pa}) by definition; (\ref{enum:pa}) implies (\ref{enum:pt}) by Lem.~\ref{lem:fol:ptheomorph}; (\ref{enum:pt}) trivially implies (\ref{enum:pa}).
+
+Similarly, for the second equivalence, (\ref{enum:m}) is equivalent to (\ref{enum:ma}) by definition. (\ref{enum:ma}) implies (\ref{enum:mt}) by Lem.~\ref{lem:fol:ptheomorph}; (\ref{enum:mt}) trivially implies (\ref{enum:ma}). (\ref{enum:m}) implies (\ref{enum:mm}) by Lem.~\ref{lem:fol:ptheomorph}; we omit the proof of (\ref{enum:mm}) implies (\ref{enum:m})
+
+Finally, using soundness, (\ref{enum:pa}) implies (\ref{enum:ma}). And, using completeness, (\ref{enum:ma}) implies (\ref{enum:pa}).
+\end{proof}
+
+The importance of theory morphisms is that they can be used to transport theorems: Theorems proved in $\Sigma$ can be moved to theorems in $\Sigma'$ along a theory morphism. That can greatly increase the set of available theorems, especially when theory morphisms connect rather different fields of mathematics. The equivalence between (\ref{enum:pa}) and (\ref{enum:pt}) is important: We want all theorems to be mapped to theorems, but we only have to check that all axioms are mapped to theorems. That is crucial because the former is infinite, the latter usually finite.
+
+Case (\ref{enum:mt}) is the most important to use: It tells us that all $(\Sigma,\Theta)$-theorems can be moved to all $(\Sigma',\Theta')$-models. Case (\ref{enum:pa}) is usually the easiest to establish.
+
+Moreover, theory morphisms can be used to piece together theories from building blocks thus providing the basis of modular (and thus large-scale) development of theories. This latter is crucial when approaching logic from the perspective of computer science, and theory morphisms constitute the central technology to move towards something that could be called \emph{theory engineering} akin to software engineering.
+Later we will see that logics can be represented as signatures of a suitable meta-logic, which we call a logical framework. Similarly, logic translations can be represented as signature morphisms. Thus, the above remark on theory engineering can be extended to \emph{logic engineering}.

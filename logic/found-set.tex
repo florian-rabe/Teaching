@@ -1,0 +1,125 @@
+Almost all variants of set theory use first-order logic but they differ in the fixed signature and axioms. All of them can be used to develop most of mathematics, but there are subtle differences in exactly what can be developed and how conveniently.
+
+\section{Foundational Logic and Theory}
+
+The underlying of these foundations is FOLEQ as defined in Part~\ref{part:fol}. The details of the accounts vary. For example, sometimes only some connectives are primitive and the others are defined. Or different calculi are used to define the same collection of theorems. None of these differences are essential. In fact, most authors are mathematicians and not logicians and therefore assume FOLEQ implicitly without bothering to define it formally.
+
+There is only one substantial difference that may exist: the difference between classical and intuitionistic FOLEQ. The former uses the axiom $F\vee \neg F$ of excluded middle, the former does not. Almost all mathematicians use classical FOLEQ, but it is generally worth keeping track of which results require classical reasoning. Often the use of excluded middle can be avoided or worked around.
+
+The characteristic feature of set theories is that their signature has a single binary predicate symbol $\in$ and no function symbols.
+We will give a Zermelo-Fraenkel-style variant of set theory.
+
+\begin{definition}\label{def:zf}
+ZF is the FOLEQ theory consisting of no function symbols, a binary predicate symbol $\in$ (written infix), and the following axioms
+\begin{itemize}
+\item extensionality (``Two sets are equal if they have the same elements.'')
+ \[\forall X\;\forall Y\;(X\doteq Y \darr \forall z\;(z\in X \darr z \in Y))\]
+\item empty set (``There is a set that we can call $\es$.'')
+ \[\exists E\; \forall z\;\neg z\in E\]
+\item pairing (``For all $X,Y$, there is a set that we may call $\{X,Y\}$.'')
+ \[\forall X\;\forall Y\;\exists P\; \forall z\;(z\in P \darr (z\doteq X \vee z \doteq Y))\]
+\item union (``For all $X$, there is a set that we may call $\bigcup_{x\in X}x$.'')
+ \[\forall X \;\exists U\;\forall z\; (z\in U \darr \exists x\;(x \in X \wedge z\in x))\]
+\item power set (``For all $X$, there is a set that we may call $\pwr(X)$.'')
+ \[\forall X \;\exists P\;\forall z\; (z\in P \darr \forall x\;(x \in z\arr x\in X))\]
+\item comprehension or specification (``For all $X$ and any formula $F$ with free variable $x$, there is a set that we may call $\{x\in X\,|\,F(x)\}$.'')
+ \[\mathcal{C}_\forall\big(\;\forall X \;\exists C\;\forall z\; (z\in C \darr (z\in X\wedge F(z)))\big)\]
+ for all formulas $F$ with a least a free variable $x$; here $\mathcal{C}_\forall$ quantifies universally over all other free variables that occur in $F$
+\item replacement (``For all $X$ and any term $t$ with free variables $x$, there is a set that we may call $\{t(x)\,:\,x\in X\}$.'')
+ \[\mathcal{C}_\forall\big(\forall X \;\exists R\;\forall z\; (z\in R \darr (\exists x\;(x\in X\wedge z\doteq t(x))))\big)\]
+ for all terms $t$ with at least a free variable $x$
+\item regularity (which we will skip here)
+\item infinity (``There is an infinite set.'')
+ \[\exists I\;(\exists x\;x\in I \wedge \forall x\;(x\in I\arr \exists y\;(y\in I\wedge x\in y)))\]
+\end{itemize}
+\end{definition}
+
+Note that ZF is not a finite theory. It contains infinitely many instances of comprehension and replacement because they exist for any formula $F$ or term $t$. These are often called axiom \emph{schemes} to emphasize that they are actually infinite families of axioms.
+
+The spirit of the axioms is as follows. Extensionality defines equality. Empty gets us off the ground by making sure that the simplest set exists; then pairing, union, and power set let us form bigger sets from existing ones. Comprehension goes backwards: If we have constructed a big set from small ones, comprehension gives us all the smaller ones in between. Replacement goes sideways: If we have constructed a set, it gives us one of the same size but with different elements.
+
+Regularity avoids certain degenerate cases. In particular, regularity can be used to prove that there are no $\in$-cycles, i.e.,
+ \[\neg\exists x_1\;\ldots\exists x_n\;(x_1\doteq x_n\wedge x_1\in x_2\wedge\ldots\wedge x_{n-1}\in x_n)\]
+ is a theorem for any $n=1,2,\ldots$.
+
+Inspecting the previous axioms shows that they all preserve finiteness: From finite sets, we can construct only finite ones. The axiom of infinity is needed to get an infinite set. Here infinity is achieved by postulating a set containing $x_1,\;x_2,\;\ldots$ such that $x_1\in x_2\in\ldots$. Because of regularity, this captures our intuition about countable infinity. Then sets of other cardinalities can be constructed using the power set axiom.
+
+\begin{remark}\label{rem:zf:terms}
+Note that ZF has no non-trivial terms: The only terms are variables. However, other terms are introduced later using definition principles.
+\end{remark}
+
+\begin{remark}
+Our version of the replacement axiom scheme is not standard. It is usually stated with a formula $F(x,y)$ instead of a term $t(x)$. Then the intuition is that it gives us the set $\{y\,:\,x\in X,\;F(x,y)\}$. Our version arises from the more intuitive special case where we have $\forall x\;F(x,t(x))$.
+
+Note that our version is pointless if we do not have any non-trivial terms. Therefore, it is usually stated with a formula instead of a term. Our version makes sense in light of Rem.~\ref{rem:zf:terms}.
+\end{remark}
+
+There are many variants of ZF-style set theories using slightly different but equivalent axioms. In fact, ours is a new variant itself. It is usually not relevant which variant is used because they are all isomorphic in the sense that we have FOLEQ-theory morphisms between them. However, one variant is important: the axiom of choice:
+
+\begin{definition}
+ZFC arises from ZF by adding the axiom of choice, which we will only state informally: For any set $X$ of pairwise disjoint non-empty sets, there is a set $C$ such that $C$ contains exactly one element from every element of $X$.
+\end{definition}
+
+In particular, if we think of $X$ as the set of classes of an equivalence relation, then we can think of $C$ as a system of representatives. So the axiom of choice lets us choose a system of representatives for any equivalence relation.
+
+The main objection to the axiom of choice is that it has many weird consequences such as the Banach–Tarski paradox \cite{banach_tarski_paradox}.
+
+\section{Definition Principles}
+
+ZF is a very weird FOLEQ theory because it does not have any function symbols and thus no terms except variables. Therefore, technically, we do not have any mathematical objects -- we only have theorem saying that certain objects exist, perhaps uniquely. Every mathematical statement has to be coded in terms of formulas and variables.
+
+Any set must be coded as a property $A(x)$ together with a proof of $\exists x\;\forall z\;(z\in A\darr A(z))$. Then, for example, a function from $A(x)$ to $B(x)$ is a formula $F(x,y)$ together with a proof of $\forall x\;(A(x)\arr \exists^! y\;B(y)\wedge F(x,y))$. Here $\exists^! y\;P(y)$ is the quantifier of unique existence defined as $\exists y\;(P(y)\wedge \forall z\;(P(z)\arr z\doteq y))$.
+
+This is, of course, awkward. So what do mathematicians do instead? They use definition principles to introduce function symbols.
+
+\begin{definition}[Direct Definition]\label{def:directdef}
+Consider a term $t$ with free variables $x_1,\ldots,x_n$.
+Then appealing to the direct definition principle means to add a new $n$-ary function symbol $f$ together with an axiom
+\[\forall x_1\;\ldots\forall x_n\;f(x_1,\ldots,x_n)\doteq t(x_1,\ldots,x_n)\]
+
+Similarly, consider a formula $F$ with free variables $x_1,\ldots,x_n$.
+Then appealing to the direct definition principle means to add a new $n$-ary predicate symbol $p$ together with an axiom
+\[\forall x_1\;\ldots\forall x_n\;p(x_1,\ldots,x_n)\darr F(x_1,\ldots,x_n)\]
+\end{definition}
+
+The direct definition principle is obviously justified: $f$ is simply an abbreviation for $t$, and any occurrence of $f(t_1,\ldots,t_n)$ can be replaced with $t[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]$. The same argument holds for predicate symbols, although here some reasoning about equivalence is necessary.
+
+\begin{definition}[Description Principle]
+Consider a formula $F(x_1,\ldots,x_n,y)$ with $n+1$ free variables together with a proof of
+\[\forall x_1\;\ldots\forall x_n\;\exists^! y\;F(x_1,\ldots,x_n,y)\]
+Then appealing to the description principle means to add a new $n$-ary function symbol $f$ together with an axiom
+\[\forall x_1\;\ldots\forall x_n\;F(x_1,\ldots,x_n,f(x_1,\ldots,x_n))\]
+\end{definition}
+
+Note that the action of the new function symbol $f$ is uniquely determined (described) by $F$: $f(x_1,\ldots,x_n)$ is the unique object $y$ such $F(x_1,\ldots,x_n,y)$.
+
+We can eliminate $f$ from any formula $G$ by first replacing $f(t_1,\ldots,t_n)$ with a fresh variable $y$ resulting in the formula $G'$, and then forming the formula $G''=\forall y\;(F(t_1,\ldots,t_n,y)\arr G')$. Then we prove that $G$ and $G''$ are equivalent.
+
+\begin{example}
+Using the axioms of ZF, it is easy to prove the unique existence of the unordered pair:
+\[\forall X\;\forall Y\;\exists^! P\; \forall z\;(z\in P \darr (z\in X \vee z \in Y))\]
+Using the description principle, we obtain a binary function symbol $f$, and we denote $f(t,t')$ as $\{t,t'\}$
+
+Similarly, we proceed with the axioms of union, power set, comprehension, and replacement introducing new function symbols and notations as already indicated in Def.~\ref{def:zf}. Note that the two axiom schemes introduce infinite families of function symbols. For example, comprehension introduces a unary function symbol $f_{F(x)}$ for every formula $F(x)$, and we introduce the notation $\{x\in A \,|\, F(x)\}$ for $f_{F(x)}(A)$.
+\end{example}
+
+The description principle is accepted by virtually everybody. It already gets complicated when we generalize a bit:
+
+\begin{definition}[Choice Principle]
+Consider a formula $F(x_1,\ldots,x_n,y)$ with $n+1$ free variables together with a proof of
+\[\forall x_1\;\ldots\forall x_n\;\exists y\;F(x_1,\ldots,x_n,y)\]
+Then appealing to the choice principle means to add a new $n$-ary function symbol $f$ together with an axiom
+\[\forall x_1\;\ldots\forall x_n\;F(x_1,\ldots,x_n,f(x_1,\ldots,x_n))\]
+\end{definition}
+
+The justification of the choice principle is well-known in logic, where it is already used in the Skolemization operation.
+
+The main objection to the choice principle is that we do not know what the result of $f(t_1,\ldots,t_n)$ is. It feels wrong to give something a name that is not precisely described.
+
+\begin{remark}
+The choice principle and the choice axiom are closely connected and often confused, but the distinction is important. Typically, the choice axiom is used crucially in the proof of the precondition of the choice principle.
+
+For example, the choice axiom guarantees the existence of a system of representatives, which we can think of a unary function mapping equivalence classes to their representatives. Then the choice principle lets us add a unary function symbol explicitly giving us the representatives.
+
+The choice axiom and the choice principle are independent of each other: A separate leap of faith is required for either one, and each one make sense by itself even if one rejects the other one. The axiom makes new objects exist, the principle gives us new names for existing but undescribable objects.
+\end{remark}

@@ -1,0 +1,24 @@
+The languages for proofs in the foundation can be informal or formal. Mathematicians tend to use set theory and then favor informal proofs that use natural -- albeit highly standardized and precise -- language. Type theory tends to favor a more restricted language of propositions and a completely formal language of proofs.
+
+Formal proofs have the advantage that they can be written, verified, and to some extent even found by computers. There have been several major research projects aiming at developing mathematics fully formally using an implementation of a foundation. Almost all of them use a type theoretic foundation because they have better computational properties than set theories.
+
+All formal foundations are far away from covering all of mathematics. Most of the time the formalized proofs reach about undergraduate or graduate level mathematics. However, the amount is growing, and several large-scale projects are in progress. Most notably the Flyspeck project \cite{flyspeck} (using HOL Light) and the formalization of the classification theorem for simple groups \cite{finitegroups1} (using Coq).
+
+The biggest bottleneck in using formal foundations is the de-Bruijn factor: the factor by which a formal proof takes more space and more time to write than the corresponding informal proof. Both can be up to $10$ or $20$ and are at the moment nowhere close to $1$, let alone smaller than $1$. Therefore, they are rarely used by mathematicians. But they are used increasingly in computer science, specifically in the verification of software and hardware.
+
+In order to cut down the work in writing proofs, these tools usually come with sophisticated proof development languages. These often provide key words for structured natural deduction style proofs, permit the use of small programs that compute proofs (tactics, often coming with their own tactic programming language), or employ external tools to simplify expressions and proof goals.
+
+\paragraph{Automath}
+Automath \cite{automath} was the first major project in this direction. It employed a logical framework so that different formal foundations could be declared. Thus, the system itself could be foundationally uncommitted. The biggest experiment in this system was the formalization of Landau's ``Foundations of Analysis'' text book \cite{landau_automath}. Automath is hardly in use anymore today.
+
+\paragraph{Mizar}
+Mizar is the only large-scale formal foundation based on set theory. It uses the Tarski-Grothendieck variant based on FOLEQ, which is very close to ZF. Mizar adds three characteristic features: a large variety of additional definition principles, e.g., for case-based function symbols; a flexible type system (with dependent types but without function types) that permits users to employ typed reasoning within the untyped language; and a high-level language that is tuned to be as close to informal mathematical language as possible. The Mizar library comprises about 50000 theorems and is the largest at the moment.
+
+\paragraph{The HOL Family}
+There are several implementations of slightly varying HOL-based foundations, most importantly HOL \cite{hol}, Isabelle/HOL \cite{isabellehol}, and HOL Light \cite{hollight}. Isabelle/HOL uses a logical framework (which is itself based on a variant of HOL) and generic theorem prover \cite{isabelle}, and then defines HOL within it.
+
+\paragraph{The Calculus of Constructions Family}
+Coq \cite{coq} is based on the calculus of constructions, which is so expressive that it can be used as a foundation right away or as a logical framework in which other foundations are defined. Matita \cite{matita} is a Coq-inspired reimplementation.
+
+\paragraph{Nuprl}
+Nuprl \cite{nuprl} is based on a very rich, even undecidable, type-theoretical foundation.

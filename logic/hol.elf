@@ -1,0 +1,78 @@
+%sig STT = {
+
+   tp : type.
+   --> : tp -> tp -> tp.
+   %infix right 10 -->.
+   
+   tm : tp -> type.
+   %prefix 0 tm.
+   @ : tm (A --> B) -> tm A -> tm B.
+   %infix left 30 @.
+   lam: (tm A -> tm B) -> tm A --> B. 
+}.
+
+%sig HOL = {
+  %include STT %open.
+  o    : tp.
+  =='  : tm A --> A --> o.
+  ==   : tm A -> tm A -> tm o = [x: tm A] [y: tm A] ==' @ x @ y.
+  %infix none 20 ==.
+
+  true   : tm o = (lam [x: tm o] x) == (lam [x: tm o] x).
+  forall': tm (A --> o) --> o = lam [f: tm A --> o] (f == (lam [x: tm A] true)).
+  forall : (tm A -> tm o) -> tm o = [f : tm A -> tm o] forall' @ (lam [x: tm A] f x).
+  %% now we can write forall ([x: tm A] f x) instead of forall' @ (lam [x: tm A] f x)
+  false  : tm o = forall' @ (lam [x: tm o] x == true).
+  ~'     : tm o --> o = lam ([x: tm o] x == false).
+  ~      : tm o -> tm o = [x: tm o] ~' @ x.
+  /\'     : tm o --> o --> o.  %%TODO
+  /\      : tm o -> tm o -> tm o = [x: tm o] [y: tm o] /\' @ x @ y.  %infix left 10 /\. 
+  \/'     : tm o --> o --> o.  %%TODO
+  \/      : tm o -> tm o -> tm o = [x][y] \/' @ x @ y.               %infix left 10 \/.
+  =>'     : tm o --> o --> o.   %%TODO
+  =>      : tm o -> tm o -> tm o = [x][y] =>' @ x @ y.               %infix none 10 =>.
+  exists' : tm (A --> o) --> o = lam [f: tm (A --> o)] (~ (forall [x : tm A] ~ (f @ x))).
+  exists  : (tm A -> tm o) -> tm o = [f : tm A -> tm o] exists' @ (lam [x: tm A] f x).
+ 
+  proof  : tm o -> type.
+  %prefix 0 proof.
+  
+  eqrefl : proof T == T.
+  eqsym  : proof S == T -> proof T == S.
+  eqapp  : proof F == G -> proof S == T -> proof (F @ S) == (G @ T). 
+  eqlam  : ({x: tm A} proof (T x) == (S x)) -> proof lam ([x: tm A] T x) == lam ([x: tm A] S x).
+
+  beta   : proof (lam [x: tm A] T x) @ S == (T S). 
+  eta    : proof F == lam ([x: tm A] F @ x).
+
+  eqI    : (proof F -> proof G) -> (proof G -> proof F) -> proof (F == G).
+  eqE    : proof F == G -> proof F -> proof G.
+
+  tnd    : proof forall [x: tm o] ((F == true) \/ (F == false)).
+  %%alternatively: tndsplit : (proof F == true -> proof G) -> (proof F == false -> proof G) -> proof G.
+
+  nonempty : {A: tp} proof (exists' @ (lam [x: tm A] true)).
+
+  form   : type = tm o.
+
+  betao  : proof F X  -> proof (lam F) @ X = [p] (eqE (eqsym beta) p).
+  
+  trueI  : proof true. %%TODO
+  falseE : proof false -> proof F. %%TODO
+
+  notI   : (proof F -> proof false) -> proof ~ F
+         = [p: proof F -> proof false]
+             (eqE (eqsym beta) (eqI p falseE)).
+  notE   : proof ~ F -> proof F -> proof false
+         = [p : proof ~ F] [q: proof F]
+             (eqE (eqE beta p) q).
+
+  %% TODO: missing rules 
+
+  forallI : ({x: tm A} proof F x) -> proof forall ([x: tm A] F x). %%TODO
+  forallE : proof forall ([x: tm A] F x) -> {x: tm A} proof F x.%%TODO
+  
+  existsI : {t: tm A} proof (F t) -> proof exists ([x : tm A] F x)
+          = [t][p] betao (notI [q: proof forall [x: tm A] ~ (lam F @ x)] (notE (forallE q t) (betao p : proof (lam F) @ t))).
+  existsE : (proof exists [x: tm A] F x) -> ({x : tm A} proof (F x) -> proof G) -> proof G. %%TODO
+}.

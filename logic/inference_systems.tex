@@ -1,0 +1,33 @@
+\begin{definition}[Inference System/Calculus]
+An \emph{inference system} consists of a set of \emph{judgments} and a set of (inference) \emph{rules}. A rule must be of the form
+ \[\rul{J}{J_1\tb \ldots \tb J_n}{R}\]
+where $J,J_1,\ldots,J_n$ are judgments.
+$R$ is the (optional) name, $J$ the \emph{conclusion}, and $J_1,\ldots,J_n$ the \emph{hypotheses} of the rule. If $n=0$, the rule is called an \emph{axiom}.
+\end{definition}
+
+The intuition of a rule as above is that we can derive/prove/conclude that $J$ holds if we have already derived/proved/concluded that $J_1,\ldots,J_n$ hold.
+
+\begin{definition}[Derivation]
+A \emph{derivation} in an inference system is a tree in which
+\begin{itemize}
+	\item every node $N$ is labelled with a judgment $J(N)$,
+	\item for every node $N$ with children $N_1,\ldots,N_r$, the inference system contains the rule \[\rul{J(N)}{J(N_1)\tb \ldots \tb J(N_r)}{}\]
+\end{itemize}
+
+A judgment $J$ \emph{holds} iff there is a derivation whose root is labelled with $J$.
+\end{definition}
+
+\begin{remark}
+Note that the leaves of a derivation must be labelled with axioms.
+
+The intuition of a derivation is that it is the proof/evidence/justification of a judgment.
+Judgements that occur as the root of a derivation are said to be established/derived/proved, to hold, or to be true.
+
+The intuition of an inference system is that it defines which judgments hold.
+\end{remark}
+
+\begin{remark}[Relation to Parse Trees]
+A derivation over an inference system $I$ is the same as a parse tree over the grammar containing one production
+ \[D::= R(\underbrace{D,\ldots,D}_{n})\]
+for every rule $R$ of $I$ with $n$ hypotheses.
+\end{remark}

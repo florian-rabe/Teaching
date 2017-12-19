@@ -1,0 +1,162 @@
+\footnote{This chapter may be outdated.}
+
+\section{Type Theories}
+
+\paragraph{Syntax}
+The syntax of a typed language $L$ consists of signatures $\Sigma$, contexts $\Gamma$ for every signature, well-formed expressions in context, and subsitutions $\gamma$ for every pair of $\Sigma$-contexts that translate well-formed expressions.
+In all cases, we can choose between a type-theoretic (judgmental) notation (in black) and a set-theoretic notation (in gray).
+
+Languages differ (only) in what classes of well-formed expressions there are:
+\begin{itemize}
+	\item FOL: terms,
+	\item STT, HOL: types and typed terms,
+	\item LF: kinds, kinded type families and typed terms.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{|ll|ll|}
+\hline
+\multicolumn{4}{|c|}{$\issig[L]{\Sigma}$ \tb {\color{gray}$\Sigma\in\Sig^L$}} \\[.2cm]
+\hline
+$\iscont[L]{\Sigma}{\Gamma}$                   & {\color{gray}$\Gamma\in\Con^L(\Sigma)$}    & 
+$\issubs[L]{\Sigma}{\Gamma}{\Gamma'}{\gamma}$  & {\color{gray}$\gamma:\Gamma'\arr\Gamma'$} \\[.2cm]
+\hline
+$\oftype[L]{\Sigma}{\Gamma}{E_1}{E_2}$         & {\color{gray}$E_1\in\op{wf}^{L,\Sigma}(\Gamma,E_2)$}   &
+$\oftype[L]{\Sigma}{\Gamma'}{\overline{\gamma}(E_1)}{\overline{\gamma}(E_2)}$
+                             & {\color{gray}$\overline{\gamma}:\op{wf}^{L,\Sigma}(\Gamma,E_2)\arr \op{wf}^{L,\Sigma}(\Gamma',\overline{\gamma}(E_2))$} \\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+There are two ways to translate the above table: into another signature along a signature morphism, or into the semantic domain along a model.
+
+\paragraph{Translation into Other Signatures}
+Here, the syntax is translated along a signature morphism $\sigma$ from $\Sigma$ to $\Sigma'$, contexts, substitutions, and well-formed expressions are translated to their counterparts.
+The counterpart of the substitution-value-lemma is a lemma that states that substitutions $\ov{\gamma}(-)$ and signature morphisms $\ov{\sigma}(-)$ commute.
+
+Languages differ (only) in how signature morphisms are represented, depending on what classes of well-formed expressions are present. In all cases, they can be written as list of pairs of a symbol and an expression.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{$\ismorph{\Sigma}{\Sigma'}{\sigma}$}\\[.2cm]
+\hline
+$\iscont[L]{\Sigma'}{\ov{\sigma}(\Gamma)}$ & $\issubs[L]{\Sigma'}{\ov{\sigma}(\Gamma)}{\ov{\sigma}(\Gamma')}{\ov{\sigma}(\gamma)}$ \\[.2cm]
+\hline
+$\oftype[L]{\Sigma'}{\ov{\sigma}(\Gamma)}{\ov{\sigma}(E_1)}{\ov{\sigma}(E_2)}$  &
+  $\ov{\sigma}\circ\ov{\gamma} = \ov{\ov{\sigma}(\gamma)}\circ\ov{\sigma}$\\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Translation into Models}
+Here, signatures are interpreted by models $I$, contexts by an $I$-assignments $\alpha$, and the well-formed $\Gamma$-expressions $E$ as set-theoretical objects $\semm{E}{I,\alpha}$. Substitutions are interpreted as mappings between assignments, and the substitution-value lemma states that substitution $\ov{\gamma}(-)$ and interpretation $\sem{-}$ commute.
+
+Languages differ (only) in what set-theoretical objects serve as the interpretation of well-formed expressions.
+\begin{itemize}
+	\item FOL: elements of some set for terms
+	\item STT, HOL: sets for base types, elements of sets for terms,
+	\item LF: classes for kinds, elements of classes (i.e., sets) for type families, elemens of sets for terms.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{$I\in\Mod^L{\Sigma}$}\\[.2cm]
+\hline
+$\alpha\in\semm{\Gamma}{I}$ & $\semm{\gamma}{I}:\semm{\Gamma'}{I}\arr\semm{\Gamma}{I}$ \\[.2cm]
+\hline
+$\semcm{\Gamma}{E_1}{I,\alpha}\in\semcm{\Gamma}{E_2}{I,\alpha}$ & $\semcm{\Gamma}{\ov{\gamma}(E)}{I,\alpha'}=\semcm{\Gamma}{E}{I,\semm{\gamma}{I}(\alpha')}$ \\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+
+\section{Logics}
+
+Logics adds formulas and consequence to the above pictures.
+
+\paragraph{Syntax}
+The syntax of a logic $L$ adds formulas and proofs as classes of well-formed expressions. Sometimes these are new classes, sometimes they are special cases of existing classes (e.g., terms). In the former case, all definitions and results have to be extended with the new cases. In particular, new judgments for well-formed formulas and well-formed proofs must be added. In the latter case, these are special cases of existing definitions and results.
+\begin{itemize}
+	\item FOL standalone: Both formulas and proofs are new. Therefore, all definitions and results must be extended for them. $F:\FORM$ and $p:\PROOF\;F$ are just notations for well-formed formulas and proofs, which happen to use a colon but have no connection to typing.
+	\item HOL in STT: $\FORM$ can be defined as a type and formulas as terms of that type. Therefore, all properties of formulas are inherited from STT; in particular, well-formedness of formulas is a special case of typing. For proofs, definitions and results must be extended.
+	\item FOL or HOL in LF: $\FORM$ and $\PROOF\;F$ can be defined as types and formulas and proof as terms of these types. Therefore, no new definitions or results are necessary; in particular, well-formedness of terms and proofs (possibly using assumptions) are special cases of typing.
+\end{itemize}
+
+Once the judgments for formulas and proofs are in place, we obtain the notions of theories, sentences, and proof-theoretical consequence. Usually, these judgments are most interesting for the case of empty contexts (but the general is needed to make the involved induction go through).
+
+The type-theoretical method builds on explicit proofs. Thus, theories lists $\Delta=a_1:\PROOF\;F_1,\ldots,a_n:\PROOF\;F_n$ of named assumptions. The model-theoretical method considers proofs to be of secondary importance and writes theories as set $\Theta=\{F_1,\ldots,F_n\}$ of sentences.
+
+\begin{center}
+\begin{tabular}{|ll|}
+\hline
+$\issig[L]{\Sigma}$                      & {\color{gray}$\Sigma\in\Sig^L$} \\[.2cm]
+%$\iscont[L]{\Sigma}{\Delta}$             & {\color{gray}$(\Sigma,\Theta)\in\Th^L$} \\[.2cm]
+\hline
+%$\oftype[L]{\Sigma}{\Gamma}{F}{\FORM}$   &  \\
+$\oftype[L]{\Sigma}{\cdot}{F}{\FORM}$    & {\color{gray}$F\in\Sen^L(\Sigma)$} \\[.2cm]
+\hline
+%$\oftype[L]{\Sigma}{\Gamma;\Delta}{p}{\PROOF\;F}$ & \\
+\multicolumn{2}{|c|}{$\oftype[L]{\Sigma}{\cdot;\Delta}{p}{\PROOF\;F}$} 
+%& {\color{gray}$F\in\Thm^L(\Sigma,\Theta)$}
+\\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Translation into Other Signatures}
+Signature morphisms translate formulas to formulas and proofs to proofs. Depending on whether formulas and proofs are special cases of terms, this may or may not require no definitions.
+
+Once the translation of formulas is in place, we obtain the translation of theories by translating the axioms component-wise.
+
+\begin{center}
+\begin{tabular}{|ll|}
+\hline
+\multicolumn{2}{|c|}{$\ismorph[L]{\Sigma}{\Sigma'}{\sigma}$}\\[.2cm]
+\hline
+$\isform[L]{\Sigma'}{\cdot}{\ov{\sigma}(F)}$ & {\color{gray}$\Sen^L(\sigma):\Sen^L(\Sigma)\arr\Sen^L(\Sigma')$} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{$\oftype[L]{\Sigma'}{\cdot;\ov{\sigma}(\Delta)}{\ov{\sigma}(p)}{\PROOF\;\ov{\sigma}(F)}$}
+% & {\color{gray}$\Sen^L(\sigma):\Thm^L(\Sigma,\Theta)\arr\Thm^L(\Sigma',\ov{\sigma}(\Theta))$}
+\\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Translation into Models}
+Models interpret formulas as truth values. Logics may differ in the interpretation of $\FORM$, the set of truth values, which at least contains one designated truth value $1$. Usually, the of truth values is $\{0,1\}$. Models do not interpret proofs but soundness requires them to respect proofs in the sense that provable formulas must be interpreted as $1$.
+
+Once the interpretation of formulas is in place, we obtain the interpretation of theories $(\Sigma,\Theta)$ as the collection $\Sigma$-models satisfying all axioms in $\Theta$.
+
+\begin{center}
+\begin{tabular}{|c|}
+\hline
+$I\in\Mod^L(\Sigma)$\\[.2cm]
+\hline
+$\moda{I}{\Sigma}{F}$ \tb iff \tb $\semm{F}{I}=1$ \\[.2cm]
+\hline
+if $I\in\Mod^L(\Sigma,\Theta)$, then $\moda{I}{\Sigma}{F}$ \\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Consequence}
+Proof-theoretical consequence is defined in terms of well-formed proofs. Model-theoretical consequence is defined in terms of models. In both cases, we obtain definitions of well-formed theory morphisms as consequence-preserving signature morphisms.
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+$\dera[L]{\Theta}{\Sigma}{F}$ \tb iff\tb ex. $p$ s.t. $\oftype[L]{\Sigma}{;\Delta}{p}{\PROOF\;F}$
+  & {\color{gray} $\moda[L]{\Theta}{\Sigma}{F}$ \tb iff \tb f.a. $I\in\Mod^L(\Sigma,\Theta)$ holds $\moda[L]{I}{\Sigma}{F}$} \\ [.2cm]
+\hline
+\multicolumn{2}{|c|}{$\ismorph[L]{\Sigma}{\Sigma'}{\sigma}$ theory morphism from $(\Sigma,\Theta)$ to $(\Sigma',\Theta')$ \tb iff \tb for all $F_i\in\Theta$} \\[.2cm]
+$\dera[L]{\Theta}{\Sigma}{F}$ & {\color{gray}$\moda[L]{\Theta}{\Sigma}{F}$} \\[.2cm]
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Soundness and Completeness}
+Soundness and completeness are the two implications between the two different possibilities to define consequence. While soundness is indispensable, completeness may sometimes be sacrificed to avoid using undecidable sets of rules or unusual models.
+
+FOL is essentially the most complicated logic for which completeness holds.

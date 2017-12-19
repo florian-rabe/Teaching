@@ -1,0 +1,134 @@
+\section{Background}
+
+\paragraph{History}
+The discovery of paradoxa, i.e., contradictions, in what is called \defemph{naive set theory} in retrospect caused the Grundlagenkrise around 1900. Naive set theory was the implicitly assumed foundation of mathematics at the time, Cantor's Grundlagen (\cite{grundlagen}) from 1883 being the most influential contribution. The best known paradoxon was found by Russell in 1901 (\cite{russellparadox}). Peano had noticed a similar one in 1897.
+
+Roughly, Russell's paradoxon arises from unlimited set comprehension. That leads to a contradiction because it permits to form the set of all sets that do not contain themselves. Intuitively, a contradiction in a logic means that something is both true and not true. That typically makes everything true, by which truth becomes vacuous. Since mathematics is a strictly hierarchical science with every new concept resting on the preceding ones, a contradiction in mathematics, unless it can be remedied somehow, is tantamount to total destruction. Therefore, the freeness from contradictions, called \defemph{consistency}, is crucial for a foundation.
+
+In response to this, mathematicians have developed several --- sometimes alternative, sometimes complementary --- foundations that can replace naive set theory. This happened over several decades as an evolutionary creative process. But it did not culminate in a commonly accepted solution. Rather, it led to profound and sometimes fierce debates on what mathematics is. The personal quarrel between Hilbert and Brouwer, which was partially fuelled by these debates, is an almost tragic example. From this evolution emerged two major classes of foundations: axiomatic set theory and type theory. (The clear separation between set and type theory is partially drawn here for instructive purposes: The historical and mathematical boundaries are not as sharp.)
+
+The basic idea of \defemph{axiomatic set theory} is that there is a universe of sets, and any mathematical object ever introduced is a set. The sets are related via the binary relations of equality and membership. For example $m\in M$ is used to say that the set $m$ is a member of the set $M$. Depending on context, $M$ is regarded as a property of $m$ or as a structuring concept.
+
+To talk about sets, equality, and membership, propositions are used. The basic propositions are of the form $m=m'$ and $m\in M$. Composed propositions are built up from the basic ones. Typically, (at least) FOL is used as the language of composed propositions: FOL uses propositions such as $F\wedge G$ and $\forall x. F(x)$ denoting ``$F$ and $G$ are true'' and ``for all (sets) $x$, $F$ is true about $x$''.
+
+\defemph{Type theory} mainly differs from set theory in that it employs a stratification of the mathematical universe. In the simplest type theories, the basic concepts are \emph{term} and type. Intuitively, terms represent mathematical objects, and types represent properties and structuring concepts. And for a term $m$ and a type $M$, the propositions (in the context of type theory often called judgments) $m=m$, $M=M$, and $m:M$ are used, where the first two state equality and the third is used to say that $m$ has type $M$. Thus, the cases $m:m$ and $M:M$ leading to the paradoxon of naive set theory are excluded by construction. Often a term may only have one type, which is in contrast to set theory, where a set may be a member of arbitrary many other sets. In that case there is a characteristic contrast between the universe of sets in set theory and the typed terms of type theory.
+
+Both set theory and type theory have led to numerous specific foundations of mathematics. Zermelo-Fraenkel set theory, based on \cite{zermelo,fraenkel}, is most commonly in use today. Other variants are von Neumann-Bernays-G\"odel set theory, based on \cite{vonneumann,bernays,goedelsettheory}, which is important for category theory, and Tarski-Groethendieck set theory, based on \cite{tarskisettheory,bourbakiunivers}. The first type theory was Russells's ramified theory of types (\cite{typetheoryrussell}). And in their Principia (\cite{principia}), Whitehead and Russell gave one of the most influential foundations of mathematics. Church's simple theory of types, also called higher-order logic, (\cite{churchtypes}) is the most-used type theory today. Important other type theories are typically organized in the lambda cube (\cite{lambdacube}) and include dependent type theory (\cite{martinlof,lf}), System F (\cite{sytemfgirard,systemfreynolds}), and the calculus of constructions (\cite{calcconstructions}). Most of these foundations have further variants, such as Zermelo-Fraenkel set theory with or without the Axiom of Choice or type theory with or without product types.
+
+\paragraph{Philosophy of Mathematics}
+Besides the set/type theory distinction, there are other dimensions along which foundations can be distinguished. We will only briefly mention the question of the philosophical nature of mathematics. In \defemph{platonism} (going back to Plato, with various defenders in the 20th century, e.g., K. G\"odel), formal mathematical objects are only devised as representations of abstract platonic objects to assist in reasoning. And within the non-platonistic view, four important schools can be singled out. In \defemph{formalism} (main proponent D. Hilbert, see, e.g., \cite{hilbertsprogram}), the formal mathematical objects themselves are the objects of interest. Thus, mathematical reasoning can be reduced to purely mechanical procedures. In \defemph{logicism} (main proponent G. Frege, see \cite{logicism}), all of mathematics is reduced to logic, i.e., all axioms are logical truths without mathematical intuition. In \defemph{intuitionism} (main proponent L. Brouwer, see \cite{brouwer}), truth depends on a mathematician's experience of it. Thus, mathematical proofs are only supplements of mental constructions. Intuitionism rejects, e.g., an argument that derives ``$F$'' from ``not not $F$'' because the absence of the truth of ``not $F$'' does not yield the truth of ``$F$''. And \defemph{predicativism} (main proponents H. Weyl, S. Feferman, see \cite{predicativism,predicativism2}) emphasizes the need that a mathematical definition may not depend on the defined object itself. Predicativism rejects, e.g., the definition of a closure of a set as the intersection of all supersets with a certain property because the closure is among the intersected sets.
+
+The correlation of these philosophical views to each other and to the set/type theory distinction is complex. Most mathematicians tend to think platonistically, and platonists tend to favor set theory over type theory. Computer-supported work tends to be formalistic. But formalism is not strongly correlated with either set or type theory. Type theories are usually predicative and often intuitionistic whereas set theories are usually neither. Similarly, researchers favoring type theory tend to favor intuitionism and predicativism. The importance of logicism has faded in general. A good overview is given in \cite{sep_philosophy}.
+
+\begin{center}
+\begin{tabular}{|l|l|p{.5\textwidth}|}
+\hline
+Frege & 1879 & first mordern logic \\
+Cantor & 1883 & (naive) set theory \\
+Peano & 1889 & axioms for natural numbers \\
+Russell & 1901 & paradoxon in naive (= informal) set theory, Grundlagenkrise \\
+Brouwer & 1900s & intuitionism \\
+Russell, Whitehead & 1900s & first type theory (Principia) \\
+Zermelo, Fraenkel & about 1910s & first axiomatic set theory \\
+Hilbert & 1920s & Hilbert's program (reduction of mathematics to formal methods) \\
+G\"odel & 1930 & incompleteness results, impossibility of Hilbert's program \\
+G\"odel, Gentzen & 1930s & first-order logic \\
+Church & 1930s & lambda calculus, higher-order logic \\
+de Bruijn & 1970s & first formalized (= computerized) foundation (Automath) \\
+various & 1970s, 1980s & advanced type theories (dependent types, calculus of constructions, LF) \\
+various & since 1980s & advanced formalized foundations (Mizar, HOL, Coq) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Foundations as Informal Concepts}
+
+\paragraph{Foundations and Logics}
+A foundation of mathematics is a formal language \emph{for mathematics itself}.
+
+This is different from a logic: Logics are formal languages developed \emph{within mathematics}. In the grand hierarchy of mathematics, the foundation is the very first thing we introduce. Then, using the foundation, we develop all objects of mathematics interest, such as sets, functions, numbers, algebraic structures, and also logics.
+
+On the other hand, foundations and logics are very similar: Both are formal languages used to describe mathematical objects. In fact, foundations usually arise by fixing a logic and one logical theory in it. For example, axiomatic set theory from Ex.~\ref{ex:set} is a foundation that arises by fixing a theory of the logic FOLEQ.
+\medskip
+
+To disentangle the relationship between logics and foundations, let us look at the dependency between them. Logics consist of three parts: syntax, proof theory, and model theory.
+We have seen that the syntax and the proof theory of a logic can be described using only very basic mathematical tools: grammars and inference systems. And these two tools do not depend on anything else in mathematics -- they are just producing and manipulating strings.
+\footnote{Readers already familiar with LF from Part \ref{part:lf} should note that this is exactly what LF provides. Thus, if we take LF for granted, we can define all the other grammars and inference systems within LF.}
+
+The situation is different for the model theory: Models interpret the syntax in mathematics. Since every model may make use of any mathematical object, the model theory of a logic may depend on everything else in mathematics. So far we have been a bit vague about what constitutes ``mathematics'' -- we have simply assumed an ambient language in which we can express whatever mathematical intuitions we have. We can now make this more precise: The ambient language is the foundation, and a model is an interpretation of the syntax in the foundation.
+\medskip
+
+Thus, \emph{proof-theoretic logics}, i.e., languages which have a syntax and proof theory but no model theory, can be given without reference to other areas of mathematics.
+Now we can say: A \emph{foundation} arises by fixing a proof-theoretic logic and a theory in it. We speak of the \emph{foundational logic} and the \emph{foundational theory}.
+We cannot give a model theoretic semantics for the foundation itself -- it is inherent in the nature of the foundation that there is no other language in which we could formally interpret it.
+
+\paragraph{The Definitional Method}
+We arrive at the following blueprint to build mathematics:
+\begin{enumerate}
+ \item We define grammars and inference systems.
+ \footnote{Readers already familiar with LF from Part \ref{part:lf} may read this as: We introduce LF.}
+ \item We use them to define proof-theoretic logics.
+ \item We fix one proof-theoretical logic and one theory in it as the foundation.
+ \item We develop mathematics within this theory. In particular, we give model theories for other logics.
+\end{enumerate}
+
+Developing mathematics in a foundation means that every mathematical object is formally defined as an expression in the foundation. Mathematical theorems are the provable sentences of that theory. For example, if $ST$ is the FOLEQ-theory for set theory, and we fix $ST$ as the foundation, then every mathematical object is a FOLEQ-term over $ST$, and every mathematical sentence is a FOLEQ-sentence.
+
+This is called the \emph{definitional method}: Every new object is introduced by defining it in terms of previously defined objects. The only primitives objects are those symbols introduced by the foundation. Similarly, every new theorem is proved from previously established theorems. The only primitive theorems are the axioms introduced by the foundation.
+
+\paragraph{Definition Principles}
+Interestingly, the above blueprint is not quite correct. It turns out that the definitional method is rather weak: Often less objects can be defined than we want to define. This could, in principle, be remedied by changing the logic accordingly. Arguably, it should be remedied this way. But this is not what scholars have preferred in the past.
+
+Instead, besides fixing a logic and a theory in it, they usually introduce a third entity: \emph{definition principles} for \emph{conservative extensions}. A definition principle adds some new primitive symbol and some new axioms to the foundation in such a way that the new foundation is a conservative extension of the original one. Here ``conservative'' means the semantics is retained in the following sense: The extended foundations agrees with the old foundation regarding which sentences of the old foundation are theorems and which are not.
+
+The most important example of a definition principle is \emph{description}. Assume our foundations has a quantifier $\exists^!$ for unique existence, and assume we have proved $\exists^! x.F(x)$. Then the description principle, lets us add a new principle symbol $c$ together with an axiom $F(c)$. The intuition is that 
+we introduce $c$ as a name for the uniquely existing object.
+
+\paragraph{Leaps of Faith}
+The appeal of the definitional method is that the problem of inconsistency is reduced to the choice of the foundation. If the axiom of the foundation are chosen consistently, then the definitional method can never introduce inconsistencies. Thus, the foundations provides a solid, robust footing to get off the ground.
+
+But how can we be sure that the foundation is consistent. The best way to prove consistency of a theory is to give a model. But we cannot give a model theory for the foundation itself. Even if we could somehow manage to prove consistency -- e.g., by giving a model the foundation within itself -- this would not help: Using the foundation to prove its own consistency is just circular reasoning -- of course, an inconsistent foundation can prove anything including its own consistency. In fact, G\"odel's theorem goes even further: It basically says that the only foundations that can prove their own consistency are the inconsistent ones.
+
+Therefore, we have to trust the consistency of the foundation. Understandably, this has led to a substantial amount of disagreement between scholars arguing which foundation to use. Usually, we try to use the weakest possible foundation, the one that requires the least trust. A foundation should only formalize ideas that are immediately obvious and somehow justified by our intuition and reality.
+
+Due to this disagreement about which leaps of faith to take, scholars have not agreed on a joint foundation and probably never will. Instead, multiple foundations exist, and each one of them is used to develop mathematics. Moreover, if we have multiple foundations, we can use of them to give model theories for each other. This amounts to translating between foundations. While this does not prove consistency of any one of them (After all, they might all be inconsistent.), this kind of cross-verification gives additional trust in them.
+
+\paragraph{The Axiomatic Method}
+The definitional method fixes a logic and a theory as the foundation. The axiomatic method on the contrary uses multiple logics and theories at the same time.
+Where the definitional method takes care to define every new object in terms of the previously defined ones, the axiomatic method simply switches to other theories in which new primitive symbols and axioms are added.
+
+For example, in set theory, the definitional method introduces the natural numbers (using $0:=\es$, $1:=\{\es\}$, etc.), then the integers (using pairs $(a,b)$ of natural numbers quotiented by $(a,b)\sim (a',b') \miff a+b'=b+a'$), then the rational numbers (similarly, using pairs $(a,b)$ of integers), and finally the real numbers (using Cauchy sequences of rational numbers or Dedekind cuts of the set of rational numbers).
+The axiomatic method simply introduces the real numbers using a theory similar to the one for the natural numbers in Ex.~\ref{ex:nat:succ}.
+
+There are two key differences between the two methods. Firstly, the axiomatic method is much simpler: It does not bother us with the details of how the numbers are defined. But it pays a price: Consistency is not guaranteed at all because axioms are introduced freely.
+Secondly, the definitional method constructs the real numbers as objects in the foundation; so we know exactly what they are. But it pays a price, too: The construction depends on the foundation and only works in this foundation.
+
+The axiomatic method can be seen as a complement to the definitional method that abstracts from the construction and only works with the final result. Axiomatically, we pick a logic $L$ and a theory $T$ and do some work in it, e.g., by proving $T\der^L F$. Definitionally, we fix a foundation $\mathcal{F}$ and give a sound model theory $M$ for $L$ and a model for $T$ in it. Because of soundness, we can port the axiomatic result to the definitional realm and conclude that $M\md^{\mathcal{F}} F$.
+
+Most importantly, the axiomatic result can be reused in any foundation, in which a model $M$ can be found. If $T$ is theory of the real numbers, it does not matter if $M$ is constructed in set theory using Cauchy sequences or in any other way in any other foundation. Scholars use this principle implicitly all the time and thus gain a certain degree of independence from the foundation.
+
+Most results in mathematics are separated from the foundation by several layers of axiomatic theories. It is understood that a result applies to any foundation in which these axiomatic theories can be modeled. Since most mathematically interesting axiomatic theories can be modeled in each foundation, (If not, it is arguably a bad foundation.), it often does not matter which foundation a result is based on.
+
+\section{An Abstract Definition of a Foundation}\label{sec:found:abs}
+
+We can give a formal definition of a foundation in the following way:
+
+\begin{definition}[Foundation]
+A \emph{foundation} consists of a proof theoretical logic $L$ and a theory $\found$ of $L$.
+\end{definition}
+
+This definition does not account for definition principles yet. Let us first define:
+
+\begin{definition}
+In a logic $L=(\Sig,\Sen,\Pf,\val)$, a theory extension $(\Sigma,\Theta)\harr(\Sigma',\Theta')$ is \emph{conservative} if
+  \[\dera{\Theta}{\Sigma}{F} \tb\miff\tb \dera{\Theta'}{\Sigma'}{F} \tb\mforall F\in\Sen(\Sigma)\]
+\end{definition}
+
+Thus, an extension is conservative if the provability of the old sentences (i.e., the ones from $\Sigma$) is not affected when switching to $(\Sigma',\Theta')$. That is exactly when enriching our foundation with a definition principle.
+
+Thus, we can say: A definition principle is a sufficient criterion for when a theory extension in $L$ is conservative. Then, appealing to a definition principle means to switch from a theory $T$ to a conservative extension of $T$. In particular, developing mathematics in $\found$ is about building a tree of conservative extensions with $\found$ at the root.
+\medskip
+
+The axiomatic approach is similar except that it studies all extensions, including the non-conservative ones. Therefore, the axiomatic approach works with a collection of trees of conservative extensions. Whenever a non-conservative extension is used, a new tree must be started.
+
+Theory morphisms in $L$ permit moving theorems between these trees. Here we can make use of conservative extensions as follows: We can choose the domain as small as possible (i.e., the root of one these trees); that is good because there are less things to prove. And we can make the codomain as large as possible (i.e., some node high up in a tree of conservative extensions); that is good because there are more things available to do the proof.

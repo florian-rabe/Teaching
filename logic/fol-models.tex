@@ -1,0 +1,1259 @@
+In the previous chapter, we saw the syntax of several logics. Even though the symbols used in the formulas had an intuitive meaning (We all knew that $\wedge$ is supposed to mean ``and''.), we avoided these intuitions. In this chapter, we will define formally the meaning of the symbols and the formulas. Instead of ``meaning'', it is also common to say \emph{interpretation} or \emph{semantics}.
+\medskip
+
+The semantics of a context-free language is usually defined as a function from the syntax to some other language. This function is defined by induction on syntax trees. The ``other language'' is called the \emph{meta-language}. For programming languages, the meta-language is often natural language. For example, the semantics of Java is given in various big books called something like ``Java language specification''. Another meta-language used to define the semantics of a programming language is assembler (or byte code in the case of Java). In that case the above-mentioned function is implemented in the compiler.
+\medskip
+
+A crucial characteristic of logics is that the meta-language is a formal language as well, namely mathematics. There are many names for the function that maps syntax to semantics in the literature. We will use the function $\sem{-}$. Thus, $\sem{w}$ is the semantics of $w$.
+
+Based on a context-free grammar for the syntax, $\sem{-}$ can be described as follows:
+\begin{itemize}
+\item Every non-terminal $A$ of the syntax (e.g., $\FORM$ and $\TERM$) is mapped to a set $\sem{A}$.
+\item Every word $w$ (e.g., a formula or term, respectively) derived from $A$ is mapped to an element $\sem{w}\in\sem{A}$.
+\item The latter is defined by induction on the syntax tree that derives $w$ from $A$.
+\end{itemize}
+
+%Equivalently, based on an inference system for the syntax, $\sem{-}$ can be described as follows:
+%\begin{itemize}
+%\item Every holding judgment about the logic is mapped to a holding judgment about the meta-language.
+%\item The latter is defined by induction on the derivations.
+%\end{itemize}
+
+\section{Semantics of Propositional Logic}
+
+\subsection{The Standard Semantics}
+
+First we interpret the single non-terminal:
+\[\sem{\FORM}=\{0,1\}\]
+The intuition here is that for all formulas $F$, we have that $\sem{F}=1$ denotes ``$F$ is true'', and $\sem{F}=0$ denotes ``$F$ is false''. The elements $0$ and $1$ are called the \emph{truth values}. Instead of $\{0,1\}$, it is also common to use the sets $\{\bot,\top\}$ (bottom and top) or $\{F,T\}$.
+
+Then we need a mapping $\sem{-}:\Sen^{PL}(\Sigma)\arr\{0,1\}$ for all signatures $\Sigma$. The definition is by induction on syntax trees, and we need one case for every production. The straightforward approach looks like this:
+\begin{itemize}
+\item $\sem{\true} = 1$,
+\item $\sem{\false} = 0$,
+\item $\sem{F\wedge G} = \min\{\sem{F},\sem{G}\} = \cas{1\mifc \sem{F}=1 \mand \sem{G}=1 \\ 0 \mothw}$,
+\item $\sem{F\vee G} = \max\{\sem{F},\sem{G}\} = \cas{1\mifc \sem{F}=1 \mor \sem{G}=1 \\ 0 \mothw}$,
+\item $\sem{F\arr G} = \min\{\sem{G}-\sem{F},0\}+1 = \cas{1\mifc \sem{F}\leq\sem{G} \\ 0 \mothw}$,
+\item $\sem{\neg F} = 1-\sem{F} = \cas{1\mifc \sem{F}=0 \\ 0 \mothw}$,
+\item for $p\in\Sigma$: $\sem{p}= \;???$
+\end{itemize}
+
+The above definition shows two things: Firstly, $\wedge$, $\vee$, $\arr$, and $\neg$ can be interpreted naturally as ``and'', ``or'', ``if \ldots then'', and ``not'', respectively. Secondly, the boolean variables $p\in\Sigma$ cannot be interpreted naturally. This was to be expected: The boolean variables represent arbitrary statements, and of course arbitrary statements can be true or false depending on the situation.
+\medskip
+
+Therefore, we cannot simply define a mapping $\sem{-}:\Sen(\Sigma)\arr\{0,1\}$. Instead, we introduce the concept of models.
+
+\begin{definition}[Models]
+A \emph{model} of the PL-signature $\Sigma$ is a mapping $\Sigma\arr\{0,1\}$.
+We denote the set of PL-models for $\Sigma$ by $\Mod^{PL}(\Sigma)$.
+\end{definition}
+
+The idea of models is that they collect all the cases that are missing in the inductive definition of the semantics. Those are all cases for production that refer to the signature. In the case of PL, there is only one such production, namely $\FORM ::= p$. Therefore, PL-models consists of one function that interprets all $p\in\Sigma$. The semantics is then defined \emph{relative to a model}, i.e., a formula has different meanings depending on the model in which it is interpreted.
+Instead of ``model'', it is common to say \emph{interpretation function} or \emph{structure}.
+\medskip
+
+Now we can define the semantics of PL as follows.
+\begin{definition}[Semantics of PL]\label{semantics:pl}
+Assume a PL-signature $\Sigma$ and a model $I\in\Mod^{PL}(\Sigma)$. Then we define the interpretation $\semm{-}{I}:\Sen(\Sigma)\arr\{0,1\}$ of $\Sigma$-sentences in $I$ as follows:
+\begin{itemize}
+\item $\semm{\true}{I} = 1$,
+\item $\semm{\false}{I} = 0$,
+\item $\semm{F\wedge G}{I} = \min\{\semm{F}{I},\semm{G}{I}\}$,
+\item $\semm{F\vee G}{I} = \max\{\semm{F}{I}, \semm{G}{I}\}$,
+\item $\semm{F\arr G}{I} = \min\{\semm{G}{I}-\semm{F}{I},0\}+1$,
+\item $\semm{\neg F}{I} = 1-\semm{F}{I}$,
+\item for $p\in\Sigma$: $\semm{p}{I}=I(p)$.
+\end{itemize}
+\end{definition}
+
+\begin{notation}[Satisfaction]
+We also write \[\moda[PL]{I}{\Sigma}{F} \tb\miff\tb \semm{F}{I}=1\]
+where $PL$ and $\Sigma$ are often omitted if they are clear from the context.
+
+We say that $I$ satisfies $F$ or $F$ holds in $I$.
+\end{notation}
+
+\begin{example}
+Assume the PL-signature $\Sigma=\{p,q,r\}$. A model $I\in\Mod^{PL}(\Sigma)$ is given by $I(p)=I(q)=1$ and $I(r)=0$. Then we have:
+\begin{itemize}
+\item $\semm{p\wedge\true}{I}=1$,
+\item $\semm{\neg(p\vee q)\vee r}{I}=0$.
+\end{itemize}
+\end{example}
+
+For some sentences, the semantics does not depend on the model. For example, we have $\semm{\true\wedge\neg \false}{I}=1$ and $\semm{p\vee\neg p}{I}=1$ in every model $I$. The study of such sentences is a primary concern of logic. Thus, they get a special name in the following definition.
+
+\begin{definition}\label{def:theorem}
+Assume a PL-signature $\Sigma$ and a $\Sigma$-sentence $F$. $F$ is called
+\begin{itemize}
+\item a \emph{theorem} or \emph{tautology} if $\semm{F}{I} = 1$ for all models $I$,
+\item \emph{satisfiable} if $\semm{F}{I} = 1$ for some (maybe all) models $I$,
+\item \emph{unsatisfiable} or \emph{contradiction} if $\semm{F}{I} = 0$ for all models $I$.
+\end{itemize}
+\end{definition}
+
+\begin{remark}
+One of the most important problems of computer science is the following: Given a PL-formula $F$, decide whether $F$ is satisfiable or not. This problem is so important that it has its own name: $\op{SAT}$. It is a good exercise at this point to solve it, i.e., to give an algorithm that answers the above question for input $F$.
+\end{remark}
+
+\subsection{Other Semantics for the PL syntax}
+
+\footnote{This section can be skipped.}
+
+It is important to realize that a logic has a syntax and a semantics. This means that it is possible that two different logics have the same logic syntax (i.e., the same signatures and the same sentences) but different semantics. The following logics are not extremely important per se. But they serve as examples to illustrate that the semantics chosen above for the logic PL is not the only possible choice.
+
+\begin{example}[Fuzzy Propositional Logic]
+Fuzzy propositional logic (FPL) has the same syntax as PL. But $\sem{\FORM}=[0;1]$, and a model for the signature $\Sigma$ is a mapping $\Sigma\arr[0;1]$. In other words, all real numbers between $0$ and $1$ are possible truth values. The intuition is that $\semm{F}{I}=0.4$ is that $F$  is 40 \% true. Thus, fuzzy logics permits us to talk about degrees of truth, insecure truths, and probabilities. Fuzzy logics have proved very useful in machine controls where interpretations often change gradually: For example, the rule ``If another robot is \emph{close}, decelerate \emph{a little}.'' can could be used to avoid collisions of mobile robots.
+
+The definition \[\semm{F\wedge G}{I}=\cas{1\mifc \semm{F}{I}=\semm{G}{I}=1\\0\mothw}\] does not make sense anymore for fuzzy logics. But the definition
+\[\semm{F\wedge G}{I}=\min\{\semm{F}{I},\semm{G}{I}\}\]
+is still appropriate. Similarly, the other cases of Def.~\ref{semantics:pl} can be reused.
+
+Thus, if $\semm{F}{I}=0.4$ and $\semm{G}{I}=0.3$, then $\semm{F\wedge G}{I}=0.3$. There are also other fuzzy logics that use
+\[\semm{F\wedge G}{I}=\semm{F}{I} \cdot\semm{G}{I}.\]
+Then we would have $\semm{F\wedge G}{I}=0.12$
+\end{example}
+
+\begin{example}[Paraconsistent Propositional Logic]
+In paraconsistent logic, we use the same syntax as for PL, but put $\sem{\FORM}=\{0,1,?,!\}$. The intuition is that $\semm{F}{I}=?$ means that the interpretation of $F$ is unknown. The intuition of $\semm{F}{I}=!$ means that $F$ is both true and false. Paraconsistent logics have proved useful when talking about knowledge about the world: Often we do not know whether something is true or false, or we have arguments in favor of and against a certain conclusion.
+\end{example}
+
+
+\section{Semantics of First-Order Logic}
+
+In principle, the semantics of FOLEQ and FOL is defined in the same way as the semantics of PL. The difference is that now we have two non-terminals that we must interpret ($\FORM$ and $\TERM$) and that the signature has function and predicate symbols that need a semantics from the models. Again, we start with the straightforward approach without using a model and see how far we get. The cases where we get stuck and need the models are written in gray.
+
+\begin{itemize}
+\item $\sem{\FORM}=\{0,1\}$,
+\item {\color{gray} $\sem{\TERM}=\univ^I$ where $\univ^I$ is some set that must come from the model}
+\item $\sem{\true} = 1$,
+\item $\sem{\false} = 0$,
+\item {\color{gray} $\sem{x}=$ some element of $\univ^I$ that must come from the model or from somewhere else}
+\item {\color{gray} $\sem{f(t_1,\ldots,t_n)} = f^I(\sem{t_1},\ldots,\sem{t_n})$ where $f^I$ is some mapping that must come from the model}
+\item {\color{gray} $\sem{p(t_1,\ldots,t_n)} = p^I(\sem{t_1},\ldots,\sem{t_n})$ where $p^I$ is some mapping that must come from the model}
+\item $\sem{F\wedge G} = \min\{\sem{F},\sem{G}\}$,
+\item $\sem{F\vee G} = \max\{\sem{F},\sem{G}\}$,
+\item $\sem{F\arr G} = \min\{\sem{G}-\sem{F},0\}+1$,
+\item $\sem{\neg F} = 1-\sem{F}$,
+\item $\sem{s\doteq t} = \cas{1\mifc \sem{s}=\sem{t} \\ 0\mothw}$
+\item $\sem{\forall x\;F} = \min\{\sem{F}(u) \| u\in \univ^I\}=\cas{1\mifc \sem{F}(u)=1 \mforall u\in \univ^I \\ 0\mothw}$\\
+ {\color{gray} where $\sem{F}(u)$ somehow means to evaluate $\sem{F}$ for the input $u$,}
+\item $\sem{\exists x\;F} = \max\{\sem{F}(u) \| u\in \univ^I\}=\cas{1\mifc \sem{F}(u)=1 \mforsome u\in \univ^I \\ 0\mothw}$\\
+ {\color{gray} where $\sem{F}(u)$ somehow means to evaluate $\sem{F}$ for the input $u$.}
+\end{itemize}
+
+Inspecting the above definition attempt, we find that a model $I$ must give us a set $\univ^I$, and functions $f^I$ and $p^I$ for all function symbols $f$ and predicate symbols $p$. We also need a way to interpret variables. The latter will be taken care of by assignments. Thus, we define as follows.
+
+
+\begin{definition}[Models]\label{def:fol:model}
+A \emph{model} $I$ of the $\FOLEQ$-signature $\Sigma=(\Sigma_p,\Sigma_f,\arit)$ is a mapping with domain $\{\univ\}\cup\Sigma_f\cup\Sigma_p$ such that
+\begin{itemize}
+\item $\univ^I$ is a set (called the \emph{universe} or the \emph{carrier set}),
+\item for every $f\in\Sigma_f$ with $\arit(f)=n$: $f^I$ is a mapping $f^I:(\univ^I)^n\arr \univ^I$,
+\item for every $p\in\Sigma_p$ with $\arit(p)=n$: $p^I$ is a mapping $p^I:(\univ^I)^n\arr \{0,1\}$.
+\end{itemize}
+Here and in the sequel, we write $\univ^I$, $f^I$, $p^I$ instead of $I(\univ)$, $I(f)$, $I(p)$.
+
+We denote the collection of $\Sigma$-models by $\Mod^{\FOLEQ}(\Sigma)$.
+\end{definition}
+
+The FOL-models are the same as the $\FOLEQ$-models.
+This makes sense because $\FOL$ and $\FOLEQ$ also have the same signatures.
+
+\begin{definition}[Assignments]
+Let $\Sigma$ be a signature.
+\begin{itemize}
+\item An \emph{assignment} $\alpha$ for a set of variables $\Gamma$ and the $\Sigma$-model $I$ is a mapping $\alpha:\Gamma\arr \univ^I$.
+\item If $\Gamma=\{x_1,\ldots,x_n\}$ and $\alpha(x_i)=u_i$, we write $\alpha$ as $[\sub{x_1}{u_1},\ldots,\sub{x_n}{u_n}]$.
+\item If $\alpha$ is an assignment for $\Gamma$, we write $[\alpha,\sub{x}{u}]$ for the assignment for $\Gamma\cup\{x\}$ that maps $x$ to $u$ and all other variables $y\in\Gamma$ to $\alpha(y)$.
+\end{itemize}
+\end{definition}
+
+\begin{remark}[Substitutions and Assignments]
+Substitutions and assignments behave very similarly and have very similar notations.
+Assignments replace variables with semantic values of some model (i.e., elements of $\univ^I$) in the same way in which substitutions replace variables with syntactic terms of some other context.
+\end{remark}
+
+If we have a model and an assignment, we can define the semantics of FOLEQ-formulas and terms.
+The definition follows the inductive definition of the syntax.
+
+\begin{definition}[Semantics of FOLEQ]\label{def:fol:interpretation}
+Given 
+\begin{itemize}
+\item a FOLEQ-signature $\Sigma$ and
+\item a $\Sigma$-context $\Gamma$,
+\end{itemize}
+we define the interpretation $\semm{w}{I,\alpha}$ of a formula or term $w$ over $\Sigma$ in context $\Gamma$
+\begin{itemize}
+\item in a $\Sigma$-model $I$ and
+\item under an assignment $\alpha$ for $\Gamma$ into $I$
+\end{itemize}
+as follows by induction on $\Gamma$ and $w$.
+\begin{itemize}
+\item $\semm{\FORM}{I,\alpha}=\{0,1\}$,
+\item $\semm{\TERM}{I,\alpha}=\univ^I$,
+\item $\semm{\true}{I,\alpha} = 1$,
+\item $\semm{\false}{I,\alpha} = 0$,
+\item $\semm{x}{I,\alpha}=\alpha(x)$,
+\item $\semm{f(t_1,\ldots,t_n)}{I,\alpha} = f^I(\semm{t_1}{I,\alpha},\ldots,\semm{t_n}{I,\alpha})$
+\item $\semm{p(t_1,\ldots,t_n)}{I,\alpha} = p^I(\semm{t_1}{I,\alpha},\ldots,\semm{t_n}{I,\alpha})$
+\item $\semm{F\wedge G}{I,\alpha} = \min\{\semm{F}{I,\alpha},\semm{G}{I,\alpha}\}$,
+\item $\semm{F\vee G}{I,\alpha} = \max\{\semm{F}{I,\alpha},\semm{G}{I,\alpha}\}$,
+\item $\semm{F\arr G}{I,\alpha} = \min\{\semm{G}{I,\alpha}-\semm{F}{I,\alpha},0\}+1$,
+\item $\semm{\neg F}{I,\alpha} = 1-\semm{F}{I,\alpha}$,
+\item $\semm{s\doteq t}{I,\alpha} = \cas{1\mifc \semm{s}{I,\alpha}=\semm{t}{I,\alpha} \\ 0\mothw}$,
+\item $\semm{\forall x\;F}{I,\alpha} = \min\{\semm{F}{I,[\sub{x}{u},\alpha]} \| u\in \univ^I\}$,
+\item $\semm{\exists x\;F}{I,\alpha} = \max\{\semm{F}{I,[\sub{x}{u},\alpha]} \| u\in \univ^I\}$.
+\end{itemize}
+In particular, for $\Gamma=\alpha=\es$ and $F\in\Sen(\Sigma)$, we write $\semm{F}{I}$ for the interpretation of $F$ in $I$.
+Then we also write \[\moda{I}{\Sigma}{F} \tb\miff\tb \semm{F}{I}=1.\]
+\end{definition}
+
+The semantics of FOL is the same as that of FOLEQ except that the case for $\doteq$ is dropped.
+
+\begin{example}[Monoids]
+Let $\Sigma$ be the signature of monoids from above. A model $I\in\Mod^{FOLEQ}(\Sigma)$ consists of
+\begin{itemize}
+\item a set $\univ^I$,
+\item an element $e^I\in \univ^I$,
+\item a binary mapping $\circ^I:\univ^I\times \univ^I\arr \univ^I$.
+\end{itemize}
+Models of such small signatures are typically written as $(\univ^I, e^I, \circ^I)$.
+
+For example, we can say $I_1=(\Z, 0, +)$ is a $\Sigma$-model. $I_1$ has the further properties that it satisfies all the axioms of the theory of monoids:
+\begin{itemize}
+\item associativity: $\moda{I_1}{\Sigma}{\forall x\;\forall y\;\forall z\;x\circ (y\circ z) \doteq (x\circ y)\circ z}$,
+\item left-neutrality: $\moda{I_1}{\Sigma}{\forall x\;e\circ x \doteq x}$,
+\item right-neutrality: $\moda{I_1}{\Sigma}{\forall x\;x\circ e \doteq x}$.
+\end{itemize}
+
+There are lots of other $\Sigma$-models, for example, $I_2=(\N,0,-)$. While $I_2$ is a $\Sigma$-model, it does not satisfy all the axioms of the theory of monoids:
+\begin{itemize}
+\item associativity does not hold: $\nmoda{I_2}{\Sigma}{\forall x\;\forall y\;\forall z\;x\circ (y\circ z) \doteq (x\circ y)\circ z}$,
+\item left-neutrality does not hold: $\nmoda{I_2}{\Sigma}{\forall x\;e\circ x \doteq x}$,
+\item right-neutrality, however, holds: $\moda{I_2}{\Sigma}{\forall x\;x\circ e \doteq x}$.
+\end{itemize}
+
+As an exercise, you should apply the definition of the semantics step by step to verify that the above statements about $I_1$ and $I_2$ are correct.
+\end{example}
+
+\begin{example}[The Empty Model]\label{ex:mod:empty}
+For every signature, there is exactly one model with $\univ^I=\empty$.
+This is because the interpretation of all function and predicate symbols is uniquely determined to be the empty mapping.
+We call it the \emph{empty} model.
+
+The empty model $E$ has some special properties: We always have
+$\semm{\forall x.F}{E,\alpha}=1$
+and 
+$\semm{\exists x.F}{E,\alpha}=0$.
+In particular, it is the only model that satisfies the formula $\forall x.\false$.
+\end{example}
+
+\begin{example}[The Trivial Model]
+For every signature, models $T$ with $|\univ^T|=1$ are called \emph{trivial}.
+Once the universe is fixed, e.g., $\univ^T=\{0\}$, the interpretation of all function symbols $f$ is uniquely determined: $f^I(0,\ldots,0)=0$.
+Similarly, there are only two options for every predicate symbol $p$: $p^I(0,\ldots,0)\in\{0,1\}$.
+
+Thus, if there are no predicate symbols in $\Sigma$, there is essentially only $1$ trivial model.
+\end{example}
+
+\begin{remark}[The Empty Model]\label{rem:mod:empty}
+In Def.~\ref{def:fol:model}, we allow $\univ^I=\empty$.
+This is \emph{not} common for $\FOLEQ$: In fact, virtually every textbook requires $\univ^I\neq\es$.
+
+We allow the empty model because almost all results about $\FOLEQ$ still work for $\univ^I=\empty$ and many results become more elegant if it is allowed.
+
+See also Rem.~\ref{rem:mod:empty:thm} and \ref{rem:pf:empty}.
+\end{remark}
+
+\paragraph{Summary}
+
+We can summarize the syntax and semantics of \emph{symbols} as follows:
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Symbol & Syntax  & Semantics \\ \hline
+logical symbol (here: $\wedge$, $\vee$, $\arr$, $\neg$, $\forall$, $\exists$, $\doteq$)
+  & always present & fixed interpretation \\
+function or predicate symbol & declared (globally) in signature & interpreted by model \\
+variable & declared (locally) in context & interpreted by assignment \\
+\hline
+\end{tabular}
+\end{center}
+
+Similarly, for a $\Sigma$-model $I$ and an assignment $\alpha$ for a $\Sigma$-context $\Gamma$, we can summarize the syntax and semantics of \emph{composed expressions} as follows:
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Expression          & Syntax          & Semantics \\ \hline
+term $t$            & $\istermSG{t}$  & $\semm{t}{I,\alpha}\in \semm{\TERM}{I}$ \\
+formula $F$         & $\isformSG{F}$  & $\semm{F}{I,\alpha}\in \semm{\FORM}{I}=\{0,1\}$ \\
+\hline
+\end{tabular}
+\end{center}
+This can be interpreted as saying that $\semm{-}{}$ (recursively) translates every judgment holding about the syntax to a judgment holding about the semantics: Whenever $\istermSG{t}$, then $\semm{t}{I,\alpha}\in \semm{\TERM}{I}$, and accordingly for formulas.
+
+
+\section{Semantics of Contexts and Substitution}\footnote{This section can be skipped.}
+
+A substitution $\gamma$ lets us move terms and formulas from a context $\Gamma$ to a context $\Gamma'$. Often we are in a situation where we know the interpretation of $F$ in context $\Gamma$ and want to compute the interpretation of $\ov{\gamma}(F)$ in context $\Gamma'$. Of course, this is straightforward: apply the substitution $\gamma$ to $F$, then use the definition of the semantics to interpret $\ov{\gamma}(F)$. But this requires two inductions on the syntax, and that can be quite complicated if $F$ is a long formula.
+
+Imagine we have a sentence $\forall x\;F(x)$, and for a certain model $I$ we have already computed $\semm{F(x)}{I,\alpha}$ for all assignments $\alpha$ in order to determine whether $\moda{I}{\Sigma}{\forall x\;F(x)}$. This can be very hard because if $\univ^I$ is infinite, there are infinitely many assignments. Now we want to determine whether $\forall y\;F(t(y))$. For that, we need to compute $\semm{F(t(y))}{I,\alpha}$ for all assignments $\alpha$. $F(t(y))$ arises from $F(x)$ by substituting $x$ with $t(y)$. We want to use this fact and reuse the work we have already done.
+
+This is possible by giving a semantics to substitutions and then studying how the interpretations of $F$, $\gamma$, and $\ov{\gamma}(F)$ are interrelated.
+\medskip
+
+\begin{definition}[Semantics of Contexts]
+Assume a FOLEQ-signature $\Sigma$, a $\Sigma$-model $I$, and a $\Sigma$-context $\Gamma$. We define the interpretation of $\Gamma$ in $I$ as follows: $\semm{\Gamma}{I}$ is the set of assignments for $\Gamma$ into $I$.
+\end{definition}
+
+\begin{definition}[Semantics of Substitutions]
+Assume a FOLEQ-signature $\Sigma$, a $\Sigma$-model $I$, and a $\Sigma$-substitution $\gamma:\Gamma\arr\Gamma'$. We define the interpretation of $\gamma$ in $I$ as follows:
+ \[\semm{\gamma}{I}:\semm{\Gamma'}{I}\arr\semm{\Gamma}{I},\]
+ \[\semm{\gamma}{I}:\alpha'\mapsto \alpha \mwhere \alpha(x)=\semm{\ov{\gamma}(x)}{I,\alpha'}.\]
+\end{definition}
+
+This looks confusing. Let us ``type-check'' the definition, i.e., check whether $\semm{\gamma}{I}$ is indeed a mapping from $\semm{\Gamma'}{I}$ to $\semm{\Gamma}{I}$:
+\begin{enumerate}
+\item The input to $\semm{\gamma}{I}$ is an assignment $\alpha'\in\semm{\Gamma'}{I}$. Thus, $\alpha'$ is an assignment for $\Gamma'$ into $I$.
+\item The output of $\semm{\gamma}{I}$ is supposed to be an assignment $\alpha\in\semm{\Gamma}{I}$. Thus, we have to prove that $\alpha$ is an assignment for $\Gamma$ into $I$.
+\item Thus, we have to prove that $\alpha$ is a mapping from $\Gamma$ to $\univ^I$. So let us assume $x\in\Gamma$. We have to prove that $\alpha(x)\in \univ^I$.
+ \begin{enumerate}
+    \item $x\in \Gamma$ and $\gamma:\Gamma\arr\Gamma'$. Therefore, $\ov{\gamma}(x)$ is a term in context $\Gamma'$.
+    \item We know $\alpha'$ is an assignment for $\Gamma'$ into $I$.
+    \item Therefore, we can compute $\semm{\ov{\gamma}(x)}{I,\alpha'}$. And the result is an element of $\univ^I$.
+    \item Thus, we have proved $\alpha(x)\in \univ^I$.
+ \end{enumerate}
+\item Thus, we have proved that $\alpha=\semm{\gamma}{I}(\alpha')$ is an element of $\semm{\Gamma}{I}$.
+\end{enumerate}
+
+So the semantics of substitutions is indeed well-defined. It maps assignments for $\Gamma'$ to assignments for $\Gamma$. Syntactically, a substitution $\gamma:\Gamma\arr\Gamma'$ translates from $\Gamma$ to $\Gamma'$: By applying $\gamma$, we move $\Gamma$-terms and formulas to $\Gamma'$. Now we have seen that semantically $\gamma$ is also a translation, but in the opposite direction: It maps assignments for $\Gamma'$ to assignments for $\Gamma$. This is a very general effect that we find for all logics. Researchers have only fully understood it within the last decades. And understanding it has led to tremendous insights into the relation between syntax and semantics.
+\medskip
+
+Using the interpretation of contexts and substitutions, we can obtain a different perspective on the interpretation of terms and formulas.
+Fix a signature $\Sigma$ and a model $I$. Take formula $F$ in context $\Gamma$. We cannot write $\semm{F}{I}$ because $F$ has free variables --- we need an assignment for $\Gamma$, and then we have $\semm{F}{I,\alpha}\in\{0,1\}$. In other words: If $F$ is fixed, then every assignment $\alpha$ gives us an element of $\{0,1\}$. Thus, we can define
+ \[\semm{F}{I}:\semm{\Gamma}{I} \arr \{0,1\},\]
+ \[\semm{F}{I}:\alpha \mapsto \semm{F}{I,\alpha}.\]
+
+Similarly, we can define for a term $t$ in context $\Gamma$:
+ \[\semm{t}{I}:\semm{\Gamma}{I} \arr \univ^I,\]
+ \[\semm{t}{I}:\alpha \mapsto \semm{t}{I,\alpha}.\]
+
+Thus, we can think of the interpretation of a formula in context $\Gamma$ as a mapping from the set of assignments (i.e., the interpretation of $\Gamma$) to $\{0,1\}$. And we can think of the interpretation of a term in context $\Gamma$ as a mapping from the set of assignments to $\univ^I$.
+\medskip
+
+We can summarize this as follows:
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Syntactically  & Semantically \\ \hline
+$\isformSG{F}$ &  $\semm{F}{I}:\semm{\Gamma}{I}\arr \semm{\FORM}{I}=\{0,1\}$ \\[0.2cm]
+
+$\istermSG{t}$  &  $\semm{t}{I}:\semm{\Gamma}{I}\arr \semm{\TERM}{I}=\univ^I$ \\[0.2cm]
+
+$\gamma : \Gamma\arr\Gamma'$ & $\semm{\gamma}{I} : \semm{\Gamma'}{I} \arr \semm{\Gamma}{I}$ \\[0.2cm]
+\hline
+\end{tabular}
+\end{center}
+\medskip
+
+If we look at this table for a while, we get a tempting idea. What if we compose maps as follows:
+
+\begin{center}
+\begin{tikzpicture}[scale=2]
+\node (G) at (0,1) {$\semm{\Gamma}{I}$};
+\node (G') at (0,-1) {$\semm{\Gamma'}{I}$};
+\node (o) at (2,1) {$\{0,1\}$};
+\node (i) at (-2,1) {$\univ^I$};
+\draw[-\arrowtip] (G') -- node[left]{$\semm{\gamma}{I}$} (G);
+\draw[-\arrowtip] (G) -- node[above]{$\semm{t}{I}$} (i);
+\draw[-\arrowtip] (G) -- node[above]{$\semm{F}{I}$} (o);
+\draw[-\arrowtip] (G') -- node[right=0.2cm]{$\semm{\ov{\gamma}(F)}{I}$} (o);
+\draw[-\arrowtip] (G') -- node[left=0.2cm]{$\semm{\ov{\gamma}(t)}{I}$} (i);
+\end{tikzpicture}
+\end{center}
+
+Could it be that the compositions yield exactly $\semm{\ov{\gamma}(t)}{I}$ and $\semm{\ov{\gamma}(F)}{I}$? Indeed they do.
+
+\begin{theorem}[Semantics of Substitution]
+Assume a FOLEQ-signature $\Sigma$ and a $\Sigma$-model $I$. Then for every substitution $\gamma:\Gamma\arr\Gamma'$ and every formula $F$ in context $\Gamma$ and every term $t$ in context $\Gamma$:
+ \[\semm{\ov{\gamma}(t)}{I}=\semm{t}{I}\circ\semm{\gamma}{I},\]
+ \[\semm{\ov{\gamma}(F)}{I}=\semm{F}{I}\circ\semm{\gamma}{I}.\]
+\end{theorem}
+\begin{proof}
+By context-sensitive induction on the syntax tree of $t$ and $F$.
+\end{proof}
+
+Thus, the semantics of substitution is simply composition.
+
+
+\section{An Abstract Definition of the Model Theory of a Logic}\label{sec:mt:abs}
+
+Above we have seen the semantics for PL, FOL, and FOLEQ. In Sect.~\ref{sec:syn:abs}, we found that the syntax of a logic can be abstractly characterized by pairs $(\Sig,\Sen)$, which we called a logic syntax. We can make a similar observation about the semantics.
+
+\begin{definition}[Model Theory]\label{def:mt:abs}
+A model theory for the logic syntax $(\Sig,\Sen)$ is a pair $(\Mod,\md)$ such that
+\begin{itemize}
+\item for every $\Sigma\in\Sig$, we have that $\Mod(\Sigma)$ is a collection of objects, called the $\Sigma$-\emph{models},
+\item for every $\Sigma\in\Sig$, we have that $\md\;\sq\;\Sen(\Sigma)\times\Mod(\Sigma)$ is a binary relation, called the \emph{satisfaction relation}.
+\end{itemize}
+If $\moda{I}{\Sigma}{F}$, we say ``$F$ holds in $I$'' or ``$I$ satisfies $F$'' or ``$I$ makes $F$ true''. We also write $\nmoda{I}{\Sigma}{F}$ for the opposite.
+
+A four-tuple $(\Sig,\Sen,\Mod,\md)$ of a logic syntax $(\Sig,\Sen)$ and a model theory $(\Mod,\md)$ for it is called a \emph{model-theoretical} logic.
+\end{definition}
+
+\begin{remark}
+Model-theoretical logics were introduced as \emph{institutions} in \cite{institutions}.
+\end{remark}
+
+\begin{example}\label{ex:mt:abs}
+Then we immediately get some example model theoretical logics:
+\begin{itemize}
+\item Propositional logic $PL=(\Sig^{PL},\Sen^{PL},\Mod^{PL},\md^{PL})$.
+\item First-order logic with equality $FOLEQ=(\Sig^{FOLEQ},\Sen^{FOLEQ},\Mod^{FOLEQ},\md^{FOLEQ})$. Note that $\Sen^{FOLEQ}(\Sigma)$ only contains the closed $\Sigma$-formulas; therefore, $\semm{F}{I}$ only depends on the model $I$, and no assignments are needed when talking about $\md$.
+\item The logics FOL, ALGEQ, and HORNEQ are obtained from FOLEQ in the obvious way.
+\end{itemize}
+\end{example}
+
+
+\section{Theorems and Consequence (Model-Theoretically)}\label{sec:fol:thymt}
+
+One of the most important advantages of the abstract definitions given by institutions is that the main definitions regarding theories can be done for all institutions at once.
+
+\begin{definition}[Models]\label{def:mod:models}
+Given syntax and model theory $(\Sig,\Sen,\Mod,\md)$ and a theory $(\Sigma;\Theta)$. We define:
+A $\Sigma$-model $I$ is a $(\Sigma;\Theta)$-model iff
+ \[\moda{I}{\Sigma}{F} \tb\mforall F\in\Theta.\]
+ We write $\Mod(\Sigma,\Theta)$ for the collection of models of $(\Sigma,\Theta)$. In other words:
+ \[\Mod(\Sigma;\Theta)=\{I\in\Mod(\Sigma) \| \moda{I}{\Sigma}{F} \;\mforall F\in\Theta\}.\]
+\end{definition}
+
+Then we are ready to make some far-reaching definitions:
+\begin{definition}[Monoids etc.]
+We define:
+\begin{itemize}
+\item A model of the FOLEQ-theory from Ex.~\ref{ex:monoid} is called a \emph{monoid}.
+\item A model of the FOLEQ-theory from Ex.~\ref{ex:group} is called a \emph{group}.
+\item Commutative groups, rings, rings with $1$, commutative rings, fields, etc. are all defined similarly using the respective signatures and axioms.
+\end{itemize}
+\end{definition}
+\medskip
+
+\begin{example}[Fields]\label{ex:field}
+The theory of fields is given by the following signature
+\begin{itemize}
+\item binary function symbols $+$ and $\cdot$,
+\item unary function symbols $-$ and $\op{inv}$ (where we write $\op{inv}(x)$ as $x^{-1}$),
+\item nullary functions symbols $0$ and $1$,
+\end{itemize}
+and the following axioms
+\begin{itemize}
+\item associativity of addition: $\forall x\;\forall y\;\forall z\;x+ (y+ z) \doteq (x+ y)+ z$,
+\item left-neutrality of zero: $\forall x\;0+ x \doteq x$,
+\item right-neutrality of zero: $\forall x\;x+ 0 \doteq x$,
+\item left-inverseness of subtraction: $\forall x\;(-x)+ x \doteq 0$,
+\item right-inverseness of subtraction: $\forall x\;x+ (-x) \doteq 0$,
+\item commutativity of addition: $\forall x\;\forall y\;x+y \doteq y+ x$,
+\item associativity of multiplication: $\forall x\;\forall y\;\forall z\;x\cdot (y\cdot  z) \doteq (x\cdot y)\cdot  z$,
+\item left-neutrality of one: $\forall x\;1\cdot x \doteq x$,
+\item right-neutrality of one: $\forall x\;x\cdot 1 \doteq x$,
+\item left-inverseness of division: $\forall x\;(\neg x\doteq 0\arr x^{-1}\cdot x \doteq 1)$,
+\item right-inverseness of division: $\forall x\;(\neg x\doteq 0\arr x\cdot x^{-1} \doteq 1)$,
+\item commutativity of multiplication: $\forall x\;\forall y\;x\cdot y \doteq y\cdot x$,
+\item left-distributivity of multiplication over addition: $\forall x\;\forall y\;\forall z\;x\cdot (y+ z) \doteq (x\cdot y)+ (x\cdot z)$,
+\item right-distributivity of multiplication over addition: $\forall x\;\forall y\;\forall z\;(y+ z)\cdot x \doteq (y\cdot x)+ (z\cdot x)$.
+\end{itemize}
+A \emph{field} is a model of this theory.
+Important fields are $\Q$, $\R$, and $\C$ with the usual functions.
+
+Note that:
+\begin{itemize}
+\item We can define rings, rings with $1$ (sometimes called unital rings or just rings), and commutative rings by dropping symbols and axioms from the theory of fields.
+\item In mathematics, $\op{inv}$ is actually only a partial function: It is undefined for $0$. In FOLEQ, we cannot talk about undefinedness. Therefore, we need a total function, and then the axioms need to say $\forall x\;(\neg x\doteq 0\arr \ldots)$.
+\item Right-neutrality, right-inverseness, and right-distributivity are actually redundant because of commutativity.
+\end{itemize}
+\end{example}
+\medskip
+The area of mathematics called \emph{algebra} is devoted to the study of the model collections $\Mod(\Sigma;\Theta)$ where $(\Sigma;\Theta)$ are the theories from above, in particular the theories of groups, rings, and fields.
+\bigskip
+
+\begin{definition}[Theorems]\label{def:mod:consequence}
+Given a syntax and model theory $(\Sig,\Sen,\Mod,\md)$ and a theory $(\Sigma;\Theta)$. We define:
+\begin{itemize}
+\item A $\Sigma$-sentence is a (model-theoretical) \emph{theorem} of $(\Sigma;\Theta)$ if it is true in all $(\Sigma,\Theta)$-models. In other words,
+ \[\Thm(\Sigma;\Theta)=\{F\in\Sen(\Sigma) \| \moda{I}{\Sigma}{F} \;\mforall I\in\Mod(\Sigma,\Theta)\}.\]
+\item If $F\in\Thm(\Sigma;\Theta)$, we also write
+ \[\moda{\Theta}{\Sigma}{F}.\]
+ Then we also say that $F$ is a (model-theoretical) \emph{consequence} of $\Theta$.
+\end{itemize}
+\end{definition}
+
+\begin{remark}[Non-Theorems due to the Empty Universe]\label{rem:mod:empty:thm}
+Because we allow the empty universe (see Rem.~\ref{rem:mod:empty}), we have more models than textbook definitions and therefore less theorems.
+In particular, $\exists x.\true$ and $\forall x.F\impl\exists x.F$ hold in all models except for the empty model.
+Therefore, they are usually $\FOLEQ$-theorems but are not theorems with our definition.
+\end{remark}
+\medskip
+
+\begin{notation}
+Note that this means that the symbol $\md$ has two different but related meanings:
+\begin{itemize}
+\item $\moda{I}{\Sigma}{F}$ means that $F$ is true in the model $I$. This is called \emph{satisfaction}, and we say that $I$ satisfies $F$.
+\item $\moda{\Theta}{\Sigma}{F}$ means that $F$ is true in all models of $(\Sigma,\Theta)$. This is called \emph{entailment}, and we say that $\Theta$ entails $F$.
+\item The relation between the two is:
+\[\moda{\Theta}{\Sigma}{F} \tb\tb\miff\tb\tb \moda{I}{\Sigma}{F} \tb\mforall I \tb \mtext{for}\mtext{which} \moda{I}{\Sigma}{T} \mforall T\in\Theta.\]
+Thus, intuitively, $\moda{\Theta}{\Sigma}{F}$ means ``$F$ holds in all models in which all sentences in $\Theta$ hold.'' Or ``If a model satisfies all sentences in $\Theta$, then it also satisfies $F$.'' Or even more intuitively: ``If all sentences in $\Theta$ hold, then $F$ holds.''
+\end{itemize}
+\end{notation}
+\medskip
+
+\begin{definition}
+A theory $(\Sigma;\Theta)$ is called \emph{closed} if $\Theta=\Thm(\Sigma;\Theta)$.
+$(\Sigma;\Thm(\Sigma;\Theta))$ is a closed theory that arises by adding all theorems to $\Theta$. This theory is called the \emph{closure} of $(\Sigma;\Theta)$.
+\end{definition}
+
+\begin{theorem}\label{thm:galois:1}
+We have the following basic properties of theories:
+\begin{enumerate}
+\item If $\Theta'\sq \Theta$, then $\Mod(\Sigma;\Theta')\supseteq\Mod(\Sigma,\Theta)$.
+\item If $\Theta'\sq \Theta$, then $\Thm(\Sigma;\Theta')\sq\Thm(\Sigma,\Theta)$.
+\item $F\in\Thm(\Sigma;\Theta)$ for every $\Sigma$-tautology $F$.
+\item $\Theta\sq\Thm(\Sigma;\Theta)$.
+\item $\Mod(\Sigma;\Thm(\Sigma;\Theta))=\Mod(\Sigma;\Theta)$.
+\item $\Thm(\Sigma;\Thm(\Sigma;\Theta))=\Thm(\Sigma;\Theta)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+\item Exercise.
+\item Exercise.
+\item Special case of the second result: Put $\Theta'=\es$.
+\item Assume $F\in\Theta$ (*). We have to show $F\in\Thm(\Sigma;\Theta)$.
+  \begin{enumerate}
+     \item By definition of $\Thm$, we have to show $\moda{I}{\Sigma}{F}$ for every model $I$ such that $I\in\Mod(\Sigma;\Theta)$.
+     \item Assume a model $I\in\Mod(\Sigma;\Theta)$ (**). We have to show $\moda{I}{\Sigma}{F}$.
+     \begin{enumerate}
+       \item By (**) and the definition of $\Mod$, we have that $\moda{I}{\Sigma}{G}$ for every $G\in\Theta$.
+       \item By (*), we can put $G=F$ and obtain $\moda{I}{\Sigma}{F}$.
+       \item Done.
+     \end{enumerate}
+     \item Done.
+  \end{enumerate}
+\item The $\sq$ direction follows by combining the first and the fourth result. \\
+  To prove the $\supseteq$ direction, we verbalize the involved sets:
+    \begin{itemize}
+      \item $\Mod(\Sigma;\Theta)$: the models satisfying all sentences in $\Theta$
+      \item $\Thm(\Sigma;\Theta)$: the sentences satisfied by all models satisfying all sentences in $\Theta$
+      \item $\Mod(\Sigma;\Thm(\Sigma;\Theta))$: the models satisfying all sentences satisfied by all models satisfying all sentences in $\Theta$
+     \end{itemize}
+     Then it is easy to see that $\Mod(\Sigma;\Thm(\Sigma;\Theta))\supseteq\Mod(\Sigma;\Theta)$
+\item This follows immediately using the definition of $\Thm$ and the fifth result. 
+\end{enumerate}
+\end{proof}
+\medskip
+
+Now we introduce some important notions for theories.
+
+\begin{definition}\label{def:mod:theorem}
+For a fixed theory $(\Sigma;\Theta)$, a sentence $F\in\Sen(\Sigma)$ is called
+\begin{itemize}
+\item a \emph{theorem}, a \emph{tautology}, or \emph{valid} if it holds in all $(\Sigma;\Theta)$-models,
+\item a \emph{contradiction} or \emph{unsatisfiable} if it holds in no $(\Sigma;\Theta)$-model.
+\end{itemize}
+The words ``tautology'' and ``valid'' are especially common for the special case $\Theta=\es$.
+\end{definition}
+
+\begin{lemma}
+If a logic has negation, then $F$ is a theorem iff $\neg F$ is a contradiction and $F$ is a contradiction iff $\neg F$ is a theorem.
+\end{lemma}
+\begin{proof}
+Clear because $F$ holds in a model iff $\neg F$ does not hold in it, and vice versa.
+\end{proof}
+
+\begin{example}
+Examples for tautologies are $\true$, $\neg\false$, $(F\wedge G)\arr (G\wedge F)$, or $\neg\neg F\arr F$. There is a number of important and fairly obvious tautologies. A good exercise is to find some more and check that they really are tautologies. An important less obvious tautology is this: $\false\arr F$ for any $F$.
+
+The most important examples for contradictions are $\false$, $F\wedge\neg F$ for any $F$, and $\neg F$ for any tautology $F$.
+\end{example}
+
+Thus, a theory splits the sentences into three groups: theorems (true in all models), contradictions (true in no model), and the rest (true in some but not all models). Thus, only the sentences in the third group differ between models -- they distinguish the models. Depending on the size of the three groups, we distinguish two special cases of theories:
+
+\begin{definition}\label{def:mod:consistent}
+A theory $(\Sigma;\Theta)$ is called
+\begin{itemize}
+ \item \emph{inconsistent} if all sentences are theorems, $\moda{\Theta}{\Sigma}{F}$ for every $F\in\Sen(\Sigma)$,
+ \item \emph{consistent} if it is not inconsistent, i.e., there is a sentence that is not a theorem,
+ \item \emph{complete} if every sentence is either a theorem or a contradiction, i.e., if for every $F\in\Sen(\Sigma)$ either $\moda{\Theta}{\Sigma}{F}$ or $\moda{\Theta}{\Sigma}{\neg F}$.
+\end{itemize}
+\end{definition}
+
+Inconsistent theories make all sentences theorems including, e.g., $\false$. Thus, truth becomes meaningless. For example, a theory is inconsistent if it contains $\false$ or any other contradiction as an axiom or if it contains both $F$ and $\neg F$ as axioms. An inconsistent theory cannot have a model. Precisely, we have:
+
+\begin{lemma}\label{lem:mod:inconsistent}
+The following are equivalent for a theory $(\Sigma;\Theta)$ in any logic:
+\begin{enumerate}
+	\item It has no model.
+	\item It is inconsistent.
+	\item (If negation is interpreted as for PL:) $F$ and $\neg F$ are theorems for some $F$.
+	\item (If falsity is interpreted as for PL:) $\false$ is a theorem.
+\end{enumerate}
+\end{lemma}
+\begin{proof} By circular implications: \\
+1 implies 2: If there is no model, then every sentence is a theorem. \\
+2 implies 3: If every sentence is a theorem, then at least $F$ and $\neg F$ for some $F$. \\
+3 implies 4: No model can satisfy $F$ and $\neg F$. So every model that does also satisfies $\false$. \\
+4 implies 1: No model satisfies $\false$.
+\end{proof}
+
+Complete theories make ``half the sentences'' theorems: For every $F$ either $F$ or $\neg F$ is a theorem, and the other one is a contradiction.
+Since the third group is empty, models have no freedom how to interpret the sentences.
+If we add one more sentence to a complete theory, it becomes inconsistent.
+Precisely, we have:
+
+\begin{lemma}\label{lem:mod:complete}
+The following are equivalent for a theory $(\Sigma;\Theta)$:
+\begin{enumerate}
+	\item It is complete.
+	\item There are models, and all models satisfy exactly the same formulas.
+	\item There is a model satisfying exactly the theorems of $(\Sigma;\Theta)$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}By circular implications: \\
+1 implies 2: If there were no models, then the theory would be inconsistent, but completeness implies consistency. These models must satisfy at least all the theorems of $(\Sigma;\Theta)$. Due to completeness, if some model satisfied one further sentence, that sentence would have to be a contradiction, which is impossible. \\
+2 implies 3: Since all models satisfy the same sentences, those are the theorems of $(\Sigma;\Theta)$. Since there are models, we can pick any one of them, and that will satisfy exactly the theorems of $(\Sigma;\Theta)$. \\
+3 implies 1: For any model $I$, the set $\{F\|\moda{I}{\Sigma}{F}\}$ of sentences it satisfies is a complete theory. So $(\Sigma;\Theta)$ must be complete.
+\end{proof}
+
+\begin{notation}\label{not:mod}
+We have defined the notions ``consequence'', ``theorem'', ``contradiction'', ``(in)consistent'', and ``complete'' model-theoretically. All have proof-theoretical analogues, see Def.~\ref{def:pf:consequence} and~\ref{def:pf:consistent}. If we need to distinguish them, we will prefix M, e.g., we will say that a theory is M-consistent. See also Not.~\ref{not:pf}.
+\end{notation}
+
+\section{Specification and Abstract Data Types}
+
+The process of \emph{specification} or \emph{axiomatization} is the following: Given a class $\sM\sq\Mod(\Sigma)$ of models, find a theory $\Theta\sq\Sen(\Sigma)$ such that $\sM$ contains exactly the models of $\Theta$.
+
+Then we call the triple $(\Sigma,\Theta,\sM)$ an abstract data type.
+
+\subsection{Theoretical Foundation}
+
+\footnote{This section can be skipped.}
+
+\begin{definition}[Model Class]
+Assume a syntax-model theory pair $(\Sig,\Sen,\Mod,\md)$. A model class is a pair $(\Sigma;\sM)$ where $\Sigma\in\Sig$ and $\sM\sq\Mod(\Sigma)$.
+\end{definition}
+
+Model classes are the analogue to theories. Just like for theories, we can define two important operations.
+
+\begin{definition}
+For every model class $(\Sigma,\sM)$, we define the theory of $(\Sigma;\sM)$ by
+\[\Thy(\Sigma;\sM)=\{F\in\Sen(\Sigma)\| \moda{I}{\Sigma}{F} \mforall I\in \sM\}\]
+and the closure of $M$ by
+\[\ModC(\Sigma;\sM)=\{I\in\Mod(\Sigma)\| \moda{I}{\Sigma}{F} \mforall F\in \Thy(\Sigma;\sM)\}\]
+Model classes satisfying $\ModC(\Sigma;\sM)=\sM$ are called closed.
+\end{definition}
+
+\begin{notation}
+Let us now fix a signature $\Sigma$ and use the following abbreviations:
+\begin{itemize}
+ \item $\Theta^*$ for $\Mod(\Sigma;\Theta)$,
+ \item $\sM^*$ for $\Thy(\Sigma;\sM)$,
+\end{itemize}
+\end{notation}
+
+Then we have the following mappings:
+\[\pwr(\Sen(\Sigma)) \arr  \pwr(\Mod(\Sigma)), \tb \Theta\mapsto \Theta^* \]
+\[\pwr(\Mod(\Sigma)) \arr  \pwr(\Sen(\Sigma)), \tb \sM\mapsto\sM^* \]
+\[\pwr(\Sen(\Sigma)) \arr  \pwr(\Sen(\Sigma)), \tb \Theta\mapsto \Theta^{**} \]
+\[\pwr(\Mod(\Sigma)) \arr  \pwr(\Mod(\Sigma)), \tb \sM \mapsto \sM^{**} \]
+and we have
+\[\Theta^{**}=\Thm(\Sigma;\Theta)\]
+\[\sM^{**}=\ModC(\Sigma;\sM)\]
+
+Intuitively, $-^*$ turns a set of sentences into a collection of models (namely those satisfying all the sentences). It also maps the other way round: Every class of models is mapped to a set of sentences (namely those satisfied by all the models). Thus, $-^*$ maps back and forth between theories and model classes.
+
+We can compose these mappings. If we start with a theory and go to model classes and back, i.e., we apply $-^*$ twice to $(\Sigma;\Theta)$, we obtain a new theory. And we already know this theory: It is $(\Sigma;\Thm(\Sigma;\Theta))$. If we compose the other way round, we start with a model class $\sM$, go to its theory, then take that theory's models. This composition also maps a model class $(\Sigma;\sM)$ to a larger one: It contains all the models that satisfy the same sentences as those in $\sM$.
+
+This is an instance of a very general concept called a Galois connection. Every binary relation $\rho\sq A\times B$ induces a Galois connection between $\pwr(A)$ and $\pwr(B)$. In our case $A=\Sen(\Sigma)$, $B=\Mod(\Sigma)$, and $\rho\;=\;\md_\Sigma$.
+
+We have the following properties:
+\begin{itemize}
+\item $\Theta\sq\Theta'$ implies $\Theta^*\supseteq\Theta'^*$, and $\sM\sq\sM'$ implies $\sM^*\supseteq\sM'^*$,
+\item $\Theta\sq\Theta^{**}$ and $\sM\sq\sM^{**}$,
+\item $\Theta\sq\Theta'$ implies $\Theta^{**}\sq\Theta'^{**}$, and $\sM\sq\sM'$ implies $\sM^{**}\sq\sM'^{**}$,
+\item $\Theta^{**}=(\Theta^{**})^{**}$ and $\sM^*=(\sM^{**})^{**}$.
+\item $\Theta^*$ and $\sM^*$ are closed.
+\item The closed theories are in bijection to the closed model classes.
+\end{itemize}
+
+Thus, specification means to find a $\Theta$ such that $\Theta^*=\sM$. Often we are interested in the special case $\sM=\{I\}$ for some intended model $I$.
+
+It cannot always be possible to axiomatize a class of models: $\Theta^*$ is always a closed model class. So let us assume that $\sM$ is closed. If $\sM$ is closed, we can always find an axiomatization $\Theta$ by simply putting $\Theta:=\sM^*$.
+
+But that does not help much: $\Theta$ should be as simple as possible. Ideally, $\Theta$ should be finite. But if $\Theta$ is infinite, it should at least be decidable (i.e., we should have an algorithm that tells us which axioms are in $\Theta$). Thus, more precisely, specification means to find a simple $\Theta$ such that $\Theta^*=\sM$.
+
+Therefore, when we do specification, two things can go wrong:
+\begin{itemize}
+ \item $\sM$ is not closed, i.e., there is no appropriate $\Theta$.
+ \item There is a $\Theta$ but no simple one.
+\end{itemize}
+
+\subsection{Examples of Abstract Data Types}
+
+Some of the most important and prevalent data types of mathematics are specified as finite FOLEQ theories.
+We have already seen some in Ex.~\ref{ex:field}.
+This section gives many more examples.
+
+This approach of applying logic to systematically define data types in mathematics, specifically algebra, in terms of logic and model theory goes back to work by Robinson \cite{robinsonmodeltheory}.
+
+\subsubsection{No Symbols}
+
+The empty signature yields the data type of sets.
+
+Without any function or predicate symbols, all elements of the universe are interchangeable.
+Indeed, the only atomic formulas are equalities between variables.
+Therefore, the only property $\FOLEQ$ can talk about is the cardinality of the universe.
+The following axioms can be used to specify cardinality:
+\begin{compactitem}
+\item universe has at least $n$ elements: \[L_n\tb=\tb\exists x_1.\ldots,\exists x_n.\bigwedge_{i,j=1,\ldots,n,\;i\neq j}\neg x_i\doteq x_j\]
+where we use $\bigwedge$ to abbreviate a long conjunction
+\item universe has at most $n$ elements: \[M_n\tb=\tb\exists x_1.\ldots,\exists x_n.\forall y.y\doteq x_1\vee\ldots\vee y\doteq x_n\]
+\end{compactitem}
+As special cases, we obtain
+\begin{compactitem}
+\item universe is empty: $M_0=\forall x.\false$
+\item universe is non-empty: $L_1=\exists x.\true$
+\end{compactitem}
+
+%If the signature contains a nullary function symbols or the theory an existentially quantified axiom, then models cannot have an empty universe anyway.
+
+The data type of infinite sets can be specified using the infinite theory $\{L_1,L_2,\ldots\}$.
+The data type of finite sets cannot be specified in $\FOLEQ$.
+
+\subsubsection{One Binary Function Symbol}
+
+The simplest data types are those of binary function symbols.
+Addition, multiplication, etc. are typical examples.
+
+\begin{example}[Data types based on a binary function symbol]\label{ex:mod:binaryfunc}
+Fig.~\ref{fig:mod:binaryfunc} gives the most important data types based for a binary function symbol.
+\end{example}
+
+\begin{tabularfigure}{|l|l|c|c|c|c|c|c|c|c|}{Data types for a binary function symbols}{fig:mod:binaryfunc}
+\multicolumn{2}{c|}{symbol or axiom} & \sw{magma} & \sw{semigroup} & \sw{commutative semigroup} & \sw{monoid} & \sw{commutative monoid} & \sw{group} & \sw{Abelian group} & \sw{semilattice} \\
+\hline
+$\circ$, binary function, written $s\circ t$ & composition & \multicolumn{8}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\op{e}$, nullary function & element & 
+                                  \multicolumn{3}{|c|}{} & \multicolumn{4}{|c|}{\checkmark} &  \\[.2cm]
+\hline
+$\op{inv}$, unary function, written $t^{-1}$ & inverse element
+                                  & \multicolumn{5}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} & \\[.2cm]
+\hline
+$\forall x \forall y \forall z\; (x \circ y) \circ z \doteq x \circ (y \circ z)$ & associative & 
+                                  & \multicolumn{7}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x\; (x \circ \op{e} \doteq x \wedge \op{e} \circ x \doteq x)$ & neutral element & 
+                                  \multicolumn{3}{|c|}{} &  \multicolumn{4}{|c|}{\checkmark} &  \\[.2cm]
+\hline
+$\forall x\; (x \circ \op{e} \doteq \op{e} \wedge \op{e} \circ x \doteq \op{e})$ & absorbing element & 
+                                  \multicolumn{8}{|c|}{} \\[.2cm]
+\hline
+$\forall x\; (x \circ x^{-1} \doteq e \wedge x^{-1}\circ x \doteq e)$ & inverse element 
+                                   & \multicolumn{5}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} & \\[.2cm]
+\hline
+$\forall x \forall y\; x \circ y \doteq y \circ x$ & commutative & 
+                                  & & \checkmark & & \checkmark & & \checkmark & \checkmark \\[.2cm]
+\hline
+$\forall x \; x \circ x \doteq x$ & idempotency
+                                  & \multicolumn{7}{|c|}{} & \checkmark \\[.2cm]
+\hline
+\end{tabularfigure}
+
+Models of the data types from Ex.~\ref{ex:mod:binaryfunc} occur all over mathematics and computer science:
+
+\begin{example}[Models based on a binary function symbol]\label{ex:mod:binaryfunc:mod}
+We have the following models, where we write $U$ for any number set, i.e., $U\in\{\N,\Z,\Q,\R,\C\}$:
+\begin{itemize}
+\item Addition of numbers: $(U,+,0)$ is a commutative monoid. Additionally, if $U\neq\N$, $(U,+,0,-)$ is an Abelian group.
+\item Addition of other objects: It is a widely used convention to name operations $+$ and $0$ and $-$ if they form commutative monoids or Abelian groups, e.g., addition of vectors, matrices, polynomials.
+\item Multiplication of numbers: $(U,\cdot,1)$ is a commutative monoid. $0$ is an annihilating element.
+\item Multiplication of other objects: It is a widely used convention to name operations $\cdot$ and $1$ if they form monoids, e.g., multiplication of matrices, polynomials. However, these do not have to be commutative, e.g., for matrices.
+\item Maximum/minimum of numbers: If $U\neq\C$, $(U,\max)$ and $(U,\min)$ are semilattices.
+$0$ is a neutral element for $(U,\max)$ and an annihilating element for $(U,\min)$.
+\item Modulus: In the magma $(\N,\mod)$, the operation $a\mod b$ returns the smallest $m\in\N$ such that $b|(a-m)$. If $b\neq 0$, we can see $m$ as the remainder left after dividing $a$ by $b$; if $b=0$, we have $m=a$. This magma has none of the properties mentioned above. However, with the definitions of Rem.~\ref{rem:binaryfunc:leftright}, we have that $0$ is a left-absorbing and a right-neutral element.
+\item Function composition: $(S^S,\circ,\id{S})$ is a monoid; it is commutative iff $|S|\in\{0,1\}$.
+If we only consider bijective functions, then inversion yields an inverse element and thus a group.
+\item Sets: $(\pwr(S),\cup,\es,S)$ and $(\pwr(S),\cap,S,\es)$ are commutative monoids with annihilating elements. They are also semilattices.
+\item Relations: As a special case of the power set example, we obtain the model of $n$-ary relations on $A_1,\ldots,A_n$ as $(\pwr(A_1\times\ldots\times A_n),\cup,\es,\cap,A_1\times\ldots\times A_n)$.
+\item Binary endorelations: As a special case of the relations examples, we obtain the model of binary relations on $A$ as $(\pwr(A\times A),\cup,\es,\cap,A\times A)$.
+In this model, we can also define the diagonal $\Delta=\{(x,x):x\in A\}$ and the composition $r;s=\{(x,z)\in A\times A\;|\;\mexists y\msuchthat (x,y)\in r,\;(y,z)\in s\}$.
+Then $(\pwr(A\times A),;,\Delta,\es)$ is also a monoid with annihilating element $\es$.
+\item Concatenation of words over an alphabet: $(\Sigma^*,\cdot,\epsilon)$ is a monoid where $\cdot$ is concatenation of words. It is commutative iff $|\Sigma|\in\{0,1\}$.
+\item Operations on languages over an alphabet: $(\pwr(\Sigma^*),\cdot,\{\epsilon\})$ is a monoid where $\cdot$ is concatenation of languages.
+\end{itemize}
+\end{example}
+
+\begin{remark}[Duality]\label{rem:binaryfunc:dual}
+By flipping the arguments of a binary function $\circ$, we obtain its dual $\circ^d$, i.e., $s\circ t$ is the same as $t\circ^d s$.
+If $\circ$ is commutative, than $\circ$ and $\circ^d$ are interchangeable.
+
+We have the following correspondences:
+\begin{center}
+ \begin{tabular}{|lcl|}
+ \hline
+ $\circ$ is/has \ldots & iff & $\circ^d$ is/has \ldots\\
+ \hline
+ commutative && commutative \\
+ associative && associative \\
+ idempotent  && idempotent \\
+ a neutral element $e$ && a neutral element $e$ \\
+ an absorbing element $a$ && an absorbing element $a$ \\
+ inverse elements $x^{-1}$ && inverse elements $x^{-1}$\\
+ \hline
+ \end{tabular}
+\end{center}
+\end{remark}
+
+\begin{remark}[Uniqueness]\label{rem:binaryfunc:unique}
+The neutral, absorbing, and inverse elements are uniquely determined if they exist.
+That is easy to prove: For example, if $e$ and $e'$ are neutral elements, then we can prove $e\doteq e\circ e'$ and $e\circ e'\doteq e'$.
+
+Therefore, the pair of function symbol and axiom is often replaced with an existential axiom as follows:
+ \begin{center}
+  \begin{tabular}{|l|l|}
+   \hline
+   function symbol and axiom & alternative axiom \\
+   \hline
+   nullary function symbol $e$, neutral element axiom for $\circ,e$    & $\exists z \forall x\; (x \circ z \doteq x \wedge z \circ x \doteq x)$\\
+   nullary function symbol $a$, absorbing element axiom for $\circ, a$ & $\exists z \forall x\; (x \circ z \doteq z \wedge z \circ x \doteq z)$\\
+   unary function symbol $\op{inv}$, inverse element axiom for $\circ, e,\op{inv}$ & $\forall x\exists z (x \circ z \doteq e \wedge z \circ x \doteq e)$\\
+   \hline
+  \end{tabular}
+ \end{center}
+This has the advantage that all data types have only a single function symbol and all differences are expressed as axioms.
+\end{remark}
+
+\begin{remark}[Left and Right Laws]\label{rem:binaryfunc:leftright}
+The axioms for neutral, absorbing, and inverse elements involve a conjunction of two properties.
+Of course, if $\circ$ is commutative, both properties are equivalent and one of them can be omitted.
+
+In the general case, we sometimes distinguish further between left- and right-neutral elements: These are elements that satisfy only one of the two properties (e.g., a left-neutral element satisfies $\forall x\;e\circ x\doteq x$).
+Left- and right-absorbing and left- and right-inverse elements are defined accordingly.
+
+Now the uniqueness properties of Rem.~\ref{rem:binaryfunc:unique} can be strengthened as follows: If a binary function has a left-neutral $l$ element and a right-neutral element $r$, then they are equal ($l\doteq r$ is a theorem) and thus a neutral element.
+Accordingly, a left- and a right-absorbing element must be equal.
+However, it is possible (although rarely useful) to have multiple different left-neutral elements if there are no right-neutral elements.
+The according statement holds for the other cases.
+
+Note that if an element $e$ is both left-neutral and left-absorbing, then the model is trivial.
+The same holds if an element is both right-neutral and right-absorbing.
+But there are non-trivial models where an element is both left-neutral and right-absorbing (or right-neutral and left-absorbing).
+
+For inverse elements, the corresponding statement requires that $\circ$ is associative: In that case, if there are left- and right-inverse elements, then they are equal and are inverse elements.
+\end{remark}
+
+\subsubsection{Two Binary Function Symbols}
+
+The next big class combines two function symbols.
+These often represent the interplay of, e.g., addition and multiplication.
+
+\begin{example}[Data types based on two binary function symbols]\label{ex:mod:binaryfunc2}
+Fig.~\ref{fig:mod:binaryfunc2} gives datatypes that combine two of the datatypes from Ex.~\ref{ex:mod:binaryfunc2}.
+
+Additionally, we define
+\begin{compactitem}
+\item the theory \emph{ring without 1} by removing the $1$ symbol and its axioms from the theory \emph{ring},
+\item the theory \emph{lattice} by removing the $0$ and $1$ symbols and their axioms from the theory \emph{bounded lattice}
+\end{compactitem}
+\end{example}
+
+\begin{tabularfigure}{|p{7cm}|l|c|c|c|c|c|c|}{Data types for two binary function symbols (T marks theorems)}{fig:mod:binaryfunc2}
+\multicolumn{2}{c|}{symbol and/or axiom} & \sw{semi-ring} & \sw{ring} & \sw{field} & \sw{bounded lattice} & \sw{Boolean lattice}\\
+\hline
+\multicolumn{2}{|c|}{binary functions $\circ$, $\ast$} & \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{associativity for $\circ$} & \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{associativity for $\ast$} & \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{nullary function $0$ and neutral element axiom for $\circ$, $0$}  & \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{nullary function $1$ and neutral element axiom for $\ast$, $1$}  &  \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{commutativity for $\circ$}        & \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{commutativity for $\ast$}   & \multicolumn{2}{|c|}{optional\footnotemark} & \multicolumn{3}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x \forall y \forall z\; x\ast(y \circ z) \doteq (x \ast y) \circ (x\ast z)$ \newline
+$\forall x \forall y \forall z\; (y \circ z)\ast x \doteq (y \ast x) \circ (z\ast x)$ & distributivity & \multicolumn{3}{|c|}{\checkmark} & & \checkmark\\[.2cm]
+\hline
+\multicolumn{2}{|c|}{unary function $-$ and inverse element axiom for $\circ$, $0$, $-$}  & & \multicolumn{2}{|c|}{\checkmark} & \multicolumn{2}{|c|}{}\\[.2cm]
+\hline
+$\forall x\; x\ast 0\doteq 0 \wedge 0\ast x\doteq 0$ & absorbing element for $\ast,0$ &  \checkmark & \multicolumn{2}{|c|}{T} & \multicolumn{2}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x\; x\circ 1\doteq 1 \wedge 1\circ x\doteq 1$ & absorbing element for $\circ,1$  &  \multicolumn{3}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{idempotency for $\circ$} & \multicolumn{3}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} \\[.2cm]
+\hline
+\multicolumn{2}{|c|}{idempotency for $\ast$} & \multicolumn{3}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x \forall y\;x\ast(x \circ y)\doteq x$ \newline
+$\forall x \forall y\;x\circ(x \ast y)\doteq x$ & lattice absorption & \multicolumn{3}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} \\[.2cm]
+\hline
+unary function $\op{inv}$, written $t^{-1}$ & inverse/complement & \multicolumn{2}{|c|}{} & \checkmark & & \checkmark\\[.2cm]
+\hline
+$\forall x\; \neg x\doteq 0\impl (x \ast x^{-1} \doteq 1 \wedge x^{-1}\ast x \doteq 1)$ & multiplicative inverse & \multicolumn{2}{|c|}{} & \checkmark & \multicolumn{2}{|c|}{} \\[.2cm]
+\hline
+$\forall x\; x\circ x^{-1}\doteq 1 \wedge x^{-1}\circ x\doteq 1$ \newline
+$\forall x\; x\ast x^{-1}\doteq 0  \wedge x^{-1}\ast x\doteq 0$ & complement (not inverse elements!)         &  \multicolumn{4}{|c|}{} & \checkmark \\[.2cm]
+\hline
+%$\ast$, binary function, written $s\ast t$ & multiplication-like & \multicolumn{8}{|c|}{\checkmark} \\[.2cm]
+%\hline
+%$\op{1}$, nullary function & neutral element & 
+%                                  \multicolumn{3}{|c|}{} & \multicolumn{4}{|c|}{\checkmark} &  \\[.2cm]
+%\hline
+%$\op{inv}$, unary function, written $t^{-1}$ & inverse element
+%\hline
+%$\forall x \forall y \forall z\; (x \circ y) \circ z \doteq x \circ (y \circ z)$ & associative & 
+%                                  & \multicolumn{7}{|c|}{\checkmark} \\[.2cm]
+%\hline
+%$\forall x\; (x \circ \op{e} \doteq x \wedge \op{e} \circ x \doteq x)$ & neutral element & 
+%                                  \multicolumn{3}{|c|}{} &  \multicolumn{4}{|c|}{\checkmark} &  \\[.2cm]
+%\hline
+%$\forall x\; (x \circ x^{-1} \doteq e \wedge x^{-1}\circ x \doteq e)$ & inverse element 
+%                                   & \multicolumn{5}{|c|}{} & \multicolumn{2}{|c|}{\checkmark} & \\[.2cm]
+%\hline
+%$\forall x \forall y\; x \circ y \doteq y \circ x$ & commutative & 
+%                                  & & \checkmark & & \checkmark & & \checkmark & \checkmark \\[.2cm]
+%\hline
+%$\forall x \; x \circ x \doteq x$ & idempotency
+%                                  & \multicolumn{7}{|c|}{} & \checkmark \\[.2cm]
+%\hline
+\end{tabularfigure}
+\footnotetext{If present, the theory is called \emph{commutative (semi-)ring}.}
+
+\begin{example}[Models based on two binary function symbols]\label{ex:mod:binaryfunc2:mod}
+Models of the data types from Ex.~\ref{ex:mod:binaryfunc2} are often obtained by combining models from Ex.~\ref{ex:mod:binaryfunc:mod}.
+
+We write the models as $(\TERM^I,\circ^I,0^I,-^I,\ast^I,1^I,\inv^I)$ where we omit the components that are not applicable:
+\begin{itemize}
+\item Addition and multiplication: $(\N,+,0,\cdot,1)$ is a commutative semi-ring. $(\Z,+,0,-,\cdot,1)$ is a commutative ring. $(U,+,0,-,\cdot,1,^{-1})$ are fields for $U\in\{\Q,\R,\C\}$.
+\item Matrices: $(R^{n\times n},+,0,-,\cdot, 1)$ is a ring if $R$ is. (Note that we have to use square matrices so that multiplication is a total function.) It is usually not commutative even if $R$ is.
+\item Multiplication: In the statement of distributivity, we say that $\ast$ distributes over $\circ$.
+For the natural numbers, multiplication distributes over various operations: $(\N,+,\cdot)$, $(\N,\mod,\cdot)$, $(\N,\min,\cdot)$, $(\N,\max,\cdot)$ are all distributive.
+\item Polynomials: $(R[X],+,0,-,\cdot,1)$ is a ring if $R$ is; it is commutative if $R$ is.
+\item Sets:
+For subsets $x$ of $S$, the complement $x^C$ is defined by $S\sm x$.
+Then $(\pwr(S),\cup,\es,\cap,S,-^C)$ is a Boolean lattice.
+  Note that the special case $|S|=1$ yields the usual 2-element Booleans.
+\item Languages: $(\pwr(\Sigma^*),\cup,\es,\cdot,\{\epsilon\})$ is a semiring.
+\item The remainder classes of the integers: For $k\in\N$, let $\Z_k=\{0,\ldots,k-1\}$ if $k\neq 0$ and $\Z_k=\Z$ if $k=0$.
+Let $+_k:\Z_k^2\to\Z_k$, $-_k:\Z_k\to\Z_k$, and $*_k:\Z_k^2\to\Z_k$ be like $+$, $-$, and $*$ but modulo $k$, e.g., $x+_k y=(x+y)\modop k$.
+Then $(\Z_k,+_k,0,-_k,*_k,1)$ is a commutative ring.
+If $k$ is prime, we can also define a multiplicative inverse and obtain a field.
+\item Binary endorelations: The binary relations on $A$ form a semi-ring $(\pwr(A\times A),\cup,\es,;,\Delta)$.
+It is usually not commutative (unless $|A|\leq 1$).
+\end{itemize}
+\end{example}
+
+\subsubsection{One Binary Predicate Symbol}
+
+Similarly important data types use a binary predicate symbol and various combinations of axioms:
+
+\begin{example}[Data types based on a binary predicate symbol]\label{ex:mod:binarypred}
+Fig.~\ref{fig:mod:binarypred} defines data types based on a binary predicate.
+
+Of course, we usually use a different symbol than $\leq$ when a relation is symmetric, e.g., $\Equiv$.
+
+Additionally, we define
+\begin{compactitem}
+\item the theory of orders bounded below/above by using only the axiom for the least/greatest element instead of both,
+\item the theory of lattices by combining the axioms of meet- and join-semilattices,
+\item the theory of bounded lattices by combining the axioms of bounded orders and lattices.
+\end{compactitem}
+\end{example}
+
+\begin{tabularfigure}{|l|l|c|c|c|c|c|c|c|c|c|}{Data types for a binary predicate symbols (T marks theorems)}{fig:mod:binarypred}
+\multicolumn{2}{c|}{symbol or axiom} & \sw{relation} & \sw{equivalence relation} & \sw{preorder} & \sw{order, partial order, poset} & \sw{total order} & \sw{dense order} & \sw{bounded order} & \sw{join-semilattice} & \sw{meet-semilattice}\\
+\hline
+$\leq$, written $s\leq t$ & comparison & \multicolumn{9}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x\; x\leq x$ & reflexive & & \multicolumn{8}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x\forall y \forall z\; ((x \leq y \wedge y \leq z) \impl x\leq z)$ & transitive & 
+                                  & \multicolumn{8}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x\forall y \; (x \leq y \impl y \leq x)$ & symmetric & 
+                                  & \checkmark & \multicolumn{7}{|c|}{} \\[.2cm]
+\hline
+$\forall x\forall y \; ((x \leq y \wedge y \leq x)\impl x\doteq y)$ & antisymmetric & 
+                                  \multicolumn{3}{|c|}{} & \multicolumn{6}{|c|}{\checkmark} \\[.2cm]
+\hline
+$\forall x\forall y \; (x \leq y \vee y \leq x)$ & total, linear & 
+                                  \multicolumn{4}{|c|}{} & \checkmark & \multicolumn{4}{|c|}{} \\[.2cm]
+\hline
+\mpag{8cm}{$\forall x \forall z\;(x<z \impl \exists y\; (x < y \wedge y < z))$ \\
+where $x < y$ abbreviates $x\leq y \wedge \neg x\doteq y$} & dense & 
+                                  \multicolumn{5}{|c|}{} & \checkmark & \multicolumn{3}{|c|}{} \\[.3cm]
+\hline
+$\exists x \forall y\; x\leq y$ & smallest element & 
+                                  \multicolumn{6}{|c|}{} & \checkmark & \multicolumn{2}{|c|}{} \\[.3cm]
+\hline
+$\exists x \forall y\; y\leq x$ & greatest element & 
+                                  \multicolumn{6}{|c|}{} & \checkmark & \multicolumn{2}{|c|}{} \\[.3cm]
+\hline
+\mpag{8.5cm}{$\forall x \forall y\exists u\; (\op{above}(u,x,y) \wedge \forall u'\; (\op{above}(u',x,y)\impl u\leq u'))$\\
+  where $\op{above}(z,x,y)$ abbreviates $x \leq z \wedge y\leq z$} & \mpag{2.8cm}{least upper \\bound, supremum} & 
+                                  \multicolumn{4}{|c|}{} & T &\multicolumn{2}{|c|}{} & \checkmark & \\[.3cm]
+\hline
+\mpag{8cm}{$\forall x \forall y\exists l\; (\op{below}(l,x,y) \wedge \forall l'\; (\op{below}(l',x,y)\impl l'\leq l))$\\
+  where $\op{below}(z,x,y)$ abbreviates $z \leq x \wedge z\leq y$} & \mpag{2.7cm}{greatest lower \\bound, infimum} & 
+                                  \multicolumn{4}{|c|}{} & T & \multicolumn{3}{|c|}{} & \checkmark \\[.3cm]
+\hline
+\end{tabularfigure}
+
+\begin{example}[Models based on a binary predicate]\label{ex:mod:binarypred:mod}
+Models of the data types from Ex.~\ref{ex:mod:binarypred} are also very common.
+We use $U$ as in Ex.~\ref{ex:mod:binaryfunc:mod}.
+
+\begin{itemize}
+\item Size of numbers: $(U,\leq)$ is a total order for $U\neq \C$. It is dense for $U\in\{\Q,\R\}$. It has a smallest element if $U=\N$.
+\item Divisibility: $(\N,|)$ is an order. $1$ is the smallest element and $0$ the greatest element. Greatest lower bound and least upper bound exist and are called greatest common divisor and least common multiple.
+\item For any order $(A,r)$, the inverse $(A,(u,v)\mapsto r(v,u))$ is an order, too. This yields $(U,\geq)$ for numbers.
+\item For any order $(A,r)$, the irreflexive variant $(A,r')$ where $r'(u,v)$ holds if $r(u,v)$ and $u\neq v$ is still transitive. This yields $(U,<)$ and $(U,>)$ for numbers.
+\item For any preorder $(A,\prec)$, we obtain an equivalence relation $(A,\Equiv)$ by putting $u\Equiv v$ iff $u\prec v$ and $v\prec u$.
+  In that case, we obtain an order $(A/\Equiv,\prec)$ where $\prec$ is defined representative-wise: $[u]^\Equiv\prec [v]^\Equiv$ iff $u\prec v$.
+\item Inclusion of sets: $(\pwr(S),\sq)$ is a lattice. It has $\es$ and $S$ as the smallest and greatest element, respectively. $\cup$ and $\cap$ yield the least upper and the greatest lower bound of two sets, respectively.
+\item The diagonal relation: $(A,\Delta_A)$ where $\Delta_A(u,v)$ iff $u=v$ is a order and an equivalence relation.
+\item Equivalences: For any function $f:A\to B$, the model $(A,r)$ with $r(u,v)=1$ iff $f(u)=f(v)$ is an equivalence relation (and every equivalence relation is of this form).
+\end{itemize}
+\end{example}
+
+%\begin{example}
+%Regular expressions also have finite axiomatizations in FOLEQ.
+%\end{example}
+
+\begin{remark}[Uniqueness]\label{rem:binarypred:unique}
+For an antisymmetric relation, we have the following uniqueness properties: The least element is uniquely determined if it exists, and accordingly for the greatest element.
+Similarly, the least upper bound and the greatest lower bound of two elements is determined uniquely if it exists.
+\end{remark}
+
+\begin{remark}[Duality]\label{rem:binarypred:dual}
+By flipping the arguments of a binary predicate $\leq$, we obtain its dual $\geq$, i.e., $s\geq t$ is the same as $t\leq s$.
+If $\leq$ is symmetric, than $\leq$ and $\geq$ are interchangable.
+
+We have the following correspondences:
+\begin{center}
+ \begin{tabular}{|lcl|}
+ \hline
+ $\leq$ is/has \ldots & iff & $\geq$ is/has \ldots\\
+ \hline
+ symmetric && symmetric \\
+ reflexive && reflexive \\
+ antisymmetric && antisymmetric \\
+ transitive && transitive \\
+ total && total \\
+ dense && dense \\
+ a \emph{least} element $e$ && a \emph{greatest} element $e$ \\
+ a \emph{least} upper bound $e$ of $x$ and $y$ && a \emph{greatest} lower bound $e$ of $x$ and $y$\\
+ \hline
+ \end{tabular}
+\end{center}
+\end{remark}
+
+
+\begin{remark}[Semilattices]\label{rem:semilattice}
+Semilattices occur both in Ex.~\ref{fig:mod:binaryfunc} and~\ref{fig:mod:binarypred}.
+This is because there are alternative but equivalent ways to see them.
+
+Rem.~\ref{rem:binarypred:dual} shows us that meet- and join-semilattices are dual, i.e., they are equivalent except for flipping the predicate.
+Therefore, we often just speak of semilattices.
+
+Given a semilattice with function symbol $\circ$, we can define a binary predicate by $x\leq y$ iff $x\circ y\doteq x$.
+Then we can show that $\leq$ is a meet-semilattice.
+Conversely, given a meet-semilattice with predicate symbol $\leq$, we can define a binary function by putting $x\circ y$ to be the greatest lower bound of $x$ and $y$.
+(This is well-defined because the greatest lower bound is uniquely determined by Rem.~\ref{rem:binarypred:unique}.)
+Then we can show that $\circ$ is a semilattice.
+
+The according equivalence holds between semilattices and join-semi-lattices.
+Given a semilattice, the join-semilattice predicate is defined by $x\leq y$ iff $x\circ y\doteq y$.
+Conversely, given a join-semilattice, $x\circ y$ is defined as the least upper bound of $x$ and $y$.
+
+Moreover, the following are equivalent:
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|c|}{$e$ is a \ldots element in the \ldots} \\
+semilattice & join-semilattice & meet-semilattice \\
+\hline
+neutral & least & greatest \\
+absorbing & greatest & least \\
+\hline
+\end{tabular}
+\end{center}
+%In particular, we have the following correspondence between order with least upper bound and join-semilattice:
+%reflexive <=> idempotent
+%in the magma
+%  assoc => trans
+%  comm => anti-sym
+%  assoc, comm, idemp => $x\circ y$ is least upper bound
+%  assoc, comm, idemp => morphism are inverse
+%in the relation with least upper bound
+%  comm holds
+%  anti-sym, trans => assoc
+%  anti-sym => morphisms are inverse 
+\end{remark}
+
+\begin{remark}[Lattices]\label{rem:lattice}
+Lattices also occur both in Ex.~\ref{fig:mod:binaryfunc2} and~\ref{fig:mod:binarypred}.
+By combining the constructions from Rem.~\ref{rem:semilattice}, we construct the equivalence.
+
+Consider a lattice in the sense of Ex.~\ref{fig:mod:binaryfunc2}.
+In lattices, the two binary function symbols are usually written as $\sqcup$ instead of $\circ$ and $\sqcap$ instead of $\ast$.
+We define the predicate symbol by $x\leq y$ iff $x\sqcap y\doteq x$ or equivalently iff $x\sqcup y\doteq y$.
+Then we can show that $\leq$ is a lattice in the sense of Ex.~\ref{fig:mod:binarypred}.
+
+Conversely, consider a lattice in the sense of Ex.~\ref{fig:mod:binarypred}.
+We define $x\sqcup y$ as the least upper bound and $x\sqcap y$ as the greatest lower bound of $x$ and $y$.
+Then we can show that $\sqcup$ and $\sqcap$ yield a lattice in the sense of Ex.~\ref{fig:mod:binaryfunc2}.
+
+The equivalence extends to bounded lattices accordingly.
+\end{remark}
+
+\subsubsection{Data Types with Families of Unary Operators}
+
+\paragraph{Vector Spaces}
+One of the most important data types of mathematics is vector spaces.
+However, each vector space requires two sets: a set $V$ of vectors and a set $F$ of scalars.
+Therefore, we also speak of $F$--vector spaces.
+Some of the operations relate the two sets, in particular the scalar multiplication $F\times V \to V$.
+
+But $\FOL$-models $V$ provide only one set $\univ^V$.
+Therefore, to specify vector spaces, we have several options:
+\begin{compactitem}
+ \item Use models whose universe is the set $F\cup V$.
+ That is extremely awkward and should be avoided.
+ \item Use a more expressive logic that allows for multiple sets.
+  Such a logic exists: It is called $\SFOL$ for \emph{sorted} first-order logic.
+  Almost all definitions and results of $\FOL$ can be easily generalized to $\SFOL$.
+ \item Assume that $F$ is fixed and consider only $V$ as the universe.
+  This is a bit awkward and only works in a few cases.
+  But in those few cases, it works well, and vector spaces are among them.
+\end{compactitem}
+
+We follow the last option.
+So fix a field $F=(\univ^F,+^F,0^F,-^F,1^F,\inv^F)$.
+The theory of $F$-vector spaces contains
+\begin{compactitem}
+  \item the symbols and axioms of commutative groups written as $+,0,-$,
+  \item for every $k\in\univ^F$ a unary function symbol $m_k$, and we write $kv$ for $m_k(v)$,
+  \item for every $k\in\univ^F$ one axiom for every function symbol of vector spaces, namely
+     \begin{compactitem}
+       \item $\forall v.\forall w.\;\;k(v+w)\doteq kv+kw$,
+       \item $k0\doteq 0$,
+       \item $\forall v.\;k(-v)\doteq -(kv)$,
+     \end{compactitem}       
+  \item for every symbol of the signature of fields a family of axioms, namely
+     \begin{compactitem}
+       \item for all $k,l\in\univ^F$, the axiom $\forall v.\;(k+^F l)v\doteq kv+lv$,
+       \item the axiom $\forall v.\;0^F v\doteq 0$,
+       \item for all $k\in\univ^F$, the axiom $\forall v.\;(-^F k)v\doteq -(kv)$,
+       \item for all $k,l\in\univ^F$, the axiom $\forall v.\;(k\cdot^F l)v\doteq k(lv)$,
+       \item the axiom $1^F v\doteq v$,
+     \end{compactitem}
+\end{compactitem}
+
+Note that this theory is infinite if $\univ^F$ is.
+That is no problem in practice.
+
+Above we have systematically included the superscript $^F$ on all field operations.
+That is usually omitted for simplicity.
+
+The above list of axioms is some minor redundancies.
+But it is more systematic this way: Note that each axioms regulates what happens when a field operation ``meets'' a commutative group operation.
+
+\paragraph{Finite Automata}
+Just like vector spaces, finite automata require two sets: the set $Q$ of states and the input alphabet $I$.
+We specify them as a $\FOLEQ$-theory using the same trick.
+
+Fix an input alphabet $I$.
+The theories of deterministic and non-deterministic finite automata over $I$ contain:
+\begin{compactitem}
+  \item a nullary function symbol $\mathit{start}$,
+  \item a unary predicate symbols $\mathit{final}$,
+  \item for every input symbol $x\in I$
+     \begin{compactitem}
+       \item in the deterministic case: a unary function symbol $\delta_x$,
+       \item in the non-deterministic case: a binary predicate symbol $\delta_x$.
+     \end{compactitem}
+\end{compactitem}
+
+For a deterministic automaton $A$, $\delta_x^A(q)=q'$ represent the transition from $q$ to $q'$ under input $x$.
+For a non-deterministic automaton $A$, $\delta_x^A(q,q')=1$ represents a possible transition from $q$ to $q'$ under input $x$.
+
+\subsection{Negative Examples}
+
+It is one of the most unsatisfactory results about FOLEQ that a lot of interesting data types cannot be specified.
+
+\begin{example}[Natural Numbers]\label{ex:nat:incomplete}
+Consider the theory $(\Sigma;\Theta)$ for Peano arithmetic from Ex.~\ref{ex:nat:arith}.
+The \defemph{standard natural numbers} are the model
+ \[SN=(\N,0,x\mapsto x+1,+,\cdot)\]
+We cannot specify the model class $\{SN\}$, i.e., we cannot give a theory $\Theta$ whose only model is $\{SN\}$.
+This would have be a theory whose theorems are
+ \[SN^*=\{F\in\Sen(\Sigma)\| \semm{F}{SN}=1\}\]
+
+This is no surprise: There are lots of other models that are isomorphic to $SN$ and thus satisfy the same sentences.
+So the best we can hope for is to specify the class $\{I\in\Mod(\Sigma)\| I\mtext{isomorphic}\mtext{to}SN\}$.
+
+However, not even that works:
+There are models of Peano arithmetic that are not isomorphic to $SN$ but satisfy exactly the same formulas as $SN$.
+The problem is that their difference to $SN$ cannot be expressed in FOLEQ.
+These are called non-standard models.
+Consequently, every theory that has $SN$ as a model also has all the non-standard models.
+
+It is hard to visualize non-standard models of arithmetic (see \url{http://en.wikipedia.org/wiki/Non-standard_arithmetic}).
+All of them are total orders that start with the natural numbers and are then followed by densely ordered copies of the integers.
+There are also non-standard models with uncountable universes.
+
+Thus, the best we can do is to axiomatize the class
+\[\sM=\{I\in\Mod(\Sigma)\| \semm{F}{I}=\semm{F}{SN} \mforall F\in\Sen(\Sigma)\}\]
+i.e., the class of all models satisfying the same sentences as $SN$.
+
+But even that is difficult.
+We can try to axiomatize $\sM$ using the axioms $\Theta$ of Peano arithmetic.
+But that is not enough: There are FOLEQ-sentences that hold in the natural numbers, but that are not consequences of Peano arithmetic, e.g., Goodstein's theorem (see \url{http://en.wikipedia.org/wiki/Goodstein%27s_theorem}).
+In particular, Peano arithmetic is not a complete theory.
+
+Essentially the best theory we can find to axiomatize $\sM$ is to use $SN^*$ itself as the set of axioms.
+But that is like giving up: Then all the sentences that we would like to prove are axioms to begin with.
+
+But even that is not a good solution.
+$SN^*$ is not only infinite but -- as we will see in Sect.~\ref{sec:fol:incomplete} -- not even recursively enumerable.
+Thus, we cannot even write down all the axioms in $SN^*$ or tell which formulas are in it.
+\medskip
+
+However, the theory of Peano arithmetic without multiplication does specify the model class $\{(\N,0,x\mapsto x+1,+)\}^{**}$.
+In particular, Peano arithmetic without multiplication is a complete theory.
+\end{example}
+
+\begin{example}[Real Numbers]
+Similarly to Ex.~\ref{ex:nat:incomplete}, the real numbers cannot be specified in $\FOLEQ$.
+\end{example}
+
+\begin{example}[Specification in Second-Order Logic]
+Both the natural and the real numbers can be specified in second-order logic (which we have not covered).
+Second-order logic permits quantifying over subsets of the universe. Using that, we can talk about induction for the natural numbers and, e.g., Dedekind cuts for the real numbers.
+\end{example}
+
+\begin{example}[Specifying Universe Sizes]
+For a given signature,
+\begin{itemize}
+  \item the class of all models with a universe of fixed finite size (i.e., all models with $n$ elements for fixed $n$) \emph{can} be specified in $\FOLEQ$ (Exercise!),
+	\item the class of all models with a universe of fixed infinite size (e.g., all models with countably many elements) \emph{cannot} be specified in $\FOLEQ$,
+	\item the class of all models with finite universe \emph{cannot} be specified in $\FOLEQ$,
+	\item the class of all models with infinite universe \emph{can} be specified in $\FOLEQ$ (Exercise!)
+\end{itemize}
+\end{example}
+	

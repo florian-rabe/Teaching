@@ -1,0 +1,156 @@
+\documentclass{book}
+\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{graphicx,url}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{xkeyval,paralist}
+\usepackage{bm} %% bold face math symbols
+\usepackage{listings}
+\usepackage{tikz}
+%\usetikzlibrary{shapes}
+\usetikzlibrary{arrows}
+\usepackage[book,mark]{theorems}
+
+\usepackage{stmaryrd}\newcommand{\contra}{\lightning}
+
+\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
+
+\usepackage{basics}
+\usepackage{ded}
+
+\usepackage{twelf-math}
+\usepackage{../mylecturenotes}
+
+\renewcommand{\P}[2]{\Pi #1:#2.}
+
+\usepackage[bookmarks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, colorlinks=true, breaklinks=true, bookmarksopen=true,bookmarksopenlevel=1,bookmarksnumbered]{hyperref} % this needs to go last
+
+\title{Integrated Lectures Notes on Logic}
+\author{Florian Rabe}
+\date{2008-2016}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+This is a collection of notes from my undergraduate and graduate lectures on logic.
+
+Standard textbooks for logic are \cite{fol_gallier}, \cite{fol_smullyan}, and \cite{intrologicenderton} (look for the respective latest edition).
+\cite{andrews_truthproof} is an interesting textbook that emphasizes higher-order logic and proof theory.
+
+\part{First-Order Logic}\label{part:fol}
+
+\chapter{Syntax}\label{sec:syn}
+  \input{fol-syntax}
+  
+\chapter{Context-Sensitive Constraints}\label{sec:infsys}
+  \section{Inference Systems}
+     \input{inference_systems}
+  \section{Inference Systems for Well-Formed Syntax}
+     \input{fol_syntax_inference_systems}
+
+\chapter{Model-Theoretic Semantics}\label{sec:mt}
+  \input{fol-models}
+
+\chapter{Proof-Theoretic Semantics}\label{sec:pt}
+  \input{fol-proofs}
+
+\chapter{The Relation between Proof and Model Theory}
+  \input{fol-proofs_models}
+
+\chapter{Computability}
+  \input{compute}
+
+\chapter{Closures and Galois Connections}
+  \input{closure}
+
+\chapter{Induction}
+  \input{induction}
+
+\chapter{Morphisms}
+  \input{fol-morphisms}
+
+\chapter{Universal Model Theory}\label{sec:unimod}
+\footnote{This chapter can be skipped.}
+  \input{model-categories}
+
+\part{Higher-Order Logic}\label{part:hol}
+
+\chapter{Syntax}
+  \input{hol-syntax}
+
+\chapter{Model-Theoretic Semantics}
+  \input{hol-models}
+  
+\chapter{Proof-Theoretic Semantics}
+  \input{hol-proofs}
+
+\chapter{The Relation between Proof and Model Theory}
+  \input{hol-proofs_models}
+
+\part{Foundations of Mathematics}\label{sec:found}
+
+\chapter{General Ideas}
+  \input{found-general}
+
+\chapter{First-Order Set Theory}
+  \input{found-set}
+  
+\chapter{Higher-Order Logic}
+  \input{found-hol}
+
+\chapter{Implemented Foundations}
+  \input{found-formal}
+
+\part{Logic Translations}\label{sec:trans}
+
+\chapter{Translating First-Order to Higher-Order Logic}\label{sec:folhol}
+  \input{translations-folhol}
+
+\chapter{An Abstract Definition of a Logic Translation}\label{sec:trans:abs}
+  \input{translations-abs}
+  
+\chapter{Model Theories as Logic Translations}
+  \input{translations-modasmorph}
+
+\part{A Proof-Theoretical Logical Framework}\label{part:lf}
+
+\chapter{LF for Everybody}\label{sec:lffe}
+ \input{lf-for-everybody}
+
+\chapter{Syntax of LF}
+ \input{lf-syntax}
+
+\chapter{Semantics of LF}
+ \input{lf-semantics}
+
+\chapter{Representing Formal Languages in LF}
+  \input{lf-logics}
+  
+\chapter{The LF Implementation Twelf}\label{sec:twelf}
+  \input{lf-twelf}
+  
+%\part{Summary}
+%
+%\chapter{Abstract Properties of Type Theories and Logics}
+%  \input{summary-abs}
+
+%\chapter{Logic Translations}
+%\begin{center}
+%\begin{tabular}{|c|c|c|c|c|}
+%\hline
+%       &             & \multicolumn{3}{|c|}{Behavior under} \\
+%Symbol & Declared in & Logic translation & Morphism & Substitution \\ \hline
+%logical symbol & logic $L$ & translated & fixed & fixed \\
+%function, predicate symbol & $L$-signature $\Sigma$ & part of translated signature & translated & fixed \\
+%variable & $\Sigma$-context $\Gamma$ & part of translated context &  part of translated context      & translated \\
+%\hline
+%\end{tabular}
+%\end{center}
+
+
+\bibliographystyle{alpha}
+\bibliography{../../Program_Data/Latex/bib/rabe,../../Program_Data/Latex/bib/pub_rabe,../../Program_Data/Latex/bib/systems,../../Program_Data/Latex/bib/institutions,../../Program_Data/Latex/bib/historical}
+
+\end{document}

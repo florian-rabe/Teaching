@@ -1,0 +1,566 @@
+The prototypical example of induction is mathematical induction, i.e., induction on the natural numbers.
+In computer science, induction is a more general principle about ``doing something exactly once for all elements of a given set $A$''.
+The ``something'' can be either of two things: a definition or a proof.
+
+In a definition by induction, we define the function value $f(a)$ for all $a\in A$ by case distinction on $a$.
+Then we use the induction principle to argue that $f$ is well-defined, i.e., that each $a\in A$ is covered by exactly one case.
+
+In a proof by induction, we prove the property $P(a)$ for all $a\in A$ by case distinction on $a$.
+Then we use the induction principle to argue that $P$ is proved, i.e., that each element of $A$ is covered by exactly one case.
+
+\section{Mathematical Induction}\label{sec:induction:math}
+
+The induction principle for the natural numbers $\N$ rests on the following:
+
+\begin{definition}[Natural Numbers]\label{def:nat}
+$\N$ is defined as follows:
+\begin{enumerate}
+  \item\label{def:nat:zero} $0\in \N$
+  \item\label{def:nat:succ} if $n\in \N$, then $s(n)\in \N$ (We call $s(n)$ the successor of $n$, e.g., $s(0)=1$.)
+  \item The natural numbers are exactly the ones constructed by the above two cases, i.e.,
+    \begin{enumerate}
+      \item\label{def:nat:consistent} All objects obtained by the cases are different: $0\neq s(n)$ for any $n$, and $s(n)\neq s(n')$ for any $n\neq n'$.
+      \item\label{def:nat:coverage} Every $n\in\N$ is obtained by one the cases: for every $n\in\N$, we have $n=0$ or $n=s(n')$ for some $n'\in \N$.
+   \end{enumerate}
+\end{enumerate}
+\end{definition}
+
+\paragraph{Inductive Definition}
+Consequently, we can define a function $f\in B^\N$ by giving $f(n)\in B$ by induction on $n\in\N$.
+We have to give two cases
+ \begin{itemize}
+   \item a case $f(0)\in B$,
+   \item a case $f(s(n))$ where we may use the value $f(n)\in B$.
+ \end{itemize}
+
+More formally, we have:
+\begin{theorem}[Definition by Induction]
+Given a value $V_0\in B$ and a function $V_s\in B^B$, the function $f\in B^\N$ given by
+ \[f(0)=V_0\]
+ \[f(s(n))=V_s(f(n))\]
+is well-defined.
+\end{theorem}
+
+%\begin{example}[Factorial]
+%To define $n!$, we use the cases
+%  \[0!=1\]
+%  \[s(n)!=n!*s(n)\]
+%\end{example}
+
+\begin{example}[Addition]\label{ex:induction:add}
+We define $m+n$ by induction on $m$.
+
+Technically, this means we define a function $f$ from $\N$ to $B=\N^\N$.
+$f$ is the curried version of addition, i.e., we put $m+n=f(m)(n)$.
+
+The cases for $f$ are
+  \[f(0) \tb=\tb n\mapsto n\]
+  \[f(s(m)) \tb=\tb n\mapsto s(f(m)(n))\]
+
+A more intuitive way to write these cases is:
+  \[f(0)(n) = 0+n = n\]
+  \[f(s(m))(n) = s(m)+n = s(m+n)\]
+\end{example}
+
+\begin{example}[Multiplication]\label{ex:induction:mult}
+We define $m\cdot n$ by induction on $m$.
+
+Left as an exercise.
+\end{example}
+
+\paragraph{Inductive Proof}
+Similarly, we can prove a property $P$ by proving $P(n)$ by induction on $n\in\N$.
+We have to give two cases
+ \begin{itemize}
+   \item a proof of $P(0)$,
+   \item a proof of $P(s(n))$ where we may assume that $P(n)$ holds.
+ \end{itemize}
+
+More formally, we have:
+\begin{theorem}[Proof by Induction]
+Assume $P(0)$ and ``for all $n\in\N$, if $P(n)$ then $P(s(n))$''.
+Then $P(n)$ for all $n\in\N$.
+\end{theorem}
+
+\begin{example}[Addition from the Right]
+We prove $m+0=m$ (AddZeroRight) by induction on $m$:
+\begin{itemize}
+  \item Case $m=0$. We have to prove $0+0=0$, which holds by applying the definition of $+$.
+  \item Case $m=s(m')$. We have to prove that if $m'+0=m'$ (IH), then $s(m')+0=s(m')$.
+   We prove this by
+    \[s(m')+0=^{\mathrm{def}}s(m'+0)=^{IH}s(m')\]
+   where $\mathrm{def}$ refers to the definition of $+$.
+\end{itemize}
+
+Similarly, we can show that $m+s(n)=s(m+n)$ (AddSuccRight) by induction on $m$:
+\begin{itemize}
+  \item Case $m=0$. We have to prove $0+s(n)=s(0+n)$, which holds by applying the definition of $+$ twice.
+  \item Case $m=s(m')$. We have to prove that if $m'+s(n)=s(m'+n)$ (IH), then $s(m')+s(n)=s(s(m')+n)$.
+   We prove this by
+    \[s(m')+s(n)=^{\mathrm{def}}s(m'+s(n))=^{IH}s(s(m'+n))\]
+   and
+   \[s(s(m')+n)=^{\mathrm{def}}s(s(m'+n))\]
+\end{itemize}
+\end{example}
+
+\begin{example}[Commutativity of Addition]
+We prove commutativity of addition $m+n=n+m$ by induction on $m$.
+Left as an exercise.
+\end{example}
+
+\begin{example}[Associativity of Addition]
+We prove associativity of addition $l+(m+n)=(l+m)+n$ by induction on $m$.
+\begin{itemize}
+ \item Case $m=0$. We have to prove $l+(0+n)=(l+0)+n$.
+   We prove this by
+    \[l+(0+n)=^{\mathrm{def}}l+n\]
+   and
+   \[(l+0)+n=^{\mathrm{AddSuccRight}}l+n\]
+ \item Case $m=s(m')$. We have to prove that if $l+(m'+n)=(l+m')+n$ (IH) then $l+(s(m')+n)=(l+s(m'))+n$.
+   We prove it as follows:
+    \[l+(s(m')+n)=^{\mathrm{def}} l+s(m'+n) =^{\mathrm{AddSuccRight}} s(l+(m'+n))\]
+   and
+    \[(l+s(m'))+n=^{\mathrm{AddSuccRight}} s(l+m')+n =^{\mathrm{def}} s((l+m')+n)\]
+   and these two are equal due to (IH).
+\end{itemize}
+\end{example}
+
+\begin{example}[Multiplication from the Right]
+We prove $m\cdot 0=0$ (MultZeroRight) by induction on $m$.
+
+Similarly, we can show that $m\cdot s(n)=m\cdot n+m$ (MultSuccRight) by induction on $m$.
+
+Left as an exercise.
+\end{example}
+
+\begin{example}[Commutativity of Multiplication]
+We prove commutativity of addition $m\cdot n=n\cdot m$ by induction on $m$.
+
+Left as an exercise.
+\end{example}
+
+\begin{example}[Distributivity of Multiplication over Addition]
+We prove left-distributivity $l\cdot (m+n)=l\cdot m+l\cdot n$ by induction on $l$.
+
+Left as an exercise.
+
+Then we immediately have right-distributivity $(m+n)\cdot l=m\cdot l+n\cdot l$ using left-distributivity and commutativity.
+\end{example}
+
+\begin{example}[Associativity of Multiplication]
+We prove associativity of multiplication $l\cdot (m\cdot n)=(l\cdot m)\cdot n$ by induction on $m$.
+
+Left as an exercise.
+\end{example}
+
+\begin{example}[Neutral Element of Multiplication]
+We put $1=s(0)$ and prove $1\cdot m=m$ and $m\cdot 1=m$ (no induction necessary).
+
+Left as an exercise.
+\end{example}
+
+\section{Regular Induction}\label{sec:induction:reg}
+
+Given an alphabet $\Sigma$, we have the following induction principle for the set $\Sigma^*$:
+\begin{definition}
+$\Sigma^*$ is defined by
+ \begin{itemize}
+   \item $\epsilon\in\Sigma^*$,
+   \item for every $x\in\Sigma$: if $w\in\Sigma^*$, then $xw\in\Sigma^*$,
+   \item The elements of $\Sigma^*$ are exactly the objects obtained by the above cases.
+ \end{itemize}
+\end{definition}
+
+Note that the number of cases is $|\Sigma|+1$.
+
+\paragraph{Inductive Definition}
+
+We give some examples for inductive definitions:
+
+\begin{example}[Reversal]\label{ex:induction:reverse}
+We define the reversal $w^R$ by induction on $w$
+ \[\epsilon^R=\epsilon\]
+ \[(xw)^R=w^Rx\]
+\end{example}
+
+\begin{example}[Length]
+We define the length $|w|$ by induction on $w$
+ \[|\epsilon|=0\]
+ \[|xw|=s(|w|)\]
+\end{example}
+
+\begin{example}[DFA Transition Function]
+Given a DFA with transition function $\delta(q,x)\in Q$, we define $\delta^*(q,w)$ by induction on $w$:
+ \[\delta^*(q,\epsilon)=q\]
+ \[\delta^*(q,xw)=\delta^*(\delta(q,x),w)\]
+\end{example}
+
+\paragraph{Inductive Proof}
+We give some examples for inductive proofs:
+
+\begin{example}[Reversal with Symbols on the Right]
+We prove $(wy)^R=yw^R$ for $y\in\Sigma$ by induction on $w$.
+\begin{itemize}
+ \item Case $w=\epsilon$: We have to prove $(\epsilon y)^R=y\epsilon^R$. This holds because both sides are equal to $y$.
+ \item Case $w=xw'$. We have to prove that if $(w'y)^R=yw'^R$, then $(xw'y)^R=y(xw')^R$.
+  We prove it as follows:
+    \[(xw'y)^R=^{\mathrm{def}}(w'y)^Rx =^{IH} yw'^Rx\]
+  and
+    \[y(xw')^R=^{\mathrm{def}} yw'^Rx\]
+\end{itemize}
+\end{example}
+
+\begin{example}[Length with Symbols on the Right]
+We prove $|wx|=s(|w|)$ (LengthRight) by induction on $w$.
+
+Left as an exercise.
+\end{example}
+
+\begin{example}[Length-Preservation of Reversal]
+We prove $|w^R|=|w|$ by induction on $w$.
+
+Left as an exercise.
+\end{example}
+
+\begin{example}[Self-Inverseness of Reversal]\label{ex:induction:thm:reverse}
+We prove $(w^R)^R=w$ by induction on $w$.
+\begin{itemize}
+ \item Case $w=\epsilon$: We have to prove $(\epsilon^R)^R=\epsilon$, which we obtain by applying the definition of reversal twice.
+ \item Case $w=xw'$. We have to prove that if $(w'^R)^R=w'$ (IH), then $((xw')^R)^R=xw'$.
+   This is left as an exercise.
+\end{itemize}
+\end{example}
+
+\paragraph{Regular Induction as a Special Case of Mathematical Induction}
+Computer science prefers using induction on $\Sigma^*$ as a stand-alone principle.
+
+Mathematics prefers reducing it to induction on natural numbers.
+Then induction on the words $w\in\Sigma^*$ becomes induction on the length $l=|w|$ of $w$.
+The case $l=0$ corresponds to the case $w=\epsilon$.
+And the case $l=s(l')$ corresponds to the case $w=xw'$.
+
+\section{Context-Free Induction}\label{sec:induction:cf}
+
+Given an unambiguous context-free grammar $(V,\Sigma,P,S)$, the context-free induction principle rests on the following:
+
+\begin{definition}[Produced Language]\label{def:ind:cf}
+For every $A\in V$, the set of words $L(A)\sq\Sigma^*$ is defined by
+ \begin{itemize}
+   \item For every production $A\to w_0A_1w_1\ldots w_{n-1}A_n w_n \;\in\;P$ (where $A_i\in V$ and $w_i\in\Sigma^*$): if $v_i\in L(A_i)$, then $w_0 v_1 w_1\ldots w_{n-1}v_n w_n\in L(A)$,
+   \item The words in $L(A)$ are exactly the ones obtained by the above cases.
+ \end{itemize}
+\end{definition}
+
+\begin{remark}
+Note that the context-free induction principle defines finitely many sets at the same time: $L(A)$ for every $A\in V$.
+Typically we are only interested in $L(S)$ where $S$ is the start symbol.
+But it is not possible to define only $L(S)$ -- the definition of $L(S)$ must refer to $L(A)$ for other non-terminals $A$.
+Therefore, we define $L(A)$ for all $A\in V$ together.
+We speak of \emph{mutual induction}.
+\end{remark}
+
+\begin{remark}
+If the grammar is ambiguous, then we cannot say ``exactly'' in Def.~\ref{def:ind:cf}.
+The cases still cover all words, but some words are covered multiple times.
+This is harmless for proofs by induction (proving something twice is harmless) but illegal for definition by induction (defining something twice is only allowed if both definitions are the same).
+
+Therefore, we require an unambiguous grammar.
+\end{remark}
+
+\paragraph{Inductive Definition}
+Given a function
+  \[f\in\Set^V\]
+which maps every non-terminal symbol to a set, we define
+a set of functions $f_A:f(A)^{L(A)}$, i.e., one function for every non-terminal symbol $A$.
+Each function $f_A$ maps the words $w\in L(A)$ produced from $A$ to elements of the set $f(A)$.
+
+The cases of a mutually inductive definition of the $f_A$ are
+ \begin{itemize}
+  \item for every production $A\to w_0A_1w_1\ldots w_{n-1}A_n w_n \;\in\;P$: a value
+     $f_A(w_0 v_1 w_1 \ldots w_{n-1} v_n w_n)\in f(A)$ where we may use the values $f_{A_i}(v_i)\in f(A_i)$.
+ \end{itemize}
+
+\begin{example}[Semantics of Propositional Logic]
+Def.~\ref{semantics:pl} is a simple example.
+Here $\FORM$ is the only non-terminal symbol, so we only define one function $\sem{-}=f_{\FORM}$ from $L(\FORM)$ to $f(\FORM)=\{0,1\}$.
+\end{example}
+
+\begin{example}[Free Variables]
+Def.~\ref{def:fol:fv} uses context-free induction to define $\FV$.
+There are two non-terminals and both $\FV(\TERM)=\FV(\FORM)=\pwr(\mathrm{Var})$ where $\mathrm{Var}$ is the set of possible variable names.
+Then Def.~\ref{def:fol:fv} gives one case per production.
+\end{example}
+
+\begin{example}[Serialization]
+The serialization of Bonus Exercise 1 is a typical example.
+
+Here for every $A\in V$, $f(A)$ is the set of strings.
+The functions $f_A$ map every word $w\in L(A)$ to its string representation.
+\end{example}
+
+\begin{example}[Regular Induction]
+If we specialize to a right-linear grammar and require $f(A)$ to be the same set for all $A\in V$, we obtain regular induction as a special case.
+\end{example}
+
+\begin{example}[Mathematical Induction]\label{ex:induction:nat}
+We obtain mathematical induction on the natural numbers as the special case of context-free induction on the grammar
+\[N \tb ::= \tb 0\tb|\tb\suc(N)\]
+\end{example}
+
+\paragraph{Inductive Proofs}
+Inductive proofs proceed very similarly.
+We do not give details here.
+However, keep in mind that all examples from Sect.~\ref{sec:induction:math} are examples of context-free induction via Ex.~\ref{ex:induction:nat}.
+
+\paragraph{Context-Free Induction as a Special Case of Mathematical Induction}
+Like regular induction, we can reduce context-free induction to induction on the natural numbers.
+The key idea is to use induction on the length of the derivation of a word.
+Alternatively, we can use induction on the height (= length of the longest branch) of the parse tree.
+
+\section{Context-Sensitive Induction}\label{sec:induction:cs}
+
+Context-sensitive induction is a generalization of context-free induction.
+Instead of functions $f_A\in f(A)^{L(A)}$, we use functions $f_A\in f(A)^{\mathrm{Cont}\times L(A)}$ where $\mathrm{Cont}$ is the context.
+
+The context may be different for every inductive definition.
+Typically, it is a list of identifiers that have been declared together with additional information about every identifier.
+The context changes during the induction; in particular, declarations are added to the context when they are encountered.
+
+\begin{remark}
+Usually, we are only interested in the function $f_S(\es,w)$ where $S$ is the start symbol and $\es$ the empty context.
+But just like context-free induction requires a function for every non-terminal, context-sensitive induction additionally requires taking an arbitrary context as an argument.
+\end{remark}
+
+\paragraph{Inductive Definition}
+
+Context-sensitive inductive definitions abound in theoretical computer science.
+Many non-trivial operations -- e.g., compiling a program -- are technically solved in this way (even if they are not called that way).
+
+\begin{example}[Substitution]
+Def.~\ref{def:fol:subapp} uses context-sensitive induction to define substitution application.
+
+The induction context is a FOL-substitution $\gamma$, which stores which variables have been declared and which term each variable is substituted with.
+
+$f(\TERM)$ is the set of terms, and $f(\FORM)$ is the set of formulas.
+The functions $f_{\TERM}(\gamma,t)$ and $f_{\FORM}(\gamma,F)$ are written $\ov{\gamma}(t)$ and $\ov{\gamma}(F)$.
+
+Def.~\ref{def:fol:subapp} gives one case per production.
+Note how the context is used in (and only in) the case $\ov{\gamma}(x)$.
+\end{example}
+
+Inference systems are the prototypical example of context-sensitive induction:
+
+\begin{example}[Well-Formed Syntax]
+Def.~\ref{def:fol:syntax2} uses context-sensitive induction to define the well-formed terms and formulas for a fixed signature $\Sigma$.
+
+The induction context is a FOL-context $\Gamma$, which stores which variables have been declared.
+
+The sets $f(\TERM)$ and $f(\FORM)$ contain boolean truth values, i.e., both $f_{\TERM}$ and $f_{\FORM}$ return either ``holds'' or ``does not hold''.
+We write $\istermSG{t}$ or $\isformSG{F}$ if $f_{\TERM}(\Gamma,t)$ holds or $f_{\FORM}(\Gamma,F)$ holds, respectively.
+
+The inference rules of Fig.~\ref{fig:fol:syntax} give one case per production.
+Note how the context is used in (and only in) the case $\istermSG{x}$.
+\end{example}
+
+\begin{example}[Static Analysis]
+The static analysis from Bonus Exercise 1 uses context-sensitive induction.
+The context stores the declared identifiers and for every identifier its type.
+
+The return type of the functions varies: For example, $f_{\mathtt{program}}(\Gamma,E)$ is a boolean; and $f_{\mathtt{expression}}(\Gamma,E)$ is a function that takes the expected type of $E$ and returns a boolean.
+\end{example}
+
+\begin{example}[Interpretation]
+The interpretation from Bonus Exercise 1 uses context-sensitive induction.
+The context stores the declared identifiers and for every identifier its type and its current value.
+
+The return type of the functions varies: $f(\mathtt{program})$ is irrelevant/empty and $f(\mathtt{expression})$ is the set containing all string, integer, and boolean values of the underlying programming language.
+\end{example}
+
+\section{Context-Free Induction in First-Order Logic}
+
+The term language of first-order logic is great for working with context-free grammars.
+In fact, we can think of FOLEQ as an abstract syntax framework for context-free grammars.
+
+There is only one caveat: There may only be one non-terminal symbol.
+However, there is a straightforward generalization of FOLEQ (called typed FOLEQ or sorted FOLEQ) that can use a separate type for each non-terminal symbol.
+
+But the restriction to a single non-terminal is not so bad: It already covers some of the most important context-free grammars.
+
+\begin{example}[Natural Numbers (Continuing Ex.~\ref{ex:induction:nat})]\label{ex:foldef:nat}
+The grammar
+\[N \tb ::= \tb 0\tb|\tb\suc(N)\]
+corresponds the FOLEQ signature from Ex.~\ref{ex:nat:succ}.
+\end{example}
+
+\begin{example}[Words]\label{ex:foldef:words}
+The language of words over an alphabet $A=\{a_1,\ldots,a_n\}$ can be written as the context-free grammar
+\[W \tb ::= \tb \epsilon \tb|\tb a_1W \tb|\tb \ldots \tb|\tb a_nW\]
+It corresponds to the FOLEQ signature using
+\begin{compactitem}
+\item nullary function symbol $\epsilon$
+\item unary function symbols $\bm{a_1}$, \ldots, $\bm{a_n}$, written as prefix without brackets, i.e., $\bm{a}w$ instead of $\bm{a}(w)$.
+\end{compactitem}
+\end{example}
+
+%\begin{example}[Regular Expressions]
+%We obtain a FOL-signature for regular expressions by using:
+%\begin{compactitem}
+%\item nullary function symbols for the symbols of the alphabet, $\bm{\epsilon}$ and $\bm{\es}$
+%\item unary function symbol $*$, written as postfix
+%\item binary function symbols $+$ and $\cdot$ (concatenation), written infix
+%\end{compactitem}
+%\end{example}
+
+%\begin{example}[Propositional Formulas]
+%We obtain a FOL-signature for the formulas of propositional logic by using:
+%\begin{compactitem}
+%\item nullary function symbols for true and false,
+%\item unary function symbol for negation
+%\item binary function symbols for conjunction, disjunction, and implication
+%\end{compactitem}
+%\end{example}
+
+\subsection{Simple Definitions in First-Order Logic}
+
+FOLEQ does not permit inductive definitions directly.
+In fact, FOLEQ signatures do not permit \emph{any} definition at all.
+But we can give almost any definition indirectly using axioms in FOLEQ theories.
+
+\paragraph{Constant Definitions}
+For some term $\istermS{}{t}$, the definition $c:=t$ can be written in a FOLEQ  theory by adding
+\begin{compactitem}
+\item a nullary function symbol $c$,
+\item the axiom $c\doteq t$
+\end{compactitem}
+
+\begin{example}[Continuing Ex.~\ref{ex:foldef:nat}]\label{ex:foldef:nat2}
+We define $1:=\suc(0)$ by adding
+\begin{compactitem}
+\item the nullary function symbol $1$,
+\item the axiom $1\doteq \suc(0)$
+\end{compactitem}
+\end{example}
+
+\paragraph{Function Definitions}
+For some term $\istermS{x_1,\ldots,x_n}{t}$, the definition $f$ is the function that maps $x_1,\ldots,x_n$ to $t$ can be written in a FOLEQ theory by adding
+\begin{compactitem}
+\item an $n$-ary function symbol $f$,
+\item the axiom $\forall x_1 \ldots \forall x_n\;f(x_1,\ldots,x_n)\doteq t$
+\end{compactitem}
+
+Note that constant definitions can be seen of the special case of a function definition where $n=0$.
+
+\begin{example}[Continuing Ex.~\ref{ex:foldef:words}]\label{ex:foldef:words2}
+We define the doubling $ww$ of a word using the term $\istermS{w}{ww}$ by adding
+\begin{compactitem}
+\item the unary function symbol $\op{double}$,
+\item the axiom $\forall w\;\op{double}(w)\doteq ww$
+\end{compactitem}
+\end{example}
+
+\paragraph{Predicate Definitions}
+For some formula $\isformS{x_1,\ldots,x_n}{F}$, the definition $p$ is the property that holds for $x_1,\ldots,x_n$ if $F$ holds can be written in a FOLEQ theory by adding
+\begin{compactitem}
+\item an $n$-ary predicate symbol $p$,
+\item the axiom $\forall x_1 \ldots \forall x_n\;p(x_1,\ldots,x_n)\equiv t$
+\end{compactitem}
+
+\begin{example}[Continuing Ex.~\ref{ex:foldef:nat}]\label{ex:foldef:nat3}
+We define the property $\op{nonzero}$ of a natural number using the formula $\isformS{n}{\neg n\doteq 0}$ by adding
+\begin{compactitem}
+\item the unary predicate symbol $\op{nonzero}$,
+\item the axiom $\forall n\;\op{nonzero}(n)\equiv \neg n\doteq 0$
+\end{compactitem}
+\end{example}
+
+\subsection{Inductive Definitions in First-Order Logic}
+
+We obtain much more flexible options for definitions if we use induction.
+The basic idea is the same: We use axioms to capture the content of the definition.
+More precisely, we use one axiom for each case of the induction.
+
+\paragraph{Inductive Function Definitions}
+Functions are defined by adding a function symbol and then one axiom for every case.
+
+\begin{example}[Continuing Ex.~\ref{ex:nat:arith},~\ref{ex:induction:add} and~\ref{ex:foldef:nat}]\label{ex:foldef:nat4}
+We define the addition $m+n$ of natural numbers by adding
+\begin{compactitem}
+\item the binary function symbol $+$ (written infix),
+\item the axioms $\forall n\;0+n\doteq n$ and $\forall m\forall n\;\suc(m)+n\doteq\suc(m+n)$.
+\end{compactitem}
+
+And we define the multiplication $m\cdot n$ of natural numbers by adding
+\begin{compactitem}
+\item the binary function symbol $\cdot$ (written infix),
+\item the axioms $\forall n\;0\cdot n\doteq 0$ and $\forall m\forall n\;\suc(m)\cdot n\doteq (m\cdot n)+n$.
+\end{compactitem}
+\end{example}
+
+\begin{example}[Continuing Ex.~\ref{ex:induction:reverse} and~\ref{ex:foldef:words}]\label{ex:foldef:words3}
+We define the reversal of a word by adding
+\begin{compactitem}
+\item the unary function symbol $R$ (written as postfix superscript, i.e., $w^R$),
+\item the axioms $\forall w\;\bm{\epsilon}^R\doteq \bm{\epsilon}$ and $\forall w\;(\bm{a}w)^R\doteq w^R\bm{a}$ for all unary symbols $\bm{a}$ from Ex.~\ref{ex:foldef:words}.
+\end{compactitem}
+\end{example}
+
+\paragraph{Inductive Predicate Definitions}
+Properties/predicates are defined by adding a predicate symbols and one axiom for every case.
+
+\begin{example}[Continuing \ref{ex:foldef:nat}]\label{ex:foldef:nat5}
+We define the less-or-equal predicate $\leq$ between natural numbers by adding
+\begin{compactitem}
+\item the binary predicate symbol $\leq$ (written infix),
+\item the axioms \[\forall n\;0\leq n\equiv \true \tb\mand\tb \forall m\forall n\;\suc(m)\leq n\equiv\exists x\;n\doteq \suc(x)\wedge m\leq x\]
+\end{compactitem}
+\end{example}
+
+\begin{remark}
+Of course, we can simply write $0\leq n$ instead of $0\leq n\equiv \true$.
+We use the longer version here to emphasize the general shape of inductive predicate definitions.
+\end{remark}
+
+\paragraph{Mutually Inductive Definitions}
+We can also state mutually inductive definitions of functions or predicates.
+We simply add multiple function/predicate symbols at once and give one axiom per case.
+
+\begin{example}[Continuing \ref{ex:foldef:nat}]\label{ex:foldef:nat6}
+We define the predicates $\op{even}$ and $\op{odd}$ on natural numbers by adding
+\begin{compactitem}
+\item the unary predicate symbols $\op{even}$ and $\op{odd}$,
+\item the axioms \[\op{even}(0)\equiv \true \tb\mand\tb \forall n\;\op{even}(\suc(n))\equiv \op{odd}(n)\]
+                 \[\op{odd}(0)\equiv \false \tb\mand\tb \forall n\;\op{odd}(\suc(n))\equiv \op{even}(n)\]
+\end{compactitem}
+\end{example}
+
+\subsection{Inductive Proofs in First-Order Logic}
+
+We can now finally understand the motivation behind the Peano axioms from Ex.~\ref{ex:nat:succ}:
+
+\begin{example}[Induction Schemata in First-Order Logic]\label{ex:nat:fol:induction}
+The Peano axioms from Ex.~\ref{ex:nat:succ} arise as follows:
+\begin{itemize}
+\item The function symbols $0$ and $\suc$ formalizes the cases \ref{def:nat:zero} and \ref{def:nat:succ} of Def.~\ref{def:nat}.
+\item The axioms for injectivity of $\suc$ and starting point $0$ formalize the cases \ref{def:nat:consistent} of Def.~\ref{def:nat}.
+  Respectively, they capture that no two successors are equal and that no successor is equal to $0$.
+\item The axiom schema of induction approximately formalizes case \ref{def:nat:coverage} of Def.~\ref{def:nat}.
+  It expresses the intuition that $0$ and all successors make up the whole natural numbers.
+\end{itemize}
+Thus, the Peano axioms systematically formalize Def.~\ref{def:nat} in FOLEQ.
+\end{example}
+
+Along these lines, we can define induction schemata in FOLEQ for all context-free grammars with a single non-terminal.
+Then we can revisit the examples of inductive proofs from Sect.~\ref{sec:induction:math}, \ref{sec:induction:reg}, and~\ref{sec:induction:cf} and formally carry them out in FOLEQ.
+
+\begin{remark}[Incompleteness of Induction]\label{ex:nat:fol:incomplete}
+Note that Ex.~\ref{ex:nat:fol:induction} says ``approximately formalizes''.
+The problem is that the axiom schema of induction yields only countably many axioms (because there are only countably many formulas).
+But there are uncountably many things we can do with the natural numbers (e.g., uncountably many different functions out of $\N$).
+Therefore, FOLEQ cannot fully capture case \ref{def:nat:coverage} of Def.~\ref{def:nat}.
+
+Indeed, as we know from Ex.~\ref{ex:nat:incomplete}, even though the theory of Ex.~\ref{ex:nat:fol:induction} is complete (i.e., can prove or disprove every formula), there are non-standard models that satisfy the exact same FOLEQ formulas as the intended standard model $SN$.
+
+Moreover, and even worse, we know that Peano arithmetic -- i.e., the union of the theories from Ex.~\ref{ex:foldef:nat4} and~\ref{ex:nat:fol:induction} -- is not even a complete theory:
+There are formulas that are true in the standard model but can be neither proved nor disproved in FOLEQ.
+The proofs of these formulas require induction hypotheses that FOLEQ's Peano arithmetic cannot express.
+\end{remark}

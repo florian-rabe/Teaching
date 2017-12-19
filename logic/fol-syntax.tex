@@ -1,0 +1,509 @@
+\section{Syntax of Propositional Logic}
+
+\begin{definition}[PL-signatures]
+A PL-signature is an alphabet, i.e., a set $\Sigma$ of symbols.
+\end{definition}
+
+\begin{definition}[PL formulas]
+The PL-grammar for the signature $\Sigma$ is:
+
+\begin{tabular}{lcl@{\tb}l}
+$\FORM$ & $::=$ & $\true$ & \emph{truth} \\
+     &  $|$  & $\false$ & \emph{falsity} \\
+     &  $|$  & $\FORM \wedge \FORM$ & \emph{conjunction} \\
+     &  $|$  & $\FORM \vee \FORM$ & \emph{disjunction} \\
+     &  $|$  & $\FORM \arr \FORM$ & \emph{implication} \\
+     &  $|$  & $\neg \FORM$ & \emph{negation} \\
+     &  $|$  & $p$ where $p\in\Sigma$ & \emph{boolean variables}\\
+\end{tabular}
+
+The set of words over this grammar is the set $\Sen^{PL}(\Sigma)$ of $\Sigma$-\emph{formulas} (also called $\Sigma$-\emph{propositions} or $\Sigma$-\emph{sentences}).
+\end{definition}
+
+This grammar is of course ambiguous. If we actually want to parse words, we have to make it unambiguous by adding brackets around conjunctions, disjunctions, and implications.
+
+\begin{remark}
+It is a specialty of propositional logic that all formulas are well-formed, i.e., the well-formed PL-formulas over $\Sigma$ are a context-free language.
+Normally, the languages are context-sensitive.
+\end{remark}
+
+\section{Syntax of First-Order Logic}
+
+\begin{definition}[FOL-Signatures]\label{def:fol:sig}
+A FOL-signature is a triple $(\Sigma_p,\Sigma_f,\arit)$ where $\Sigma_p$ and $\Sigma_f$ are disjoint sets of symbols and $\arit:\Sigma_p\cup\Sigma_f\arr\N$ is a mapping.
+\end{definition}
+
+The symbols in $\Sigma_p$ and $\Sigma_f$ are called \emph{predicate symbols} and \emph{function symbols}, respectively. If $\arit(s)=0,1,2,3,4,\ldots$, we say that $s$ is a \emph{nullary}, \emph{unary}, \emph{binary}, \emph{ternary}, $4$-ary, \ldots, symbol.
+
+\begin{figure}[htp]
+\begin{center}
+\begin{tabular}{lcl@{\tb}l}
+$\FORM$ & $::=$ & $\true$ & \emph{truth} \\
+        &  $|$  & $\false$ & \emph{falsity} \\
+        &  $|$  & $\FORM \wedge \FORM$ & \emph{conjunction} \\
+        &  $|$  & $\FORM \vee \FORM$ & \emph{disjunction} \\
+        &  $|$  & $\FORM \arr \FORM$ & \emph{implication} \\
+        &  $|$  & $\neg \FORM$ & \emph{negation} \\
+        &  $|$  & $\forall \VAR\; \FORM$ & \emph{universal quantification} \\
+        &  $|$  & $\exists \VAR\; \FORM$ & \emph{existential quantification} \\
+        &  $|$  & $p(\underbrace{\TERM,\ldots,\TERM}_n)$ where $p\in\Sigma_p$ with $\arit(p)=n$ & \emph{atomic formulas} or \emph{predicates}\\
+$\TERM$ & $::=$ & $f(\underbrace{\TERM,\ldots,\TERM}_n)$ where $f\in\Sigma_f$ with $\arit(f)=n$ \\
+        &  $|$  & $\VAR$ &\\
+$\VAR$  & $::=$ & some symbol & \emph{variables}
+\end{tabular}
+\caption{FOL Grammar}\label{fig:fol:grammar}
+\end{center}
+\end{figure}
+
+\begin{definition}[FOL-Grammar]\label{def:fol:grammar}
+The FOL-grammar for the signature $\Sigma=(\Sigma_p,\Sigma_f,\arit)$ is given by the productions in Fig.~\ref{fig:fol:grammar} with start symbol $\FORM$.
+
+The language of this grammar is denoted by $\Forms^{FOL}(\Sigma)$.
+\end{definition}
+
+Words produced from $\TERM$ are called \emph{terms}.
+Words produced from $\FORM$ are called \emph{formulas} (or propositions or sentences).
+
+Words produced from $\VAR$ are variable names.
+These are elements of some countable set that is usually left implicit.
+For example, we can put
+\[L(\VAR)=\{x_n,y_n,z_n \| n\in \N\}.\]
+
+This grammar is also ambiguous. To make it unambiguous, we have to add brackets around all complex formulas.
+
+\begin{remark}
+The intuition behind the arity is that it gives the number of arguments that a function or predicate symbol takes.
+
+Arity $0$ is permitted: Nullary function symbols are also called \emph{constant} symbols, nullary predicate symbols are the \emph{boolean variables} from propositional logic.
+\end{remark}
+
+\begin{remark}
+The intuition behind the non-terminals $\TERM$ and $\FORM$ is that terms represent mathematical objects and formulas represent properties of mathematical objects.
+
+It is easy to see that the FOL syntax is an extension of the PL-syntax.
+
+Note that formulas and terms are not mixed: In every branch of the syntax tree of a well-formed formula, all $\FORM$-nodes occur above all $\TERM$-nodes.
+\end{remark}
+
+Equality is needed so often that we define FOLEQ. It is like FOL but with a fixed binary predicate symbol $\doteq$ that is always present.
+
+\begin{definition}[FOL with equality]
+FOLEQ is defined like FOL but with one production added to the grammar: $\FORM ::= \TERM \doteq \TERM$.
+\end{definition}
+
+\begin{remark}[Equality]
+It is crucial to understand the difference between $=$ and $\doteq$.
+
+$\doteq$ is a symbol of the alphabet, which happens to look very similar to the symbol $=$.
+But at this point $\doteq$ has no meaning whatsoever.
+It just takes two term and turns them into a formula.
+
+$=$ on the other hand, has a meaning: It denotes equality of mathematical objects.
+In particular, we can use $=$ to express the equality of words over our alphabets, e.g., the equality of terms and formulas.
+For example, we can say the following: "We assume $F=s\doteq t$." This sentence expresses that $F$ is a word (in this case a formula) over the alphabet and $F$ is the formula $s\doteq t$.
+\end{remark}
+
+\begin{example}[Set Theory]
+Axiomatic set theory was introduced around the 1920s by Zermelo and Fraenkel. It is the base of all modern mathematics. In modern language and notation, a very simple variant of axiomatic set theory is based on the following FOLEQ-signature:
+\begin{itemize}
+\item a binary predicate symbol $\in$, and we usually write $s\in t$ instead of $\in(s,t)$
+\item a nullary function symbol $\es$,
+\item a unary function symbol $\op{Pow}$,
+\item a unary function symbol $\bigcup$,
+\item a binary function symbol $\op{unorderedpair}$, and we usually write $\{s,t\}$ instead of $\op{unorderedpair}(s,t)$.
+\end{itemize}
+
+Example formulas for this signature are
+\begin{itemize}
+\item $\forall x \; \neg x\in\es$,
+\item $\forall x \; \forall y \; x \in \{x,y\}$,
+\item $\forall x \; \forall y \; \{x,y\} \doteq \{y,x\}$,
+\item $\forall x \; \es \doteq \{x,x\}$,
+\item $\forall x \; \forall y \; x \in y$.
+\end{itemize}
+Note the difference between the first three and the last two formulas: The first three feel "correct" or "true", whereas the last two feel "false". However, at this point, no formula has a meaning. They are all just words over our grammar.
+
+This signature looks like it has only very few and very boring terms, for example $\es$, $\op{Pow}(\es)$, $\{\es,\es\}$, and so on. And the formulas are even more boring because there is only one predicate symbol. However, together with some abbreviations, this is already enough to talk about most of mathematics.
+
+For example, mathematics usually uses the following abbreviations for terms and formulas:
+\begin{itemize}
+\item If $s$ and $t$ are terms, then the term $\{s,\{s,t\}\}$ is abbreviated as $(s,t)$.
+\item If $s$ and $t$ are terms, then the term $\bigcup\{s,t\}$ is abbreviated as $s\cup t$ (or $(s\cup t)$ if there are ambiguities otherwise).
+\item If $s$ is a term, then the term $\{s,s\}$ is abbreviated as $\{s\}$.
+\item If $s$ and $t$ are terms (which do not use the variable $x$), then the formula $\forall x\; (x\in s \arr x\in t)$ is abbreviated as $s\sq t$.
+\end{itemize}
+
+Then we can give even more abbreviations:
+\begin{itemize}
+\item We write $0$ instead of $\es$.
+\item We write $1$ instead of $\{\es\}$.
+\item We write $2$ instead of $\{\es,\{\es\}\}$.
+\item We write $3$ instead of $2\cup\{2\}$.
+\item and so on
+\end{itemize}
+\end{example}
+
+\begin{example}[Monoids and Groups]
+Monoids and groups (as well as rings, fields, etc.) can also be expressed as FOLEQ signatures.
+The signature for monoids has:
+\begin{itemize}
+\item a binary function symbol $\circ$, and we usually write $s\circ t$ instead of $\circ(s,t)$ (again we may have to write $(s\circ t)$ to prevent ambiguities),
+\item a nullary function symbol $e$.
+\end{itemize}
+The signature for groups extends the signature for monoids with
+\begin{itemize}
+\item a unary function symbol $\op{inv}$, and we usually write $s^{-1}$ instead of $\op{inv}(s)$.
+\end{itemize}
+\end{example}
+
+
+%\section{Induction on Syntax Trees}
+%
+%We know two induction principles for formal languages:
+%\begin{itemize}
+%\item Induction on (the length of) the word with
+%  \begin{itemize}
+%   \item base case: $w=\epsilon$ (i.e., $|w|=0$)
+%   \item step case: $w=w'x$ (alternatively: $w=xw'$) for a word $w$ and a symbol $x$ (i.e., $|w|=|w'|+1$)
+%  \end{itemize}
+%\item Induction on (the length of) the derivation $S\Arr^* w$ with
+%  \begin{itemize}
+%   \item base case: $S\Arr^* w=S$ (i.e., derivation length $0$)
+%   \item step case: $S\Arr^* w' \Arr w$ for a word $w'$ (i.e., derivation length of $S\Arr^* w' \Arr w$ is one plus the derivation length of $S\Arr^* w'$)
+%  \end{itemize}
+%\end{itemize}
+%
+%
+%Induction on syntax trees is very similar to induction on derivations. Induction on (the height of) the syntax tree with root $S$ and yield $w$ works as follows:
+%\begin{itemize}
+%   \item base case: $w=S$, then the syntax tree has a single node $S$ and thus height $0$,
+%   \item step case: $S\Arr^* A_1\ldots A_n \Arr^* w_1\ldots w_n$ for non-terminals $A_i$ and for all $i$ either $w_i=A_i$ or there is a production $A_i\arr w_i$ in the grammar, then the height of the syntax tree is (at most) one plus the height of the syntax tree with root $S$ and leaves $A_i$.
+%\end{itemize}
+%The only difference is that in an induction on derivations, we only apply a single production in the induction step, whereas in an induction on syntax trees we can apply several productions at once. Usually, induction on syntax trees is useless because an induction on derivations works as well and is much simpler. However, induction on syntax trees is useful when we do the induction step in the other direction: instead of appending productions at the leaves of the syntax tree, we append one at the root. We call this bottom-up induction on syntax trees.
+%
+%Bottom-up induction on (the height of) syntax trees with yield $w$ works as follows:
+%\begin{itemize}
+% \item base case: $w$ is a terminal word produced in a single production from \emph{some} non-terminal symbol (i.e., the height of the syntax tree is $1$),
+% \item step case:
+%    \begin{itemize}
+%      \item if $w_1,\ldots, w_n$ are terminal words such that either $A_i=w_i$ or $w_i$ is the yield of a syntax tree with root $A_i$,
+%      \item and if $A\arr A_1\ldots A_n$ is a production of the grammar,
+%      \item then the induction step goes from $A_i\Arr^* w_i$ (with height of the syntax trees at most $n$) to $A\Arr A_1\ldots A_n\Arr^* w_1\ldots w_n$ (with height of the syntax tree $n+1)$.
+%    \end{itemize}
+%\end{itemize}
+%Note that because we append productions at the roots of the syntax trees, the non-terminal at the root changes in the induction step. Therefore, we often need different induction steps for different non-terminals at the root.
+
+\section{Contexts and Substitutions}
+
+\paragraph{Free and Bound Variables}
+Bottom-up induction on syntax trees is the most important induction for logics and similar languages. It is often just called "induction on the grammar", or ``induction on the language'', or even just ``induction''.
+The following definitions are done in this way. The following definitions are for FOLEQ; the analogues for FOL are obtained by deleting the case for $\doteq$.
+
+\begin{definition}[Bound Variables]\label{def:fol:bv}
+We define the set $\BV(w)$ of \emph{bound variables} of a word $w$ --- i.e., a formula or a term --- as follows.
+\begin{itemize}
+  \item for terms:
+   \begin{itemize}
+    \item $\BV(x)=\es$,
+    \item $\BV(f(t_1,\ldots,t_n))=\BV(t_1)\cup\ldots\cup\BV(t_n)$,
+   \end{itemize}
+  \item for formulas:
+   \begin{itemize}
+    \item $\BV(p(t_1,\ldots,t_n))=\BV(t_1)\cup\ldots\cup\BV(t_n)$,
+    \item $\BV(t_1\doteq t_2)=\BV(t_1)\cup\BV(t_2)$,
+    \item $\BV(\true)=\es$,
+    \item $\BV(\false)=\es$,
+    \item $\BV(F\wedge G)=\BV(F)\cup\BV(G)$ and accordingly for the other connectives,
+    \item $\BV(\forall x\;F)=\BV(F)\cup\{x\}$ and accordingly for the other quantifier.
+  \end{itemize}
+\end{itemize}
+\end{definition}
+
+The opposite of bound variables are the free variables.
+\begin{definition}[Free Variables]\label{def:fol:fv}
+We define the set $\FV(w)$ of \emph{free variables} of a word $w$ --- i.e., a formula or a term --- as follows.
+\begin{itemize}
+  \item for terms:
+   \begin{itemize}
+    \item $\FV(x)=\{x\}$,
+    \item $\FV(f(t_1,\ldots,t_n))=\FV(t_1)\cup\ldots\cup\FV(t_n)$,
+   \end{itemize}
+  \item for formulas:
+   \begin{itemize}
+    \item $\FV(p(t_1,\ldots,t_n))=\FV(t_1)\cup\ldots\cup\FV(t_n)$,
+    \item $\FV(t_1\doteq t_2))=\FV(t_1)\cup\FV(t_2)$,
+    \item $\FV(\true)=\es$,
+    \item $\FV(\false)=\es$,
+    \item $\FV(F\wedge G)=\FV(F)\cup\FV(G)$ and accordingly for the other connectives,
+    \item $\FV(\forall x\;F)=\FV(F)\sm\{x\}$ and accordingly for the other quantifier.
+  \end{itemize}
+\end{itemize}
+\end{definition}
+
+
+\begin{remark}
+Note that:
+\begin{itemize}
+\item $x\in\BV(F)$ iff there is a $\forall x$ or a $\exists x$ in $F$. We say that, e.g., $\forall x \; F$ binds the variable $x$ in $F$. $\forall$ and $\exists$ are called \emph{binders}.
+\item For a term $t$, we always have $\BV(t)=\es$ because terms cannot contain binders. This is a special property of FOL and FOLEQ  --- for example, lambda calculus is a language where terms may contain binders (namely the $\lambda$ binder).
+\item The sets $\FV(F)$ and $\BV(F)$ are always finite.
+\item The definitions of $\BV(-)$ and $\FV(-)$ only differ in two cases.
+\item If a variable $x$ occurs in $F$, then $x\in\BV(F)$ or $x\in\FV(F)$ or both. For example, $x$ occurs both free and bound in $p(x)\wedge\forall x\;q(x)$.
+\end{itemize}
+\end{remark}
+
+\begin{remark}
+A $\Sigma$-formula/term with an empty set of free variables is called \emph{closed} or a \emph{ground formula/term}.
+Ground formulas are often called \emph{sentences} and
+
+If $F$ is a formula with $\FV(F)=\{x_1,\ldots,x_n\}$, then $\forall x_1\;\ldots\;\forall x_n\;F$ and $\exists x_1\;\ldots\;\exists x_n\;F$ are closed formulas. We call them the \emph{universal closure} and the \emph{existential closure} of $F$.
+\end{remark}
+
+\begin{example}
+Here are some examples for free and bound variables:
+\begin{itemize}
+\item For the formula $F\;=\; x\circ (y\circ z) \doteq (x\circ y)\circ z$ over the signature of monoids, we have $\BV(F)=\es$ and $\FV(F)=\{x,y,z\}$. Its universal closure is $\forall x\;\forall y\;\forall z\;x\circ (y\circ z) \doteq (x\circ y)\circ z$.
+\item There are not so many ground terms over the signature of monoids: They are $e$, $e\circ e$, $(e\circ e)\circ e$, $e\circ(e\circ e)$, and so on.
+\item If a FOL- or FOLEQ-signature has no constant symbols, then there are no ground terms.
+\item If a FOL-signature has a unary predicate symbol $p$, then $\exists x\;p(x)$ is a (non-boring) ground formula.
+\item If a FOLEQ-signature has a unary function symbol $f$, then $\exists x\;x\doteq f(x)$ is a (non-boring) ground formula.
+\end{itemize}
+\end{example}
+The last two examples show that even with only one function or predicate symbol, FOL and FOLEQ already offer a lot of interesting formulas to study.
+
+
+\paragraph{Contexts}
+Above we defined the syntax FOLEQ by using a context-free grammar.
+This grammar produced all formulas, i.e., formulas with any number of free variables.
+This is often not desirable because we usually only care about closed formulas.
+
+However, the language of closed formulas is not context-free.
+This is easy to see: Every binder $\forall x\;F$ declares a variable $x$; this variable is \emph{local} in the sense that it has a certain \emph{scope} and should only occur within its scope; for example, in $G\wedge\forall x\;F$, the scope of $x$ is $F$ (but not $G$).
+In general, all languages with such declarations are not context-free.
+Therefore, we can only give a context-free grammar for formulas but not for closed formulas.
+
+This is the main reason why we use formulas with free variables at all: We can write down a context-free grammar for them, and such a grammar gives us the powerful and simple induction principle of induction on syntax trees.
+
+In general, we use contexts to keep track of the free variables:
+
+\begin{definition}[Context]\label{def:fol:context}
+Let $\Sigma$ be a signature.
+A $\Sigma$-\emph{context} $\Gamma$ is a finite set of variables.
+
+We define
+\[\isformSG{F} \tb\miff\tb F\in \Forms^{FOLEQ}(\Sigma) \mand \FV(F)\sq\Gamma\]
+If $\isformSG{F}$, we say that $F$ is a $\Sigma$-formula in context $\Gamma$.
+If $\Gamma=\es$, we write $\isform{\Sigma}{}{F}$.
+
+Finally, we define
+\[\Sen^{FOLEQ}(\Sigma)=\{F \,|\,\isform{\Sigma}{}{F}\}\]
+\end{definition}
+
+
+\begin{example}
+Let $\Sigma$ be the signature of monoids.
+The formula $x\circ (y\circ z) \doteq (x\circ y)\circ z$ is a formula in the context $\{x,y,z\}$:
+\[\isformS{x,y,z}{x\circ (y\circ z) \doteq (x\circ y)\circ z}\]
+It is also a formula in any bigger context:
+\[\isformS{x,x',y,z,y'}{x\circ (y\circ z) \doteq (x\circ y)\circ z}\]
+\end{example}
+
+\paragraph{Substitutions}
+We can think of free variables as holes or placeholder that can be filled with arbitrary terms.
+This filling operation is the task of substitutions.
+
+\begin{definition}[Substitution]\label{def:fol:sub}
+Let $\Sigma$ be a signature. A \emph{substitution} from a $\Sigma$-context $\Gamma$ to a $\Sigma$-context $\Gamma'$ is a mapping from $\Gamma$ to $\Sigma$-terms in context $\Gamma'$.
+\end{definition}
+
+\begin{notation}
+If $\gamma$ is a substitution from $\Gamma$ to $\Gamma'$, we write $\gamma:\Gamma\arr\Gamma'$.
+If $\Gamma=\{x_1,\ldots,x_n\}$ and $\gamma(x_i)=t_i$, we write $\gamma$ as $[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]$.
+\end{notation}
+
+\emph{Remark}: It is not so common to use contexts when talking about FOL and FOLEQ. When you study additional literature, you will probably not find them. The reason is that --- contrary to other logics --- FOL and FOLEQ are so simple that contexts are not needed. However, contexts make a lot of things much clearer and more elegant, and a good computer scientist should understand them. Also, some literature writes substitutions the other way around: $\sub{t}{x}$ instead of $\sub{x}{t}$.
+
+\begin{example}\label{ex:fol:sub}
+Let $\Sigma$ be the signature of monoids.
+\begin{itemize}
+\item If $\Gamma=\{x,y,z\}$ and $\Gamma'=\{x,u,v,y\}$, then $[\sub{x}{y},\sub{y}{x},\sub{z}{e\circ v}]$ is a substitution from $\Gamma$ to $\Gamma'$.
+\item The identity $[\sub{x_1}{x_1},\ldots,\sub{x_n}{x_n}]$ is a substitution from the context $\{x_1,\ldots,x_n\}$ to itself.
+\item More generally, $[\sub{x_1}{x_1},\ldots,\sub{x_n}{x_n}]$ is a substitution from the context $\{x_1,\ldots,x_n\}$ to any context $\Gamma'$ with $\{x_1,\ldots,x_n\}\sq\Gamma'$.
+\end{itemize}
+\end{example}
+
+The intuition behind a substitution $[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]$ from $\Gamma$ to $\Gamma'$ is that every (free) variable $x_i$ occurring in a formula/term over $\Gamma$ is substituted with $t_i$ thus creating a formula/term over $\Gamma'$. This is formalized in the following definition.
+
+\begin{definition}[Substitution application]\label{def:fol:subapp}
+Let $\Sigma$ be a signature and $\gamma:\Gamma\arr\Gamma'$ a substitution between $\Sigma$-contexts. Then we define the \emph{application} $\ov{\gamma}(-)$ of $\gamma$ to a word as follows:
+\begin{itemize}
+\item terms:
+  \begin{itemize}
+    \item $\ov{\gamma}(x)=\gamma(x)$,
+     \item $\ov{\gamma}(f(t_1,\ldots,t_n))=f\big(\ov{\gamma}(t_1),\ldots,\ov{\gamma}(t_n)\big)$,
+  \end{itemize}
+\item formulas:
+   \begin{itemize}
+     \item $\ov{\gamma}(p(t_1,\ldots,t_n))=p\big(\ov{\gamma}(t_1),\ldots,\ov{\gamma}(t_n)\big)$,
+     \item $\ov{\gamma}(t_1\doteq t_2)=\ov{\gamma}(t_1)\doteq\ov{\gamma}(t_2)$,
+     \item $\ov{\gamma}(\true)=\true$,
+     \item $\ov{\gamma}(\false)=\false$,
+     \item $\ov{\gamma}(F\wedge G)=\ov{\gamma}(F)\wedge\ov{\gamma}(G)$ and similarly for the other connectives,
+     \item $\ov{\gamma}(\forall x\;F)=\forall x\;\ov{\gamma^x}(F)$ and similarly for the other quantifier.
+   \end{itemize}
+   Here $\gamma^x$ is a substitution from $\Gamma\cup\{x\}$ to $\Gamma'\cup\{x\}$ defined by $\gamma^x(x)=x$ and $\gamma^x(y)=\gamma(y)$ for all variables $y$ in $\Gamma$. (In the special case where $x\in\Gamma$, the former takes precedence.)
+\end{itemize}
+\end{definition}
+
+\begin{notation}\label{not:fol:sub}
+If $F$ is a formula with $\FV(F)=x_1,\ldots,x_n$, it is common to use the following abbreviation:
+\[F(t_1,\ldots,t_n) \tb := \tb \ov{[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]}(F).\]
+And similarly, if $t$ is a term with $\FV(t)=x_1,\ldots,x_n$, then:
+\[t(t_1,\ldots,t_n) \tb := \tb \ov{[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]}(t).\]
+
+Moreover, we use the following abbreviations
+\[F[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}] \tb := \tb \ov{[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]}(F).\]
+\[t[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}] \tb := \tb \ov{[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]}(t).\]
+\end{notation}
+
+There is one tricky problem with substitutions. Assume $\gamma=[\sub{x}{y}]:\{x\}\arr\{y\}$. Then $\ov{\gamma}(\forall y\;p(x,y))=\forall y\;p(y,y)$. This is not intended: We want to obtain something like $\forall y'\;p(y,y')$, i.e., we want to distinguish the first $y$, which should stem from the context $\{y\}$ and the second one, which should stem from the binder $\forall y$. If a substitution makes two variables equal that are supposed to different, we speak of \emph{variable capture}. In this example, we can avoid variable capture only by renaming $y$ to $y'$. This is called $\alpha$-\emph{renaming}.
+
+\begin{definition}[$\alpha$-renaming]
+Replacing a (sub-)formula $\forall x\;F$ with $\forall x'\;F'$ where $F'$ is like $F$ but with all occurrences of $x$ replaced with $x'$ is called an $\alpha$-\emph{renaming} (from $x$ to $x'$). The same holds for $\exists$ instead of $\forall$.
+\end{definition}
+
+More generally, we can always avoid variable capture as follows: Before applying the substitution $\gamma:\Gamma\arr\Gamma'$ to the formula $F$, we use $\alpha$-renaming to replace all variables $x\in\BV(F)\cap\Gamma'$ with other variables. If we want to indicate that we do that, we speak of \emph{capture-avoiding substitutions}.
+
+\begin{example}\label{ex:fol:subapp}
+Let $\Sigma$ be the signature of monoids. Let $\Gamma=\{x,y,z\}$ and $\Gamma'=\{x,u,v,y\}$, and $\gamma=[\sub{x}{y},\sub{y}{x},\sub{z}{e\circ v}]$ as above. Then
+\begin{itemize}
+\item $\ov{\gamma}\big(x\circ (y\circ z) \doteq (x\circ y)\circ z\big) \tb=\tb y\circ (x\circ (e\circ v)) \doteq (y\circ x)\circ (e\circ v)$,
+\item $\ov{\gamma}\big(\forall z \; x\circ (y\circ z) \doteq (x\circ y)\circ z\big) \tb=\tb \forall z \; y\circ (x\circ z) \doteq (y\circ x)\circ z$,
+\item $\ov{\gamma}\big(\forall y \; x\circ (y\circ z) \doteq (x\circ y)\circ z\big) \tb=\tb
+                       \forall y \; y\circ (y\circ (e\circ v)) \doteq (y\circ y)\circ (e\circ v)$ 
+                       \\ (variable capture)
+\item $\ov{\gamma}\big(\forall y' \; x\circ (y'\circ z) \doteq (x\circ y')\circ z\big) \tb=\tb
+                       \forall y' \; y\circ (y'\circ (e\circ v)) \doteq (y\circ y')\circ (e\circ v)$
+                       \\ (capture-avoiding variant of the above after $\alpha$-renaming of $y$ to $y'$)
+\end{itemize}
+\end{example}
+
+Eventually we can state the main property of substitutions:
+\begin{theorem}[Closure under Substitution]
+Let $\Sigma$ be a signature and $\gamma:\Gamma\arr\Gamma'$ a substitution between $\Sigma$-contexts. Then:
+\begin{itemize}
+\item if $\istermSG{t}$, then $\istermS{\Gamma'}{\ov{\gamma}(t)}$,
+\item if $\isformSG{F}$, then $\isformS{\Gamma'}{\ov{\gamma}(F)}$,
+\end{itemize}
+where, if necessary, the substitution application uses $\alpha$-renaming in $F$ such that variable capture is avoided.
+\end{theorem}
+\begin{proof}
+This is left as an exercise.
+\end{proof}
+
+\section{An Abstract Definition of the Syntax of a Logic}\label{sec:syn:abs}
+
+Above we have seen the signatures and formulas of three logics: PL, FOL, and FOLEQ. And there are many more logics: Researchers have developed all kinds of logics for different purposes. For example, two general ways how to obtain new logics from old ones are the following.
+\begin{itemize}
+\item Changing the signatures: for example, ALGEQ (algebraic equational logic) arises from FOLEQ by only using signatures without predicate symbols.
+\item Changing the formulas: for example, HORNEQ (equational Horn logic) arises from FOLEQ by only allowing formulas that look like this:
+\[\forall x_1 \ldots \forall x_m\; ((F_1\wedge \ldots \wedge F_n) \arr F)\]
+where all the $F_1,\ldots,F_n,F$ are atomic (i.e., they do not contain proper subformulas).
+\end{itemize}
+
+Therefore, it is important to study the abstract properties of logics so that we can work with all these logics at once. Otherwise, every definition or theorem would have to be repeated for every logic.
+
+Therefore, we introduce the following definition.
+
+\begin{definition}\label{def:syn:abs}
+A \emph{logic syntax} is a pair $(\Sig,\Sen)$ where $\Sig$ is a collection of objects --- called the \emph{signatures} --- and $\Sen$ is a mapping from $\Sig$ to sets, i.e., if $\Sigma\in\Sig$, then $\Sen(\Sigma)$ is a set. The elements of $\Sen(\Sigma)$ are called the $\Sigma$-\emph{sentences}.
+\end{definition}
+
+\begin{example}\label{ex:syn:abs}
+Now we can say:
+\begin{itemize}
+\item Let $\Sig^{PL}$ be the collection of PL-signatures, and $\Sen^{PL}$ be the mapping that maps a PL-signature to its set of PL-formulas. Then $(\Sig^{PL},\Sen^{PL})$ is a logic syntax.
+\item Let $\Sig^{FOL}$ be the collection of FOL-signatures, and $\Sen^{FOL}$ be the mapping that maps a FOL-signature to its set of FOL-sentences. Then $(\Sig^{FOL},\Sen^{FOL})$ is a logic syntax.
+\item The logic syntax $(\Sig^{FOLEQ},\Sen^{FOLEQ})$ is defined similarly to $(\Sig^{FOL},\Sen^{FOL})$.
+\end{itemize}
+\end{example}
+\medskip
+
+When defining logics (or related formalisms) in this way, we typically end up with the following situation:
+\begin{itemize}
+\item There is a collection of signatures $\Sigma$.
+\item For every signature, there is a collection of contexts $\Con(\Sigma)$.
+\item For every signature $\Sigma$ and every context $\Gamma$, there is the set of formulas $\isformSG{F}$.
+\item For a fixed signature $\Sigma$, we can use substitutions $\gamma:\Gamma\arr\Gamma'$ between two $\Sigma$-contexts $\Gamma$ and $\Gamma'$.
+\item Such a substitution $\gamma:\Gamma\arr\Gamma'$ induces a mapping from formulas $\isformSG{F}$ to formulas $\isformS{\Gamma'}{\ov{\gamma}(F)}$.
+\end{itemize}
+For example, this is the case for FOL and FOLEQ. FOL and FOLEQ have the special property that for all signatures $\Sigma$, the contexts are simply finite sets of variables. In other logics, the contexts can be more complex.
+
+
+\section{Theories}\label{sec:fol:thysyn}
+
+The above definition of logic syntax comes in very handy when we define theories: Theories are defined in exactly the same way for every logic. With our definition of logic syntax, we can handle all logics at once.
+
+\begin{definition}[Theories]
+Let $L=(\Sig,\Sen)$ be a logic syntax. Then an $L$-\emph{theory} is pair $(\Sigma,\Theta)$ where $\Sigma\in\Sig$ and $\Theta\sq\Sen(\Sigma)$. The formulas in $\Theta$ are called the \emph{axioms} of the theory.
+\end{definition}
+
+The most important logic, for which theories are used, is FOLEQ. A FOLEQ-theory is a pair of a FOLEQ signature and a set of FOLEQ-formulas. Let us look at some examples of FOLEQ-theories.\medskip
+
+\begin{example}[Set Theory]\label{ex:set}
+Below we will use the abbreviation $F\darr G$ for $(F\arr G)\wedge (G\arr F)$.
+The theory of set theory consists of the above-mentioned signature for set theory and the following axioms:
+\begin{itemize}
+\item axiom of equality (also called extensionality, intuitively: Two sets are equal if they have the same elements.): $\forall X\;\forall Y\;(X\doteq Y \darr \forall z\;(z\in X \darr z \in Y))$,
+\item axiom characterizing the empty set: $\forall x\; \neg x\in\es$,
+\item axioms characterizing the unordered pair: $\forall x\;\forall y\;\{x,y\}\doteq\{y,x\}$ and $\forall x\;\forall y\;x\in\{x,y\}$,
+\item axiom characterizing the union: $\forall X\;\forall z\; (z\in\bigcup X \darr \exists x\;(x \in X \wedge z\in x))$,
+\item axiom characterizing the power set: $\forall X\;\forall z\; (z\in \op{Pow}(X) \darr z \sq X)$,
+\item some other axioms, which would go beyond the scope of this lecture. A nice overview is given at \url{http://en.wikipedia.org/wiki/Zermelo\%E2\%80\%93Fraenkel_set_theory}. However, there the variant of set theory is used where $\in$ is the only function/predicate symbol.
+\end{itemize}
+As said above, this formulation of set theory goes back to works by Zermelo and Fraenkel in the 1920s \cite{zermelo,fraenkel}.
+However, it was not originally written in FOLEQ.
+In fact, FOLEQ was not even fully understood yet at the time.
+It has undergone various changes in modern mathematics, and today different versions of set theory are used.
+\end{example}
+
+\begin{example}[Monoids]\label{ex:monoid}
+The theory of monoids consists of the above-mentioned signature for monoids and the following axioms:
+\begin{itemize}
+\item associativity: $\forall x\;\forall y\;\forall z\;x\circ (y\circ z) \doteq (x\circ y)\circ z$,
+\item left-neutrality: $\forall x\;e\circ x \doteq x$,
+\item right-neutrality: $\forall x\;x\circ e \doteq x$.
+\end{itemize}
+\end{example}
+
+\begin{example}[Groups]\label{ex:group}
+The theory of groups consists of the above-mentioned signature for groups, all the axioms of the theory of monoids, and the following axioms:
+\begin{itemize}
+\item left-inverseness: $\forall x\;x\circ x^{-1} \doteq e$,
+\item right-inverseness: $\forall x\;x^{-1}\circ x \doteq e$.
+\end{itemize}
+\end{example}
+
+\begin{example}[Natural numbers]\label{ex:nat:succ}
+The theory of natural numbers is a tricky one, which we will come back to later (see Ex.~\ref{ex:nat:incomplete} and~\ref{ex:nat:fol:induction}). For now we can define it like this:
+\begin{itemize}
+\item a nullary function symbol $0$,
+\item a unary function symbol $\op{succ}$,
+\item an axiom for the injectivity of $\op{succ}$: $\forall x\;\forall y\;(\op{succ}(x)\doteq\op{succ}(y)\arr x\doteq y)$,
+\item an axiom that makes $0$ the starting point: $\neg\exists x\;0\doteq\op{succ}(x)$.
+\item a set of axioms for induction: For every formula $F$ with $\FV(F)=\{x\}$, the axiom
+ \[\big(F(0) \wedge \forall\;x \big(F(x)\arr F(\op{succ}(x))\big)\big)\arr\forall x\; F(x).\]
+\end{itemize}
+These are Peano's axioms from 1889 \cite{peanoaxioms}. As for set theory, they were written at a time when researchers only began to study the notions of logic and formal syntax. In particular, Peano did not know FOLEQ as we do today.
+\end{example}
+
+\begin{example}[Natural numbers]\label{ex:nat:arith}
+A variant of the theory of natural numbers -- usually called Peano arithmetic -- extends Ex.~\ref{ex:nat:succ} with:
+\begin{itemize}
+\item binary function symbols $+$ and $\cdot$,
+\item two axioms that define addition inductively,
+\item two axioms that define multiplication inductively.
+\end{itemize}
+\end{example}
+
+

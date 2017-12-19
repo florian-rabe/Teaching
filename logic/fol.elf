@@ -1,0 +1,54 @@
+%sig FOL = {
+   term : type.
+   form : type.
+   
+   proof  : form -> type.
+   
+   true  : form.
+   false : form.
+   and   : form -> form -> form.
+   or    : form -> form -> form.
+   imp   : form -> form -> form.
+   not   : form -> form.
+   eq    : term -> term -> form.
+   
+   forall : (term -> form) -> form.
+   exists : (term -> form) -> form.
+   
+   %prefix 15 not.
+   %infix left 10 and.
+   %infix left 10 or.
+   %infix none 10 imp.
+   %infix none 20 eq.
+   %prefix 10 forall.
+   %prefix 10 exists.
+   %prefix 0 proof.
+   
+   truthI : proof true.
+   falseE : proof false -> proof F.
+    
+   notI : (proof F -> {G:form} proof G) -> proof not F.
+   %% alternatively: (proof F -> proof false) -> proof not F.
+   notE : proof not F -> proof F -> {F: form} proof F.
+   %% alternatively: notE : proof not F -> proof F -> proof false.
+   
+   andI  : proof F -> proof G -> proof F and G.
+   andEl : proof (F and G) -> proof F.
+   andEr : proof (F and G) -> proof G.
+   
+   orIl : proof F -> proof F or G.
+   orIr : proof G -> proof F or G.
+   orE  : proof F or G -> (proof F -> proof H) -> (proof G -> proof H) -> proof H.
+   
+   impI : (proof F -> proof G) -> proof F imp G.
+   impE : proof F imp G -> proof F -> proof G.
+   
+   forallI : {x:term} proof F x -> proof forall ([x:term] F x).
+   forallE : proof forall ([x:term] F x) -> {x:term} proof F x.
+   
+   existsI : {t:term} proof F t -> proof exists ([x:term] F x).
+   existsE : proof (exists [x:term] F x) -> ({t:term} proof F t -> proof H) -> proof H.
+   
+   nonempty : proof exists [x:term] true.
+   tnd      : proof F or not F.
+}.

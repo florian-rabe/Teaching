@@ -1,0 +1,12 @@
+\begin{theorem}
+HOL is sound.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+We do not have completeness for HOL: Not all sentences that are true in all models are provable. There are two ways to interpret that:
+\begin{itemize}
+	\item From a model-theoretical perspective, the model theory is fine but more axioms and proof rules are needed to make all theorems provable. But the model theory of HOL is sufficient for the natural numbers and large parts of mathematics. Due to G\"odel's result, the set of theorems is not recursively enumerable, i.e., no complete calculus (with a decidable set of rules) exists.
+	\item From a proof-theoretical perspective, the proof theory is fine but more models are needed to make less sentences theorems. Completeness holds when using more general models. But these models are not intuitive anymore: Either the interpretation of function types is unnatural (when using Henkin-models) or the interpretation of base types is unnatural (when using cartesian closed categories).
+\end{itemize}

@@ -1,0 +1,141 @@
+\paragraph{Logics}
+Intuitively, logics are formal language with a mathematical semantics.
+This is different from natural language (whose semantics is often unclear) and other formal languages used in computer science such as programming or data description languages (whose semantics is usually given by a textual specification).
+\medskip
+
+Logics consist of syntax, proof theory, and model theory as well as soundness and (ideally) completeness theorems.
+The syntax defines the formal language.
+The proof and model theory define one semantics each.
+The soundness and completeness theorems show that the proof and the model theoretical semantics are equivalent.
+
+\paragraph{Syntax}
+The syntax consists of a set of signatures and one formal language for each signature.\\
+Each signature fixes some globally available symbols, whose meaning is open to interpretation.\\
+The formal language is typically context-sensitive and defined by a context-free grammar and a context-sensitive inference system for well-formedness.
+The terminal symbols of the grammar consist of the symbols of the signature (e.g., function and predicate symbols) and the logical symbols (e.g., $\wedge\vee\impl\neg\forall\exists\doteq$).
+\medskip
+
+The formal language includes in particular the set of sentences $\Sen(\Sigma)$ for every signature $\Sigma$.\\
+Theories consists of a signature $\Sigma$ and a set $\Theta\sq\Sen(\Sigma)$ of axioms.\\
+The semantics of the logic is given by the consequence relation between theories $\Theta$ and sentences $F\in\Sen(\Sigma)$.
+If the relation holds, $F$ is called a theorem.
+
+\paragraph{Model Theory}
+The model theory defines models $I\in\Mod(\Sigma)$ for every signature.\\
+For each model, the function $\semm{-}{I}$ is defined by context-sensitive induction on the syntax of $\Sigma$.
+It maps every word to its interpretation in $I$.\\
+Sentences $F$ are interpreted as truth values $\semm{F}{I}\in\{0,1\}$. If $\semm{F}{I}=1$, we say that $F$ is true in $I$, satisfied by $I$, or holds in $I$.\\
+The model theoretical consequence relation is written $\mod{\Sigma}{\Theta}{F}$. It holds if all models that satisfy all axioms also satisfy $F$.
+\medskip
+
+The purpose of $\Sigma$-models is that they define different interpretations for the symbols of $\Sigma$.
+That way the same syntax can be used to talk about lots of different phenomena represented by different models.\\
+Moreover, the syntax is available to computer implementation, whereas the most models are not.
+Thus, the symbols of $\Sigma$ act as abstract representatives for objects that cannot be implemented themselves, and each model bundles a set of concrete objects (one for each symbol of $\Sigma$).
+\medskip
+
+\paragraph{Proof Theory}
+The proof theory defines proofs for every signature.\\
+Proofs are trees whose nodes are labelled with judgments and which are formed by applying inference rules.\\
+The proof theoretical consequence relation is given by the judgment $\iscons{\Sigma}{\Theta}{}{F}$.
+The relation holds if the judgment has a proof.
+\medskip
+
+The purpose of proofs is to capture the intuition of reasoning and consequence by a finite set of rules.
+This permits the systematic and mechanical exploration of the consequence relation.\\
+In particular and contrary to the model theory, it can be implemented.
+
+\paragraph{Soundness and Completeness}
+A logic is sound if proof theoretical consequence implies model theoretical consequence.\\
+Soundness is useful because it legitimizes the mechanic reasoning performed by the proof rules.
+\medskip
+
+A logic is complete if model theoretical consequence implies proof theoretical consequence.\\
+Alternatively, we can say that there must be enough proofs to prove all the model theoretical theorems, or that there must be enough models to provide counter-examples for all the proof theoretical non-theorems.
+
+\paragraph{Propositional Logic}
+Propositional logic is the simplest useful logic.\\
+Its signatures declare only names of unknown formulas, and its logical symbols are only $\wedge\vee\impl\neg$.
+\medskip
+
+Models interpret the signature symbols as truth values.\\
+Proofs can be formed in various ways, in particular using the natural deduction calculus.
+\medskip
+
+Propositional logic PL is sound and complete.\\
+PL is special in that its formal language is context-free and its consequence relation is decidable.
+
+\paragraph{First-Order Logic}
+First-order logic is a generalization of propositional logic. It adds the logical symbols $\forall\exists$ and depending on the definition also $\doteq$.\\
+The grammar for formulas, the context-sensitive interpretation function, and the natural deduction proof rules are extended appropriately for the new symbols.\\
+
+The main addition of FOL is that, in addition to truth values, it talks about data.
+
+Syntactically, the data is described by terms.
+These are formed from function symbols with certain arities and variables.
+The former are introduced by the signature, the latter by the quantifiers $\forall$ and $\exists$.
+
+Model theoretically, the data is described by the universe: a non-empty set $\TERM^I$ provided by the model.
+Models interpret $n$-ary function symbols as $n$-ary functions on the universe.
+
+Additionally, signatures may introduce predicate symbols, which describe properties of the data.
+Predicate symbols provide additional formulas if applied to terms.\\
+Models interpret $n$-ary predicate symbols as $n$-ary relations on the universe.
+
+Proof theoretically, there is no special treatment necessary for data.
+\medskip
+
+First-order logic FOL (or FOLEQ if $\doteq$ is used) are sound and complete.
+Moreover, FOLEQ is essentially the simplest possible logic that is still sound and complete.
+\medskip
+
+FOLEQ can be used to define a wide variety of data types by giving an appropriate theory.
+Examples include the theories of monoids, groups, rings, fields, relations, orders, and lattices.
+The soundness and completeness properties guarantee that e.g., everything we prove in the theory of fields holds for every individual field.
+
+\paragraph{Incompleteness}
+While logics such as FOLEQ are great for representing abstract data types (e.g., fields), it has two major limitations when it comes to representing concrete data types (e.g., the natural numbers).
+
+Firstly, we cannot give a theory whose models are exactly the natural numbers.
+There are non-standard models that satisfy exactly the same FOLEQ-formulas as the natural numbers without being isomorphic to them.
+
+Secondly, the set of FOLEQ-formulas that hold in the natural numbers is not recursively enumerable.
+Therefore, no sound and complete logic can express them with a recursively enumerable set of axioms.
+
+According results hold for all more complex concrete data types.
+
+\paragraph{Formal Languages Involved in Logic}
+The formal languages of logic are usually context-sensitive, and the sublanguages containing only the theorems are usually only recursively enumerable but not decidable.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Formal Language & Classification \\
+\hline
+formulas over a fixed & \\
+ \tb PL-signature & context-free \\
+ \tb FOL or FOLEQ-signature in any context & context-free \\
+ \tb FOL or FOLEQ-signature in a fixed context & context-sensitive \\
+\hline
+theorems over a fixed consistent{\footnotemark} & \\
+  \tb PL-theory & decidable{\footnotemark} (but not context-sensitive)\\
+  \tb FOL or FOLEQ-theory & recursively enumerable{\footnotemark} (but usually not decidable)\\
+\hline
+\end{tabular}
+\end{center}
+\addtocounter{footnote}{-2}
+\footnotetext{If the theory is inconsistent, the set of theorems is trivially regular.}
+\addtocounter{footnote}{1}
+\footnotetext{Technically, the set of axioms must be finite.}
+\addtocounter{footnote}{1}
+\footnotetext{Technically, the of axioms must be recursively enumerable. If the theory is also complete, the set of theorems is decidable.}
+
+\paragraph{Induction}
+Induction permits defining functions out of a formal language.
+The most important induction principle is the one for context-free languages, where we give one case for every production.
+
+The context-free induction principle can be generalized to the context-sensitive induction principle.
+Here we take a context as an additional argument.
+\medskip
+
+The functions for substitution application and the for interpretation in a model are defined by context-sensitive induction on the formulas of FOLEQ.

@@ -1,0 +1,94 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Models as Theory Morphisms}
+
+In Sect.~\ref{sec:found:abs}, we have seen that foundations consist of a fixed theory in a fixed proof theoretical logic (along with some definition principles). Now consider a logic syntax $L=(\Sig,\Sen)$. We would like to define a model theory for it using a foundation consisting of $P$ and $\found$. The key observation is that the inductive definition of the interpretation function $\semm{-}{I}$ for a model $I$ behaves very much like the inductive expression translation function $\ov{\sigma}$ obtained from a theory morphism $\sigma$: Both are an inductive, compositional mapping in which every expression constructor of $L$ is mapped to a value constructor in mathematics. We want to make that precise and define models as theory morphisms. We can do that by using a special logic translation from $L$ to $P$:
+
+\begin{definition}
+Assume a logic syntax $L=(\Sig,\Sen)$ and a foundation $\found\in\Th^{P}$. A syntax translation $(\Phi,\alpha):L\arr P$ is called $\found$-founded if
+\begin{itemize}
+ \item $\Phi(\Sigma)$ is an extension of $\found$ for every $\Sigma\in\Sig$
+ \item \advanced{$\Phi(\sigma)$ is the identity on $\found$ for every signature morphism $\sigma$}
+\end{itemize}
+\end{definition}
+
+\begin{definition}\label{def:trans:modasmorph}
+Assume a logic syntax $L=(\Sig,\Sen)$, a foundation $\found\in\Th^{P}$, and an $\found$-founded syntax translation $(\Phi,\alpha):L\arr P$. \\
+We define $\Mod(\Sigma)$ as the collection of $P$-theory morphisms from $\Phi(\Sigma)$ to $\found$ that are the identity on $\found$. \\
+Moreover, if $\sigma:\Phi(\Sigma)\arr\found$ is such a model and $F\in\Sen(\Sigma)$, we define
+ \[\sigma\md_\Sigma F \tb\miff\tb \val^P_\found \ov{\sigma}(\alpha_\Sigma(F))\]
+\end{definition}
+
+\begin{remark}
+More generally, for the interpretation function of $L$-$\Sigma$-expressions in the model $\sigma$, we obtain
+ \[\semm{-}{\sigma}=\ö{\alpha_\Sigma}{\ov{\sigma}}.\]
+\end{remark}
+
+\begin{remark}
+More generally, we could use morphisms from $\Phi(\Sigma)$ to any conservative extension of $\found$ in Def.~\ref{def:trans:modasmorph}.
+\end{remark}
+
+\begin{theorem}\label{thm:trans:modasmorph}
+Given a logic syntax $(\Sig,\Sen)$, a foundation $\found\in\Th^{P}$, and an $\found$-founded syntax translation $(\Phi,\alpha):L\arr P$. Then $(\Mod,\md)$ as defined in Def.~\ref{def:trans:modasmorph} is a model theory for $(\Sig,\Sen)$.
+\end{theorem}
+
+\begin{example}\label{ex:trans:modasmorph}
+Consider $(\Sig^{\FOLEQ},\Sen^{\FOLEQ})$ and the foundation $HOLF\in\Th^{\HOL}$. We define a translation $(\Phi,\alpha)$ that is very similar to the one from Def.~\ref{def:folhol:syn} and~\ref{def:folhol:syn}. There are only two difference: (i) $\Phi(\Sigma)$ additionally contains all the declarations of $HOLF$; (ii) $\Phi(\Sigma)$ contains an additional base type $u$, which serves as the translation of the $\FOLEQ$-universe (instead of $\iota$).
+
+For example, the $\FOLEQ$-signature of monoids is mapped to the $\HOL$ theory $M$ that extends $HOLF$ with
+\begin{itemize}
+  \item $u:\TYPE$,
+  \item $\circ:u\arr u\arr u$
+  \item $e:u$
+\end{itemize}
+
+Now a model of that signature is a $\HOL$-theory morphism from $M$ to $HOLF$ that is the identity on $HOLF$. Thus, every $HOLF$-symbol is mapped to itself, and we only have to map $u$, $\circ$, and $e$ is some way. That is exactly what a model is supposed to do.
+\end{example}
+
+\section{A More Abstract Formulation}
+
+In order to formulate the notion of ``$\found$-founded translations'' more elegantly, we can use two constructions. Both work for arbitrary logics; therefore, we state them in full generality (which actually makes them more elegant).
+
+\paragraph{The Logic of Theories}
+For every logic $L$, we can construct another logic $\theolog{L}$ such that the signatures of $\theolog{L}$ are the theories of $L$.
+
+\begin{definition}
+Given a logic $L=(\Sig,\Sen,\Mod,\md,\Pf,\val)$, we define the logic $\theolog{L}=(\Th^L,\Sen',\Mod',\md',\Pf,\val')$ as follows:
+\begin{itemize}
+  \item $\Th^L$ consists of the theories and theory morphisms of $L$,
+  \item $\Sen'$ is like $\Sen$ but ignores the axioms: $\Sen'((\Sigma;\Theta))=\Sen(\Sigma)$ and $\Sen'(\sigma)=\Sen(\sigma)$,
+  \item $\Mod'(\Sigma;\Theta)$ is $\Mod(\Sigma;\Theta)$ from Def.~\ref{def:mod:models},
+  \item $\md'_{(\Sigma,\Theta)}$ is the same as $\md_\Sigma$,
+  \item $\Pf'(\Sigma;\Theta)$ has the same judgments as $\Pf(\Sigma)$, and all proofs may additionally use $\val_\Sigma F$ as assumptions for all $F\in\Theta$,
+  \item $\val'_{(\Sigma,\Theta)}$ is the same $\val_\Sigma$
+\end{itemize}
+
+The corresponding definition applies to proof or model theoretical logics.
+\end{definition}
+
+\paragraph{The Logic of Extensions}
+For every logic $L$ and a fixed signature $\Sigma$, we can construct another logic $\incllog{L}{\Sigma}$ that arises as as a sublogic of $L$: We only consider those signature that extend $\Sigma$.
+
+\begin{definition}\label{def:logics:incllog}
+Given a logic $L=(\Sig,\Sen,\Mod,\md,\Pf,\val)$ and a signature $\Sigma\in\Sig$, we define the logic $\incllog{L}{\Sigma}=(\Sig',\Sen',\Mod',\md',\Pf,\val')$ as follows:
+\begin{itemize}
+  \item $\Sig'$ consists of the signatures that extend $\Sigma$ and those signature morphisms between them that are the identity on $\Sigma$,
+  \item $\Sen'$, $\Mod'$, $\md'$, $\Pf'$ and $\val'$ are the appropriate restrictions of their counterparts in $L$
+\end{itemize}
+
+The corresponding definition applies to proof or model theoretical logics.
+\end{definition}
+
+\begin{remark}
+Technically, Def.~\ref{def:logics:incllog} only applies to logics in which \emph{signature inclusions} are a defined notion. This is not always the case, but almost always and almost always obviously so. For example, it is obvious what a signature inclusion in FOLEQ is.
+\end{remark}
+
+\paragraph{Founded Translations}
+Now we can combine the two constructions:
+
+\begin{lemma}
+Assume a logic syntax $(\Sig,\Sen)$ and a foundation $\found\in\Th^{P}$. An $\found$-founded syntax translation $L\arr P$ is the same as a syntax translation $L\arr \incllog{\theolog{P}}{\found}$.
+\end{lemma}
+
+\begin{example}\label{ex:logics:incltheo}
+Consider the logic $\incllog{\theolog{\FOLEQ}}{ZFC}$. Its ``signatures'' are the FOLEQ-theories that extend ZFC.
+\end{example}

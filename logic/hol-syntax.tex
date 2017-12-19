@@ -1,0 +1,322 @@
+All basic concepts of first-order logic are preserved when going to higher-order logic (HOL, \cite{}): signatures, contexts, substitutions, terms, formulas. Two principle things change: types are added, and formulas become a special case of terms.
+
+HOL without formulas yields simple type theory (STT, \cite{churchtypes}), also called $\lambda$-calculus. We look at STT first and then obtain HOL from it.
+
+\section{Simple Type Theory}
+
+The \defemph{judgments} are:
+\begin{center}
+	\begin{tabular}{|l|l|}
+	  \hline
+	  $\issig{\Sigma}$   & $\Sigma$ is a well-formed signature \\
+	  $\ismorph{\Sigma}{\Sigma'}{\sigma}$   & $\sigma$ is a well-formed signature morphism from $\Sigma$ to $\Sigma'$\\
+	  $\iscont{\Sigma}{\Gamma}$  & $\Gamma$ is a well-formed $\Sigma$-context \\
+	  $\issubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}$  & $\gamma$ is a well-formed substitution from $\Gamma$ to $\Gamma'$ over $\Sigma$ \\
+		$\istype{\Sigma}{A}$ & $A$ is a well-formed type over $\Sigma$ \\
+		$\oftype{\Sigma}{\Gamma}{t}{A}$ & $t$ is a well-formed term of (well-formed) type $A$ over $\Sigma$ and $\Gamma$ \\
+		\hline
+	\end{tabular}
+\end{center}
+
+Before giving the inference system, let us look at a context-free \defemph{grammar} to get a better intuition:
+\begin{center}
+	\begin{tabular}{l@{\tb::=\tb}l}
+		$\Sigma$ & $\cdot \| \Sigma,\;c:A \| \Sigma,\;a:\TYPE$ \\
+		$\sigma$ & $\cdot \| \Sigma,\;c:=t \| \Sigma,\;a:=A$ \\
+		$\Gamma$ & $\cdot \| \Gamma,\;x:A$ \\
+		$\gamma$ & $\cdot \| \gamma,\;x/t$ \\
+		$A$      & $a     \| A \arr A$ \\
+		$t$      & $c     \| x \| t\;t \| \lam{x}{A}t$ \\
+	\end{tabular}
+\end{center}
+Here $\cdot$ denotes the empty list. $\cdot$ is usually omitted in the judgments.
+
+Intuitively, we have:
+\begin{itemize}
+	\item Signatures are lists of typed constants ($c:A$) and base types ($a$).
+	\item Morphisms are lists of expressions to be substituted for the constants ($c:=t$) and base types ($a:=A$).
+	\item Contexts are lists of typed variables ($x:A$).
+	\item Substitutions are lists of terms to be substituted for the variables ($x/t$).
+	\item Types are base types ($a$) or function types ($A\arr B$).
+	\item Terms are constants ($c$), variables ($x$), function applications ($f\;t$), or $\lambda$-abstractions ($\lam{x}{A}t$).
+\end{itemize}
+
+The inference system for these five judgments is not as simple as for FOL. In FOL, we could define first signatures, then contexts, then terms, then formulas. In STT, the definitions of \defemph{types} and \defemph{signatures} are mutally recursive as seen in Fig.~\ref{fig:hol:types} and~\ref{fig:hol:signatures}.  
+
+\begin{fignd}{hol:types}{Well-formed Types}
+\ibnc{\issig{\Sigma}}
+     {a:\TYPE \minn \Sigma}
+     {\istype{\Sigma}{a}}
+     {tpbase}
+\tb\tb
+\ibnc{\istype{\Sigma}{A}}
+     {\istype{\Sigma}{B}}
+     {\istype{\Sigma}{A\arr B}}
+     {tpfun}
+\end{fignd}
+
+\begin{fignd}{hol:signatures}{Well-formed Signatures}
+\ianc{}
+     {\issig{\cdot}}
+     {sigempty}
+\tb\tb
+\icnc{\issig{\Sigma}}
+     {c \mnot\minn \Sigma}
+     {\istype{\Sigma}{A}}
+     {\issig{\Sigma,\;c:A}}
+     {sigcon}
+\tb\tb
+\ibnc{\issig{\Sigma}}
+     {a \mnot\minn \Sigma}
+     {\issig{\Sigma,\;a:\TYPE}}
+     {sigtype}
+\end{fignd}
+
+Note that the rules are such that $\istype{\Sigma}{A}$ implies $\issig{\Sigma}$. This is a general principle: Whenever a judgment holds, all objects occuring in the judgment should be well-formed. Also note that types do not depend on contexts; this is clear from the grammar because no variables may occur in types.
+
+
+Contexts can no longer be sets or lists of variables as for FOL -- since the variables are typed, the definition of contexts depends on that of types. It is given in Fig.~\ref{fig:hol:contexts}. The rules for \defemph{contexts} are very similar to those for signatures, only the case for base types is omitted, i.e., variables are always terms, never types.
+
+\begin{fignd}{hol:contexts}{Well-formed Contexts}
+\ianc{\issig{\Sigma}}
+     {\iscont{\Sigma}{\cdot}}
+     {conempty}
+\tb\tb
+\ibnc{\iscont{\Sigma}{\Gamma}}
+     {\istype{\Sigma}{A}}
+     {\iscont{\Sigma}{\Gamma,\;x:A}}
+     {convar}
+\end{fignd}
+
+Note that the rules are such that $\iscont{\Sigma}{\Gamma}$ implies $\issig{\Sigma}$. Also note that signatures may not declare the same name twice, but contexts may. If a context declares the same variable name twice, the later (more to the right) one takes precedence; we say it shadows the earlier declaration.
+
+Substitutions are straightforward: The rules for \defemph{substitutions} have the same structure as those for contexts, see Fig.~\ref{fig:hol:substitutions}. A substitution from $\Gamma$ to $\Gamma'$ provides a $\Gamma'$-term for every variable in $\Gamma$. This is the same as for FOL except that the terms must be typed according to the types in $\Gamma$. Some expressions are underlined as a visual aid to make the bracketing structure apparent.
+
+\begin{fignd}{hol:substitutions}{Well-formed Substitutions}
+\ianc{\iscont{\Sigma}{\Gamma'}}
+     {\issubs{\Sigma}{\cdot}{\Gamma'}{\cdot}}
+     {subsempty}
+\tb\tb
+\ibnc{\issubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}}
+     {\oftype{\Sigma}{\Gamma'}{t}{A}}
+     {\issubs{\Sigma}{\underline{\Gamma,\;x:A}}{\Gamma'}{\underline{\gamma,\;x/t}}}
+     {subsvar}
+\end{fignd}
+
+Note that a well-formed substitution from $\Gamma=x_1:A_1,\ldots,x_n:A_n$ to $\Gamma'$ has the form $x_1/t_1,\ldots,x_n/t_n$ and satisfies $\oftype{\Sigma}{\Gamma'}{t_i}{A_i}$. Also note that the rules are such that $\issubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}$ implies $\iscont{\Sigma}{\Gamma}$ (To see this, use the property (*) below.) and $\iscont{\Sigma}{\Gamma'}$.
+
+While STT is more complicated conceptually than FOL -- more judgments, mutual recursion between judgments -- note that the rules of the inference system are actually very simple so far. Once we have an intuitive understanding of what we want to formalize, the rules are straightforward. The only rules that are a little bit more complicated are the ones for \defemph{terms}, see Fig.~\ref{fig:hol:terms}.
+
+\begin{fignd}{hol:terms}{Well-formed Terms}
+\ibnc{c:A \minn \Sigma}
+     {\iscont{\Sigma}{\Gamma}}
+     {\oftype{\Sigma}{\Gamma}{c}{A}}
+     {termcon}
+\tb\tb
+\ibnc{x:A\minn \Gamma \mtext{(rightmost} x \mtext{if\;multiple)}}
+     {\iscont{\Sigma}{\Gamma}}
+     {\oftype{\Sigma}{\Gamma}{x}{A}}
+     {termvar}
+\\
+\ibnc{\oftype{\Sigma}{\Gamma}{f}{A\arr B}}
+     {\oftype{\Sigma}{\Gamma}{t}{A}}
+     {\oftype{\Sigma}{\Gamma}{f\;t}{B}}
+     {termapp}
+\tb\tb
+\ianc{\oftype{\Sigma}{\Gamma,\;x:A}{t}{B}}
+     {\oftype{\Sigma}{\Gamma}{\lam{x}{A}t}{A\arr B}}
+     {termlam}
+\end{fignd}
+
+The difficulty is that we define two things at once: when a term is well-formed and what its type is. (Exactly the well-formed terms have types.) The first two rules are easy: Constants and variables are typed according to the signature and the context, respectively. The rule $termapp$ formalizes function application: A function from $A$ to $B$ can be applied to an argument of type $A$ yielding a result of type $B$. The rule $termlam$ formalizes function formation: $\lambda$-abstraction over a term of type $B$ with a free variable of type $A$ yields a function from $A$ to $B$.
+
+Note how these rules are such that $\oftype{\Sigma}{\Gamma}{t}{A}$ implies $\iscont{\Sigma}{\Gamma}$ and $\istype{\Sigma}{A}$ (*).
+
+\begin{notation}
+We use the following conventions to save brackets:
+\begin{itemize}
+	\item $\arr$ is right-associative, i.e., $A\arr B\arr C$ abbreviates $A\arr (B\arr C)$.
+  \item iuxtaposition is left-associative, i.e., $f\;s\;t$ abbreviates $(f\;s)\;t$.
+\end{itemize}
+These abbreviation let us think of $A_1\arr\ldots\arr A_n\arr A$ as the type of $n$-ary functions with argument types $A_1,\ldots A_n$ and result type $A$. Similarly, if $f$ is such a function and $t_i$ has type $A_i$, we think of $f\;t_1\;\ldots\;t_n$ as the application of $f$ to $n$ arguments.
+\end{notation}
+
+
+%\subsection{Substitution}
+%
+%The definition of bound and free variables and substitution application is straightforward.
+%
+%\begin{definition}[Bound and Free Variables]
+%We define the set $\BV(t)$ of \emph{bound variables} of a term as follows:
+%\begin{itemize}
+%     \item $\BV(c)=\es$, $\FV(c)=\es$,
+%     \item $\BV(x)=\es$, $\FV(x)=\{x\}$,
+%     \item $\BV(f\;t)=\BV(f)\cup \BV(t)$, $\FV(f\;t)=\FV(f)\cup \FV(t)$,
+%     \item $\BV(\lam{x}{A}t)=\BV(t)\cup\{x\}$, $\FV(\lam{x}{A}t)=\FV(t)\sm\{x\}$.
+%\end{itemize}
+%\end{definition}
+%
+
+Finally, we can define substitution application and prove its intended property. It is notable that this is much easier for STT than FOL because there are only four cases.
+
+\begin{definition}[Substitution Application]
+For a substitution $\gamma=x_1/t_1,\ldots,x_n/t_n$, and a term $t$ using only the variables $x_1,\ldots,x_n$, we define $\ov{\gamma}(t)$ as follows:
+\begin{itemize}
+     \item $\ov{\gamma}(c)=c$,
+     \item $\ov{\gamma}(x_i)=t_i$,
+     \item $\ov{\gamma}(f\;t)=\ov{\gamma}(f)\;\ov{\gamma}(t)$,
+     \item $\ov{\gamma}(\lam{x}{A}t)=\lam{x}{A}\ov{\gamma^x}(t)$,
+\end{itemize}
+where $\gamma^x$ abbreviates $\gamma,x/x$.
+\end{definition}
+We also write $t[x/s]$ for the result of substituting $x$ with $s$ and all other variables with themselves.
+
+\begin{lemma}[Substitution Application]
+If $\issubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}$ and $\oftype{\Sigma}{\Gamma}{t}{A}$, then $\oftype{\Sigma}{\Gamma'}{\ov{\gamma}(t)}{A}$.
+\end{lemma}
+\begin{proof}
+Exercise.
+\end{proof}
+
+
+Fig.~\ref{fig:hol:morphisms} defines the rules for signature morphisms, which are very similar to those for substitutions: They map signature symbols to expressions, the preserved structure is the typing relation. Because variables canot occur in types, we did not need substitution in types. But signature symbols do occur in types (namely the base types); therefore, we need to define substitution in types as well and use it in the rule $morphcon$.
+\begin{fignd}{hol:morphisms}{Well-formed Morphisms}
+\ianc{\issig{\Sigma'}}
+     {\ismorph{\cdot}{\Sigma'}{\cdot}}
+     {morphempty}
+\tb\tb
+\ibnc{\ismorph{\Sigma}{\Sigma'}{\sigma}}
+     {\oftype{\Sigma'}{\cdot}{t}{\overline{\sigma}(A)}}
+     {\ismorph{\underline{\Sigma,\;c:A}}{\Sigma'}{\underline{\sigma,\;c:=t}}}
+     {morphcon}
+\\
+\ibnc{\ismorph{\Sigma}{\Sigma'}{\sigma}}
+     {\istype{\Sigma'}{A}}
+     {\ismorph{\underline{\Sigma,\;a:\TYPE}}{\Sigma'}{\underline{\sigma,\;a:=A}}}
+     {morphtype}
+\end{fignd}
+
+\begin{definition}[Morphism Application]
+Assume a signature morphism $\ismorph{\Sigma}{\Sigma'}{\sigma}$. Then, for a $\Sigma$ term or type, we define $\ov{\sigma}(-)$ as follows:
+\begin{itemize}
+     \item $\ov{\sigma}(a)=A$ where $a:=A$ in $\sigma$,
+     \item $\ov{\sigma}(A\arr B)=\ov{\sigma}(A)\arr\ov{\sigma}(B)$,
+     \item $\ov{\sigma}(c)=t$ where $c:=t$ in $\sigma$,
+     \item $\ov{\sigma}(x)=x$,
+     \item $\ov{\sigma}(f\;t)=\ov{\sigma}(f)\;\ov{\sigma}(t)$,
+     \item $\ov{\sigma}(\lam{x}{A}t)=\lam{x}{\ov{\sigma}(A)}\ov{\sigma}(t)$.
+\end{itemize}
+\end{definition}
+
+Note that the context does not matter because all variables are mapped to themselves. More thoroughly, we could also define the application of signature morphism to contexts and substitutions and obtain a more general result below, but we omit that here and assume signature morphisms are only applied to closed expressions. That is a typical scenario.
+
+\begin{lemma}[Morphism Application]
+If $\ismorph{\Sigma}{\Sigma'}{\sigma}$ then: if $\oftype{\Sigma}{\cdot}{t}{A}$, then $\oftype{\Sigma'}{\cdot}{\ov{\sigma}(t)}{\ov{\sigma}(A)}$. If $\istype{\Sigma}{A}$, then $\istype{\Sigma}{\ov{\sigma}(A)}$.
+\end{lemma}
+\begin{proof}
+A straightforward induction on the derivations of well-formed expressions.
+\end{proof}
+
+
+\section{Higher-Order Logic}
+
+\renewcommand{\impl}{\Arr}
+
+Simple type theory is to higher-order logic as terms are to first-order logic, i.e., to obtain higher-order logic from simple type, we need to add the notion of formulas. One of the most appealing features of HOL is that formulas can be defined within simple type theory without changing the grammar or the inference system: All logical symbols of HOL can be defined as base types and constants of STT.
+
+Let $\Sigma_{HOL}$ be the pseudo-signature of STT containing the following declarations:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+ \hline
+	$o:\TYPE$               & base type for formulas/truth values \\
+	$\wedge:o\arr o\arr o$  & constant for conjunction \\
+	$\vee:o\arr o\arr o$    & constant for disjunction \\
+	$\impl:o\arr o\arr o$   & constant for implication \\
+  $\neg:o\arr o$          & constant for negation \\
+  $\forall_A:(A\arr o)\arr o$ & family of constants for universal quantification over type $A$ \\
+  $\exists_A:(A\arr o)\arr o$ & family of constants for existential quantification over type $A$ \\
+  $\doteq_A:  A\arr A\arr o$  & family of constants for equality at type $A$ \\
+ \hline
+\end{tabular}
+\end{center}
+Note that we have to use $\impl$ for implication because $\arr$ is already taken for function types. Some authors use $\supset$ for implication.
+
+This is a pseudo-signature because it contains infinitely many constants. Namely, $\forall_A$, $\exists_A$, and $\doteq_A$ exist for every type that can be formed using all available base types. Apart from that, it is a well-formed STT-signature. We will pretend that this is a well-formed signature from now on, ignoring the fact that it is infinite. This is harmless because whenever we write $\oftype{\Sigma_{HOL}}{\Gamma}{t}{A}$, there are only finitely many constants that may occur in $t$. Thus, we can say that $\oftype{\Sigma_{HOL}}{\Gamma}{t}{A}$ abbreviates $\oftype{\Sigma}{\Gamma}{t}{A}$ for some finite fragment $\Sigma$ of $\Sigma_{HOL}$ that contains all instances of $\forall_B$, $\exists_B$, and $\doteq_B$ that occur in $t$. (They may not occur in $\Gamma$ or $A$ anyway.)
+
+The type of equality depends on a parameter $A$: Equality takes two terms of the same but arbitrary type $A$ and returns a formula.
+\medskip
+
+The types of the universal and the existential quantifier look weird at first. They are an example of \defemph{higher-order abstract syntax}, which is the principle of using the $\lambda$-binder of the meta-language (here STT) to represent arbitrary binders of the object language (here HOL). Higher-order abstract syntax works because of the following equivalence
+ \[\oftype{\Sigma}{\Gamma,x:A}{F}{o}  \tb\miff\tb \oftype{\Sigma}{\Gamma}{\lam{x}{A}F}{A\arr o}.\]
+It implies that terms of type $A\arr o$ are in bijection to terms of type $o$ with a free variable of type $A$.
+Because in $\forall x:A.F$, $F$ must be a formula with a free variable $x$ of type $A$, we can regard $\forall_A$ as a constant taking an argument of type $A\arr o$. Thus, in HOL, quantifications are technically written as $\forall_A(\lam{x}{A}F)$.
+
+\begin{notation}
+We introduce the following simplifications:
+\begin{itemize}
+  \item If applied to two arguments, $\wedge$, $\vee$, $\Arr$, and $\doteq_A$ are written infix. For example, $s\wedge t$ is the same as $\wedge\;s\;t$.
+	\item $\forall x:A.F$ abbreviates $\forall_A(\lam{x}{A}F)$.
+	\item $\exists x:A.F$ abbreviates $\exists_A(\lam{x}{A}F)$.
+	\item $s\doteq t$ abbreviates $s \doteq_A t$. (This is possible because given $s$ and $t$, we can always infer $A$.)
+\end{itemize}
+\end{notation}
+
+Then we are ready to define the syntax of HOL.
+
+\begin{definition}
+The collection $\Sig^{HOL}$ of HOL-\defemph{signatures} consists of the well-formed STT-signatures that do not declare a name already used in $\Sigma_{HOL}$.
+\end{definition}
+
+\begin{definition}
+The set $\Sen^{HOL}(\Sigma)$ of HOL-\defemph{sentences} over a HOL-signature $\Sigma$ is the set
+ \[\{F \| \oftype{\Sigma_{HOL},\Sigma}{}{F}{o}\}\]
+of well-formed STT-terms of type $o$ using constants from $\Sigma_{HOL}$ or $\Sigma$.
+\end{definition}
+
+This already defines the HOL-theories as pairs of a signature and a set of sentences.
+
+\begin{definition}
+The set of $\Sig^{HOL}$ \defemph{morphisms} from a HOL-signature $\Sigma$ to a HOL-signature $\Sigma'$ is the set of well-formed STT-signature morphisms between them.
+\end{definition}
+
+\begin{definition}
+For a HOL-signature morphism $\ismorph{\Sigma}{\Sigma'}{\sigma}$, the \defemph{sentence translation} $\Sen^{HOL}(\sigma):\Sen^{HOL}(\Sigma)\arr\Sen^{HOL}(\Sigma')$ \defemph{morphisms} is defined by morphism application: $\Sen^{HOL}(\sigma)(F)=\overline{\sigma}(F)$.
+\end{definition}
+
+\begin{example}[Natural Numbers]
+The theory of Peano arithmetic can be properly given as a finite HOL theory as follows:
+\begin{itemize}
+  \item base type for the natural numbers: $\iota:\TYPE$,
+	\item constant for zero: $z:\iota$,
+	\item constant for successor: $s:\iota\arr\iota$,
+	\item axiom for injectivity of successor: $\forall x:\iota\forall y:\iota.(s\;x\doteq s\;y \impl x\doteq y)$,
+	\item axiom for zero as starting point: $\forall x:\iota.\neg (z\doteq s\;x)$,
+	\item axiom for induction: $\forall P:\iota\arr o.\big((P\;z\wedge \forall x:\iota.(P\;x\impl P\;(s\;x)))\impl \forall x:\iota.(P\;x)\big)$.
+\end{itemize}
+\end{example}
+
+\section{Minimal Sets of Logical Symbols}\label{hol:syntax:abbrevs}
+
+From FOL, it is well-known that we only need $\false$, $\impl$, $\forall$, and $\doteq$ as primitive logical symbols. All others could be defined like this:
+\begin{myeqnarray}[:=]
+  \neg F & F\impl \false \\
+  \true & \neg \false = \forall x.x\doteq x \\
+	F\vee G & \neg F\impl G \\
+	F\wedge G & \neg(\neg F\vee \neg G) \\
+	\exists x.F & \neg\forall x.\neg F
+\end{myeqnarray}
+
+In HOL, we can go even further: We can still define all logical symbols if only $\doteq$ is primitive. We can define as follows:
+\begin{myeqnarray}[:=]
+ \true  & (\lam{x}{o}x)\doteq_{o\arr o} (\lam{x}{o}x) \\
+ \forall_A & \lam{f}{A\arr o}(f\doteq_{A\arr o}\lam{x}{A}\true) \\
+ \false & \forall x:o.(x\doteq_o \true) \\
+ \neg & \lam{x}{o}(x\doteq_{o}\false) \\
+ \wedge & \lam{x}{o}\lam{y}{o}\forall f:o\arr o\arr o.((f\; x\; y)\doteq_{o}(f\;\true\;\true)) \\
+ \impl & \lam{x}{o}\lam{y}{o}((x\wedge y)\doteq_o x) \\
+ \vee & \lam{x}{o}\lam{y}{o}\forall c:o.(((x\impl c)\wedge (y\impl c))\impl c) \\
+ \exists_A & \lam{f}{A\arr o}\forall c:o.((\forall x:A.(f\;x\impl c))\impl c)
+\end{myeqnarray}
+
+Thus, STT with a base type $o$ and a family of constants $\doteq_A$ is already enough to obtain higher-order logic.

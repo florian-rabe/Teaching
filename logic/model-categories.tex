@@ -1,0 +1,844 @@
+In this chapter we investigate general methods for studying the collection of models of a given theory.
+The word ``universal'' refers to the insight that we can establish many deep definitions and theorems generically for an arbitrary theory.
+
+This section will focus on $\FOLEQ$.
+But many results are even more general -- they can be established for an arbitrary theory of an arbitrary logic.
+Unless mentioned otherwise, we work with a fixed $\FOLEQ$-signature $\Sigma$.
+
+The basic idea that $\Sigma$-models are sets with structure (namely the structure given by the interpretations of the $\Sigma$-symbols).
+Now we want to generalize well-known operations on sets to operations on models.
+For the special case where $\Sigma$ is the empty signature, we obtain the analogous operation on sets.
+
+\section{Model Morphisms}\label{sec:fol:modelmorphisms}\label{sec:univ:morph}
+
+\subsection{The Analog for Sets: Functions}
+
+For any two sets $M,N$, we can form the set of functions $\phi:M\to N$.
+Functions are essentially the most important concept of mathematics and computer science, representing structure and algorithms.
+
+If $M,N$ are $\Sigma$-models, the morphisms are functions $\phi:\univ^M\to \univ^N$ that preserve the structure.
+
+\begin{example}[Monoid Morphisms]
+A morphism from a monoid $M_1=(U_1,*_1,e_1)$ to a monoid $M_2=(U_2,*_2,e_1)$ is a map $\phi:U_1\arr U_2$ such that
+\begin{itemize}
+  \item $\phi(u *_1 v)=\phi(u) *_2 \phi(v)$,
+	\item $\phi(e_1)=e_2$.
+\end{itemize}
+$\phi$ preserves the operations: It maps composition to composition and unit to unit.
+\end{example}
+
+\begin{example}[Monoid Morphisms]
+Consider $M_1=(\N,+,0)$ and $M_2=(\Z,+,0)$ and let $\phi:\N\arr\Z$ be the inclusion.
+It is easy to see that this inclusion is a monoid morphism.
+
+For a less trivial example, consider $M_1$ and $M_2$ as before but let now $\phi(u)=k u$ for some fixed $k\in\Z$.
+This is a monoid morphism for every $k$ (even for $k=0$).
+
+For an example that relates very different monoids, consider $M_1=(\Sigma^*,\cdot,\epsilon)$ and $M_2=(\N,+,0)$ where $\Sigma^*$ denotes the set of words over some fixed alphabet (i.e., Scala-strings), $+$ denotes the binary function that concatenates two words, and $\epsilon$ denotes the empty word. Then ($M_1$ is a monoid and) the length of a word is a monoid morphism from $M_1$ to $M_2$.
+\end{example}
+
+The above examples already indicate how powerful the concept of morphisms is: Relations between very different objects can be expressed succinctly.
+Furthermore, the definition of morphism does not depend so much on the particular structure that is supposed to be preserved.
+For monoids, the preserved structure consists of composition and unit.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Formal Definition}
+
+\begin{definition}[Model Morphisms]
+For two $\Sigma$-models $M,N$, a $\Sigma$-\textbf{morphism} $\phi:M\to N$ is a mapping from $\univ^M$ to $\univ^N$ such that
+\begin{itemize}
+  \item for every function symbol $f$ or arity $n$ and for all $u_1,\ldots,u_n\in\univ^M$
+      \[\phi(f^M(u_1,\ldots,u_n))=f^N(\phi(u_1),\ldots,\phi(u_n))\]
+  \item for every predicate symbol $p$ or arity $n$ and for all $u_1,\ldots,u_n\in\univ^M$
+      \[p^M(u_1,\ldots,u_n)\leq p^N(\phi(u_1),\ldots,\phi(u_n))\]
+\end{itemize}
+$\phi$ is called \textbf{strong} if we have $=$ instead of $\leq$ in the cases for predicate symbol.
+\end{definition}
+
+\begin{example}[Morphisms]
+Morphisms come up virtually everywhere in mathematics.
+\begin{compactitem}
+\item The models and morphisms of the empty theory are simply the sets and mappings.
+\item All inclusion maps between the number sets $\N$, $\Z$, $\Q$, $\R$, and $\C$ are morphisms for various signatures.
+For example, $(\Z,+,0,-,\cdot,1)\to(\C,+,0,-,\cdot,1)$ is a ring morphism.
+\item For any number set $U$ and every $k\in U$, the mapping $M_k:x\mapsto kx$ (which multiplies by $k$) is a monoid morphism $(U,+,0)\to(U,+,0)$ because
+\[k(x+y)=kx+ky\tb\mand\tb k0=0.\]
+\item The exponential function $\exp:x\mapsto e^x$ is a group morphism $(\R,+,0,-)\to(\R^+,\cdot,1,^{-1})$ where $\R^+$ is the set of positive real numbers because
+\[e^{x+y}=e^x\cdot e^y\tb\mand\tb e^0=1\tb\mand\tb e^{-x}=1/(e^x).\]
+Its inverse $\ln$ is a group morphism in the opposite direction.
+\item Let $\modulus_k:\Z\to\Z_k$ be the mapping $n\mapsto n\modop k$.
+Then $\modulus_k$ is a ring morphism $(\Z,+,0,-,\cdot,1)\to(\Z_k,+_k,0,-_k,\cdot_k,1)$.
+Moreover, if $k|l$, the mapping $\modulus_k:\Z_l\to\Z_k$ is a ring morphism between the corresponding rings.
+(The former is a special case of the latter using $l=0$, $k|0$, and $\Z_0=\Z$.)
+\item The real and imaginary part functions $\mathrm{Re,Im}$ are homomorphisms $(\C,+,0,-)\to(\R,+,0,-)$ because
+\[\mathrm{Re}(x+y)=\mathrm{Re}x+\mathrm{Re}y\tb\mand\tb \mathrm{Re}0=0\tb\mand\tb\mathrm{Re}(-x)=-\mathrm{Re}x\]
+and accordingly for $\mathrm{Im}$.
+\item The conjugation $x+yi\mapsto x-yi$ is a field isomorphism from $(\C,+,0,-,\cdot,1,^{-1})$ to itself.
+\item The order morphisms $\phi:(U,\leq)\to(U',\leq')$ are the monotonous mappings, i.e., the mappings for which $u\leq v$ implies $\phi(u)\leq'\phi(v)$.
+\item The complement $-^C:\pwr(S)\to\pwr(S)$ is a lattice morphism $(\pwr(S),\cup,\es,\cap,S)\to(\pwr(S),\cap,S,\cup,\es)$.
+It is also a strong order morphism $(\pwr(S),\sq)\to(\pwr(S),\supseteq)$.
+\item The morphisms between vector spaces are the linear maps.
+\item The length-function $|-|$ is a monoid morphism $(\Sigma^*,\cdot,\epsilon)\to(\N,+,0)$ because
+\[|vw|=|v|+|w|\tb\mand\tb |\epsilon|=0.\]
+\item Let $U$ be a sufficiently large set of finite sets that contains $0:=\es$, $1:=\{\es\}$, disjoint unions $A\sqcup B:=\{0\}\times A\cup \{1\}\times B$, and function sets $A\to B$.
+Then the cardinality-function $|-|$ is a morphism $(U,\sqcup,\es,\times,\{\es\},\to)\to(\N,+,0,\cdot,1,(x,y)\mapsto y^x)$ because
+\[|\es|=0 \tb |\{\es\}|=1 \tb |A\sqcup B|=|A|+|B| \tb |A\times B|=|A|\cdot |B| \tb |A\to B|=|B|^{|A|}.\]
+\end{compactitem}
+\end{example}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Morphisms as Property-Preserving Maps}
+
+Intuitively, morphisms preserve properties.
+In fact, the main reason why morphisms are interesting is that they preserve properties -- many important mathematical theorems can be stated as the preservation of some property under some operation.
+The following definition makes precise what we mean by that:
+
+\begin{definition}[Preservation and Reflection]
+Consider a morphism $\phi:M\to N$ and a $\Gamma$-formula $F$.
+
+If $\alpha$ is an assignment from $\Gamma$-into $M$, we write $\phi(\alpha)$ for the assignment from $\Gamma$ into $N$ that maps $\phi(\alpha)(x)=\phi(\alpha(x))$.
+
+Then we say that
+\begin{compactitem}
+\item $\phi$ \textbf{preserves} $F$ if for every assignment $\alpha$
+\[\semm{F}{M,\alpha}\leq \semm{F}{N,\phi(\alpha)}\]
+\item $\phi$ \textbf{reflects} $F$ if for every assignment $\alpha$
+\[\semm{F}{M,\alpha}\geq \semm{F}{N,\phi(\alpha)}\]
+\end{compactitem}
+For a $\Gamma$-term $t$, we say that $\phi$ preserves/reflects $t$ if it preserves/reflects the formula $y=t$, where $y$ is an additional variable that is not in $\Gamma$.
+
+We say that $\phi$ preserves/reflects the predicate symbol $p$ if it preserves/reflects the formula $p(x_1,\ldots,x_n)$.
+We say that $\phi$ preserves/reflects the function symbol $f$ if it preserves/reflects the term $f(x_1,\ldots,x_n)$.
+\end{definition}
+
+%Intuitively, preservation of terms means that $\phi$ can be pulled into (or reversely: out of) and term or atomic formula.
+%Therefore, other words for morphisms are \defemph{structural}, \defemph{recursive}, or \defemph{compositional} mapping because the result of applying $\phi$ to the interpretation of a term is obtained by recursively applying $\phi$ to the interpretations of the subterms and composing the results using the same term structure.
+
+Note that the definition of the preservation of $F$ can be rephrased more intuitively as: if $F$ holds in $M$ under $\alpha$, then it holds in $N$ under $\phi(\alpha)$.
+Even more intuitively, $F$ stays true when going from $M$ to $N$ via $\phi$.
+That is why we call it \emph{preservation}.
+The definition of reflection can be rephrased accordingly.
+
+Moreover, we can rephrase the definition of morphisms as follows: A mapping $\phi$ is a morphism iff it preserves function and predicate symbols.
+A morphism reflects function symbols if it is injective and reflects predicate symbols iff it is strong.
+In fact, morphisms preserve even more:
+
+\begin{theorem}[Preservation]
+A morphism preserves all terms and all atomic formulas.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+Morphisms do \emph{not} in general preserve \emph{all} formulas.
+The preservation of all formulas is usually only possible if the involved models are very similar.
+But morphisms are most interesting and valuable if they allow connecting very different models, i.e., models that satisfy very different formulas.
+Therefore, morphisms are only required to preserve atomic formulas.
+
+\begin{theorem}[Preservation/Reflection of Complex Formulas]\label{thm:univ:preserve}
+Under the following conditions, a morphism $\phi$ preserves/reflects the respective formula:
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+The formula & is preserved if & is reflected if \\
+\hline
+$s\doteq t$ & always & $\phi$ injective \\
+$p(t_1,\ldots,t_n)$ & always & $\phi$ strong \\
+$\true$     & always & always \\
+$\false$    & always & always \\
+$\neg F$    & $F$ reflected & $F$ preserved \\
+$F\wedge G$ & $F,G$ preserved & $F,G$ reflected \\
+$F\vee G$   & $F,G$ preserved & $F,G$ reflected \\
+$F\impl G$  & $F$ reflected, $G$ preserved & $F$ preserved, $G$ reflected\\
+$\forall x.\;F$ & $F$ preserved, $\phi$ surjective & $F$ reflected \\
+$\exists x.\;F$ & $F$ preserved & $F$ reflected, $\phi$ surjective \\
+\hline
+\end{tabular}
+\end{center}
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+For example, we can see from the table that
+\begin{compactitem}
+ \item morphisms preserve all formulas that do not use $\forall$, $\neg$, or $\impl$, and $\forall$ is allowed in the surjective case,
+ \item injective strong morphisms reflect all formulas that do not use $\exists$, $\neg$, or $\impl$,
+ \item bijective strong morphisms preserve and reflect all formulas.
+\end{compactitem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Special Morphisms}
+
+\begin{theorem}[Identity Morphism]
+For every theory and every model $M$, the identity $\id{M}:M\to M$, which maps $\id{M}(x)=x$, is a morphism.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\begin{theorem}[Composition]
+For every theory and morphisms $\phi_1:M_1\to M_2$ and $\phi_2:M_2\to M_3$, the composition mapping $\phi_1;\phi_2:M_1\to M_3$, which maps $(\phi_1;\phi_2)(x)=\phi_2(\phi_1(x))$, is a morphism.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\begin{definition}[Powers]
+Given a model morphism $\phi:M\to M$, we define $\phi^n:M\to M$ by
+\[\phi^0=\id{M} \tb\mand\tb \phi^{n+1}=\phi^n;\phi\]
+\end{definition}
+
+In particular, $\phi^1=\phi$ and $\phi^{n+1}(x)=\phi(\phi^n(x))$.
+
+\begin{theorem}[Kinds of Morphisms]
+Consider a morphism $\phi:M\to N$.
+Then:
+\begin{compactitem}
+\item The following are equivalent:
+	\begin{compactitem}
+	\item $\phi$ is an injective mapping
+	\item $\phi$ can be canceled in terminal position: $\psi;\phi=\psi';\phi$ implies $\psi=\psi'$
+	\end{compactitem}
+	In that case, $\phi$ is called a \textbf{mono(morphism)}.
+\item The following are equivalent:
+	\begin{compactitem}
+	\item $\phi$ is a surjective mapping
+	\item $\phi$ can be canceled in initial position: $\phi;\psi=\phi;\psi'$ implies $\psi=\psi'$
+	\end{compactitem}
+	In that case, $\phi$ is called an \textbf{epi(morphism)}.
+\item The following are equivalent:
+	\begin{compactitem}
+	\item $\phi$ is strong and a bijective mapping
+	\item $\phi$ is strong, mono, and epi
+	\item $\phi$ can be inverted: there is a morphism $\phi^{-1}$ such that $\phi;\phi^{-1}=\id{M}$ and $\phi^{-1};\phi=\id{N}$
+	\end{compactitem}
+	In that case, $\phi$ is called an \textbf{iso(morphism)}.
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+Exercise.
+For isomorphisms, note that the mapping $\phi^{-1}$ exists uniquely if the mapping $\phi$ is bijective.
+\end{proof}
+
+\begin{theorem}
+The identity is iso and thus in particular strong, mono, and epi.
+
+If two morphisms are strong, mono, epi, or iso, then so is their composition.
+
+The inverse of an iso is also iso.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\begin{terminology}
+Morphism from $M\to M$ are sometimes called \textbf{endomorphisms} of $M$.
+Iso-Endo-Morphisms of $M$ are sometimes called \textbf{automorphisms} of $M$.
+\end{terminology}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Closed Subsets and Submodels}\label{sec:univ:sub}
+
+\subsection{The Analog for Sets: Subsets}
+
+If for every $x\in M$, we also have $x\in N$, we write $M\sq N$ and call $M$ a subset of $N$.
+In that case, we have the inclusion function $M\harr N$, which maps every $x\in M$ to itself.
+
+\subsection{Formal Definition}
+
+\subsubsection{Closed Subsets}
+
+\begin{definition}[Closed Set]
+Consider a $\Sigma$-model $N$.
+A subset $S\sq\univ^N$ is called \textbf{closed} if
+\begin{compactitem}
+ \item for every $n$-ary function symbol $f$
+  \[\mif \tb u_1\in S, \ldots,u_n\in S\tb\mthen\tb f^M(u_1,\ldots,u_n)\in S.\]
+\end{compactitem}
+\end{definition}
+
+\subsubsection{Images of Morphisms}
+
+\begin{definition}[Image]
+Consider a $\Sigma$-morphism $\phi:M\to N$.
+The \textbf{image} $\image{\phi}$ of $\phi$ is the subset of $N$ defined by $\{\phi(m):m\in\univ^M\}$.
+\end{definition}
+
+\begin{theorem}
+The image of a morphism is closed.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\subsubsection{Submodels}
+
+\begin{definition}[Submodel]
+Consider a $\Sigma$-model $N$ and a closed set $S$.
+We define the submodel $M=N|S$ by
+\begin{compactitem}
+\item $\univ^{M}=S$,
+\item for every $n$-ary function symbol $f$
+ \[f^{M}(u_1,\ldots,u_1)=f^{N}(u_1,\ldots,u_n),\]
+\item for every $n$-ary predicate symbol $p$
+ \[p^{M}(u_1,\ldots,u_1)=p^{M}(u_1,\ldots,u_n).\]
+\end{compactitem}
+
+Well-definedness: $f^M$ is well-defined (i.e., returns an element of $\univ^M$) because $S$ is closed.
+\end{definition}
+
+Intuitively, the submodels of $N$ are the subsets of $\univ^N$ that are closed.
+
+\begin{theorem}
+The submodels of $N$ are exactly those models $M$ with $\univ^M\sq \univ^N$ for which the inclusion mapping is a morphism.
+\end{theorem}
+\begin{proof}
+Consider a subset $S$ of $\univ^N$.
+We have the inclusion mapping $S\to \univ^N$, which maps $x\mapsto x$.
+We have to show that the following are equivalent:
+\begin{compactenum}
+ \item $S$ is closed.
+ \item The inclusion is a morphism $N|S\to N$
+\end{compactenum}
+This is an exercise.
+\end{proof}
+
+\begin{example}[Submodels]
+Almost every model has a rich structure of different submodels.
+\begin{compactitem}
+\item The submodels of the empty theory are simply the subsets.
+\item Every model $M$ is its own submodel $M\leq M$.
+Of course, this is the greatest possible submodel of $M$.
+\item For every model $M$, we can form the set $Defin_M := \{u\in \univ^M\,|\,\mexists t \msuchthat \semm{t}{M}=u\}$.
+Intuitively, it contains all definable elements, i.e., all elements that can be named by a term $t$ in the syntax.
+$Defin_M$ is the smallest submodel of $M$.
+For example, $Defin_O=\es$ for every order $O$, and $Defin_R=\{0\}$ for every ring $R$.
+\item All inclusion maps between the number sets $\N$, $\Z$, $\Q$, $\R$, and $\C$ yield submodels for various signatures.
+For example, $(\Z,+,0,-,*,1)$ is a subring of $(\C,+,0,-,*,1)$.
+And the rational numbers are a subfield of the real numbers, which are a subfield of the complex numbers.
+\item The positive integers with $0$ form a subsemiring of $(\Z,+,0,\cdot,1)$.
+They do not form a subring because they are not closed under negation.
+The according result applies to rational and real numbers.
+\item The positive real numbers without $0$ form a subgroup of $(\R,\times,1,^{-1})$.
+The according result applies to rational numbers.
+\item For $k\in\N$, let $k\Z=\{kz : z\in\Z\} = \{z\in\Z\;|\;k|z\}$ be the set of integers that are divisible by $k$.
+(Note that $1\Z=\Z$ and $0\Z=\{0\}$.)
+This set is the image of the endomorphism $z\mapsto kz$.
+Thus $k\Z$ is closed and yields a subring of the integers.
+Moreover, we have $k\Z\sq l\Z$ iff $l|k$.
+\item The universal relation $\top_M=\{(x,y)\,:\,x,y\in\univ^M\}=\univ^M\times\univ^M$ is an equivalence relation( and thus a model of the theory of equivalence relations).
+Its submodels are the equivalence relations on $\univ^M$.
+\end{compactitem}
+\end{example}
+
+\subsection{Interaction with Theories}
+
+Note that if $M\leq N$ and $N$ is a $(\Sigma;\Theta)$-model, then $M$ may or not be a $(\Sigma;\Theta)$-model.
+Thus, $M$ has fewer submodels if $\Theta$ has more axioms.
+
+However, we know that the inclusion morphism $M\to N$ is strong and mono.
+Therefore, Thm.~\ref{thm:univ:preserve} tells us that a propositional formula (i.e., a formula without $\forall$, $\exists$) holds in $M$ for some assignment iff it holds in $N$ for the same assignment.
+Universally quantified propositional formulas that hold in a model also hold in any submodel.
+And existentially quantified propositional formulas that hold in a model also hold in any supermodel.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Product Models}\label{sec:univ:prod}
+
+\subsection{The Analog for Sets: Cartesian Product}
+
+For any two sets $M_1,M_2$, we can form the set $M_1\times M_2$.
+It comes with projection functions $(-)_i:M_1\times M_2\to M_i$ such that $(u,v)_1=u$ and $(u,v)_2=v$.
+
+\subsection{Formal Definition}
+
+The product of two models uses the cartesian product of the universes as its universe and interprets every function and predicate symbol component-wise:
+
+\begin{definition}[Product Model]
+Consider two $\Sigma$-models $M_1, M_2$.
+We define the $\Sigma$-model $M_1\times M_2$ as follows:
+\begin{compactitem}
+\item $\univ^{M_1\times M_2}=\univ^{M_1}\times\univ^{M_2}$,
+\item for every $n$-ary function symbol $f$
+ \[f^{M_1\times M_2}(u^1,\ldots,u^n)=(f^{M_1}(u^1_1,\ldots,u^n_1),f^{M_2}(u^1_2,\ldots,u^n_2))\]
+\item for every $n$-ary predicate symbol $p$
+ \[p^{M_1\times M_2}(u^1,\ldots,u^n)=1 \tb\miff\tb p^{M_1}(u^1_1,\ldots,u^n_1)=1 \mand p^{M_2}(u^1_2,\ldots,u^n_2)=1\]
+\end{compactitem}
+\end{definition}
+
+For $i=1,2$, we obtain projection morphisms $(-)_i:M_1\times M_2\to M$ that map $(u,v)_1=u$ and $(u,v)_2=v$.
+
+\begin{example}
+Products are one the most important ways to obtain to build larger models from smaller ones. (Submodels and quotients only produce smaller models.)
+\begin{compactitem}
+\item The commutative group $(\C,+,0,-)$ can be seen as the product of $(\R,+,0,-)$ with itself because
+\[(x+yi)+(x'+y'i)=(x+x')+(y+y')i\tb 0=0+0i\tb -(x+yi)=-x+(-y)i\]
+The two projections are $\mathrm{Re}$ and $\mathrm{Im}$.
+
+However, complex multiplication cannot be obtained in this way.
+\item Every $k$-dimensional $F$-vector space is isomorphic to the $n$-th power $P$ (i.e., the $n$-fold product with itself) of $(F,+,0,-)$.
+The operations in $P$ are
+\[\vect{u_1\\\vdots\\u_n}+^P\vect{v_1\\\vdots\\v_n}=\vect{u_1+v_1\\\vdots\\u_n+v_n} \tb
+  0^P=\vect{0\\\vdots\\0}\tb
+  -^P\vect{u_1\\\vdots\\u_n}=\vect{-u_1\\\vdots\\-u_n}
+\]
+\item The product of two rings is again a ring.
+\item The product $P=F\times G$ of two fields is only a ring and not a field.
+The problem is that elements like $(0^F,1^G)$ are different from $0^P=(0^F,0^G)$ but do not have a multiplicative inverse.
+\end{compactitem}
+\end{example}
+
+\subsection{Interaction with Theories}
+
+If $M_1$ and $M_2$ are $(\Sigma;\Theta)$-models, then $M_1\times M_2$ may or may not be a $(\Sigma;\Theta)$-model.
+Therefore, if we restrict attention to $(\Sigma;\Theta)$-models we may not always have product models.
+
+However, we can apply Thm.~\ref{thm:univ:preserve} using that the projection morphisms are epi (but not necessarily strong) if both factors are non-empty.
+Moreover, we know that $(u,v)=(u',v')$ iff $u=u'$ and $v=v'$.
+Therefore, if both factors are non-empty, then any formula that does not use $\neg$, $\vee$, or $\impl$ holds in a product iff it holds in both factors.
+Similarly, any Horn formula holds in a product if it holds in both factors.
+
+Thus, many important theories admit product models.
+An important exception is the theory of fields (which uses an axiom with $\neg$). 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Power Models}\label{sec:univ:exp}
+
+\subsection{The Analog for Sets: Families of Elements}
+
+For any two sets $M,I$, we can form the set $M^I$ of functions from $M$ to $I$.
+Such a function can be seen as a family $(u_i)_{i\in I}$ of values $u_i\in M$.
+
+\subsection{Formal Definition}
+
+We obtain a simple generalization to morphisms if we use a $\Sigma$-model $M$ and a set $I$.
+We call $I$ the index set.
+
+\begin{definition}[Power Model]
+Consider a $\Sigma$-model $M$ and a set $I$.
+We define the $\Sigma$-model $P=M^I$ as follows:
+\begin{compactitem}
+\item $\univ^{P}=(\univ^{M})^I$,
+\item for every $n$-ary function symbol $f$
+ \[f^{P}(u^1,\ldots,u^n)=(f^{M}(u^1_i,\ldots,u^n_i))_{i\in I}\]
+\item for every $n$-ary predicate symbol $p$
+ \[p^{P}(u^1,\ldots,u^n)=1 \tb\miff\tb p^{M}(u^1_i,\ldots,u^n_i)=1 \mforall i\in I\]
+\end{compactitem}
+\end{definition}
+
+For every $i\in I$, we obtain a projection morphism $M^I\to M$ that maps $u\mapsto u_i$.
+
+\begin{example}
+Power models have some important cases if $I$ is finite:
+\begin{compactitem}
+\item If $I$ is the set $\{0,\ldots,k-1\}$, then $M^I$ is isomorphic to the $k$-th power of, i.e., $M\times\ldots\times M$.
+In particular, $M^{\{0,1\}}$ is isomorphic to $M\times M$, and the two definitions of the projection morphisms coincide.
+\item $M^{\{0\}}$ is isomorphic to $M$ itself, and the projection is that isomorphism.
+\item $M^\es$ is isomorphic to the trivial model, and the projection is the unique morphism into the terminal model (see Sect.~\ref{sec:univ:term}).
+\end{compactitem}
+\end{example}
+
+\subsection{Interaction with Theories}
+
+If $M$ is a $(\Sigma;\Theta)$-model, then $M^I$ may or may not be a $(\Sigma;\Theta)$-model.
+Therefore, if we restrict attention to $(\Sigma;\Theta)$-models we may not always have power models.
+
+However, we can use the same arguments as for product models to show that $M^I$ is a $(\Sigma;\Theta)$-model for special cases of $\Theta$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Terminal Models}\label{sec:univ:term}
+
+Terminal models do not always exist and are not always useful.
+But they are the dual of the crucially important concept of initial models (see Sect.~\ref{sec:univ:init}).
+
+\subsection{The Analog for Sets: The Trivial Sets}
+
+Singleton sets (i.e., sets of size $1$) have a special property.
+If $T=\{t\}$ for some $t$, there is a unique function $M\to T$ for every set $M$: It maps every $x\in M$ to $t$.
+
+\subsection{Formal Definition}
+
+\begin{definition}[Terminal Model]
+A $(\Sigma;\Theta)$-model $T$ is called \textbf{terminal} if for every $(\Sigma;\Theta)$-model $M$ there is a unique morphism $M\to T$.
+\end{definition}
+
+\begin{theorem}[Trivial Model]
+For $\Theta=\es$, we obtain a terminal $\Sigma$-model $T$ as follows:
+\begin{compactitem}
+ \item $\univ^T$ is some singleton set, e.g., $\{\ast\}$,
+ \item $f^T$ for function symbols $T$ is the uniquely determined map that always returns $\ast$,
+ \item $p^T$ for predicate symbols $p$ is the map that always returns $1$.
+\end{compactitem}
+Moreover, all terminal $\Sigma$-models are of this form.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\subsection{Interaction with Theories}
+
+If $\Theta\neq\es$, the terminal $\Sigma$-model may or may not be a $(\Sigma;\Theta)$-model.
+If it is a $(\Sigma;\Theta)$-model, it is also a terminal $(\Sigma;\Theta)$-model.
+If not, there may or not be other $(\Sigma;\Theta)$-models that are terminal.
+
+However, it is easy to see that the terminal $\Sigma$-model satisfies all formulas that do not contain $\false$ or $\neg$.
+Therefore, it is terminal for many theories.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Initial Models}\label{sec:univ:init}
+
+\subsection{The Analog for Sets: The Smallest Set}
+
+The empty set $\es$ is the smallest set in the sense that $\es\sq M$ for every set $M$.
+Moreover, for every set $M$, there is a unique map $\es\to M$, namely the empty map $\es:\es\harr M$.
+
+\subsection{Formal Definition}
+
+We do not always have a smallest $\Sigma$-model.
+But we do have the dual of the terminal model:
+
+\begin{definition}[Initial Model]
+A $\Sigma$-model $T$ is called \textbf{initial} if for every $\Sigma$-model $M$ there is a unique morphism $I\to M$.
+\end{definition}
+
+\begin{theorem}[Term Model]\label{thm:univ:termmodel}
+For $\Theta=\es$, we obtain an initial $\Sigma$-model $I$ as follows:
+\begin{compactitem}
+ \item $\univ^I$ is the set of all closed $\Sigma$-terms,
+ \item $f^I$ for function symbols $T$ maps $f^I(t_1,\ldots,t_n)=f(t_1,\ldots,t_n)$,
+ \item $p^I$ for predicate symbols $p$ always returns $0$.
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+The unique morphism $u:I\to M$ maps $u(t)=\semm{t}{M}$.
+The rest is left as an exercise.
+\end{proof}
+
+$\FOL$ does not have an initial model for every theory.
+The most important theories for which initial models exists are the Horn theories:
+
+\begin{theorem}[Term Model for Horn Theories]\label{thm:univ:termmodel2}
+If $\Theta$ contains only Horn formulas, we obtain an initial $\Sigma$-model $I$ as follows:
+\begin{compactitem}
+ \item $\univ^I$ is the set of all closed $\Sigma$-terms quotiented by the equivalence relation $\Equiv$ defined by
+   \[s\Equiv t  \tb\miff\tb \iscons{\Sigma}{}{\Theta}{s\doteq t}.\]
+ \item $f^I$ for function symbols $T$ maps \[f^I([t_1],\ldots,[t_n])=[f(t_1,\ldots,t_n)],\]
+ \item $p^I$ for predicate symbols $p$ maps \[p^I([t_1],\ldots,[t_n])=\cas{1\mifc \iscons{\Sigma}{}{\Theta}{p(t_1,\ldots,t_n)}\\0\mothw}\]
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+The model is well-defined because $\Equiv$ is a congruence relation (see Sect.~\ref{sec:univ:quot}).
+Moreover, $I$ is the quotient of the term model constructed in Thm.~\ref{thm:univ:termmodel}.
+
+The unique morphism $u:I\to M$ maps $u([t])=\semm{t}{M}$.
+The rest is left as an exercise.
+\end{proof}
+
+Note that the term model of Thm.~\ref{thm:univ:termmodel} is isomorphic to the one from Thm.~\ref{thm:univ:termmodel2} for $\Theta=\es$.
+
+\begin{example}[Initial Models]
+Many data types can be specified by Horn theories, and we obtain may initial models:
+\begin{compactitem}
+\item The initial set is the empty set.
+\item More generally, the empty model is initial whenever it is a model at all (i.e., whenever it satisfies all axioms in $\Theta$), e.g., for the theory of orders.
+\item The trivial model is initial for monoids, groups, rings without 1, and vector spaces.
+Indeed, we can check that all closed terms over these signatures are equal to the neutral element.
+\item The integers are an initial ring with 1.
+Indeed, the smallest set of not-provably-equal terms over the theory of rings with 1 is $\{0,1,-1,1+1,-(1+1),\ldots\}$.
+\item Peano arithmetic from Ex.~\ref{ex:nat:succ} is not a Horn theory. However, the term model is still initial.
+It is isomorphic to the natural numbers.
+Indeed, the smallest set of not--provably equal terms over Peano arithmetic is $\{0,\suc(0),\suc(\suc(0)),\ldots\}$.
+\item The theory of fields is not a Horn theory and has no initial model.
+\end{compactitem}
+\end{example}
+
+\subsection{Interaction with Theories}
+
+The initial $(\Sigma;\Theta)$-model $I$ from Thm.~\ref{thm:univ:termmodel2} has a very special property --- it satisfies exactly the theorems:
+\[\semm{F}{I}=1\tb\miff\tb \iscons{\Sigma}{}{\Theta}{F}\]
+For atomic formulas, that holds by construction.
+For the remaining formulas, we can show it by induction using the fact all axioms are Horn formulas.
+
+If $\Theta$ contains non-Horn formulas, $I$ is usually not a $(\Sigma;\Theta)$-model and therefore also not an initial $(\Sigma;\Theta)$-model.
+However, there may be other $(\Sigma;\Theta)$-models that are initial.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Congruence Relations and Quotient Models}\label{sec:univ:quot}
+
+As we will see in Sect.~\ref{sec:univ:meta:subquot}, quotients are the dual construction to submodels.
+
+\subsection{The Analog for Sets: Equivalence Relations and Quotient Sets}
+
+An equivalence relation on a set $M$ is a binary relation $\Equiv$ on $M$ that is reflexive, symmetric, and transitive.
+In that case, we can form the equivalence class $[m]:=\{x\in M\,|\,m\Equiv x\}$ for every $m\in M$.
+
+The set $M/\Equiv:=\{[m]:m\in M\}$ of all equivalence classes is called the quotient of $M$ by $\Equiv$.
+
+The classification mapping $[-]:M\to M/\Equiv$ maps every $m$ to its equivalence class.
+It is surjective, and we have $m\Equiv n\iff [m]=[n]$.
+
+\subsection{Formal Definition}
+
+\subsubsection{Congruences}
+
+It is easy to obtain equivalence relations on models.
+But not every equivalence relation interacts well with the symbols.
+We are interested in those relations that are closed under the symbols:
+
+\begin{definition}[Congruence Relation]
+Consider a $\Sigma$-model $M$ and a binary relation $r$ on $M$.
+$r$ is called a \textbf{pre-congruence} if
+\begin{compactitem}
+\item for every $n$-ary function symbol $f$
+  \[\mif\tb (u_1,v_1)\in r,\;\ldots,(u_n,v_n)\in r\tb\mthen\tb (f^M(u_1,\ldots,u_n),f^M(v_1,\ldots,v_n))\in r\]
+\item for every $n$-ary predicate symbol $f$
+  \[\mif\tb (u_1,v_1)\in r,\;\ldots,(u_n,v_n)\in r\tb\mthen\tb p^M(u_1,\ldots,u_n)=p^M(v_1,\ldots,v_n)\]
+\end{compactitem}
+$r$ is called a \textbf{congruence} if it is additionally an equivalence relation.
+\end{definition}
+
+\subsubsection{Kernels of Morphisms}
+
+\begin{definition}[Kernels]
+Consider a $\Sigma$-morphism $\phi:M\to N$.
+The kernel $\kernel{\phi}$ of $\phi$ is the binary relation on $M$ defined by $\{(x,y)\in \univ^M\times \univ^M\;|\;\phi(x)=\phi(y)\}$.
+\end{definition}
+
+\begin{theorem}
+The kernel of a morphism is a congruence.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\subsubsection{Quotients}
+
+\begin{definition}[Quotient Model]
+Consider a $\Sigma$-model $M$ and a congruence $\Equiv$ on it.
+We define the $\Sigma$-model $Q=M/\Equiv$ as follows:
+\begin{compactitem}
+\item $\univ^{Q}=\univ^{M}/\Equiv$,
+\item for every $n$-ary function symbol $f$
+ \[f^{Q}([u_1],\ldots,[u_1])=[f^{M}(u_1,\ldots,u_n)],\]
+\item for every $n$-ary predicate symbol $p$
+ \[p^{Q}([u_1],\ldots,[u_1])=p^{M}(u_1,\ldots,u_n).\]
+\end{compactitem}
+
+Well-definedness:
+Here the arguments of $f^Q$ are equivalence classes, and we define the result of $f^Q$ by applying $f^M$ to arbitrary elements $u_i$ of these equivalence classes.
+This is well-defined because the properties of pre-congruences guarantee that all values $f^M(u_1,\ldots,u_n)$ are in the same equivalence class, no matter which $u_i$ we pick.
+The argument that $p^Q$ is well-defined proceeds accordingly.
+\end{definition}
+
+\begin{theorem}
+The quotients of $M$ are exactly those models with universe $\univ^M/\Equiv$ for which the classification mapping is a morphism.
+\end{theorem}
+\begin{proof}
+Consider an equivalence relation $\Equiv$ on $\univ^M$.
+We have the mapping $[-]:\univ^M\to \univ^M/\Equiv$, which maps $x\mapsto [x]$.
+We have to show that the following are equivalent:
+\begin{compactenum}
+ \item $\Equiv$ is a congruence.
+ \item $[-]:M\to M/\Equiv$ is a morphism.
+\end{compactenum}
+This is an exercise.
+\end{proof}
+
+\begin{example}
+Almost every model has a rich structure of quotient models:
+\begin{compactitem}
+\item Modulo $k$: The relation $m\Equiv_k n$ on $\Z$ is defined by $m-n\in k\Z$. It is a congruence on the ring with 1 of integers.
+It is the kernel of the morphism $\modulus_k:\Z\to\Z_k$.
+$\Z_k$ is isomorphic to the corresponding quotient.
+\item A group is called simple if it has no non-trivial quotient groups. In a huge collaborative undertaking, mathematicians have been able to find all finite simple groups \cite{finitegroups1}, one of the biggest results ever in mathematics.
+\item The diagonal relation $\Delta_M=\{(x,x)\,:\,x\in \univ^M\}$ is a congruence.
+The quotient $M/\Delta_M$ is isomorphic to $M$.
+\item The universal relation $\top_M$ is a congruence.
+The quotient $M/\top_M$ is a trivial model.
+\end{compactitem}
+\end{example}
+
+
+\subsection{Interaction with Theories}
+
+Note that if $M$ is $(\Sigma;\Theta)$-model, then $M/\Equiv$ may or not be a $(\Sigma;\Theta)$-model.
+Thus, $M$ has fewer quotients if $\Theta$ has more axioms.
+
+However, we know that the classification morphism is strong and epi.
+Therefore, Thm.~\ref{thm:univ:preserve} tells us that any formula that does not use $\impl$ or $\neg$ that holds in a model also holds in every quotient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Factoring Models}
+%
+% theory with null elements
+% congruence relations 
+%  [0] closed
+%  x\Equiv y \miff x-y\in [0]
+%  $[0]$ is submodel of $M$.
+% Let $R$ be a system of representatives for $\Equiv$ with canonical form $C$
+% Then every x can be uniquely written as r+z with $r\in R$ and $z\in[0]$.
+% $M=(M/\Equiv)\times (M|[0])
+% $R$ has $\Sigma$-structure by defining $f^R(r_1,\ldots,r_n)=C(f^M(r_1,\ldots,r_n))
+%  isomorphic to $M/\Equiv$
+
+% converse: does every submodel yield congruence relation?
+% not quite
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Meta-Mathematics}\label{sec:univ:meta}
+
+\subsection{Isomorphism as an Equivalence Relation}
+
+The relation $M\cong N$ defined by ``there is an isomorphism from $M$ to $N$'' is an equivalence relation.
+Thus, we can quotient $\Mod(\Sigma;\Theta)$ by $\cong$.
+
+For a property $P$, we say ``$P$ holds up to isomorphism'' if the following holds: If $P$ holds for $M$ and $M\cong N$, then $P$ also holds for $N$.
+In other words, $P$ holds in the quotient $\Mod(\Sigma;\Theta)/\cong$.
+
+\subsection{Models Containing Morphisms}
+
+Given a model $M$, the endomorphisms of $M$ can be composed with each other.
+Thus, they form a magma $(Endo(M),\circ)$.
+
+Moreover,
+\begin{itemize}
+\item $(Endo(M),\circ, \id{M})$ is a monoid.
+\item The set of automorphisms of $M$ is a closed subset of $(Endo(M),\circ, \id{M})$.
+In other words, the identity is an automorphism, and the composition of automorphisms is an automorphism.)
+$(Auto(M),\circ, \id{M},\inv)$ is a group.
+\end{itemize}
+
+\subsection{Product as a Monoid}
+
+The product model operation $M\times N$ is a magma on $\Mod(\Sigma;\Theta)$.
+$\cong$ is a congruence with respect to $\times$ and thus the quotient $\Mod(\Sigma;\Theta)/\cong$ is also a magma.
+This quotient has several nice properties:
+\begin{itemize}
+ \item It is commutative: $M\times N\cong N\times M$.
+ \item It is associative.
+ \item The trivial $\Sigma$-model (if it is $\Theta$-model) is a neutral element.
+ \item The empty model (if it is a $\Theta$-model) is an absorbing element.
+\end{itemize}
+
+Here it is necessary to work ``up to isomorphism'', i.e., in the quotient by $\cong$.
+For example, we have $M\times N \cong N\times M$ but not $M\times N=N\times M$.
+Similarly, we have $A\times \{\ast\}\cong A$ but not $A\times \{\ast\}=A$.
+Thus, the axioms do not hold exactly --- they only hold if we identify isomorphic models.
+An example is the absorbing element: We do have $A\times \es=\es$.
+
+\subsection{Duality}\label{sec:univ:meta:dual}
+
+\subsubsection{Terminal and Initial Models}\label{sec:univ:meta:terminit}
+
+\subsubsection{Submodels and Quotients}\label{sec:univ:meta:subquot}
+
+Given a model $M$, we have the following correspondence of dual concepts:
+
+\begin{center}
+\begin{tabular}{|l||l|l|}
+\hline
+Concept & for submodels & for quotients \\
+\hline
+\hline
+New models & submodels $L$ of $M$ & quotients $Q$ of $M$ \\
+Constructed from & closed subsets of $\univ^M$ & congruence relations on $\univ^M$ \\
+Characterized by & inclusion monomorphism $L\to M$ & classification epimorphism $M\to Q$ \\
+Induced by & images of morphisms into $M$ & kernels of morphisms out of $M$ \\
+Biggest model & $M$ & $M/\Delta_M\cong M$ \\
+Least model & image of initial model & kernel of terminal model \\
+Least model for $\Theta=\es$ & $Defin_M$ & $M/\top_M$ \\
+\hline
+\end{tabular}
+\end{center}
+
+We can even unify closed subsets and congruence relations as follows:
+\begin{definition}
+An $n$-ary logical relation on $M$ is a closed subset of $M^n$.
+\end{definition}
+
+Now we have:
+\begin{theorem}\label{thm:univ:closedcong}
+The closed subsets of $M$ are the unary logical relations on $M$.
+The pre-congruences on $M$ are the binary logical relations on $M$.
+\end{theorem}
+\begin{proof}
+The first result holds by definition.
+
+For the second result, the key idea is that $M\times M$ is a $\Sigma$-model.
+The universe of a submodel of $M\times M$ is a subset of $\univ^M\times\univ^M$ (i.e., a binary relation on $M$) with an inclusion morphism into $M\times M$.
+Spelling out the morphism properties yields exactly the conditions on pre-congruences.
+\end{proof}
+
+Now a crucial observation is the following closure properties:
+
+\begin{theorem}\label{thm:univ:closedinter}
+The closed subsets of $M$ are closed under intersection.
+\end{theorem}
+\begin{proof}
+Exercise.
+\end{proof}
+
+\begin{theorem}
+The congruence relations of $M$ are closed under intersection.
+\end{theorem}
+\begin{proof}
+Due to Thm.~\ref{thm:univ:closedinter} and~\ref{thm:univ:closedcong}, the pre-congruences are closed under intersection.
+Moreover, we know that equivalence relations on $\univ^M$ are just the submodels of $\top^M$ and thus by Thm.~\ref{thm:univ:closedinter} closed under intersection.
+Therefore, the congruence relations are as well.
+\end{proof}
+
+Thus, the closed subsets and the congruence relations of $M$ each form a closure system and thus a lattice.
+
+Concretely, the lattice relation between submodels $N,N'$ of $M$ is given by the subset relation of their universes.
+Equivalently, $N\leq N'$ iff there is a monomorphism $N\harr N'$.
+The greatest element is $M$ itself.
+The least element is $Defin_M$. This is also the image of the unique morphism $I\to M$.
+The join of $N$ and $N'$ is the smallest submodel that is bigger than both $N$ and $N'$; we can construct it by starting with $N\cup N'$ and iteratively adding elements until we obtain a closed subset.
+
+The lattice relation between quotients $Q,Q'$ of $M$ is given by the subset relation between their congruence relations.
+However, we have to watch out for the following: the bigger the congruence relation, the smaller the quotient.
+We will write $Q\prec Q'$ if $Q$ is smaller than $Q'$, i.e., if the congruence of $Q'$ is bigger than that of $Q$.
+Equivalently, $Q\prec Q'$ iff there is an epimorphism $Q'\arr Q$.
+The greatest quotient is essentially $M$ itself: $M/\Delta_M$, which uses the least congruence relation $\Delta_M$ (which identifies nothing) and is isomorphic to $M$.
+The least quotient is $M/\top_M$, which uses the greatest congruence relation (which identifies everything).
+This is also the kernel of the unique morphism $M\to T$.
+
+Note that contrary to the least quotient, the least submodel can have rich structure.
+For example, the least subring of the real numbers is the ring of integers.
+
+\begin{example}\quad
+\begin{compactitem}
+\item The mapping $k\mapsto (k\Z,+,0,-,1,\cdot)$ is a lattice morphism from $(\N,|^d,1,0)$ to the lattice of subrings of $\Z$.\\
+In particular, if $k|l$, then $l\Z\sq k\Z$ and the inclusion is a monomorphism.\\
+The least subring is $0\Z$; its universe is $\{0\}$.\\
+The greatest subring is $1\Z$; its universe is $\Z$.
+\item The mapping $k\mapsto (\Z_k,+_k,0,-_k,1,\cdot_k)$ is a lattice morphism from $(\N,|,1,0)$ to the lattice of quotients of $\Z$.
+(Technically, $\Z_k$ is not a quotient set of $\Z$. But it is isomorphic to the quotient $\Z/\Equiv_k$.)\\
+In particular, if $k|l$, then $\Z_k\sq \Z_l$ and $\modulus_k:\Z_l\to\Z_k$ is an epimorphism.\\
+The greatest quotient is $\Z/\Equiv_0$, its universe is $\{\{z\}:z\in \Z\}$, which is isomorphic to $\Z_0=\Z$.\\
+The least quotient is $\Z/\Equiv_1$; its universe is $\{\Z\}$, which is isomorphic to $\Z_1=\{0\}$.
+\end{compactitem}
+\end{example}
+
+\subsection{Factorization of Morphisms}
+
+\begin{theorem}\label{thm:univ:factorize}
+For every model morphism $\phi:M\to N$, we have $M/(\kernel{\phi})\cong N|(\image{\phi})$.
+\end{theorem}
+\begin{proof}
+The isomorphism maps \[M/(\kernel{\phi}) \ni[m] \mapsto \phi(m) \in  N|(\image{\phi}).\]
+Its inverse maps \[N|(\image{\phi})\ni n \mapsto \{m\in\univ^M\;|\;\phi(m)=n\}\in M/(\kernel{\phi}).\]
+\end{proof}
+
+\begin{theorem}\label{thm:univ:factorize2}
+Every morphism $\phi:M\to N$ is of the form $\phi=e;m$ where $e$ is epi and $m$ is mono.
+
+Every morphism $\phi:M\to N$ is uniquely of the form $\phi=e;i;m$ where $e$ is a classification, $i$ is iso, and $m$ is an inclusion.
+\end{theorem}
+\begin{proof}
+The first statement follows easily from the second.
+
+To prove the second statement, we pick the classification $e:M\to M/(\kernel{\phi})$ and the inclusion $m:N|(\image{\phi})\to N$.
+The isomorphism $i$ is then (uniquely) the one from Thm.~\ref{thm:univ:factorize}.
+The uniqueness of $m$ and $e$ follows because no other classification would yield the same kernel as $\phi$ and no other inclusion the same image as $\phi$.
+\end{proof}

@@ -1,0 +1,61 @@
+The variety of type theories is even bigger than that of set theories: The differences between simple type theory, dependent type theory, and the calculus of constructions are quite big. All three can be used as pure type theories (i.e., without formulas), as logics, and as foundations. We will only consider HOL, which is based on simple type theory.
+
+\section{Foundational Logic and Theory}
+
+In general, every symbol or axiom introduced in a foundational theory could alternatively be built into the foundational logic a priori. Thus, the formal border between foundational logic and foundational theory can be a bit blurry. This is specifically the case for HOL where different accounts vary regarding which features are present in HOL the logic and which are relegated to individual theories. The name ``HOL'' is commonly used for all of them.
+
+To avoid confusion, we will reserve the name HOL for ``HOL the logic'' as defined in introduced in Part~\ref{part:hol}
+
+The foundational theory HOLF arises by adding choice and infinity to HOL. As mentioned above, there is some flexibility as to whether these features are hard-coded into HOL already or not. Our choice here tries to put all features that have a more mathematical flavor rather than a logical one into the foundational theory.
+
+\begin{definition}
+HOLF is the HOL-theory that consists of
+\begin{itemize}
+ \item individuals: a single base type $\iota:\TYPE$ (in addition to the base type $o$ which is built into HOL),
+ \item description operator: a family of constants $\delta_A:(A\arr o)\arr A$ for any HOLF-type $A$,
+ \item description axiom: the axiom scheme
+  \[\forall p:A\arr o.(\exists^! x:A.p\; x \impl p\;(\delta_A\;p))\]
+   for any HOLF type $A$,
+ \item choice operator: a family of constants $\epsilon_A:(A\arr o)\arr A$ for any HOLF-type $A$,
+ \item choice axiom: the axiom scheme
+  \[\forall p:A\arr o.(\exists x:A.p\; x \impl p\;(\epsilon_A\;p))\]
+   for any HOLF type $A$,
+ \item infinity: an axiom forcing the infinity of $\iota$, e.g., by stating the existence of an injective function $\iota\arr\iota$.
+\end{itemize}
+\end{definition}
+
+\begin{notation}
+We write $\delta x:A.p(x)$ for $\delta_A\;(\lam{x}{A}p(x)))$, and $\epsilon x:A.p(x)$ for $\epsilon_A\;(\lam{x}{A}p(x)))$.
+\end{notation}
+
+The choice operator is the characteristic feature of the HOL foundation. If $p:A\arr o$ is a predicate on $A$, then $\epsilon x:A.p(x)$ returns some element of $A$ satisfying $p$. There are two objections to this feature. Firstly, $\epsilon_A\;p$ is well-formed even if there is no such element. Indeed, $\epsilon x:\iota.\false$ is a well-formed term. Secondly, it is left unspecified what the result of $\epsilon_A\;p$ is if there is more than $x$ with the require property. For the description operator, only the first objection applies.
+
+HOLF does not run into inconsistencies due to these problems because the corresponding axioms are chosen carefully: It only states the property of $\epsilon x:A.p(x)$ (namely that it satisfies $p$) if $p$ is satisfiable at all, and then all we know about it is that it satisfies $p$. Otherwise, the result of $\epsilon x:A.p(x)$ is unspecified.
+Thus, we can prove that $\epsilon x:\iota.\false$ exists but nothing else about it. Therefore, as far as we know, the only tangible side effect of the choice operator is that all types are non-empty.
+
+The description operator is a special case of the choice operator and therefore redundant. But because it is less objectionable, it is preferable to use it whenever that is sufficient. In fact, often HOLF is often formulated without the choice operator because the description operator is enough for most applications.
+
+\section{Definition Principles}
+
+Like virtually every foundation ever defined HOLF admits the analogue of the direct definition principle from Def.~\ref{def:directdef}. However, due to the presence of $\lambda$-abstraction and because $o$ is just a normal type, the definition principle takes a significantly simpler form:
+
+\begin{definition}[Direct Definition]
+For any well-formed closed term $t:A$, we may add a new constant $c:A$ and an axiom $c\doteq t$.
+\end{definition}
+
+While direct definitions exists in some form in any foundations, the second definition principle is a bit peculiar and specific to HOL:
+
+\begin{definition}[Type Definition]
+For any well-formed closed term $p:A\arr o$ together with a proof of $\exists x:A.p\;x$, we may add
+\begin{itemize}
+ \item a new type $t:\TYPE$,
+ \item constants $r:t\arr A$ and $a:A\arr t$,
+ \item the axiom $\forall x:t.p\;(r\;x)$,
+ \item the axiom $\forall x:t.a\;(r\;x)\doteq x$,
+ \item the axiom $\forall x:A.(p\;x \impl r\;(a\;x)\doteq x)$.
+\end{itemize}
+\end{definition}
+
+The intuition behind this extension is that the new type $t$ represents the subtype of $A$ containing those objects that satisfy $p$. Since HOL cannot directly describe this type, a new base type $t$ is introduced and $r$ and $a$ map back and forth between $A$ and $t$. These map go is such a way that $t$ becomes indeed isomorphic to the subtype.
+
+This type definition is strong enough to define most useful types as derived notions, such as record types and inductive types.

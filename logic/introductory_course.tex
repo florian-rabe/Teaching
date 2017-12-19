@@ -1,0 +1,67 @@
+\documentclass{book}
+\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{graphicx,url}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{xkeyval,paralist}
+\usepackage{listings}
+\usepackage{bm} %% bold face math symbols
+\usepackage{tikz}
+%\usetikzlibrary{shapes}
+\usetikzlibrary{arrows}
+%\usepackage{stmaryrd}
+\usepackage{stmaryrd}\newcommand{\contra}{\lightning}
+
+\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
+
+\usepackage{ded}
+
+\usepackage{basics}
+\usepackage{twelf-math}
+\usepackage[book,mark]{theorems}
+
+\usepackage{localcommands}
+
+\usepackage[bookmarks=true, linkcolor=blue, citecolor=blue, urlcolor=blue, colorlinks=true, breaklinks=true, bookmarksopen=true,bookmarksopenlevel=1,bookmarksnumbered]{hyperref} % this needs to go last
+
+\title{Advanced CS 1: Formal Languages and Logic \\ Part 2: Logic}
+\author{Florian Rabe}
+\date{2008-2013}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\newpage
+Standard textbooks for logic are \cite{fol_gallier}, \cite{fol_smullyan}, and \cite{intrologicenderton} (look for the respective latest edition).
+\cite{andrews_truthproof} is an interesting textbook that emphasizes proof theory over model theory.
+
+\chapter{Syntax}\label{sec:syn}
+  \input{fol-syntax}
+  
+\chapter{Context-Sensitive Well-Formedness}\label{sec:infsys}
+  \section{Inference Systems}
+     \input{inference_systems}
+  \section{Inference Systems for Well-Formed Syntax}
+     \input{fol_syntax_inference_systems}
+
+
+\chapter{Model Theory}\label{sec:mt}
+  \input{fol-models}
+
+\chapter{Proof Theory}\label{sec:pt}
+  \input{fol-proofs}
+
+\chapter{The Relation between Proof and Model Theory}
+  \input{fol-proofs_models}
+
+\chapter{Induction}
+  \input{induction}
+
+\chapter{Summary}
+  \input{introductory_summary}
+
+\bibliographystyle{alpha}
+\bibliography{bib/rabe,bib/pub_rabe,bib/systems,bib/institutions,bib/historical}
+
+\end{document}

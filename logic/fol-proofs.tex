@@ -1,0 +1,439 @@
+\section{Introduction}
+
+There is a number of philosophical arguments against model theory.
+\begin{itemize}
+\item In order to define consequence, mathematics (i.e., the collection of models) must already exist.
+\item The semantics of formulas is kind of trivial by interpreting, e.g., $\wedge$ as ``and''. Are we really formalizing anything, or are we only using fancy symbols?
+\item The model-theoretic definition of consequence is not accessible to algorithmic treatment.
+\item Model-theoretic consequence does not correspond to the everyday mathematical practice of proving theorems.
+\item G\"odel's incompleteness shows: Consistency is a big problem.
+\end{itemize}
+
+In the following, we will introduce an inference system that forms the core of \emph{proof theory}.
+
+The most important example of a rule coming up in proof theory is the modus ponens rule
+\[\rul{\der G}{\der F\arr G\tb \der F}{R_2}\]
+Here $\der F$ is the judgment that $F$ is true.
+
+Further examples are this rule for conjunction and truth:
+\[\rul{\der F\wedge G}{\der F\tb \der G}{R_1}\]
+\[\rul{\der \true}{}{R_3}\]
+
+This is the axiom of the so-called excluded middle or tertium non datur:
+\[\rul{\der F\vee\neg F}{}{R_4}\]
+
+Then proofs are the derivations of this inference system. For example, a proof of $G$ using hypotheses from $\Delta=\{F_1, F_2, (F_1\wedge (\true\wedge F_2))\arr G\}$ could look like this:
+ \[\rul{\der G}{\rul{\der F_1\wedge (\true\wedge F_2)}{\der F_1 \tb \rul{\der \true\wedge F_2}{\rul{\der \true}{}{R_3} \tb \der F_2}{R_1}}{R_1} \tb \der(F_1\wedge (\true\wedge F_2))\arr G}{R_2}\]
+Here we apply $R_3$ to get $\der \true$, then $R_1$ twice to get $\der F_1\wedge(\true\wedge F_2)$, then $R_2$ to get $G$. Note how the leaves of the derivation tree are either axioms (i.e., $\der\true$) or hypotheses (i.e., $\der F$ for $F\in\Delta$). We can think of the hypotheses as additional axioms.
+
+%\begin{definition}[Proof-Theoretic Consequence]
+%Let $C$ be an inference system. We say that $J$ is a (proof-theoretic) \emph{consequence} of $\Delta$ if there is a proof over $C$ using hypotheses from $\Delta$ and with conclusion $J$.
+%
+%We call $J$ (proof-theoretically) \emph{valid} if it is a consequence of the empty set of hypotheses.
+%\end{definition}
+%\bigskip
+
+An inference system used for proof theory is often also called a \emph{calculus}. In fact, first-order logic is often called (first-order) predicate calculus.
+Calculus-based definitions of consequence have important properties that answer the criticisms against model theory:
+\begin{itemize}
+ \item It is algorithmic: Given a calculus, we can
+   \begin{itemize}
+     \item search for proofs,
+     \item check whether a given proof is correct.
+   \end{itemize}
+ \item It is defined by giving rules that directly capture our intuition.
+ \item No model theory and almost nothing about mathematics is presupposed.
+ \item It is very similar to how a mathematician would reason.
+\end{itemize}
+\bigskip
+
+Now the crucial design question is: How do we get a calculus for PL, FOL, FOLEQ?
+\begin{itemize}
+\item First design decision: What are the judgments?
+  \begin{itemize}
+    \item simplest choice: the $\Sigma$-judgments are $\der F$ for $\Sigma$-formulas $F$
+    \item more complicated choices of judgments are much more useful in practice
+  \end{itemize}
+\item Second design decision: What are the rules?
+  \begin{itemize}
+    \item Very different sets of rules may lead to the same consequence relation
+    \item Very similar sets of rules may lead to very different implementations
+  \end{itemize}
+\item Conflicting design goals:
+ \begin{itemize}
+   \item Theoretical elegance, simplicity
+   \item Practical strength, efficiency  --- We want to use calculi to make the computer find proofs!
+ \end{itemize}
+\end{itemize}
+
+\section{Calculi for Propositional Logic}
+
+\subsection{Hilbert-Calculi}
+
+The simplest calculi are those where the judgments are simply the formulas. Such calculi are called Hilbert calculi.
+
+Assume a PL-signature $\Sigma$. A calculus $C(\Sigma)$ is given by using the set $\Forms(\Sigma)$ as the set of judgments and the following rules:
+\begin{itemize}
+ \item modus ponens
+    \[\rul{G}{F\arr G \tb F}{MP}\]
+ \item the following axioms (i.e.) rules without hypotheses (where we use the $\darr$ as an abbreviation)
+   \begin{enumerate}
+     \item $\false \darr \neg\true$
+     \item $(F\arr G)\darr (\neg F\vee G)$
+     \item $(F\wedge G)\darr \neg (\neg F\vee \neg G)$
+     \item $\true$
+     \item $(F\vee F)\arr F$
+     \item $F\arr (F\vee G)$
+     \item $(F\vee G)\arr (G\vee F)$
+     \item $(G\arr H) \arr ((F\vee G)\arr (F\vee H))$
+   \end{enumerate}  
+\end{itemize}
+All these rules are used for arbitrary formulas $F$ and $G$. Therefore, we actually have infinitely many rules.
+
+This calculus is essentially the one used in the Bertrand's and Russell's Principia \cite{principia}, a very influential work from 1910 that attempted to formalize all of mathematics. For example, G\"odel discovered his result \cite{goedelincompleteness} while working in the Principia, i.e., they were the mathematics as he knew it.
+
+An overview over Hilbert Calculi for various variants of propositional logics is given at \url{http://home.utah.edu/~nahaj/logic/structures/systems/index.html}
+
+
+Assume $\Sigma=\{p,q\}$. Then an example proof with hypothesis $\Delta=\{p\}$ looks like this:
+\[\rul{q\vee p}{\rul{(p\vee q)\arr(q\vee p)}{}{Axiom\;7} \tb \rul{p \vee q}{\rul{p\arr (p\vee q)}{}{Axiom\;6} \tb \rul{p}{}{\Delta}}{MP}}{MP}\]
+
+Hilbert calculi are extremely useful in theory. Because there is only one rule, the proofs are very simple: The leaves are axioms, and then only modus ponens is used.
+
+For the same reason, Hilbert calculi are extremely useless in practice. For example, try to derive something as trivial as $F\arr F$.
+
+\subsection{Other Calculi}
+
+Other calculi for PL are obtained by dropping the rules for the quantifiers from the following calculi for FOL.
+
+
+\section{Calculi for First-Order Logic}
+
+\subsection{The Natural Deduction Calculus}
+
+The point of natural deduction is that it captures the way in which we reason intuitively and mathematically.
+
+The main judgment of the ND Calculus is  \[\Gamma; \Delta\der_\Sigma F\]
+where $\Gamma$ is a $\Sigma$-context, $\Delta$ is a list of $\Sigma$-formulas in context $\Gamma$ and $F$ is a $\Sigma$-formula in context $\Gamma$.
+The rules of the ND calculus are described in detail below.
+
+\begin{notation}
+A lot of simplifications are common:
+\begin{itemize}
+\item The subscript $\Sigma$ in $\der_\Sigma$ is often dropped when $\Sigma$ is fixed.
+\item We usually write $x_1,\ldots,x_m$ instead of $\{x_1,\ldots,x_m\}$ and $\Gamma,x$ instead of $\Gamma\cup\{x\}$.
+\item Similarly, we usually write $F_1,\ldots,F_m$ instead of $\{F_1,\ldots,F_m\}$ and $\Delta,F$ instead of $\Delta\cup\{F\}$.
+\item In $\Gamma;\Delta\der F$, we omit $\Gamma$ or $\Delta$ if they are empty.
+\item In $\Gamma;\Delta\der F$, usually $\Gamma$ is omitted altogether. In that case, it is implied that $\Gamma$ is the set of all variables occurring free in any formula in $\Delta$ or in $F$.
+\end{itemize}
+\end{notation}
+
+The intuition of the judgment $\{x_1,\ldots,x_m\};\{F_1,\ldots,F_n\}\der F$ is as follows: For arbitrary values for $x_1,\ldots,x_m$, if all of the $F_1,\ldots,F_n$ hold, then $F$ holds. Using this intuition, the rules of ND capture the meaning we have in mind when we prove something. That's why it is called \emph{natural} deduction.
+\bigskip
+
+The rules are split into elimination and introduction rules. We use introduction rules when we establish a proof goal. For example, we use $\wedge I$ to establish the \emph{proof goal} $\der A\wedge B$ after first proving $\der A$ and $\der B$. We use elimination rules when we use assumptions. For example, we use $\wedge E_l$ to break down the previously proved $\der A\wedge B$ into $\der A$.
+
+When we actually do a proof in this calculus, we typically apply introduction rules backwards (i.e., from bottom to top) as long as possible. Then we use elimination rules forwards (i.e., from top to bottom) to build up the needed proof goal from the assumptions.
+\bigskip
+
+Fig.~\ref{fig:fol:nd} gives the introduction and elimination rules for ND as well as some structural rules. All rules are given for arbitrary $\Gamma$, $\Delta$, $A$, and $B$. To indicate that $\Sigma$, $\Gamma$, and $\Delta$ are irrelevant (and could be omitted), they are printed in gray.
+\medskip
+
+\newcommand{\gdseqa}[1]{\gGamma;\gDelta\der_{\gSigma} #1}
+\newcommand{\gdseqb}[2]{\gGamma;\gDelta,#1\der_{\gSigma} #2}
+\newcommand{\gdseqc}[2]{\gGamma,#1;\gDelta\der_{\gSigma} #2}
+\newcommand{\gdseqbc}[3]{\gGamma,#1;\gDelta,#2\der_{\gSigma} #3}
+
+\begin{figure}[htb]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+            & Introduction & Elimination \\[0.1cm]
+\hline
+$\wedge$ & $\rul{\gdseqa{A\wedge B}}{\gdseqa{A}\tb\gdseqa{B}}{\wedge I}$
+                           & $\rul{\gdseqa{A}}{\gdseqa{A\wedge B}}{\wedge E_l}$ \tb $\rul{\gdseqa{B}}{\gdseqa{A\wedge B}}{\wedge E_r}$ \\[0.5cm]
+$\vee$ & $\rul{\gdseqa{A\vee B}}{\gdseqa{A}}{\vee I_l}$ \tb $\rul{\gdseqa{A\vee B}}{\gdseqa{B}}{\vee I_r}$
+                           & $\rul{\gdseqa{C}}{\gdseqa{A\vee B} \tb \gdseqb{A}{C} \tb \gdseqb{B}{C}}{\vee E}$ \\[0.5cm]
+$\arr$ & $\rul{\gdseqa{A\arr B}}{\gdseqb{A}{B}}{\arr I}$
+                           & $\rul{\gdseqa{B}}{\gdseqa{A\arr B} \tb \gdseqa{A}}{\arr E}$ \\[0.5cm]
+$\neg$ & $\rul{\gdseqa{\neg A}}{\gdseqb{A}{\false}}{\neg I}$
+                           & $\rul{\gdseqa{C}}{\gdseqa{\neg A} \tb \gdseqa{A}\tb\isform{\gSigma}{\gGamma}{C}}{\neg E}$ \\[0.5cm]
+$\true$ & $\rul{\gdseqa{\true}}{}{\true I}$
+                           &  \\[0.5cm]
+$\false$ & 
+                           & $\rul{\gdseqa{C}}{\gdseqa{\false}\tb \isform{\gSigma}{\gGamma}{C}}{\false E}$ \\[0.5cm]
+$\forall$ & $\rul{\gdseqa{\forall x\;A}}{\gdseqc{x}{A}\tb x\nin \Gamma}{\forall I}$
+                           & $\rul{\gdseqa{A[\sub{x}{t}]}}{\gdseqa{\forall x\;A} \tb \isterm{\gSigma}{\gGamma}{t}}{\forall E}$ \\[0.5cm]
+$\exists$ & $\rul{\gdseqa{\exists x\;A}}{\gdseqa{A[\sub{x}{t}]} \tb \isterm{\gSigma}{\gGamma}{t}}{\exists I}$
+                           & $\rul{\gdseqa{C}}{\gdseqa{\exists x\;A}\tb\gdseqbc{x}{A}{C}\tb x\nin\Gamma,C}{\exists E}$ \\[0.5cm]
+\hline
+\multicolumn{3}{|c|}{
+ $\rul{\gGamma;\Delta\der A}{A\in\Delta}{Axiom}\tb 
+  \rul{\gdseqa{A\vee \neg A}}{}{tnd} \tb
+\rul{\gdseqa{B}}{\gdseqa{A} \tb \gdseqb{A}{B}}{cut}$}\\
+\hline
+\end{tabular}
+\caption{Natural Deduction Rules}\label{fig:fol:nd}
+\end{center}
+\end{figure}
+
+The intuitions behind the rules are as follows.
+\begin{itemize}
+ \item $\wedge I$, $\wedge E_l$, $\wedge E_r$: Proving a conjunction is equivalent to proving the two conjuncts.
+ \item $\vee I_l$, $\vee I_r$: To prove a disjunction, it suffices to prove one of the disjuncts.
+ \item $\vee E$: If a disjunction has been proved, it can be used for case distinction on the two disjuncts.
+ \item $\arr I$: Proving an implication means to assume the implicant and to prove the implicate.
+ \item $\arr E$: This is modus ponens.
+ \item $\neg I$: Proving a negation means to prove that the opposite leads to a contradiction. This is also called indirect reasoning. There are various ways to express contradictions; here we use proving $\neg A$ from $A$; another option is to prove $\false$ or to prove all formulas (i.e., to prove an arbitrary formula).
+ \item $\neg E$: From a contradiction (i.e., $A$ and $\neg A$ provable), we can prove everything. Compare $\false E$.
+ \item $\true I$: $\true$ always holds.
+ \item $\false E$: $\false$ never holds, i.e., if it holds, then there is a contradiction and every well-formed formula holds. Note that there is an additional assumption that $C$ is a well-formed formula. This is necessary because otherwise $C$ could be any nonsensical object.
+ \item $\forall I$: A universal quantification holds, if its body holds for an arbitrary value. The ``arbitrary value'' is represented by a fresh variable, i.e., a variable that occurs nowhere.
+ \item $\forall E$: If a universal quantification holds, its body can be instantiated with every well-formed term.
+ \item $\exists I$: An existential quantification holds, if its body holds for some value. The ``some value'' is represented by an arbitrary well-formd term.
+ \item $\exists E$: If an existential quantification holds, then its body must holds for some value. The ``some value'' is represented by a fresh variable.
+ \item $Axiom$: The assumptions imply themselves.
+ \item $tnd$: Tertium non datur, either a formula or its negation holds.
+ \item $cut$: This rule is lemma application, i.e., if a formula is proved separately, then it can be used as an additional assumption.
+\end{itemize}
+
+An important question in a given calculus is the redundancy of rules, especially of the structural rules, which are often not so natural. A rule is redundant if omitting the rule does not change the set of derivable judgments and thus does not change the consequence relation. We have the following:
+
+\begin{remark}[Tertium Non Datur]
+The rule $tnd$ is not redundant. On the other hand, the system of introduction and elimination rules has a nice symmetry, and adding $tnd$ to it seems arbitrary and unnatural. If we omit it, some formulas are not provable anymore. For example, there would be no proofs for $\neg\neg A\arr A$ and $\neg\forall x\;F\arr \exists x\;\neg F$, which hold in every FOL model. However, some philosophers and researchers argue that would be a feature, not a bug, and that the FOL model theory is wrong, not the proof theory. This point of view is called \emph{intuitionism} and has led to the development of \emph{intuitionistic logic}, which does not use $tnd$.
+\end{remark}
+
+%\begin{remark}
+%The rule $Axiom$ is partially redundant: Only the cases where the derived formula is atomic are needed. All other cases are derivable rules. This is a very good exercise as the inductive prove uses every other rule of the system.
+%\end{remark}
+%\ednote{Change system as Frank uses it to make this true.}
+
+\begin{remark}[Cut]
+The rule $cut$ is redundant. To prove that it is redundant for a given logic, is called $cut$ elimination. $cut$ elimination is one of the central problems in proof theory because once $cut$ is eliminated, it is relatively easy to show consistency. (An inference system is consistent, if not every formula is derivable. An inconsistent inference system is clearly useless.) Also proof search is a lot easier for a machine (For a human, it is harder.) if $cut$ is omitted.
+\end{remark}
+
+\begin{remark}[Empty Universe]\label{rem:pf:empty}
+As pointed out in Rem.~\ref{rem:mod:empty}, most textbooks exclude the case $\univ^I=\es$.
+Those textbooks use subtly different and slightly stronger rules for the quantifiers, which have the side-effect that they prove $\exists x.\true$.
+Thus, these textbook definitions of $\FOLEQ$ work out in the sense that both the model theory and the proof theory exclude the empty universe.
+
+Our calculus does not prove $\exists x.\true$.
+Therefore our model and proof theory work out in the sense that both allow the empty universe.
+
+If we want to use our calculus for the variant of the model theory where the empty model is excluded, we have to add an appropriate axiom, e.g., $\exists x.\true$.
+\end{remark}
+
+\paragraph{Rules for Equality}
+So far we have only considered FOL. By adding the rules from Fig.~\ref{fig:foleq:nd}, we obtain the natural deduction calculus for FOLEQ.
+
+\begin{figure}[htb]
+\begin{center}
+\[
+\ianc{\isterm{\gSigma}{\gGamma}{t}}{\gdseqa{t\doteq t}}{refl}
+\tb\tb
+\ianc{\gdseqa{s\doteq t}}{\gdseqa{t\doteq s}}{sym}
+\tb\tb
+\ibnc{\gdseqa{r\doteq s}}{\gdseqa{s\doteq t}}{\gdseqa{r\doteq t}}{trans}
+\]
+
+\[
+\ibnc{\gdseqa{s\doteq t}}{\isterm{\gSigma}{\gGamma,x}{U}}{\gdseqa{U[\sub{x}{s}]\doteq U[\sub{x}{t}]}}{congterm}
+\]
+
+\[
+\icnc{\gdseqa{s\doteq t}}{\isform{\gSigma}{\gGamma,x}{U}}{\gdseqa{U[\sub{x}{s}]}}{\gdseqa{U[\sub{x}{t}]}}{congform}
+\]
+\caption{Equality Rules}\label{fig:foleq:nd}
+\end{center}
+\end{figure}
+
+The intuitions behind the rules are as follows.
+\begin{itemize}
+ \item $refl$: Every term is equal to itself (reflexivity).
+ \item $sym$: Equality is symmetric.
+ \item $trans$: Equality is transitive.
+ \item $congterm$: Every function $U(x)$ maps equal inputs $s$ and $t$ to equal outputs $U(s)$ and $U(t)$ (congruence for terms).
+ \item $congform$: If a property $U(x)$ holds for $s$ then it also holds for anything equal to $s$ (congruence for formulas).
+\end{itemize}
+
+The first three rules have the effect that equality is an equivalence relation. $congterm$ makes it additionally a congruence relation. Finally, $congform$ say that formulas can never distinguish between equal terms.
+
+The rules $sym$ and $trans$ are actually redundant: They can be proved using $refl$ and $congform$ (Exercise!).
+
+\paragraph{The Inference System}
+Finally, we can define the inference system of natural deduction.
+
+\begin{definition}\label{def:fol:pf}
+The inference system $\Pf^{FOLEQ}(\Sigma)$ consists of the following \defemph{judgments}
+\begin{itemize}
+ \item all judgments $\isterm{\Sigma}{\Gamma}{t}$ for any $\Gamma,t$,
+ \item all judgments $\isform{\Sigma}{\Gamma}{F}$ for any $\Gamma,F$,
+ \item all judgments $\iscons{\Sigma}{\Gamma}{\Theta}{F}$ for any $\Gamma,\Theta,F$.
+\end{itemize}
+and the proof rules of Fig.~\ref{fig:fol:nd} and~\ref{fig:foleq:nd}.
+\end{definition}
+
+\paragraph{The Deduction Theorem}
+Interestingly, we now have two options to define provability:
+
+\begin{definition}
+We say that $F\in\Sen^{FOLEQ}(\Sigma)$ is \defemph{locally provable} from assumptions $F_1,\ldots,F_n\sq\Sen^{FOLEQ}(\Sigma)$ if there is a proof \[\rul{\iscons{\Sigma}{F_1,\ldots,F_n}{}{F}}{}{}\]
+
+We say that $F\in\Sen^{FOLEQ}(\Sigma)$ is \defemph{globally provable} from assumptions $\Theta\sq\Sen^{FOLEQ}(\Sigma)$ if there is a proof \[\rul{\iscons{\Sigma}{}{}{F}}{\iscons{\Sigma}{}{}{F_1\tb\ldots\tb\iscons{\Sigma}{}{}{F_n}}}{}\]
+\end{definition}
+
+Global provability is a very general notion because it can be stated for virtually any calculus, e.g., for a Hilbert calculus. Local provability depends on the structure of the ND calculus: We can only state it because ND judgments may have assumptions, e.g., we cannot state if for a Hilbert calculus.
+
+It turns out for the ND calculus, both notions are equivalent:
+
+\begin{theorem}[Deduction Theorem]
+In the ND calculus for FOLEQ, local and global provability are equivalent.
+\end{theorem}
+\begin{proof}
+Firstly, assume a provability $\iscons{\Sigma}{F_1,\ldots,F_n}{}{F}$. By applying $\arr\! I$ $n$ times, we obtain a proof of $\iscons{\Sigma}{}{}{F_1\arr\ldots\arr F_n\arr F}$. By applying $\arr\! E$ $n$ times, we obtain global provability.
+The opposite direction proceeds accordingly.
+\end{proof}
+
+%\section{Theorem Proving and the Resolution Calculus}
+%
+%In this section, we work with a fixed FOL-signature $\Sigma$.
+%
+%\begin{definition}[Atom]
+%An \emph{atom} is a formula of the form $p(t_1,\ldots,t_n)$.
+%\end{definition}
+%
+%\begin{definition}[Literal]
+%A \emph{literal} is an atom or a negated atom.
+%\end{definition}
+%
+%\begin{definition}[Clause]
+%A \emph{clause} is a set of literals.
+%A clause $\{C_1,\ldots,C_m\}$ is true in a model $I$ if the universal closure of $C_1\vee\ldots\vee C_m$ is true in $I$. (Here if $m=0$, we put $C_1\vee\ldots\vee C_m =\false$.)
+%\end{definition}
+%
+%\begin{example}
+%The empty clause $\es$ is true in no model.
+%\end{example}
+%
+%Clausification transforms a set of sentences $\Theta\sq\Sen^{FOL}(\Sigma)$ into a set $\Clause(\Theta)$ of $\Sigma'$-clauses for a new signature $\Sigma'$ according to the following algorithm sketch:\footnote{see Lecture Dec. 01 for details}
+%\begin{enumerate}
+%\item ``clean'' the set of sentences by using $\alpha$-renaming to make sure that no variable is bound twice anywhere
+%\item eliminate implication according to $(F\arr G)\darr (\neg F\vee G)$
+%\item transform all sentences into negation normal form (NNF) using $\neg\forall x\;F\darr \exists x\; \neg F$, $\neg(F\wedge G)\darr (\neg F\vee \neg G)$, $\neg\neg F\darr F$, and similar tautologies,
+%\item transform all sentences into prenex normal form (PNF) using $((Q x\;F)\bullet G) \darr (Q x\;(F\bullet G))$ for $Q\in\{\forall,\exists\}$ and $\bullet\in\{\wedge,\vee\}$,
+%\item eliminate $\true$ and $\false$ in all sentences by
+% \begin{enumerate}
+%   \item applying $(F\wedge \true)\darr F$, $(F\wedge \false)\darr \false$, similarly for disjunction, and $Q x\;\true\darr \true$ and $Q x\;\false\darr \false$ for $Q\in\{\forall,\exists\}$,
+%   \item if any sentence is transformed to $\true$, drop it; if any sentence is transformed to $\false$, break and return $\Clause(\Theta)=\{\es\}$,
+% \end{enumerate}
+%\item skolemize all sentences by
+%  \begin{enumerate}
+%    \item initialize $\Sigma'$ with $\Sigma$,
+%    \item repeatedly transform a sentence $\forall x_1 \ldots \forall x_n \exists x\;F$ into $\forall x_1\;\ldots\;\forall x_n\;\ov{[\sub{x}{f(x_1,\ldots,x_n)}]}(F)$ and add an $n$-ary function symbol $f$ to $\Sigma'$ ($f$ is any name that is not already used for a symbol in $\Sigma'$)
+%  \end{enumerate}
+%\item transform all bodies $F$ of sentences $\forall x_1\;\ldots\forall x_n\;F$ where $F$ does not contain quantifiers into conjunctive normal form (CNF) by repeatedly applying $(F\vee (G\wedge H))\darr ((F\vee G)\wedge (F\vee H))$,
+%\item replace every sentence $\forall x_1\;\ldots\forall x_n\;(C_1\wedge\ldots\wedge C_m)$ with the set $\{\forall x_1\;\ldots\forall x_n\;C_i \| i=1,\ldots,m\}$
+%\item replace every sentence $\forall x_1\;\ldots\forall x_n\;(L_1\vee\ldots\vee L_m)$ with the clause $\{L_1,\ldots,L_m\}$.
+%\end{enumerate}
+%
+%
+%The main theorem about clausification is the following:
+%\begin{lemma}
+%$\Theta$ has a $\Sigma$-model iff $\Clause(\Theta)$ has a $\Sigma'$-model.
+%\end{lemma}
+%\begin{proof}
+%Trivial for all steps but skolemization. The proof for skolemization is omitted.
+%\end{proof}
+%
+%The starting point of resolution-based theorem proving is the following:
+%\begin{lemma}
+%$\moda{\Theta}{\Sigma}{F}$ iff $\Clause(\Theta\cup\{\neg F\})$ has no model.
+%\end{lemma}
+%\begin{proof}
+%Exercise. Use ``$\Theta\cup\{\neg F\}$ has no model'' as an intermediate step.
+%\end{proof}
+%
+%The resolution calculus is a special calculus for FOL, which uses sets of clauses as judgments. To prove $\moda{\Theta}{\Sigma}{F}$, we try to derive from $\Clause(\Theta\cup\{\neg F\})$ a set of clauses containing the empty clause.\footnote{see Lecture Dec. 01 for details}
+
+\section{An Abstract Definition of the Proof Theory of a Logic}\label{sec:pt:abs}
+
+In Sect.~\ref{sec:syn:abs} and~\ref{sec:mt:abs}, we have seen abstract definitions of syntax $(\Sig,\Sen)$ and for a given logic syntax the model theory $(\Mod,\md)$ of logics. We will now the analogue for proof theory: for a given logic syntax, define the proof theory of a logic.
+
+\begin{definition}[Proof Theory]\label{def:pt:abs}
+A proof theory for the logic syntax $(\Sig,\Sen)$ is a pair $(\Pf,\val)$ such that for every $\Sigma\in\Sig$, we have that
+\begin{itemize}
+    \item $\Pf(\Sigma)$ is an inference system,
+    \item for any sentences $\Theta\sq\Sen(\Sigma)$ and $F\in\Sen(\Sigma)$, there is a judgment of $\iscons{}{}{\Theta}{F}$ in $\Pf(\Sigma)$.
+\end{itemize}
+If there is a proof $p\in\Pf(\Sigma)$ of $\iscons{}{}{\Theta}{F}$ in $\Pf(\Sigma)$, we say $F$ is provable from/implied by/entailed by/a consequence of $\Theta$.
+
+A four-tuple $(\Sig,\Sen,\Pf,\val)$ of a logic syntax $(\Sig,\Sen)$ and a proof theory $(\Pf,\val)$ for it is called a \emph{proof theoretical logic}. 
+\end{definition}
+
+\begin{example}\label{ex:pt:abs}
+We immediately get some examples:
+\begin{itemize}
+%\item We have a proof theoretical logic $PL=(\Sig^{PL},\Sen^{PL},\Pf^{PL},\val^{PL})$.
+\item We have a proof theoretical logic $FOLEQ=(\Sig^{FOLEQ},\Sen^{FOLEQ},\Pf^{FOLEQ},\val^{FOLEQ})$. \\
+  $\Pf^{FOLEQ}$ is defined in Def.~\ref{def:fol:pf}. $\Theta\val^{FOLEQ}_\Sigma F$ is already defined as an abbreviation for $\iscons{\Sigma}{\es}{\Theta}{F}$.
+\item Proof theoretical logics for FOL, ALGEQ, and HORNEQ are obtained from FOLEQ in the obvious way.
+\end{itemize}
+\end{example}
+
+\section{Theorems and Consequence (Proof-Theoretically)}\label{sec:fol:thypt}
+
+In Sect.~\ref{sec:fol:thymt}, we defined model theoretical theorems and consequence for an arbitrary model theory. Now we do the same proof theoretically for an arbitrary proof theory. We obtain the proof theoretical analogues to Def.~\ref{def:mod:consequence}, Def.~\ref{def:mod:theorem}, Def.~\ref{def:mod:consistent}, Lem.~\ref{lem:mod:inconsistent}, and~\ref{lem:mod:complete}:
+
+
+\begin{definition}[Theorems]\label{def:pf:consequence}
+Given a proof theoretical logic $(\Sig,\Sen,\Pf,\val)$ and a theory $(\Sigma;\Theta)$.
+Then a $\Sigma$-sentence is a (proof-theoretical) \emph{theorem}/\emph{tautology}/\emph{consequence}/\emph{valid sentence} of $(\Sigma;\Theta)$ if there is a proof of
+ \[\dera{\Theta}{\Sigma}{F}\]
+and we write
+ \[\Thm(\Sigma;\Theta)=\{F\in\Sen(\Sigma) \| \dera{\Theta}{\Sigma}{F}\}\]
+
+$F$ is called a \emph{contradiction} if it $\dera{\Theta,F}{\Sigma}{C}$ for all $C\in\Sen(\Sigma)$.
+\end{definition}
+
+\begin{lemma}
+If a proof theoretical logic contains a negation whose rules are as for the ND calculus:
+$F$ is a theorem iff $\neg F$ is a contradiction. $F$ is a contradiction iff $\neg F$ is a theorem.
+\end{lemma}
+\begin{proof}
+Clear using the rules $\neg I$ and $\neg E$.
+\end{proof}
+
+%\begin{example}
+%Examples for tautologies are $\true$, $\neg\false$, $(F\wedge G)\arr (G\wedge F)$, or $\neg\neg F\arr F$. There is a number of important and fairly obvious tautologies. A good exercise is to find some more and check that they really are tautologies. An important less obvious tautology is this: $\false\arr F$ for any $F$.
+%
+%The most important examples for contradictions are $\false$, $F\wedge\neg F$ for any $F$, and $\neg F$ for any tautology $F$.
+%\end{example}
+%
+%Thus, a theory splits the sentences into three groups: theorems (true in all models), contradictions (true in no model), and the rest (true in some but not all models). Thus, only the sentences in the third group differ between models -- they distinguish the models. Depending on the size of the three groups, we distinguish two special cases of theories:
+
+\begin{definition}\label{def:pf:consistent}
+A theory $(\Sigma;\Theta)$ is called
+\begin{itemize}
+ \item \emph{inconsistent} if all sentences are theorems, $\dera{\Theta}{\Sigma}{F}$ for every $F\in\Sen(\Sigma)$,
+ \item \emph{consistent} if it is not inconsistent, i.e., there is a sentence that is not a theorem,
+ \item \emph{complete} if every sentence is either a theorem or a contradiction, i.e., if for every $F\in\Sen(\Sigma)$ either $\dera{\Theta}{\Sigma}{F}$ or $\dera{\Theta}{\Sigma}{\neg F}$.
+\end{itemize}
+\end{definition}
+
+\begin{lemma}\label{lem:pf:inconsistent}
+The following are equivalent for a theory $(\Sigma;\Theta)$ in any proof theoretical logic $L$:
+\begin{enumerate}
+	\item It is inconsistent.
+	\item (If $L$ has negation in the same way as FOL:) $F$ and $\neg F$ are theorems for some $F$.
+	\item (If $L$ has falsity in the same way as FOL:) $\false$ is a theorem.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+Easy using the rules for negation and falsity.
+\end{proof}
+
+
+\begin{notation}\label{not:pf}
+We have defined the notions ``consequence'', ``theorem'', ``contradiction'', ``(in)consistent'', and ``complete'' proof-theoretically. All have model-theoretical analogues, see Def.~\ref{def:mod:consequence},~\ref{def:mod:theorem}, and~\ref{def:mod:consistent}. If we need to distinguish them, we will prefix P, e.g., we will say that a theory is P-consistent. See also Not.~\ref{not:mod}.
+\end{notation}
+\bigskip

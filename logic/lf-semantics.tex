@@ -1,0 +1,109 @@
+LF does not have formulas or a consequence relation between them. Therefore, LF is not a logic. Nevertheless, LF is a type theory, and every type theory has a semantics. As for logics, there is a proof- and a model-theoretical approach to define the semantics.
+
+\section{Model-Theoretic Semantics}
+
+The model theory of LF can be defined very similarly to the model theory of STT.
+
+Just like the syntax of LF needs one higher type-level than STT (namely for kinds), the model theory of LF requires one higher set-theoretical concept, namely classes. Intuitively, any collection of sets is a class. For example, $\Set$ is the class containing all sets; $\es$ is the class containing no set; every set is a class. Some classes are so ``big'' that they are not sets anymore, e.g., $\Set$ is not a set; other classes are so ``small'' that they are sets, e.g., $\es$ is a set.
+
+Then we can interpret $\KIND$ as $\Class$ and thus kinds as classes; $\TYPE$ as $\Set$ and thus types as sets; and terms as elements of sets. We have:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Expression          & Syntax                           & Semantics \\ \hline
+kind $K$            & $\isdkind{\Sigma}{\Gamma}{K}$    & $\semm{K}{I,\alpha}\in \semm{\KIND}{}=\Class$
+    \\[.2cm]
+type family $A$     & $\ofdkind{\Sigma}{\Gamma}{A}{K}$  & $\semcm{\Gamma}{A}{I,\alpha}\in \semcm{\Gamma}{K}{I,\alpha}$ 
+    \\[.2cm]
+in particular: type $A$
+                    & $\ofdkind{\Sigma}{\Gamma}{A}{\TYPE}$ & 
+                               $\semcm{\Gamma}{A}{I,\alpha}\in\semcm{\Gamma}{\TYPE}{I,\alpha}=\Set$
+    \\[.2cm]
+term $t$            & $\ofdtype{\Sigma}{\Gamma}{t}{A}$ & $\semcm{\Gamma}{t}{I,\alpha}\in \semcm{\Gamma}{A}{I,\alpha}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Because the syntax of LF is defined in by mutual recursion, the same must be the case for the semantics: Models, assignments, and the interpretation of kinds, type families, and terms is defined in one big mutually recursive induction. We omit the details.
+
+\section{Proof-Theoretic Semantics}
+
+The proof-theoretical semantics uses additional judgments for equality of terms, type families, and kinds, and then uses an inference to axiomatize them.
+
+The judgments are:
+\begin{center}
+	\begin{tabular}{|l|l|}
+	  \hline
+		$\isdequal{\Sigma}{\Gamma}{K}{K'}$ & $K$ and $K'$ are equal kinds over $\Sigma$ and $\Gamma$ \\
+		$\isdequal{\Sigma}{\Gamma}{A}{A'}$ & $A$ and $A'$ are equal type families over $\Sigma$ and $\Gamma$ \\
+		$\isdequal{\Sigma}{\Gamma}{t}{t'}$ & $t$ and $t'$ are equal terms over $\Sigma$ and $\Gamma$ \\
+		\hline
+	\end{tabular}
+\end{center}
+
+The equality relation must be such that:
+\begin{itemize}
+ \item Two kinds $A_1\arr\ldots\arr A_m \arr\TYPE$ and $A'_1\arr\ldots\arr A'_n\arr\TYPE$ can only be equal if $m=n$.
+ \item Two type families can only be equal if their kinds are equal.
+ \item Two terms can only be equal if their types are equal.
+\end{itemize}
+
+The inference system is given by:
+\begin{itemize}
+	\item reflexivity, symmetry, transitivity for terms, type families, and kinds,
+	\item congruence rules for all composed expressions:
+	\[\mathll[c]{
+     \ibnc{\isdequal{\Sigma}{\Gamma}{A}{A'}}
+          {\isdequal{\Sigma}{\Gamma}{K}{K'}}
+          {\isdequal{\Sigma}{\Gamma}{A\arr K}{A'\arr K'}}
+          {eq\_kdfun}
+     \nl
+     \ibnc{\isdequal{\Sigma}{\Gamma}{A}{A'}}
+          {\isdequal{\Sigma}{\Gamma}{t}{t'}}
+          {\isdequal{\Sigma}{\Gamma}{A\;t}{A'\;t'}}
+          {eq\_tpapp}
+     \tb\tb
+     \ibnc{\isdequal{\Sigma}{\Gamma}{A}{A'}}
+          {\isdequal{\Sigma}{\Gamma,x:A}{B}{B'}}
+          {\isdequal{\Sigma}{\Gamma}{\P{x}{A}B}{\P{x}{A'}B'}}
+          {eq\_tpfun}
+     \nl     
+     \ibnc{\isdequal{\Sigma}{\Gamma}{f}{f'}}
+          {\isdequal{\Sigma}{\Gamma}{t}{t'}}
+          {\isdequal{\Sigma}{\Gamma}{f\;t}{f'\;t'}}
+          {eq\_termapp}
+     \tb\tb
+     \ibnc{\isdequal{\Sigma}{\Gamma}{A}{A'}}
+          {\isdequal{\Sigma}{\Gamma,x:A}{t}{t'}}
+          {\isdequal{\Sigma}{\Gamma}{\lam{x}{A}t}{\lam{x}{A'}t'}}
+          {eq\_termlam}
+	}\]
+   The intuition of congruence is that composed expressions built from equal components must be equal. Note that every rule corresponds to a rule in Fig.~\ref{fig:lf:terms}.
+	\item the rule
+	  \[\icnc{\isdequal{\Sigma}{\Gamma}{E}{E'}}{\isdequal{\Sigma}{\Gamma}{F}{F'}}
+	         {\ofdtype{\Sigma}{\Gamma}{E}{F}}{\ofdtype{\Sigma}{\Gamma}{E'}{F'}}{}\]
+	   where $E,E'$ and $F,F'$ are (i) terms and types, respectively, or (ii) type families and kinds, respectively.
+	   This rule says that typing respects equality. It can also be seen as a congruence rule for the typing judgment.
+	\item $\beta$ and $\eta$-equality for terms:
+	  \[
+	     \ianc{\ofdtype{\Sigma}{\Gamma}{(\lam{x}{A}t)\;s}{B}}
+            {\isdequal{\Sigma}{\Gamma}{(\lam{x}{A}t)\;s}{t[x/s]}}
+            {beta}
+       \tb\tb
+       \ibnc{\ofdtype{\Sigma}{\Gamma}{f}{\P{x}{A}B}}
+            {x\mnot\minn \Gamma}
+            {\isdequal{\Sigma}{\Gamma}{f}{\lam{x}{A}(f\; x)}}
+            {eta}
+      \]
+\end{itemize}
+
+Like many other type theories, the equality of LF enjoys the normalization property: For every expression (i.e., every kind, type family, or term), there is a normal form; every expression is equal to its normal form, and two expressions are equal iff their normal forms are identical (up to $\alpha$-renaming of variables). Because the normal form can be computed, the equality judgments are decidable: To decide if two expressions are equal, we check if they have the same normal form.
+
+\section{The Relation between Model and Proof Theory}
+
+For type theories, we can define soundness and completeness as follows. Soundness: If two expressions are provably equal, then their interpretations are equal in every model and under every assignment. Completeness: If the interpretations of two expressions are equal in every model and under every assignment, then they are provably equal. In other words, soundness and completeness relate:
+ \[\isdequal{\Sigma}{\Gamma}{E}{E'}  \tb\mand\tb \semcm{\Gamma}{E}{I,\alpha}=\semcm{\Gamma}{E'}{I,\alpha}\mforall I,\alpha\]
+for pairs $(E,E')$ of kinds, type families, or terms.
+
+Similarly to STT and HOL, we have soundness but not completeness for LF. To obtain completeness, we would need a larger collection of models, and the needed models are even weirder than the ones needed for STT and HOL.

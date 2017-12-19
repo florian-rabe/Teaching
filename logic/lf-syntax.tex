@@ -1,0 +1,249 @@
+We will now look at the logical framework LF (\cite{lf}) more formally. If you are already familiar with the Twelf implementation \cite{twelf} of LF, consider Fig.~\ref{fig:lftwelfsyntax} for the correspondence between the mathematical notation of LF and the ASCII notation of Twelf. LF is a type theory that arises from STT by adding the feature of \defemph{dependent types}. Dependent typing means that terms may occur in types. We will use that to represent proofs as terms and judgment as types: A constant declaration $\PROOF:\FORM \arr \TYPE$ returns a new type for every formula -- the type of proofs of that formula.
+
+In dependent type theories, there are several type constructors. The most important one is the dependent function type. In a dependent function type, the value of the argument may occur in the return type. More generally, using functions with multiple arguments, the value of argument may occur in the later argument types and the return type. For example,
+\[\P{F}{\FORM}\P{G}{\FORM}\PROOF\;F\arr\;\PROOF \;G\;\arr\PROOF\;(F\wedge G)\]
+is the type of the conjunction introduction rule as a function taking two formulas and two proofs of them and returning a proof of the conjunction.
+
+A good way to understand the syntax of LF is to compare it to the syntax of STT. The \defemph{judgments} of LF are almost the same as for STT. There are only two differences between STT and LF:
+\begin{center}
+	\begin{tabular}{|l|l|}
+	  \hline
+	  $\isdsig{\Sigma}$   & $\Sigma$ is a well-formed signature \\
+	  $\ismorph{\Sigma}{\Sigma'}{\sigma}$  & $\sigma$ is a well-formed signature morphism from $\Sigma$ to $\Sigma'$ \\ $\isdcont{\Sigma}{\Gamma}$  & $\Gamma$ is a well-formed $\Sigma$-context \\
+	  $\isdsubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}$  & $\gamma$ is a well-formed substitution from $\Gamma$ to $\Gamma'$ over $\Sigma$ \\
+		$\isdkind{\Sigma}{\Gamma}{K}$ & $K$ is a well-formed kind over $\Sigma$ and $\Gamma$ \\
+		$\ofdkind{\Sigma}{\Gamma}{A}{K}$ & $A$ is a well-formed type family of (well-formed) kind $K$ over $\Sigma$ and $\Gamma$ \\
+		$\ofdtype{\Sigma}{\Gamma}{t}{A}$ & $t$ is a well-formed term of (well-formed) type $A$ over $\Sigma$ and $\Gamma$ \\
+		\hline
+	\end{tabular}
+\end{center}
+
+The first difference is that LF adds a judgment for well-formed \defemph{kinds}. In type theories, the expressions are arranged in a hierarchy where the colon judgment $E:F$ is used if $F$ is one level above $E$ in the hierarchy. The first three levels have special names: level $0$ is the term level, level $1$ the type level, and level $2$ the kind level. We might call level $3$ the hyperkind level.
+
+The kind level has the special kind $\TYPE$, which is the kind of all types. There may be more type-level expressions, which are then kinded by other kinds. Similarly, $\KIND$ is the hyperkind of all kinds.
+If $E:F$ holds for a term $E$, then $F$ must be a type, i.e., $E:F:\TYPE$. Similarly, if $E$ is a type-level expression, then $F$ must be a kind and thus $E:F:\KIND$. We say terms are typed by types, and type-level expressions are kinded by kinds.
+
+In STT, $\TYPE$ is the only kind, and all type-level expressions are types. Thus, kinds can be ignored. LF has more than one kind, and therefore, we need an extra judgment for well-formed kinds. The additional type level expressions are called type families. Thus, LF has typed terms and kinded type families.
+
+The second difference is the judgment for well-formed type families. It now depends on a context $\Gamma$ because terms (and thus variables) can occur in types.
+
+The context-free \defemph{grammar} also looks very similar:
+\begin{center}
+	\begin{tabular}{l@{\tb::=\tb}l}
+		$\Sigma$ & $\cdot \| \Sigma,\;c:A \| \Sigma,\;a:K$ \\
+		$\sigma$ & $\cdot \| \sigma,\;c:=t \| \sigma,\;a:=A$ \\
+		$\Gamma$ & $\cdot \| \Gamma,\;x:A$ \\
+		$\gamma$ & $\cdot \| \gamma,\;x/t$ \\
+		$K$      & $\TYPE \| A\arr K$ \\
+		$A$    & $a       \| A\;t \| \P{x}{A}A$ \\
+		$t$      & $c     \| x \| t\;t \| \lam{x}{A}t$ \\
+	\end{tabular}
+\end{center}
+
+The first difference between the grammars is that signatures may contain type family declarations $a:K$, not just base type declaration $a:\TYPE$. This is a natural consequence of using kinds.
+
+The second difference is the extra non-terminal $K$ for kinds. A kind is either the special kind $\TYPE$ or of the form $A\arr K$. It is easy to see that all kinds are of the form $A_1\arr\ldots\arr A_n\arr\TYPE$. The intuition of such a kind is that a type family constant $a:A_1\arr\ldots\arr A_n\arr\TYPE$ takes $n$ arguments of types $A_1,\ldots,A_n$ and returns a type. This also means that other imaginable kinds are excluded: For example, there is no kind $\TYPE\arr\TYPE$ as we would need for a type operator like $list$.
+
+The third difference are the productions for type families. The $\arr$ is gone, instead we have a $\Pi$, and we add an application $A\;t$ of type families to terms. The application is easy to understand: If we have $A:B\arr\TYPE$ and $t:B$, then we need a way to apply $A$ to $t$ in order to get a type -- that application is $A\;t$. The $\Pi$ is the dependent function type constructor. Intuitively, $\P{x}{A}B$ is the type of functions that take an argument $x$ of type $A$ and return a value of type $B(x)$ that depends on the value of the argument. Types of functions with multiple arguments are formed by chaining $\Pi$ just like chaining $\arr$ in STT: $\P{x_1}{A_1}\ldots\P{x_n}{A_n}B$ is the type of functions taking $n$ arguments $x_i$ of type $A_i$ and returning a value of type $B$ where every argument $x_i$ may occur in all later argument types $A_{i+1},\ldots,A_n$ and the return type $B$. The $\arr$ of STT is recovered as a special case: If in $\P{x}{A}B$, $x$ does not occur in $B$, we abbreviate it as $A\arr B$.
+
+Intuitively, we have:
+\begin{itemize}
+	\item Signatures are lists of typed constants ($c:A$) and kinded type families ($a:K$).
+	\item Signature morphisms are lists of terms and type families to be substituted for the symbols of a signature.
+	\item Contexts are lists of typed variables ($x:A$). (As in STT, there are no kinded variables.)
+	\item Substitutions are lists of terms to be substituted for the variables ($x/t$).
+	\item Kinds are of the form $A_1\arr\ldots\arr A_n\arr\TYPE$ (just writing $\TYPE$ if $n=0$).
+	\item Types are base types ($a$), application of type families to terms ($A\;t$) or dependent function types ($\P{x}{A}B$).
+	\item Terms are constants ($c$), variables ($x$), dependent function applications ($f\;t$), or dependent $\lambda$-abstractions ($\lam{x}{A}t$).
+\end{itemize}
+
+
+\begin{example}
+The following signature represents some operations on matrices.
+\begin{itemize}
+	\item A type for natural numbers with $1$ and successor: $N:\TYPE,\;1:N,\;s:N\arr N$. Here $s:N\arr N$ abbreviates $s:\P{x}{N}N$.
+	\item A type family for matrices: $Mat:N\arr N\arr\TYPE$. $Mat$ takes two natural numbers, say $m$ and $n$, and returns a new type -- the type of $(m,n)$-matrices (over same ring which we omit).
+	\item A constant for addition of matrices:
+	 \[+:\P{x}{N}\P{y}{N}Mat\;x\;y\arr Mat\;x\;y\arr Mat\;x\;y.\]
+	 $+$ first takes two natural numbers $x$ and $y$ and then two matrices with the dimensions $(x,y)$, i.e., two elements of type $Mat\;x\;y$, and returns another such matrix.
+	\item A constant for multiplication of matrices: 
+	\[\cdot:\P{x}{N}\P{y}{N}\P{z}{N}Mat\;x\;y\arr Mat\;y\;z\arr Mat\;x\;z.\]
+	 $\cdot$ first takes three natural numbers $x$, $y$, and $z$ and then two matrices with the dimensions $(x,y)$ and $(y,z)$ and returns a matrix of dimension $(x,z)$.
+\end{itemize}
+Here is the declaration of $+$ again without the $\arr$ abbreviation and with some more brackets:
+\[+\;\;:\;\;\P{x}{N}\big(\P{y}{N}\big(\P{m}{(Mat\;x)\;y}\big(\P{n}{(Mat\;x)\;y}\big((Mat\;x)\;y\big)\big)\big)\big)\]
+\end{example}
+
+The inference system for these judgments is more complicated than the one for STT because all judgments (except for signature morphisms) have to be defined by mutual recursion. This is because terms occur in types, types occur in kinds, and types and kinds occur in contexts and signatures -- on the other hand well-formed terms, type families, and kinds are defined relative to a signature and a context. It is even worse: Even substitution application must be part of that big mutual recursion because it is needed already in some of the rules.
+
+This big mutual recursion can be hard to grasp for a beginner. Apart from that, it is quite straightforward. The rules are given in Fig.~\ref{fig:lf:signatures} and~\ref{fig:lf:terms}. Some expressions are underlined as a visual aid to make the bracketing structure apparent.
+
+\begin{fignd}{lf:signatures}{Well-formed Signatures, Morphisms, Contexts, and Substitutions}
+\ianc{}
+     {\issig{\cdot}}
+     {sigempty}
+\tb\tb
+\icnc{\issig{\Sigma}}
+     {c \mnot\minn \Sigma}
+     {\ofdkind{\Sigma}{\cdot}{A}{\TYPE}}
+     {\issig{\Sigma,\;c:A}}
+     {sigcon}
+\tb\tb
+\icnc{\issig{\Sigma}}
+     {a \mnot\minn \Sigma}
+     {\isdkind{\Sigma}{\cdot}{K}}
+     {\issig{\Sigma,\;a:K}}
+     {sigtype}
+\\
+\ianc{\issig{\Sigma'}}
+     {\ismorph{\cdot}{\Sigma'}{\cdot}}
+     {morphempty}
+\tb\tb
+\ibnc{\ismorph{\Sigma}{\Sigma'}{\sigma}}
+     {\ofdtype{\Sigma'}{\cdot}{t}{\ov{\sigma}(A)}}
+     {\ismorph{\underline{\Sigma,\;c:A}}{\Sigma'}{\underline{\sigma,\;c:=t}}}
+     {morphcon}
+\tb\tb
+\ibnc{\ismorph{\Sigma}{\Sigma'}{\sigma}}
+     {\ofdkind{\Sigma}{\cdot}{A}{\ov{\sigma}(K)}}
+     {\ismorph{\underline{\Sigma,\;a:K}}{\Sigma'}{\underline{\sigma,\;a:=A}}}
+     {morphtype}
+\\
+\ianc{\issig{\Sigma}}
+     {\isdcont{\Sigma}{\cdot}}
+     {conempty}
+\tb\tb
+\ibnc{\isdcont{\Sigma}{\Gamma}}
+     {\ofdkind{\Sigma}{\Gamma}{A}{\TYPE}}
+     {\isdcont{\Sigma}{\Gamma,\;x:A}}
+     {convar}
+\\
+\ianc{\iscont{\Sigma}{\Gamma'}}
+     {\issubs{\Sigma}{\cdot}{\Gamma'}{\cdot}}
+     {subsempty}
+\tb\tb
+\ibnc{\issubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}}
+     {\ofdtype{\Sigma}{\Gamma'}{t}{\ov{\gamma}(A)}}
+     {\issubs{\Sigma}{\underline{\Gamma,\;x:A}}{\Gamma'}{\underline{\gamma,\;x/t}}}
+     {subsvar}
+\end{fignd}
+
+Note that the types and kinds of the constants in signatures must be closed, i.e., be well-formed in the empty context. In a context, however, the type of a variable may refer to the preceding variables. Therefore, when defining substitutions, we have to already apply the substitution to the types of the domain context in rule $subsvar$.
+
+
+\begin{fignd}{lf:terms}{Well-formed Kinds, Type Families, and Kinds}
+\ianc{\isdcont{\Sigma}{\Gamma}}
+     {\isdkind{\Sigma}{\Gamma}{\TYPE}}
+     {kdbase}
+\tb\tb
+\ibnc{\ofdkind{\Sigma}{\Gamma}{A}{\TYPE}}
+     {\isdkind{\Sigma}{\Gamma}{K}}
+     {\isdkind{\Sigma}{\Gamma}{A\arr K}}
+     {kdfun}
+\\
+\ibnc{\isdcont{\Sigma}{\Gamma}}
+     {a:K\minn \Sigma}
+     {\ofdkind{\Sigma}{\Gamma}{a}{K}}
+     {tpbase}
+\tb\tb
+\ibnc{\ofdkind{\Sigma}{\Gamma}{C}{A\arr K}}
+     {\ofdtype{\Sigma}{\Gamma}{t}{A}}
+     {\ofdkind{\Sigma}{\Gamma}{C\;t}{K}}
+     {tpapp}
+\\
+\ibnc{\ofdkind{\Sigma}{\Gamma}{A}{\TYPE}}
+     {\ofdkind{\Sigma}{\Gamma,x:A}{B}{\TYPE}}
+     {\ofdkind{\Sigma}{\Gamma}{\P{x}{A}B}{\TYPE}}
+     {tpfun}
+\\
+\ibnc{c:A \minn \Sigma}
+     {\isdcont{\Sigma}{\Gamma}}
+     {\ofdtype{\Sigma}{\Gamma}{c}{A}}
+     {termcon}
+\tb\tb
+\ibnc{x:A\minn \Gamma \mtext{(rightmost} x \mtext{if\;multiple)}}
+     {\isdcont{\Sigma}{\Gamma}}
+     {\ofdtype{\Sigma}{\Gamma}{x}{A}}
+     {termvar}
+\\
+\ibnc{\ofdtype{\Sigma}{\Gamma}{f}{\P{x}{A}B}}
+     {\ofdtype{\Sigma}{\Gamma}{t}{A}}
+     {\ofdtype{\Sigma}{\Gamma}{f\;t}{B[\sub{x}{t}]}}
+     {termapp}
+\tb\tb
+\ianc{\ofdtype{\Sigma}{\Gamma,\;x:A}{t}{B}}
+     {\ofdtype{\Sigma}{\Gamma}{\lam{x}{A}t}{\P{x}{A}B}}
+     {termlam}
+\end{fignd}
+
+The rules for terms almost look like the ones from STT, but note that variables may now occur in the types. Therefore, substitution application is needed in rule $termapp$.
+
+\begin{definition}[Substitution Application]\label{def:lf:subsapp}
+For a substitution $\gamma=x_1/t_1,\ldots,x_n/t_n$, and a term, type family, or kind using only the variables $x_1,\ldots,x_n$, we define $\ov{\gamma}(-)$ as follows:
+\begin{itemize}
+     \item $\ov{\gamma}(\TYPE)=\TYPE$,
+     \item $\ov{\gamma}(A \arr K)=\ov{\gamma}(A) \arr{\gamma}(K)$,
+     \item $\ov{\gamma}(a)=a$,
+     \item $\ov{\gamma}(A\;t)=\ov{\gamma}(A)\;\ov{\gamma}(t)$,
+     \item $\ov{\gamma}(\P{x}{A}t)=\P{x}{\ov{\gamma}(A)}\ov{\gamma^x}(t)$,
+     \item $\ov{\gamma}(c)=c$,
+     \item $\ov{\gamma}(x_i)=t_i$,
+     \item $\ov{\gamma}(f\;t)=\ov{\gamma}(f)\;\ov{\gamma}(t)$,
+     \item $\ov{\gamma}(\lam{x}{A}t)=\lam{x}{\ov{\gamma}(A)}\ov{\gamma^x}(t)$,
+\end{itemize}
+where $\gamma^x$ abbreviates $\gamma,x/x$.
+\end{definition}
+We also write $t[x/s]$ for the result of substituting $x$ with $s$ and all other variables with themselves.
+
+\begin{lemma}[Substitution Application]\label{lem:lf:subsapp}
+Assume $\issubs{\Sigma}{\Gamma}{\Gamma'}{\gamma}$.
+Then
+\[\ofdtype{\Sigma}{\Gamma}{t}{A} \tb\mimplies\tb \ofdtype{\Sigma}{\Gamma'}{\ov{\gamma}(t)}{\ov{\gamma}(A)}\]
+\[\ofdkind{\Sigma}{\Gamma}{A}{K} \tb\mimplies\tb \ofdkind{\Sigma}{\Gamma'}{\ov{\gamma}(A)}{\ov{\gamma}(K)}\]
+\[\isdkind{\Sigma}{\Gamma}{K} \tb\mimplies\tb \isdkind{\Sigma}{\Gamma'}{\ov{\gamma}(K)}\]
+\end{lemma}
+\begin{proof}
+One big induction.
+\end{proof}
+
+Similarly, we define signature morphism application.
+
+\begin{definition}[Morphism Application]\label{def:lf:morapp}
+Assume a signature morphism $\ismorph{\Sigma}{\Sigma'}{\sigma}$. Then, for a $\Sigma$ term, type family, or kind we define $\ov{\sigma}(-)$ as follows:
+\begin{itemize}
+     \item $\ov{\sigma}(\TYPE)=\TYPE$,
+     \item $\ov{\sigma}(A \arr K)=\ov{\sigma}(A) \arr{\sigma}(K)$,
+     \item $\ov{\sigma}(a)=A$ where $a:=A$ in $\sigma$,
+     \item $\ov{\sigma}(A\;t)=\ov{\sigma}(A)\;\ov{\sigma}(t)$,
+     \item $\ov{\sigma}(\P{x}{A}B)=\P{x}{\ov{\sigma}(A)}\ov{\sigma}(B)$,
+     \item $\ov{\sigma}(c)=t$ where $c:=t$ in $\sigma$,
+     \item $\ov{\sigma}(x)=x$,
+     \item $\ov{\sigma}(f\;t)=\ov{\sigma}(f)\;\ov{\sigma}(t)$,
+     \item $\ov{\sigma}(\lam{x}{A}t)=\lam{x}{\ov{\sigma}(A)}\ov{\sigma}(t)$.
+\end{itemize}
+\end{definition}
+
+Like for STT, we only care about applying morphisms to closed expressions and map (bound) variables to themselves.
+
+\begin{lemma}[Morphism Application]\label{lem:lf:morapp}
+Assume $\ismorph{\Sigma}{\Sigma'}{\sigma}$. Then
+\[\ofdtype{\Sigma}{\cdot}{t}{A} \tb\mimplies\tb \ofdtype{\Sigma'}{\cdot}{\ov{\sigma}(t)}{\ov{\sigma}(A)}\]
+\[\ofdkind{\Sigma}{\cdot}{A}{K} \tb\mimplies\tb \ofdkind{\Sigma}{\cdot}{\ov{\sigma}(A)}{\ov{\sigma}(K)}\]
+\[\isdkind{\Sigma}{\cdot}{K} \tb\mimplies\tb \isdkind{\Sigma}{\cdot}{\ov{\sigma}(K)}\]
+\end{lemma}
+\begin{proof}
+Another big induction.
+
+We actually use a more general theorem as the induction hypothesis:
+\[\ofdtype{\Sigma}{\Gamma}{t}{A} \tb\mimplies\tb
+\ofdtype{\Sigma'}{\ov{\sigma}(\Gamma)}{\ov{\sigma}(t)}{\ov{\sigma}(A)}\]
+\[\ofdkind{\Sigma}{\Gamma}{A}{K} \tb\mimplies\tb \ofdkind{\Sigma}{\ov{\sigma}(\Gamma)}{\ov{\sigma}(A)}{\ov{\sigma}(K)}\]
+\[\isdkind{\Sigma}{\Gamma}{K} \tb\mimplies\tb
+\isdkind{\Sigma}{\ov{\sigma}(\Gamma)}{\ov{\sigma}(K)}\]
+\[\iscont{\Sigma}{\Gamma} \tb\mimplies\tb
+\iscont{\Sigma}{\ov{\sigma}(\Gamma)}\]
+
+Here we define $\ov{\sigma}(\Gamma)$ (the homomorphic translation of a context along a signature morphism) by
+\[\ov{\sigma}(\cdot) = \cdot\]
+\[\ov{\sigma}(\Gamma,\,x:A) = \ov{\sigma}(\Gamma),\,x:\ov{\sigma}(A)\]
+\end{proof}

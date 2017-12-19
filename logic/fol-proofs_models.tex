@@ -1,0 +1,446 @@
+\section{An Abstract Definition of a Logic}
+
+\begin{definition}[Logic]\label{def:logic:abs}
+A \emph{logic} consists of
+\begin{itemize}
+	\item a collection of signatures $\Sig$,
+	\item a set of sentences $\Sen(\Sigma)$ for every $\Sigma\in\Sig$,
+	\item a collection of models $\Mod(\Sigma)$ for every $\Sigma\in\Sig$,
+	\item	a model-theoretic definition of truth and consequence: for every $\Sigma\in\Sig$, a relation $\md_\Sigma$ between $\Mod(\Sigma)$ and $\Sen(\Sigma)$,
+	\item an inference system $\Pf(\Sigma)$ for every $\Sigma\in\Sig$,
+	\item a proof theoretic definition of consequence: for every $\Sigma\in\Sig$, a judgment $\Delta\der_\Sigma F$.
+\end{itemize}
+\end{definition}
+
+Thus, we have two alternative ways of defining theorems and consequence: model and proof theoretically.
+The former was strongly influenced by Tarski \cite{tarskilogic} and \cite{robinsonmodeltheory} and has become the dominant method in mathematical logic.
+The latter was strongly influenced by Hilbert's program \cite{hilbertsprogram} and the work by G\"odel \cite{goedelcompleteness} and Gentzen \cite{gentzen}.
+It has become important in computer science because it permits using computers to check and search for proofs.
+
+\section{Soundness and Completeness}
+
+Proof and model theory work best when used in combination: We use theories as interfaces, models as interface providers, and the proofs of a theory can be reused in every model.
+This works if P-consequence and M-consequence are the same, which is where soundness and completeness come in.
+
+\subsection{Definitions}
+
+We define:
+\begin{definition}[Soundness and Completeness]
+A \emph{logic} is \emph{sound} if for all signatures $\Sigma$, all sets of sentences $\Delta$ and all sentences $F$,
+\[\Delta\der_\Sigma F \tb\mimplies\tb \moda{\Delta}{\Sigma}{F}.\]
+
+A \emph{logic} is \emph{complete} if for all signatures $\Sigma$, all sets of sentences $\Delta$ and all sentences $F$,
+\[\moda{\Delta}{\Sigma}{F} \tb\mimplies\tb \Delta\der_\Sigma F.\]
+\end{definition}
+
+In other words, it is complete if M-consequence implies P-consequence; or if all M-theorems are P-theorems.
+And it is sound if the implication goes the other way around.
+
+\begin{notation}
+Note that both theories and logics can be complete. The two notions are only loosely related and should be seen as different notions that happen to share the name ``complete''.
+\end{notation}
+
+Soundness and completeness extend to the other notions mentioned in Not.~\ref{not:mod} and~\ref{not:pf}:
+\begin{theorem}\label{thm:pfmod:mp}
+If a logic is sound then,
+\begin{itemize}
+	\item P-contradictions are M-contradictions,
+	\item P-inconsistent theories are M-inconsistent,
+	\item P-complete theories are M-complete.
+\end{itemize}
+For completeness, the opposite implications hold.
+\end{theorem}
+\begin{proof}
+Straightforward because all notions are defined in terms of the consequence relation.
+\end{proof}
+
+Note that Thm.~\ref{thm:pfmod:mp} does not include a case for ``consistent'' theories. For ``consistent'', the implication is flipped because ``M-consistent theories are P-consistent'' is the same as ``not M-inconsistent theories are not P-inconsistent'' and that is equivalent to ``P-inconsistent theories are M-inconsistent''. More precisely, we have the following:
+
+\subsection{Intuitions}
+
+Soundness means that the proof theory is correct: If we can prove a consequence, it holds about all models.
+It is usually easy to show soundness by induction on proof trees.
+
+Completeness is more complicated (and there are useful logics that are not complete).
+To understand it better, we show the following:
+
+\begin{lemma}\label{lem:pfmod:complete}
+The following are equivalent for any logic $L$ that has a negation together with rules for negation introduction and double-negation elimination (i.e., $\neg \neg F\der F$):
+\begin{enumerate}
+ \item $L$ is complete (i.e., M-consequence implies P-consequence).
+ \item Every P-consistent theory has a model (i.e., P-consistency implies M-consistency).
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+By circular implication: \\
+1 implies 2: See Thm.~\ref{thm:pfmod:mp}.
+2 implies 1: To show completeness, assume a theory $(\Sigma;\Theta)$ and an M-theorem $F$ (*). Then $(\Sigma;\Theta\cup\{\neg F\})$ has no model. Using 2, we obtain that $(\Sigma;\Theta\cup\{\neg F\})$ is P-inconsistent. Using negation introduction, we can derive $\neg \neg F$ from $\Theta$, and because of double-negation elimination, we can also derive $F$. Thus, $F$ is a P-theorem of $(\Sigma;\Theta)$.
+\end{proof}
+
+Lem.~\ref{lem:pfmod:complete} is the typical way how we prove completeness.
+\medskip
+
+Then we have two intuitions for the word ``completeness''.
+If the model theory defines the theorems, completeness is a property of the proof theory: A logic is complete if it has enough proofs to derive all the theorems.
+
+If the proof theory defines the theorems, completeness is a property of the model theory: A logic is complete if it has enough models to interpret all the consistent theories.
+\medskip
+
+Another way to think about soundness and completeness is to imagine a step-by-step logic design.
+Say initially we have no proof rules and no models.
+Then no formula is a P-theorem, and all formulas are M-theorems.
+The logic is as sound as it can be but also as far from complete as it can be.
+
+We can change the logic by adding proof rules (which increases the set of P-theorems) and/or by adding models (which decreases the set of M-theorems).
+If we have added enough proof rules and models, the sets of P-theorems and M-theorems meet, and we have a sound and complete logic.
+If we keep adding proof rules or models, we will have too many: The set of P-theorems becomes bigger than the set of M-theorems, and we lose soundness (while staying complete).
+
+Thus, to make a logic sound, we have to remove rules and/or models.
+And to make a logic complete, we have to add rules and/or models.
+
+\begin{example}[Empty Universe]
+As pointed in Rem.~\ref{rem:mod:empty} and~\ref{rem:pf:empty}, there is flexibility as to how to treat the empty universe.
+
+If we use the usual rules for first-order logic with all models (including the empty universe), the logic is not sound.
+To make it sound, we have two options:
+\begin{itemize}
+  \item remove models, specifically the one with the empty universe: This is the option chosen by most logic textbooks.
+  \item remove (or weaken) rules: This is the option chosen in these notes by using weakening the $\forall E$ rule.
+\end{itemize}
+\end{example}
+
+% similar: $\vee R$ rule of sequent calculus, which allows an assumption to escape its scope
+% classical solution: upgrade the bug to a feature
+
+\subsection{Compactness}
+
+Compactness is the property that all consequences are caused by finitely many axioms:
+
+\begin{definition}
+A model theory is called \defemph{compact} if $\moda{\Sigma}{\Theta}{F}$ implies $\moda{\Sigma}{\Theta'}{F}$ for some finite set $\Theta'\sq\Theta$.
+\end{definition}
+
+\begin{theorem}
+If a logic is sound and complete, then it is compact.
+\end{theorem}
+\begin{proof}
+We always have that $\iscons{\Sigma}{\Theta}{}{F}$ implies $\iscons{\Sigma}{\Theta'}{}{F}$ for some finite set $\Theta'\sq\Theta$ because a proof can only use finitely many axioms from $\Theta$.
+
+Therefore, soundness and completeness together imply compactness.
+\end{proof}
+
+\section{The Big Theorems of First-Order Logic}
+
+The most important theorems about FOL and FOLEQ are soundness and completeness.
+The first sound and complete calculi for first-order logic were given by G\"odel \cite{goedelcompleteness} and Gentzen \cite{gentzen} in the 1930s.
+
+\subsection{Soundness}
+
+\begin{theorem}[Soundness of FOL]
+FOL is sound.
+\end{theorem}
+\begin{proof}
+By induction on derivations.
+The theorem only mentions those judgments where $\Gamma=\es$ (i.e., $\Gamma$ is omitted). This is as usual the only case we are really interested in. But in the induction we will encounter all judgments.
+
+Therefore, we have to prove something more general, namely:
+\begin{quote}
+$\Gamma;\Delta\der_\Sigma F$ implies that \\
+ \tb for every model $I\in\Mod(\Sigma)$ and every assignment $\alpha$ for $\Gamma$, \\
+ \tb we have that\\
+ \tb\tb if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta$,\\
+ \tb\tb then $\moda{I,\alpha}{\Sigma}{F}$.
+\end{quote}
+Note that if we put $\Gamma=\es$, this is the same as saying $\moda{\Delta}{\Sigma}{F}$.
+
+Now we can prove this more general statement by induction on derivations. The intuition behind this is the following: For all axioms $\rul{\der A}{}{}$, show that $A$ is true in every model. For every rule $\rul{J}{J_1\tb\ldots\tb J_n}{}$ show that applying the rule preserves truth, i.e., show the above for $J$ assuming it is true (induction hypothesis) for the $J_i$.
+Since proof trees are built up by composing rules, the induction requires one case for every rule. Therefore, we often say that a single rule is sound: The soundness of a rule $R$ means that the induction step succeeds for $R$; then to show soundness of the logic, we need to show that every rule is sound.
+
+In the following we give three example soundness proofs for the rules $Axiom$, $\wedge I$, and $\arr I$.
+\medskip
+
+\noindent The case for $Axiom$. For this rule, there are no hypotheses. So we have to show that for every model and assignment $I$ and $\alpha$, if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta$, then $\moda{I,\alpha}{\Sigma}{A}$. This is trivial because $A\in\Delta$.
+\medskip
+
+\noindent The case for $\wedge I$. For this rule, there are two hypotheses. Applying the induction hypothesis to them yields:
+\begin{itemize}
+\item (1) For every model and assignment $I$ and $\alpha$, if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta$, then $\moda{I,\alpha}{\Sigma}{A}$.
+\item (2) For every model and assignment $I$ and $\alpha$, if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta$, then $\moda{I,\alpha}{\Sigma}{B}$.
+\end{itemize}
+We have to show: For every model and assignment $I$ and $\alpha$, if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta$, then $\moda{I,\alpha}{\Sigma}{A\wedge B}$. This is obvious. But to be totally clear, here is the full proof:
+\begin{itemize}
+\item We pick an arbitrary model $I_0$ and an arbitrary assignment $\alpha_0$.
+\item We assume that (3) $\moda{I_0,\alpha_0}{\Sigma}{T}$ for all $T\in\Delta$. We have to show $\moda{I_0,\alpha_0}{\Sigma}{A\wedge B}$.
+\begin{itemize}
+\item From (3), using (1) and (2), we obtain (4) $\moda{I_0,\alpha_0}{\Sigma}{A}$ and (5) $\moda{I_0,\alpha_0}{\Sigma}{B}$, respectively.
+\item From (4) and (5), using the definition of the interpretation of formulas, we obtain $\moda{I_0,\alpha_0}{\Sigma}{A\wedge B}$.
+\item Done.
+\end{itemize}
+\item Done.
+\end{itemize}
+\medskip
+
+\noindent The case for $\arr I$. For this rule, there is one hypothesis. Applying the induction hypothesis to it yields:
+\begin{itemize}
+\item (1) For every model and assignment $I$ and $\alpha$, if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta\cup\{A\}$, then $\moda{I,\alpha}{\Sigma}{B}$.
+\end{itemize}
+We have to show: For every model and assignment $I$ and $\alpha$, if $\moda{I,\alpha}{\Sigma}{T}$ for all $T\in\Delta$, then $\moda{I,\alpha}{\Sigma}{A\arr B}$.
+\begin{itemize}
+\item We pick an arbitrary model $I_0$ and an arbitrary assignment $\alpha_0$.
+\item We assume that (2) $\moda{I_0,\alpha_0}{\Sigma}{T}$ for all $T\in\Delta$. We have to show $\moda{I_0,\alpha_0}{\Sigma}{A\arr B}$.
+\item We distinguish two cases: $\moda{I_0,\alpha_0}{\Sigma}{A}$ and $\nmoda{I_0,\alpha_0}{\Sigma}{A}$.
+\begin{itemize}
+\item $\nmoda{I_0,\alpha_0}{\Sigma}{A}$. Then by definition of the interpretation of formulas $\nmoda{I_0,\alpha_0}{\Sigma}{A\arr B}$. Done.
+\item (3) $\moda{I_0,\alpha_0}{\Sigma}{A}$.
+  \begin{itemize}
+    \item Combining (2) and (3), we are able to apply (1), from which we obtain (4) $\moda{I_0,\alpha_0}{\Sigma}{B}$.
+    \item From (3) and (4), using the definition of the interpretation of formulas, we obtain $\moda{I_0,\alpha_0}{\Sigma}{A\arr B}$.
+    \item Done.
+  \end{itemize}
+\end{itemize}
+\item Done.
+\end{itemize}
+\end{proof}
+
+\subsection{Completeness}
+
+The completeness of FOL requires a few additional constructions.
+
+The central idea of the completeness proof is to build a model $S$ of a theory $(\Sigma;\Theta)$ from the terms and proofs.
+First, we define the interpretation of function symbols -- this is called the term model:
+
+\begin{definition}[Term Model]\label{def:termmodel}
+Let $\Sigma$ be a signature without predicate symbols.
+
+Then we define the model $S$ as follows:
+ \begin{itemize}
+  \item $\TERM^S=\{t\;|\;\istermS{}{t}\}$
+  \item $f^S(u_1,\ldots,u_n)=f(u_1,\ldots,u_n)$ for $n=\arit(f)$
+ \end{itemize}
+\end{definition}
+
+\begin{remark}
+If we used the variant of $\FOLEQ$ that excludes the empty universe, we might have to add some nullary function symbol to $\Sigma$ to make sure that the universe of the term model is not empty.
+\end{remark}
+
+Read the last line in Def.~\ref{def:termmodel} very carefully:
+\begin{enumerate}
+ \item $\TERM^S$ is a set, which $S$ defines to be set of terms.
+ \item $f$ is a function symbol.
+ \item $f^S$ is an $n$-ary function on $\TERM^S$, i.e., a function that takes terms and returns a term.
+ \item $f^S(u_1,\ldots,u_n)$ is the application of $f^S$ to some arguments, which in this case must be terms.
+ \item $f(u_1,\ldots,u_n)$ is the term formed from the function symbol $f$ and the term $u_i$.
+\end{enumerate}
+
+The important property of the term model is that it interprets every term as itself:
+\begin{lemma}\label{thm:termmodel}
+In the situation of Def.~\ref{def:termmodel}, we have
+  \[\semm{t}{S}=t\]
+for all terms $\istermS{}{t}$.
+\end{lemma}
+\begin{proof}
+We use induction on $t$:
+\begin{itemize}
+  \item Case $t=f(t_1,\ldots,t_n)$: We have
+   \[\semm{f(t_1,\ldots,t_n)}{S}=^{Def}f^S(\semm{t_1}{S},\ldots,\semm{t_n}{S})=^{IH}f^S(t_1,\ldots,t_n)=^{Def}f(t_1,\ldots,t_n)\]
+  \item Case $t=x$: impossible because $t$ has no free variables.
+\end{itemize}
+\end{proof}
+
+You should read the proof very carefully, too, and understand how the three steps in the case for function terms proceed.
+
+We cannot interpret every formula as itself because the set $\FORM^S$ is already fixed to be $\{0,1\}$.
+But we can do something similar: We interpret a formula $F$ as $1$ if it is a theorem and as $0$ if is a contradiction.
+But that does not quite work immediately: If $\Theta$ is not complete, there are formulas that are neither theorems nor contradictions.
+Therefore, we show:
+
+\begin{lemma}\label{thm:complete_extension}
+For every P-consistent theory $\Theta$, there is a P-consistent complete theory $\ov{\Theta}$ with $\Theta\sq\ov{\Theta}$.
+\end{lemma}
+\begin{proof}
+Let $F_1,F_2,\ldots,$ be an enumeration of all $\Sigma$-sentences (in any order).
+We define theories $\Theta_0,\Theta_1,\Theta_2,\ldots$ inductively:
+\begin{itemize}
+  \item $\Theta_0=\Theta$
+  \item $\Theta_{n+1}= \cas{(a)\tb \Theta_n\cup \{F_{n+1}\} \mifc \mnot \iscons{\Sigma}{\Theta_n}{}{\neg F_{n+1}}\\ (b) \tb \Theta_n \mothw }$
+\end{itemize}
+We define $\ov{\Theta}=\bigcup_{i\in\N}\Theta_i$.
+\medskip
+
+We have to show three properties about $\ov{\Theta}$.
+
+\begin{itemize}
+\item $\Theta\sq\ov{\Theta}$: That is obvious.
+\item Completeness: Consider a sentence $F$. We know $F=F_n$ for some $n$. By construction $\ov{\Theta}$ contains $F_n$ for every sentence or can prove $\neg F_{n+1}$.
+Thus it can prove $F_n$ or $\neg F_n$.
+\item P-consistency:
+\begin{enumerate}
+  \item We show that if $\Theta_{n+1}$ is P-inconsistent, then so is $\Theta_n$.
+  Assume $\Theta_{n+1}$ is $P$-inconsistent.
+        We distinguish the two cases in the definition of $\Theta_{n+1}$:
+        \begin{itemize}
+          \item[(a)] Then we have $\iscons{\Sigma}{\Theta_n,F_{n+1}}{}{\false}$ and thus (using the negation introduction rule) $\iscons{\Sigma}{\Theta}{}{\neg F_{n+1}}$. But that violates the assumption of case (a).
+        There are two cases for $G$:
+          \item[(b)] Then $\Theta_{n+1}=\Theta_n$, so $\Theta_n$ is also inconsistent.
+        \end{itemize}
+     \item Thus, because $\Theta_0$ is P-consistent, so are all $\Theta_n$.
+     \item If $\ov{\Theta}$ were P-inconsistent, there would be a proof $p$ of $\iscons{\Sigma}{\ov{\Theta}}{}{\false}$.
+       Because a proof can only use finitely many axioms, there would be a $\Theta_n$ that contains all axioms used in $p$.
+       Then $\Theta_n$ would be inconsistent, too, which is impossible.
+   \end{enumerate}
+\end{itemize}
+\end{proof}
+
+Then we can extend Def.~\ref{def:termmodel}:
+
+\begin{definition}[Term Model with Predicates]\label{def:termmodel2}
+For a theory $(\Sigma;\Theta)$, we define the model $S$ as follows:
+ \begin{itemize}
+  \item $\TERM^S$ and $f^S$ are as in Def.~\ref{def:termmodel}.
+  \item $p^S(u_1,\ldots,u_n)=\cas{1 \mifc \iscons{\Sigma}{\Theta}{}{p(u_1,\ldots,u_n)} \\
+                                  0 \mothw}$
+ \end{itemize}
+\end{definition}
+
+Correspondingly, we can extend Def.~\ref{thm:termmodel}:
+\begin{lemma}\label{thm:termmodel2}
+In the situation of Def.~\ref{def:termmodel2} let $\Theta$ be complete and consistent.
+Then, we have
+  \[\semm{F}{S}=\cas{1 \mifc \iscons{\Sigma}{\Theta}{}{F} \\
+                     0 \mifc \iscons{\Sigma}{\Theta}{}{\neg F}}\]
+for all sentences $\isformS{}{F}$ that do not use $\forall$, $\exists$, or $\doteq$.
+\end{lemma}
+\begin{proof}
+We use induction on $F$:
+\begin{itemize}
+  \item Case $F=p(t_1,\ldots,t_n)$: We have
+   \[\semm{p(t_1,\ldots,t_n)}{S}=^{Def}p^S(\semm{t_1}{S},\ldots,\semm{t_n}{S})=^{\text{Lem.}~\ref{thm:termmodel}}p^S(t_1,\ldots,t_n)
+    =^{Def}\cas{1 \mifc \iscons{\Sigma}{\Theta}{}{p(u_1,\ldots,u_n)} \\
+                0 \mifc \iscons{\Sigma}{\Theta}{}{\neg p(u_1,\ldots,u_n)}}\]
+   Here, the last step uses the fact that $\Theta$ is complete to turn ``otherwise'' into ``if $\iscons{\Sigma}{\Theta}{}{\neg p(u_1,\ldots,u_n)}$''.
+  \item Case $F=G\wedge H$: We distinguish two cases:
+    \begin{itemize}
+      \item $\semm{G}{S}=1$ and $\semm{H}{S}=1$: We evaluate both sides of the equation:
+       \begin{itemize}
+         \item[(left)] We get $\semm{G\wedge H}{S}=1$.
+         \item[(right)] The induction hypothesis for $G$ and $H$ yields $\iscons{\Sigma}{\Theta}{}{G}$ and $\iscons{\Sigma}{\Theta}{}{H}$.
+            Thus, (using the conjunction introduction rule), we have $\iscons{\Sigma}{\Theta}{}{G\wedge H}$.
+            Thus, the right side also yields $1$.
+       \end{itemize}
+      \item $\semm{G}{S}=0$ or $\semm{H}{S}=0$: We evaluate both sides of the equation:
+        \begin{itemize}
+         \item[(left)] We get $\semm{G\wedge H}{S}=0$.
+         \item[(right)] The induction hypothesis for $G$ or $H$ yields $\iscons{\Sigma}{\Theta}{}{\neg G}$ or $\iscons{\Sigma}{\Theta}{}{\neg H}$.
+            Thus, (using the conjunction elimination rules and negation introduction+elimination rules), we have $\iscons{\Sigma}{\Theta}{}{\neg(G\wedge H)}$.
+            Thus, the right side also yields $0$.
+        \end{itemize}
+    \end{itemize}
+  \item The cases for negation, disjunction, and implication proceed like the one for conjunction.
+\end{itemize}
+\end{proof}
+
+\begin{remark}
+There is a more complex version of Lem.~\ref{thm:termmodel2} that applies to all sentences.
+However, all of the above definitions have to be changed to use a different set $\TERM^S$.
+The key ideas is
+ \begin{itemize}
+   \item To handle equality, $\TERM^S$ is the quotient of the set of terms modulo the equivalence relation $\iscons{\Sigma}{\Theta}{}{t_1\doteq t_2}$.
+   This is necessary to make sure $\semm{t_1}{S}=\semm{t_2}{S}=1$ whenever $\iscons{\Sigma}{\Theta}{}{t_1\doteq t_2}$.
+   \item To handle quantifiers, $\Sigma$ and $\Theta$ have to be extended: If we can prove $\forall x_1\ldots\forall x_n\;\exists x A$, we have to add an $n$-ary function symbols $f$ and an axiom $\forall x_1\ldots\forall x_n\;A[x/f(x_1,\ldots,x_n)$.
+    This is necessary to make sure that $\TERM^S$ contains the element necessary for $\semm{\exists x \;A}=1$.
+ \end{itemize}
+
+%There are also other versions of Lem.~\ref{thm:termmodel2} that use the same $\TERM^S$. For example, we can permit $\forall$ if $\neg$ may only occur before atomic formulas.
+%For Horn theories, the Herbrand model always exists. (In a Horn theory, all formulas in $\Theta$ must be of the form $\forall x_1\;\ldots\;\forall x_m\;((A_1\wedge \ldots A_n)\arr A)$ for atoms $A_1,\ldots,A_n,A$. Horn theories are already in Skolem normal form.)
+%\item The Herbrand model of Horn theories is the base of the Prolog programming language. Prolog interprets a command $A:-A_1,\ldots,A_m$ with free variables $x_1,\ldots,x_n$ as the axiom $\forall x_1\;\ldots\;\forall x_m\;((A_1\wedge \ldots A_n)\arr A)$. A query $A$ (without free variables) is answered with Yes or No depending on whether $A$ holds in the Herbrand model constructed from all commands of the current program.
+\end{remark}
+
+Finally, we can prove completeness of FOL:
+
+\begin{theorem}[Completeness of FOL]
+FOL is complete.
+\end{theorem}
+\begin{proof}
+We only prove the completeness of FOL with $\forall$, $\exists$, and $\doteq$ removed.
+The general prove proceeds similarly after generalizing Lem.~\ref{thm:termmodel2}.
+
+By Lem.~\ref{lem:pfmod:complete}, we only have to show that every P-consistent FOL theory has a model.
+So assume a P-consistent theory $(\Sigma;\Theta)$.
+
+Using Lem.~\ref{thm:complete_extension}, we can assume that $\Theta$ is complete.
+Otherwise, we construct a model of $\ov{\Theta}$, which will also be a model of $\Theta$.
+
+We use the term model from Def.~\ref{def:termmodel2}.
+By Lem.~\ref{thm:termmodel2}, it satisfies all formulas in $\Theta$.
+\end{proof}
+
+%
+%\begin{theorem}
+%Assume $(\Sigma;\Theta)$ is in Skolem normal form, i.e., all sentences in $\Theta$ are in prenex normal form and there are no existential quantifiers. Then $\Mod(\Sigma;\Theta)\neq\es$ iff $H\in\Mod(\Sigma;\Theta)$.
+%\end{theorem}
+%\begin{proof}
+%Omitted.
+%\end{proof}
+%Intuitively: If there are any models, then the Herbrand model is one of them.
+%
+%More elaborately, assume we have a theory $(\Sigma;\Theta)$. We know we can transform it (by the clausification algorithm from above) into a theory $(\Sigma';\Theta')$ in Skolem normal form. Furthermore, we know that $(\Sigma;\Theta)$ is consistent iff $(\Sigma';\Theta';)$ is. We can construct the Herbrand model $H$ for $(\Sigma';\Theta')$. Then we can check whether $H\in\Mod(\Sigma';\Theta')$, i.e., we check whether $\moda{\Theta'}{\Sigma'}{F}$ for all $F\in\Theta'$. If this is the case, we have found a model of $(\Sigma';\Theta')$ and therefore $(\Sigma';\Theta')$ and $(\Sigma;\Theta)$ are consistent. If this is not the case, we can conclude that no model exists, and the theories are inconsistent.
+%\bigskip
+%
+%Remarks:
+%\item There are some strong syntactic criteria when the Herbrand model exists. The most important one is the following. For Horn theories, the Herbrand model always exists. (In a Horn theory, all formulas in $\Theta$ must be of the form $\forall x_1\;\ldots\;\forall x_m\;((A_1\wedge \ldots A_n)\arr A)$ for atoms $A_1,\ldots,A_n,A$. Horn theories are already in Skolem normal form.)
+%\item The Herbrand model of Horn theories is the base of the Prolog programming language. Prolog interprets a command $A:-A_1,\ldots,A_m$ with free variables $x_1,\ldots,x_n$ as the axiom $\forall x_1\;\ldots\;\forall x_m\;((A_1\wedge \ldots A_n)\arr A)$. A query $A$ (without free variables) is answered with Yes or No depending on whether $A$ holds in the Herbrand model constructed from all commands of the current program.
+%\end{itemize}
+
+
+\section{Incompleteness}\label{sec:fol:incomplete}
+
+In Ex.~\ref{ex:nat:incomplete}, we already saw that we cannot specify the natural numbers using Peano arithmetic in FOLEQ.
+We can now generalize this result.
+
+\begin{theorem}\label{thm:natincomplete}
+The set $SN^*$ from Ex.~\ref{ex:nat:incomplete} is not recursively enumerable.
+\end{theorem}
+\begin{proof}
+Omitted.
+\end{proof}
+
+We immediately get the following corollary with far-reaching consequences:
+
+\begin{theorem}[G\"odel's First Incompleteness Theorem]\label{thm:goedelincomplete}
+There is no logic in which there is a P-consistent theory whose
+  \begin{itemize}
+    \item signature includes the symbols of Peano arithmetic,
+    \item whose theorems include $SN^*$,
+    \item whose axioms are recursively enumerable.
+  \end{itemize}
+\end{theorem}
+\begin{proof}
+If there were such a logic and such a theory, we could recursively enumerate all its theorems and thus $SN^*$.
+\end{proof}
+
+This is one of the most famous results of computer science.
+It was discovered by G\"odel in 1930 \cite{goedelincompleteness}.
+At around that time mathematicians were driven by Hilbert's program \cite{hilbertsprogram} to find a logic that can prove all theorems of mathematics.
+G\"odel's incompleteness result showed that is not even possible to find a theory that can prove all theorems about the natural numbers (unless the theory is inconsistent, of course).
+Since many data types somehow contain the natural numbers, it implies a lot of negative results for other data types.
+
+We can understand this as a special case of the philosophical map-territory problem: A map is different from the mapped territory.
+In some sense, the best map would have scale $1:1$ and be an exact copy of the territory; but that is impossible or at least impractical.
+Similarly, a theory is different from the intended model, and using an exact copy of the model would be impossible or impractical.
+\bigskip
+
+G\"odel's result also imply a second incompleteness theorem: No matter what logic and what theory we use for mathematics, we will never be able to prove that the theory is consistent.
+In other words, no language can prove its own consistency.
+Consistency must be always be proved in a stronger language.
+But then we do not know whether that stronger language is consistent, and so on.
+
+Therefore, it is theoretically possible that tomorrow someone will discover that set theory (see Ex.~\ref{ex:set}) is inconsistent.
+And then all of mathematics would break down.
+This is essentially what happened in 1897 and 1901, when Peano and Russell found inconsistencies in the theories used for mathematics.
+These theories had been mainly formalized by Frege in 1879 \cite{begriffsschrift} and Cantor in 1883 \cite{grundlagen} and had been used informally by all mathematicians before.
+
+This gave rise to the development of modern set theories whose axioms are chosen very carefully to make inconsistency unlikely.
+The currently used variants of set theory have been developed mainly between 1900 and 1930, but mathematicians are still contributing important details.
+Parallel to the introduction of these new theories, researchers started studying logic and consistency in more detail.
+Then G\"odel's result crushed all hope to settle the consistency question permanently.
+
