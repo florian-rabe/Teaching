@@ -1,0 +1,183 @@
+\documentclass{beamer}
+
+\usepackage{url}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{basics}
+\usepackage{basics-slides}
+
+\begin{document}
+
+\title{How to give a talk?}
+\author{Florian Rabe}
+\institute{Jacobs University Bremen, Computer Science}
+\date{Doctoral Programme at CICM 2015}
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\section{General}
+
+\begin{frame}\frametitle{Advice for Students}
+\begin{itemize}
+  \item Loosely edited list of advice
+  \url{https://www.authorea.com/43655-Advice-for-Students}
+  \item Apparently very helpful
+  \item Neither sound nor complete
+  \item Includes section on talks
+  \item Any feedback/additions welcome
+\end{itemize}
+\end{frame}
+
+\section{Example: Final Preparation of a Slide}
+
+\begin{frame}\frametitle{MathML vs. TPTP: Logical Similarities}
+If we abstract from
+\begin{itemize}
+  \item concrete syntax
+  \item intended purpose
+  \item user community
+  \item tool support
+\end{itemize}
+the languages are quite similar:
+
+MathML
+\begin{itemize}
+ \item MathML objects: constants, variables, application, arbitrary binding
+ \item all operators introduced/specified in content dictionaries
+\end{itemize}
+TPTP (since expansion towards higher-order logic)
+\begin{itemize}
+ \item TPTP formulas: constants, variables, application, built-in binders $\forall\exists\lambda\Pi\Sigma$
+ \item logic-related operators built-in, specified in various language references
+  \lec{no fixed type systems, no fixed calculus}
+ \item other operators introduced/specified in TPTP files
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{MathML vs. TPTP: Logical Similarities}
+If we abstract from
+\begin{itemize}
+  \item concrete syntax
+  \item intended purpose
+  \item user community
+  \item tool support
+\end{itemize}
+the languages are quite similar:
+
+\begin{blockitems}{MathML}
+ \item MathML objects: constants, variables, application, arbitrary binding
+ \item all operators introduced/specified in content dictionaries
+\end{blockitems}
+\begin{blockitems}{TPTP (since expansion towards higher-order logic)}
+ \item TPTP formulas: constants, variables, application, built-in binders $\forall\exists\lambda\Pi\Sigma$
+ \item logic-related operators built-in, specified in various language references
+  \lec{no fixed type systems, no fixed calculus}
+ \item other operators introduced/specified in TPTP files
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{MathML vs. TPTP: Logical Similarities}
+If we abstract from
+\begin{itemize}
+  \item concrete syntax
+  \item intended purpose
+  \item user community
+  \item tool support
+\end{itemize}
+the languages are quite similar:
+
+\begin{blockitems}{MathML}
+ \item constants, variables, application, arbitrary binding
+ \item all operators introduced/specified in content dictionaries
+\end{blockitems}
+\begin{blockitems}{TPTP (since expansion towards higher-order logic)}
+ \item constants, variables, application, built-in binders $\forall\exists\lambda\Pi\Sigma$
+ \item most operators introduced/specified in TPTP files
+ \item built-in logic-related operators, specified in various language references
+  \lec{no fixed type systems, no fixed calculus}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{MathML vs. TPTP: Logical Similarities}
+If we abstract from
+\begin{itemize}
+  \item concrete syntax
+  \item intended purpose
+  \item user community
+  \item tool support
+\end{itemize}
+the languages are quite similar:
+
+\begin{blockitems}{MathML}
+ \item constants, variables, application, \hlA{arbitrary binding}
+ \item \hlA{all} operators introduced/specified in content dictionaries
+\end{blockitems}
+\begin{blockitems}{TPTP (since expansion towards higher-order logic)}
+ \item constant, variables, application, \hlA{built-in binders $\forall\exists\lambda\Pi\Sigma$}
+ \item \hlA{most} operators introduced/specified in TPTP files
+ \item \hlA{built-in logic-related operators}, specified in various language references
+  \lec{no fixed type systems, no fixed calculus}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{MathML vs. TPTP: Logical Similarities}
+If we abstract from
+\begin{itemize}
+  \item concrete syntax
+  \item intended purpose
+  \item user community
+  \item tool support
+\end{itemize}
+the languages are quite similar:
+
+\begin{blockitems}{MathML}
+ \item constants, variables, application, \hlA{arbitrary binding}
+ \item \hlA{all} operators introduced/specified in \hlA{content dictionaries}
+\end{blockitems}
+\begin{blockitems}{TPTP (since expansion towards higher-order logic)}
+ \item constant, variables, application, \hlA{built-in binders $\forall\exists\lambda\Pi\Sigma$}
+ \item \hlA{most} operators introduced/specified in \hlA{TPTP files}
+ \item \hlA{built-in logic-related operators}
+   \begin{itemize}
+     \item semantics left open
+       \lec{no fixed type systems, no fixed calculus}
+     \item specified in various language references
+       \lec{fof, tff, thf, thf1, \ldots}
+    \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{MathML vs. TPTP: Logical Similarities}
+Languages are quite similar if we abstract from
+\vspace{-1em}
+\begin{multicols}{2}
+\begin{itemize}
+  \item concrete syntax
+  \item intended purpose
+\end{itemize}
+\begin{itemize}
+  \item user community
+  \item tool support
+\end{itemize}
+\end{multicols}
+
+\begin{blockitems}{MathML}
+ \item constants, variables, application, \hlA{arbitrary binding}
+ \item \hlA{all} operators introduced/specified in \hlA{content dictionaries}
+\end{blockitems}
+\begin{blockitems}{TPTP (since expansion towards higher-order logic)}
+ \item constant, variables, application, \hlA{built-in binders $\forall\exists\lambda\Pi\Sigma$}
+ \item \hlA{most} operators introduced/specified in \hlA{TPTP files}
+ \item \hlA{built-in logic-related operators}
+   \begin{itemize}
+     \item semantics left open
+       \lec{no fixed type systems, no fixed calculus}
+     \item various dialects
+       \lec{fof, tff, thf, thf1, \ldots}
+   \end{itemize}
+\end{blockitems}
+\end{frame}
+\end{document}
