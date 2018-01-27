@@ -32,7 +32,7 @@ Divisibility is preserved by arithmetic operations: If $x|m$ and $y|m$, then
 \item preserved by addition: $x+y|m$
 \item preserved by subtraction: $x-y|m$
 \item preserved by multiplication: $x*y|m$
-\item preserved by division if $x/y\in Z$: $x/y|m$
+\item preserved by division if $x/y\in \Z$: $x/y|m$
 \item preserved by negation of any argument: $-x|m$ and $x|-m$
 \end{compactitem}
 \medskip
@@ -121,6 +121,10 @@ It is also preserved by arithmetic operations: If $x\Equiv_m x'$ and $y\Equiv_m 
  We write $\Z_m$ for the image of $\modulus_m$.
 \end{definition}
 
+\begin{theorem}[Modulus]
+$\modulus_m$ and $\Z_m$ are a canonical form and a system of representatives for $\Equiv_m$.
+\end{theorem}
+
 \begin{remark}[Modulo $0$ and $1$]
 The cases $m=0$ and $m=1$ are trivial again:
 \begin{compactitem}
@@ -130,7 +134,7 @@ The cases $m=0$ and $m=1$ are trivial again:
 \end{remark}
 
 \begin{remark}[Possible Values]
-For $m\neq 0$, we have $x\modop m\in \{0,\ldots,m-1\}$.
+For $m\neq 0$, we have $\Z_m=\{0,\ldots,m-1\}$.
 In particular, there are $m$ possible values for $x\modop m$.
 
 For example, we have $x\modop 1\in \{0\}$.
@@ -205,7 +209,7 @@ This field is usually called $F_{p^n}$ because it has $p^n$ elements.
 From now on, let $q=p^n$.
 
 The elements of $F_q$ are vectors $(a_0,\ldots,a_{n-1})$ for $a_i\in\Z_p$.
-Addition and subtraction are component-wise, the $0$-element is $(0,\ldots,0)$, the $1$-elements is $(1,0,\ldots,0)$.
+Addition and subtraction are component-wise, the $0$-element is $(0,\ldots,0)$, the $1$-element is $(1,0,\ldots,0)$.
 
 However, multiplication in $F_q$ is tricky if $n>1$.
 To multiply two elements, we think of the vectors $(a_0,\ldots,a_{n-1})$ as polynomials $a_{n-1}X^{n-1}+\ldots+a_1X+a_0$ and multiply the polynomials.
@@ -227,20 +231,22 @@ Multiplication is a bit more complex but can be obtained as a sequence of bit-sh
 Because $F_q$ has multiplication, we can define natural powers in the usual way:
 
 \begin{definition}
-For $x\in F^q$ and $l\in\N$, we define $x^l\in F_q$ by $x^0=1$ and $x^{l+1}=x\cdot x^l$.
+For $x\in F_q$ and $l\in\N$, we define $x^l\in F_q$ by $x^0=1$ and $x^{l+1}=x\cdot x^l$.
 
-If $l$ is the smallest number such that $x^l=y$, we write $l=\log_x y$ and call $n$ the \textbf{discrete $q$-logarithm} of $y$ with base $x$.
+If $l\in \N$ is the smallest number such that $x^l=y$, we write $l=\log_x y$ and call $n$ the \textbf{discrete $q$-logarithm} of $y$ with base $x$.
 \end{definition}
 
 The powers $1,x,x^2,\ldots\in F_q$ of $x$ can take only $q-1$ different values because $F_q$ has only $q$ elements and $x^l$ can never be $0$ (unless $x=0$).
 Therefore, they must be periodic:
 
 \begin{theorem}
-For every $x\in F_q$, we have $x^q=x$. If $x\neq 0$, that is equivalently to $x^{q-1}=1$.
+For every $x\in F_q$, we have $x^q=x$. If $x\neq 0$, that is equivalent to $x^{q-1}=1$.
 \end{theorem}
 
 For some $x$, the period is indeed $q-1$, i.e., we have $\{1,x,x^2,\ldots,x^{q-1}\}=F_q\sm\{0\}$.
 Such an $x$ is called a \textbf{primitive element} of $F_q$.
+In that case $\log_x y$ is defined for all $y$.
+
 But the period may be smaller.
 For example, the powers of $1$ are $1,\ldots,1$, i.e., $1$ has period $1$.
 For a non-trivial example consider $p=5$, $n=1$, (i.e., $q=5$): The powers of $4$ are $4^0=1$, $4^1=4$, $4^2=16\modop 5=1$, and $4^3=4$.
@@ -252,7 +258,7 @@ In that case $\log_x y$ is not defined for all $y\in F_q$.
 Computing $x^l$ is straightforward and can be done efficiently.
 (If $n>1$, we first have to find the values $k_i$ needed to do the multiplication, but we can precompute them once and for all.)
 
-Determining whether $\log_x y$ is defined and computing its value is also straightforward: We can enumerate all powers $x,x^2,\ldots$ until $x^l=1$ (in which case the logarithm is undefined) or $x^l=y$ (in which case the logarithm is $l$).
+Determining whether $\log_x y$ is defined and computing its value is also straightforward: We can enumerate all powers $1,x,x^2,\ldots$ until $x^l=1$ (in which case the logarithm is undefined) or $x^l=y$ (in which case the logarithm is $l$).
 However, no efficient algorithm is known.
 
 \subsection{Infinity}\label{sec:math:infty}
@@ -270,7 +276,7 @@ Addition works as usual.
 $\infty$ is an attractive element.
 
 Subtraction is introduced as usual, i.e., $a-b=x$ whenever $x$ is the unique value such that $a=x+b$.
-Thus, $\infty-n=\infty$ for $n\in N$.
+Thus, $\infty-n=\infty$ for $n\in \N$.
 $x-\infty$ is undefined.
 The law $x-x=0$ does not hold anymore.
 

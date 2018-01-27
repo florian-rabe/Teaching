@@ -14,6 +14,7 @@ We say that $\#$ is \ldots if the following holds:
  \item anti-symmetric: for all $x,y$, if $x\# y$ and $y\# x$, then $x=y$
  \item symmetric: for all $x,y$, if $x\# y$, then $y\# x$
  \item an order\footnotemark: preorder and anti-symmetric (= reflexive, transitive, and anti-symmetric)
+ \item a partial equivalence: symmetric and transitive (equivalence without reflexive)
  \item an equivalence: preorder and symmetric (= reflexive, transitive, and symmetric)
  \item a partial equivalence: transitive and symmetric
  \item a total order: order and for all $x,y$, $x\# y$ or $y\# x$
@@ -41,8 +42,12 @@ If a relation is reflexive/irreflexive/transitive/symmetric/antisymmetric/total,
 
 \subsection{Equivalence Relations}
 
+\paragraph{Symbols}
 Equivalence relations are usually written using infix symbols whose shape is reminiscent of horizontal lines, such as $=$, $\sim$, or $\Equiv$.
 Often vertically symmetric symbols are used to emphasize the symmetry property.
+
+\paragraph{Equivalence Classes and Quotients}
+Equivalence relations allow grouping related elements into classes and collecting all the classes in what is called a quotient.
 
 \begin{definition}[Quotient]
 Consider a relation $\Equiv$ on $A$.
@@ -55,30 +60,68 @@ Then
 \end{compactitem}
 \end{definition}
 
+\begin{definition}[Kernel]
+Consider a function $f:A\to B$. The \textbf{kernel} of $f$, written $\mathrm{ker}\, f$, is the binary relation on $A$ defined by $x\,(\mathrm{ker}\, f)\,y$ iff $f(x)=f(y)$.
+\end{definition}
+
+\begin{definition}[Partition]
+A \textbf{partition} $P$ on a set $A$ is a set of non-empty, pairwise disjoint subsets $A$ whose overall union is $A$.
+\end{definition}
+
 \begin{theorem}
-For a relation $\Equiv$ on $A$, the following are equivalent\footnote{Logical equivalence is itself an equivalence relation.}:
+For a relation $\Equiv$ on $A$, the following are equivalent\footnotemark:
 \begin{compactitem}
  \item $\Equiv$ is an equivalence.
- \item There is a set $B$ and a function $f:A\to B$ such that $x\Equiv y$ iff $f(x)=f(y)$.
- \item Every element of $A$ is in exactly one class in $A/\Equiv$.
-\end{compactitem}
-
-In particular, the elements of $A/\Equiv$ 
-\begin{compactitem}
- \item are pairwise disjoint,
- \item have $A$ as their overall union.
+ \item $\Equiv$ is the kernel of some function, i.e., there is a set $B$ and a function $f:A\to B$ such that $x\Equiv y$ iff $f(x)=f(y)$.
+ \item $A/\Equiv$ is a partition on $A$, i.e., every element of $A$ is in exactly one class in $A/\Equiv$.
 \end{compactitem}
 \end{theorem}
+\footnotetext{Logical equivalence is itself an equivalence relation.}
 
+\paragraph{Partial Equivalence Relations}
 Consider a partial equivalence relation $\Equiv$ on $A$.
 $\Equiv$ is not an equivalence because it is not reflexive.
 However, we can easily prove: if $x \Equiv y$, then $x\Equiv x$ and $y\Equiv y$.
+Thus, the only elements for which $x\Equiv x$ does not hold are the ones that are in relation to no element at all.
 
 Thus, we have:
 \begin{theorem}\label{thm:math:per}
 A partial equivalence relation $\Equiv$ on $A$ is the same as an equivalence relation on a subset of $A$.
 \end{theorem}
 
+\paragraph{Normal and Canonical Forms}
+Instead of working with classes, we usually prefer working with representatives.
+
+\begin{definition}[System of Representatives]
+Consider an equivalence relation $\Equiv$ on $A$.
+A subset $R$ of $A$ is a system of \textbf{representatives} for $\Equiv$ if it contains exactly one element from every $\Equiv$ class.
+\end{definition}
+
+Normal forms are used to choose representatives for each element:
+
+\begin{definition}[Normal Forms]
+Consider an equivalence relation $\Equiv$ on $A$.
+A function $N:A\to A$ is called a \ldots if
+\begin{compactitem}
+ \item \textbf{normal form}: $N(x)\Equiv x$ and $N(N(x))=N(x)$ for all $x\in A$
+ \item \textbf{canonical form}: $N$ is a normal form and $N(x)=N(y)$ whenever $x\Equiv y$
+\end{compactitem}
+\end{definition}
+
+We also call $N(x)$ the normal/canonical form of $x$.
+The process of mapping $x$ to $N(x)$ is called \textbf{normalization}.
+
+The main application of canonical forms is that we can check $x\Equiv y$ by comparing $N(x)$ and $N(y)$.
+
+\begin{theorem}\label{thm:math:normalform}
+Consider an equivalence relation $\Equiv$ on $A$ and a normal form $N: A\to A$.
+The following are equivalent:
+\begin{compactitem}
+ \item $N$ is a canonical form.
+ \item The image of $N$ is a system of representatives.
+ \item $\Equiv$ is the kernel of $N$.
+\end{compactitem}
+\end{theorem}
 
 \subsection{Orders}
 
@@ -115,8 +158,8 @@ If $\leq$ is a preorder, then for all elements $x,y$, there are four mutually ex
 \hline
 & $x\leq y$ & $x\geq y$ & $x=y$ \\
 \hline
-$x$ strictly smaller than $y$, i.e., $x>y$ & true  & false & false\\
-$x$ strictly greater than $y$, i.e., $x<y$ & false & true  & false \\
+$x$ strictly smaller than $y$, i.e., $x<y$ & true  & false & false\\
+$x$ strictly greater than $y$, i.e., $x>y$ & false & true  & false \\
 $x$ and $y$ incomparable      & false & false & false \\
 $x$ and $y$ similar           & true  & true  & maybe \\
 \hline

@@ -1,15 +1,15 @@
-The size $|S|$ of a set $S$ is a very complex topic of mathematics because there are different degrees of infinity.
+The size $|S|$ of a set $S$ is a very complex operation because there are different degrees of infinity, i.e., not all infinite sets have the same size.
 Specifically, we have that $|\pwr(S)|>|S|$, i.e., we have infinitely many degrees of infinity.
 
 In computer science, we are only interested in countable sets.
-We use a very simple definition that writes $C$ for countable and merges all greater sizes into uncountable sets, whose size we write as $U$.
+Therefore, we use a much simpler definition of size: we write $C$ for \emph{countable} and $U$ for uncountable, i.e., everything that is bigger:
 
 \begin{definition}[Size of sets]\label{def:setsize}
 The size $|S|\in\N\cup\{C,U\}$ of a set $S$ is defined by:
 \begin{itemize}
 \item if $S$ is finite: $|S|$ is the number of elements of $S$
-\item if $S$ is infinite and bijective to $\N$: $|S|=C$, and we say that $S$ is countable
-\item if $S$ is infinite and not bijective to $\N$: $|S|=U$, and we say that $S$ is uncountable
+\item if $S$ is infinite and bijective to $\N$: $|S|=C$, and we say that $S$ is \textbf{countable}
+\item if $S$ is infinite and not bijective to $\N$: $|S|=U$, and we say that $S$ is \textbf{uncountable}
 \end{itemize}
 \end{definition}
 

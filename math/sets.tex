@@ -9,7 +9,7 @@ These are typically among the first data structures and algorithms implemented i
 When building sets, we have to start somewhere with some sets that are assumed to exist.
 These are called the \emph{bases sets} or the \emph{primitive sets}.
 
-The following table gives an overview, where we also list the size of each set according to Def.~\ref{def:setsize}:
+The following table gives an overview of commonly used base sets, where we also list the size of each set according to Def.~\ref{def:setsize}:
 
 \begin{ctabular}{|l|l|l|}
 \hline
@@ -43,7 +43,7 @@ $\String$ & lists of characters & $C$ \\
 \footnotetext{Primitive integers are the $2^n$ possible values for a sequence of $n$ bits.
 Old machines used $n=8$ (and the integers were called ``bytes''), later machines used $n=16$ (called ``words'').
 Modern machines typically use $32$-bit or $64$-bit integers.
-Modern programmers usually---but dangerously---assume that $2^n$ is much bigger than any number that comes up in practice so that essentially $\Int =\Z$.
+Modern programmers usually---but dangerously---assume that $2^n$ is much bigger than any number that comes up in practice so that essentially (but not actually) $\Int =\Z$.
 Some programming languages (e.g., Python) correctly implement $\Int=\Z$.}
 \footnotetext{The ASCII standard defined $2^7$ or $2^8$ characters. Nowadays, we use Unicode characters, which is a constantly growing set containing the characters of virtually any writing system, many scientific symbols, emojis, etc.
 Many programming languages assume that there is one character for every primitive integers, e.g., typically $2^{32}$ characters.}
@@ -74,14 +74,14 @@ Instead, $x\modop y$ is built-in as a function on $\Int$.
 On booleans, we can define the usual boolean operations conjunction (usually written $\&$ or $\&\&$), disjunction (usually written $|$ or $||$), and negation (usually written $!$).
 
 Moreover, we have the equality and inequality functions, which take two objects $x,y$ and return a boolean.
-These are usually written $x==y$ and $x!=y$ in text files and $x=y$ and $x\neq y$ on paper.
+These are usually written $x==y$ and $x\,!\!=\,y$ in text files and $x=y$ and $x\neq y$ on paper.
 
 \subsection{Set Constructors}\label{sec:math:sets:deriv}
 
 From the base sets, we build all other sets by applying set constructors.
 Those are operations that take sets and return new sets.
 
-The following table gives an overview, where we also list the size of each set according to Def.~\ref{def:setsizecomp}:
+The following table gives an overview of commonly used set constructors, where we also list the size of each set according to Def.~\ref{def:setsizecomp}:
 
 \begin{ctabular}{|l|l|l|}
 \hline
@@ -126,8 +126,8 @@ $\{l_1:A_1,\ldots,l_n:A_n\}$ & record: like $A_1\times\ldots\times A_n$ but also
 
 \subsection{Characteristic Functions of the Set Constructors}\label{sec:math:sets:derivfun}
 
-Every set constructor comes systematically with characteristic functions into and out of the constructed sets $C$.
-These functions allow building elements of $C$ or using elements of $C$ for other computations.
+Every set constructor comes systematically with characteristic functions into and out of the constructed sets $S$.
+These functions allow building elements of $S$ or using elements of $S$ for other computations.
 
 For some sets, these functions do not have standard notations in mathematics.
 In those cases, different programming languages may use slightly different notations.
