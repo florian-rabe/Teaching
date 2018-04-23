@@ -1,0 +1,50 @@
+\subsection{Subsets and Characteristic Functions}
+
+\subsection{Operations on Subsets}
+
+\subsection{Closures}
+
+\begin{definition}[Closure System]\label{def:math:clossys}
+A \textbf{closure system} $C$ on a set $A$ is a set of subsets of $A$ (called the \textbf{closed} sets) such that the intersection of any collection of closed sets is again closed.
+
+For any $X\sq A$, the smallest closed superset of $X$ (which can be constructed by taking the intersection of all closed supersets of $X$) is called the $C$-\textbf{closure} of $X$.
+\end{definition}
+
+Here ``any number'' is meant to include the intersection of
+\begin{compactitem}
+ \item infinitely many sets
+ \item no set, i.e., $A$ (which is the intersection of $0$ subsets of $A$) is always closed
+\end{compactitem}
+
+\begin{definition}[Closure Operator]\label{def:math:closop}
+A \textbf{closure operator} $C$ on a set $A$ is a function from subsets of $A$ to subsets of $A$ such that
+\begin{compactitem}
+ \item for all $X\sq A$: $X\sq C(X)$
+ \item for all $X\sq A$: $C(C(X))= C(X)$
+ \item for all $X,Y\sq A$: if $X\sq Y$, then $C(X)\sq C(Y)$
+\end{compactitem}
+
+The sets for which $C(X)=X$ are called $C$-\textbf{closed}.
+\end{definition}
+
+\begin{theorem}[Closure]\label{thm:math:clos}
+Closure systems and closure operators are the same in the following sense:
+\begin{compactitem}
+ \item Given a closure operator, the closed sets form a closure system.
+ \item Given a closure system, the closure is a closure operator.
+\end{compactitem}
+\end{theorem}
+
+Closure operators occur in multiple places of these notes including
+
+\begin{example}
+Given a set $U$, the reflexive/symmetric/transitive/reflexive-transitive/equivalence relations on $U$ each form a closure system on $U\times U$.
+The respective closure operators are
+\begin{compactitem}
+ \item reflexive closure: $r\mapsto r\cup \Delta_U$
+ \item symmetric closure: $r\mapsto r\cup r^{-1}$
+ \item transitive closure: $r\mapsto r\cup rr \cup rrr\cup \ldots=\bigcup_{i=1}r^i$
+ \item reflexive-transitive closure: $r\mapsto \Delta_U\cup r\cup rr \cup rrr\cup \ldots=\bigcup_{i=0}r^i$
+ \item equivalence closure: $r\mapsto \bigcup_{i=0}(r\cup r^{-1})^i$
+\end{compactitem}
+\end{example}

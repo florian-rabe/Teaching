@@ -1,0 +1,124 @@
+A binary relation between sets $A$ and $B$ is a subset $\#\sq A\times B$.
+We usually write $(x,y)\in\#$ as $x\# y$.
+
+\subsection{Classification}
+
+\begin{definition}[Properties of Relations]\label{def:math:rel}
+We say that $\#$ is \ldots if the following holds:
+ \begin{compactitem}
+ \item functional: for all $x\in A$, there is at most one $y\in B$ such that $x\# y$.
+ \item total: for all $x\in A$, there is at least one $y\in B$ such that $x\# y$.
+ \item injective: for all $y\in B$, there is at most one $x\in A$ such that $x\# y$.
+ \item surjective: for all $y\in B$, there is at least one $x\in A$ such that $x\# y$.
+ \end{compactitem}
+
+Moreover, $\#$ is \ldots if it is \ldots:
+ \begin{compactitem}
+ \item a partial function: functional
+ \item a (total) function: functional and total
+ \item bijective: total, functional, injective, and bijective
+ \end{compactitem}
+
+If a $\#$ is functional, we write $\#(x)$ for the $y\in B$ such that $x\# y$ if such a (necessarily unique) $y$ exists.
+\end{definition}
+
+Because relations are the subsets of some set (namely $A\times B$), they admit all operations of subsets:
+\begin{compactitem}
+ \item empty relation: for no $x\in A$, $y\in B$ we have $x\# y$
+ \item universal relation: for all $x\in A$, $y\in B$ we have $x\# y$
+ \item for two relations $r$ and $s$:
+  \begin{compactitem}
+   \item union of $r$ and $s$: $x\,(r\cup s)\,y$ iff $x\,r\,y$ or $x\,r\,y$ 
+   \item intersection of $r$ and $s$: $x\,(r\cup s)\,y$ iff $x\,r\,y$ and $x\,r\,y$
+  \end{compactitem}
+\end{compactitem}
+
+Moreover, if $r\sq s$ (if $x\,r\,y$, then also $x\,s\,y$), we say that $s$ is a refinement of $r$.
+
+\subsection{Operations on Relations}
+
+\begin{definition}[Identity]\label{def:math:reliden}
+We define the identity relation $\Delta_A$ between $A$ and $A$ by: 
+\[x\,\Delta_A\,y \tb\miff\tb x=y\]
+i.e., $\Delta_A=\{(x,x):x\in A\}$.
+\end{definition}
+
+\begin{theorem}[Identity]\label{thm:math:reliden}
+The identity is functional, total, injective, and surjective.
+\end{theorem}
+
+\begin{definition}[Composition]\label{def:math:relcomp}
+Given relations $r$ between $A$ and $B$ and $s$ between $B$ and $C$, we define the relation $rs$ between $A$ and $C$ by
+\[x\,(rs)\,z \tb\miff\tb x\,r\,y \mand y\,s\,z \mforsome y\in B\]
+\end{definition}
+
+Composition $rs$ is also written as $r;s$ or $s\circ r$.
+
+\begin{theorem}[Composition]\label{thm:math:relcomp}
+If two relations are both functional/total/injective/surjective, then so is their composition.
+\end{theorem}
+
+\begin{theorem}[Properties of Composition]\label{def:math:relcat}
+Composition is associative whenever defined.
+
+Identity is a neutral element for composition whenever defined.
+\end{theorem}
+
+\begin{definition}[Powers]\label{def:math:relcomp}
+Given a relation $r$ between $A$ and $A$ and a natural number $n$, we define $X^n$ inductively by
+\[r^0=\Delta_A\]
+\[r^{n+1}=X^n r\]
+We also define
+\[r^{-n}=(r^{-1})^n\]
+\end{definition}
+
+\begin{definition}[Dual Relation]\label{def:math:reldual}
+For every relation $\#$, the relation $\#^{-1}$ is defined by $x\,\#^{-1}\, y$ iff $y\,\#\,x$.
+
+$\#^{-1}$ is called the \textbf{dual} of $\#$.
+\end{definition}
+
+\begin{theorem}[Dual Relation]\label{thm:math:reldual}
+If a relation is functional/total/injective/surjective, then its dual is injective/surjective/functional/total, respectively.
+
+In particular, the dual of a bijective function is a bijective function, which we call its \textbf{inverse}.
+\end{theorem}
+
+\begin{theorem}[Properties of Dualization]\label{thm:math:reldualprop}
+For all relations $r$, we have $(r^{-1})^{-1}=r$.
+
+For the identity relation, we have $\Delta_A^{-1}=\Delta_A$.
+
+For all composed relations, we have $(rs)^{-1}=s^{-1}r^{-1}$.
+
+For all powers of relations, we have $(r^n)^{-1}=(r^{-1})^n=r^{-n}$.
+\end{theorem}
+
+\subsection{Point-Free Formulations}
+
+A statement about relations between $A$ and $B$ is called \emph{point-free} if no elements $x\in A$ or $y\in B$ are mentioned explicitly.
+Point-free formulations take some getting used to but are more compact and eventually easier to work with.
+
+\begin{theorem}[Point-Free Formulations]
+For a relation $r$ between $A$ and $B$, the following are equivalent:
+\begin{ctabular}{|l|l|}
+\hline
+functional & $r^{-1}r\sq\Delta_B$\\
+total      & $rr^{-1}\supseteq\Delta_A$\\
+injective  & $rr^{-1}\sq\Delta_A$\\
+surjective & $r^{-1}r\supseteq\Delta_B$\\
+\hline
+\end{ctabular}
+
+For a relation $r$ on $A$, the following\footnotemark are equivalent:
+\begin{ctabular}{|l|l|}
+\hline
+reflexive & $\Delta_A\sq r$\\
+symmetric & $r^{-1}=r$\\
+transitive & $rr\sq r$\\
+reflexive and transitive & $\Delta_A\sq r$ and $rr=r$\\
+\hline
+\end{ctabular}
+\end{theorem}
+
+\footnotetext{The concepts on the left are defined in Def.~\ref{def:math:binrel}.}
