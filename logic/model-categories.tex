@@ -218,7 +218,7 @@ Then:
 \end{theorem}
 \begin{proof}
 Exercise.
-For isomorphisms, note that the mapping $\phi^{-1}$ exists uniquely if the mapping $\phi$ is bijective.
+For isomorphisms, note that the mapping $\phi^{-1}$ exists \emph{uniquely} because the mapping $\phi$ is bijective.
 \end{proof}
 
 \begin{theorem}
@@ -310,10 +310,10 @@ Almost every model has a rich structure of different submodels.
 \item The submodels of the empty theory are simply the subsets.
 \item Every model $M$ is its own submodel $M\leq M$.
 Of course, this is the greatest possible submodel of $M$.
-\item For every model $M$, we can form the set $Defin_M := \{u\in \univ^M\,|\,\mexists t \msuchthat \semm{t}{M}=u\}$.
+\item For every model $M$, we can form the set $\mathit{Defin}_M := \{u\in \univ^M\,|\,\mexists t \msuchthat \semm{t}{M}=u\}$.
 Intuitively, it contains all definable elements, i.e., all elements that can be named by a term $t$ in the syntax.
-$Defin_M$ is the smallest submodel of $M$.
-For example, $Defin_O=\es$ for every order $O$, and $Defin_R=\{0\}$ for every ring $R$.
+$\mathit{Defin}_M$ is the smallest submodel of $M$.
+For example, $\mathit{Defin}_O=\es$ for every order $O$, and $\mathit{Defin}_R=\{0\}$ for every ring $R$.
 \item All inclusion maps between the number sets $\N$, $\Z$, $\Q$, $\R$, and $\C$ yield submodels for various signatures.
 For example, $(\Z,+,0,-,*,1)$ is a subring of $(\C,+,0,-,*,1)$.
 And the rational numbers are a subfield of the real numbers, which are a subfield of the complex numbers.
@@ -327,20 +327,30 @@ The according result applies to rational numbers.
 This set is the image of the endomorphism $z\mapsto kz$.
 Thus $k\Z$ is closed and yields a subring of the integers.
 Moreover, we have $k\Z\sq l\Z$ iff $l|k$.
-\item The universal relation $\top_M=\{(x,y)\,:\,x,y\in\univ^M\}=\univ^M\times\univ^M$ is an equivalence relation( and thus a model of the theory of equivalence relations).
+\item The universal relation $\top_M=\{(x,y)\,:\,x,y\in\univ^M\}=\univ^M\times\univ^M$ is an equivalence relation (and thus a model of the theory of equivalence relations).
 Its submodels are the equivalence relations on $\univ^M$.
 \end{compactitem}
 \end{example}
 
 \subsection{Interaction with Theories}
 
-Note that if $M\leq N$ and $N$ is a $(\Sigma;\Theta)$-model, then $M$ may or not be a $(\Sigma;\Theta)$-model.
-Thus, $M$ has fewer submodels if $\Theta$ has more axioms.
+All of the above has been formulated for \emph{signatures} $\Sigma$, not for \emph{theories} $(\Sigma;\Theta)$.
+This is because if $M$ and $N$ are $\Sigma$-models and $M\leq N$, and $N$ is a $(\Sigma;\Theta)$-model, then $M$ is not necessarily also $(\Sigma;\Theta)$-model.
+Similarly, if $M$ is a $(\Sigma;\Theta)$-models, $N$ may or may not be.
+In other words, if $N$ as a $(\Sigma;\Theta)$, it has fewer submodels if $\Theta$ has more axioms.
 
-However, we know that the inclusion morphism $M\to N$ is strong and mono.
-Therefore, Thm.~\ref{thm:univ:preserve} tells us that a propositional formula (i.e., a formula without $\forall$, $\exists$) holds in $M$ for some assignment iff it holds in $N$ for the same assignment.
-Universally quantified propositional formulas that hold in a model also hold in any submodel.
-And existentially quantified propositional formulas that hold in a model also hold in any supermodel.
+These negative results are a consequence of the fact that morphisms do not preserve/reflect all formulas.
+However, we do not have an arbitrary morphism here: we have an inclusion morphism $M\to N$, and we know that inclusion morphisms are strong and mono.
+Then Thm.~\ref{thm:univ:preserve} tells us that a propositional formula (i.e., a formula without $\forall$, $\exists$) holds in $M$ for some assignment iff it holds in $N$ for the same assignment.
+
+Therefore, we have at least some positive results:
+Universally quantified propositional formulas that hold in a model also hold in any submodel;
+thus, if all axioms in $\Theta$ have that form, any $\Sigma$-submodel is also a $(\Sigma;\Theta)$ submodel.
+Similarly, existentially quantified propositional formulas that hold in a model also hold in any supermodel.
+thus, if all axioms in $\Theta$ have that form, any $\Sigma$-supermodel is also a $(\Sigma;\Theta)$ supermodel.
+
+Especially the former case is important in practice:
+Many important theories only use axioms that are universally quantified propositional formulas, including most of the theories from Sect.~\ref{sec:fol:adtexamples}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Product Models}\label{sec:univ:prod}
@@ -369,7 +379,7 @@ We define the $\Sigma$-model $M_1\times M_2$ as follows:
 For $i=1,2$, we obtain projection morphisms $(-)_i:M_1\times M_2\to M$ that map $(u,v)_1=u$ and $(u,v)_2=v$.
 
 \begin{example}
-Products are one the most important ways to obtain to build larger models from smaller ones. (Submodels and quotients only produce smaller models.)
+Products are one the most important ways to build larger models from smaller ones. (Submodels and quotients only produce smaller models from larger ones.)
 \begin{compactitem}
 \item The commutative group $(\C,+,0,-)$ can be seen as the product of $(\R,+,0,-)$ with itself because
 \[(x+yi)+(x'+y'i)=(x+x')+(y+y')i\tb 0=0+0i\tb -(x+yi)=-x+(-y)i\]
@@ -385,6 +395,7 @@ The operations in $P$ are
 \item The product of two rings is again a ring.
 \item The product $P=F\times G$ of two fields is only a ring and not a field.
 The problem is that elements like $(0^F,1^G)$ are different from $0^P=(0^F,0^G)$ but do not have a multiplicative inverse.
+\item In the product $P=O\times O'$ of two orders, pairs $(u,u')\leq^P (v,v')$ if $u\leq^O v$ and $u'\leq^{O'} v'$.
 \end{compactitem}
 \end{example}
 
@@ -398,8 +409,8 @@ Moreover, we know that $(u,v)=(u',v')$ iff $u=u'$ and $v=v'$.
 Therefore, if both factors are non-empty, then any formula that does not use $\neg$, $\vee$, or $\impl$ holds in a product iff it holds in both factors.
 Similarly, any Horn formula holds in a product if it holds in both factors.
 
-Thus, many important theories admit product models.
-An important exception is the theory of fields (which uses an axiom with $\neg$). 
+Thus, many important theories admit product models, including most of the ones from Sect.~\ref{sec:fol:adtexamples}.
+The most important exception is the theory of fields (which uses an axiom with $\neg$). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Power Models}\label{sec:univ:exp}
@@ -443,7 +454,7 @@ In particular, $M^{\{0,1\}}$ is isomorphic to $M\times M$, and the two definitio
 If $M$ is a $(\Sigma;\Theta)$-model, then $M^I$ may or may not be a $(\Sigma;\Theta)$-model.
 Therefore, if we restrict attention to $(\Sigma;\Theta)$-models we may not always have power models.
 
-However, we can use the same arguments as for product models to show that $M^I$ is a $(\Sigma;\Theta)$-model for special cases of $\Theta$.
+However, we can use the same arguments as for product models to show that $M^I$ is a $(\Sigma;\Theta)$-model for many important special cases of $\Theta$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Terminal Models}\label{sec:univ:term}
@@ -454,7 +465,7 @@ But they are the dual of the crucially important concept of initial models (see 
 \subsection{The Analog for Sets: The Trivial Sets}
 
 Singleton sets (i.e., sets of size $1$) have a special property.
-If $T=\{t\}$ for some $t$, there is a unique function $M\to T$ for every set $M$: It maps every $x\in M$ to $t$.
+If $T=\{t\}$ for some $t$, there is a unique mapping $M\to T$ for every set $M$: It maps every $x\in M$ to $t$.
 
 \subsection{Formal Definition}
 

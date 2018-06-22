@@ -321,7 +321,13 @@ If $\gamma$ is a substitution from $\Gamma$ to $\Gamma'$, we write $\gamma:\Gamm
 If $\Gamma=\{x_1,\ldots,x_n\}$ and $\gamma(x_i)=t_i$, we write $\gamma$ as $[\sub{x_1}{t_1},\ldots,\sub{x_n}{t_n}]$.
 \end{notation}
 
-\emph{Remark}: It is not so common to use contexts when talking about FOL and FOLEQ. When you study additional literature, you will probably not find them. The reason is that --- contrary to other logics --- FOL and FOLEQ are so simple that contexts are not needed. However, contexts make a lot of things much clearer and more elegant, and a good computer scientist should understand them. Also, some literature writes substitutions the other way around: $\sub{t}{x}$ instead of $\sub{x}{t}$.
+\begin{remark}[Contexts]
+It is not so common to use contexts when talking about FOL and FOLEQ. When you study additional literature, you will probably not find them. The reason is that --- contrary to other logics --- FOL and FOLEQ are so simple that contexts are not needed. However, contexts make a lot of things much clearer and more elegant, and a good computer scientist should understand them.
+\end{remark}
+
+\begin{notation}
+Some literature writes substitutions the other way around: $\sub{t}{x}$ instead of $\sub{x}{t}$.
+\end{notation}
 
 \begin{example}\label{ex:fol:sub}
 Let $\Sigma$ be the signature of monoids.
