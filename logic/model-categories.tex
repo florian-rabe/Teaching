@@ -493,7 +493,8 @@ If it is a $(\Sigma;\Theta)$-model, it is also a terminal $(\Sigma;\Theta)$-mode
 If not, there may or not be other $(\Sigma;\Theta)$-models that are terminal.
 
 However, it is easy to see that the terminal $\Sigma$-model satisfies all formulas that do not contain $\false$ or $\neg$.
-Therefore, it is terminal for many theories.
+Therefore, it is terminal for many practically important theories.
+Again, fields are the most important exception.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Initial Models}\label{sec:univ:init}
@@ -539,7 +540,7 @@ If $\Theta$ contains only Horn formulas, we obtain an initial $\Sigma$-model $I$
 \end{theorem}
 \begin{proof}
 The model is well-defined because $\Equiv$ is a congruence relation (see Sect.~\ref{sec:univ:quot}).
-Moreover, $I$ is the quotient of the term model constructed in Thm.~\ref{thm:univ:termmodel}.
+Moreover, $I$ is the quotient of the term model constructed in Thm.~\ref{thm:univ:termmodel} by $\Equiv$.
 
 The unique morphism $u:I\to M$ maps $u([t])=\semm{t}{M}$.
 The rest is left as an exercise.
@@ -548,7 +549,7 @@ The rest is left as an exercise.
 Note that the term model of Thm.~\ref{thm:univ:termmodel} is isomorphic to the one from Thm.~\ref{thm:univ:termmodel2} for $\Theta=\es$.
 
 \begin{example}[Initial Models]
-Many data types can be specified by Horn theories, and we obtain may initial models:
+Many data types can be specified by Horn theories, and we obtain many initial models:
 \begin{compactitem}
 \item The initial set is the empty set.
 \item More generally, the empty model is initial whenever it is a model at all (i.e., whenever it satisfies all axioms in $\Theta$), e.g., for the theory of orders.
@@ -583,7 +584,7 @@ As we will see in Sect.~\ref{sec:univ:meta:subquot}, quotients are the dual cons
 An equivalence relation on a set $M$ is a binary relation $\Equiv$ on $M$ that is reflexive, symmetric, and transitive.
 In that case, we can form the equivalence class $[m]:=\{x\in M\,|\,m\Equiv x\}$ for every $m\in M$.
 
-The set $M/\Equiv:=\{[m]:m\in M\}$ of all equivalence classes is called the quotient of $M$ by $\Equiv$.
+The set $M/\Equiv\;:=\;\{[m]:m\in M\}$ of all equivalence classes is called the quotient of $M$ by $\Equiv$.
 
 The classification mapping $[-]:M\to M/\Equiv$ maps every $m$ to its equivalence class.
 It is surjective, and we have $m\Equiv n\iff [m]=[n]$.
@@ -662,9 +663,9 @@ Almost every model has a rich structure of quotient models:
 It is the kernel of the morphism $\modulus_k:\Z\to\Z_k$.
 $\Z_k$ is isomorphic to the corresponding quotient.
 \item A group is called simple if it has no non-trivial quotient groups. In a huge collaborative undertaking, mathematicians have been able to find all finite simple groups \cite{finitegroups1}, one of the biggest results ever in mathematics.
-\item The diagonal relation $\Delta_M=\{(x,x)\,:\,x\in \univ^M\}$ is a congruence.
+\item The diagonal relation $\Delta_M=\{(x,x)\,:\,x\in \univ^M\}$ is a congruence (moreover, the smallest possible congruence).
 The quotient $M/\Delta_M$ is isomorphic to $M$.
-\item The universal relation $\top_M$ is a congruence.
+\item The universal relation $\top_M$ is a congruence (moreover, the largest possible congruence).
 The quotient $M/\top_M$ is a trivial model.
 \end{compactitem}
 \end{example}
@@ -672,7 +673,7 @@ The quotient $M/\top_M$ is a trivial model.
 
 \subsection{Interaction with Theories}
 
-Note that if $M$ is $(\Sigma;\Theta)$-model, then $M/\Equiv$ may or not be a $(\Sigma;\Theta)$-model.
+If $M$ is $(\Sigma;\Theta)$-model, then $M/\Equiv$ may or not be a $(\Sigma;\Theta)$-model.
 Thus, $M$ has fewer quotients if $\Theta$ has more axioms.
 
 However, we know that the classification morphism is strong and epi.
@@ -735,29 +736,39 @@ Here it is necessary to work ``up to isomorphism'', i.e., in the quotient by $\c
 For example, we have $M\times N \cong N\times M$ but not $M\times N=N\times M$.
 Similarly, we have $A\times \{\ast\}\cong A$ but not $A\times \{\ast\}=A$.
 Thus, the axioms do not hold exactly --- they only hold if we identify isomorphic models.
-An example is the absorbing element: We do have $A\times \es=\es$.
+An exception is the absorbing element: We do have $A\times \es=\es$, not only $A\times \es\cong \es$.
 
 \subsection{Duality}\label{sec:univ:meta:dual}
 
 \subsubsection{Terminal and Initial Models}\label{sec:univ:meta:terminit}
 
+Inspecting the definitions of terminal and initial models, we can spot an important duality:
+The definitions are exactly the same except for flipping the direction of the arrows.
+Initial models have unique morphisms \emph{into} any other models, and terminal models have unique morphisms \emph{out of} any other model.
+
+Another duality between the two is that both are unique up to isomorphism: any two initial models of the same theory are isomorphic, and any two terminal models of the same theory are isomorphic.
+
+This is a special case of an extremely powerful and wide-reaching duality.
+As a general rule, for every interesting definition, we obtain another interesting definition (the dual) by flipping all arrows.
+Moreover, for every theorem about the original definition, we obtain a theorem about the dual definition by flipping all arrows.
+This is studied in detail in the field of category theory \cite{categories,categories_awodey}.
+
 \subsubsection{Submodels and Quotients}\label{sec:univ:meta:subquot}
 
-Given a model $M$, we have the following correspondence of dual concepts:
+Consider a fixed model $M$ of a fixed theory.
+We have the following duality between closed sets/submodels/images and congruences/quotients/kernels:
 
 \begin{center}
 \begin{tabular}{|l||l|l|}
 \hline
-Concept & for submodels & for quotients \\
+ & submodels $L$ of $M$& quotients $Q$ of $M$ \\
 \hline
-\hline
-New models & submodels $L$ of $M$ & quotients $Q$ of $M$ \\
 Constructed from & closed subsets of $\univ^M$ & congruence relations on $\univ^M$ \\
 Characterized by & inclusion monomorphism $L\to M$ & classification epimorphism $M\to Q$ \\
 Induced by & images of morphisms into $M$ & kernels of morphisms out of $M$ \\
-Biggest model & $M$ & $M/\Delta_M\cong M$ \\
+Greatest model & $M$ & $M/\Delta_M\cong M$ \\
 Least model & image of initial model & kernel of terminal model \\
-Least model for $\Theta=\es$ & $Defin_M$ & $M/\top_M$ \\
+Least model for $\Theta=\es$ & $\mathit{Defin}_M$ & $M/\top_M$ (trivial model) \\
 \hline
 \end{tabular}
 \end{center}
@@ -803,7 +814,7 @@ Thus, the closed subsets and the congruence relations of $M$ each form a closure
 Concretely, the lattice relation between submodels $N,N'$ of $M$ is given by the subset relation of their universes.
 Equivalently, $N\leq N'$ iff there is a monomorphism $N\harr N'$.
 The greatest element is $M$ itself.
-The least element is $Defin_M$. This is also the image of the unique morphism $I\to M$.
+The least element is $\mathit{Defin}_M$. This is also the image of the unique morphism $I\to M$.
 The join of $N$ and $N'$ is the smallest submodel that is bigger than both $N$ and $N'$; we can construct it by starting with $N\cup N'$ and iteratively adding elements until we obtain a closed subset.
 
 The lattice relation between quotients $Q,Q'$ of $M$ is given by the subset relation between their congruence relations.
@@ -831,14 +842,24 @@ The least quotient is $\Z/\Equiv_1$; its universe is $\{\Z\}$, which is isomorph
 \end{compactitem}
 \end{example}
 
+\subsubsection{Products and Coproducts}\label{sec:univ:meta:prodcoprod}
+
+The dual concept of product models $M_1\times M_2$ are the coproduct models $M_1\sqcup M_2$.
+
+For sets, the coproduct of sets is the disjoint union $D=\{1\}\times M_1\cup \{2\}\times M_2$.
+Just like the product comes with two projection epimorphism $M_1\times M_2\to M_i$, the coproduct comes with two injection monomorphisms $M_i\to M_1\sqcup M_2$.
+
+However, it is not possible to define a coproduct in general for arbitrary signatures $\Sigma$.
+Moreover, if a coproduct of $\Sigma$-models $M_i$ exists, its universe is usually not the disjoint union of the universes of the $M_i$.
+
 \subsection{Factorization of Morphisms}
 
 \begin{theorem}\label{thm:univ:factorize}
 For every model morphism $\phi:M\to N$, we have $M/(\kernel{\phi})\cong N|(\image{\phi})$.
 \end{theorem}
 \begin{proof}
-The isomorphism maps \[M/(\kernel{\phi}) \ni[m] \mapsto \phi(m) \in  N|(\image{\phi}).\]
-Its inverse maps \[N|(\image{\phi})\ni n \mapsto \{m\in\univ^M\;|\;\phi(m)=n\}\in M/(\kernel{\phi}).\]
+The isomorphism maps \[M/(\kernel{\phi}) \;\ni\;[m] \mapsto \phi(m) \;\in\;  N|(\image{\phi}).\]
+Its inverse maps \[N|(\image{\phi})\;\ni\; n \mapsto \{m\in\univ^M\;|\;\phi(m)=n\}\;\in\; M/(\kernel{\phi}).\]
 \end{proof}
 
 \begin{theorem}\label{thm:univ:factorize2}

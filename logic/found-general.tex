@@ -65,8 +65,7 @@ We cannot give a model theoretic semantics for the foundation itself -- it is in
 \paragraph{The Definitional Method}
 We arrive at the following blueprint to build mathematics:
 \begin{enumerate}
- \item We define grammars and inference systems.
- \footnote{Readers already familiar with LF from Part \ref{part:lf} may read this as: We introduce LF.}
+ \item We define grammars and inference systems.\footnote{Readers already familiar with LF from Part \ref{part:lf} may read this as: We introduce LF.}
  \item We use them to define proof-theoretic logics.
  \item We fix one proof-theoretical logic and one theory in it as the foundation.
  \item We develop mathematics within this theory. In particular, we give model theories for other logics.
@@ -85,9 +84,9 @@ The most important example of a definition principle is \emph{description}. Assu
 we introduce $c$ as a name for the uniquely existing object.
 
 \paragraph{Leaps of Faith}
-The appeal of the definitional method is that the problem of inconsistency is reduced to the choice of the foundation. If the axiom of the foundation are chosen consistently, then the definitional method can never introduce inconsistencies. Thus, the foundations provides a solid, robust footing to get off the ground.
+The appeal of the definitional method is that the problem of inconsistency is reduced to the choice of the foundation. If the axiom of the foundation are chosen consistently, then the definitional method can never introduce inconsistencies. Thus, the foundation provides a solid, robust footing to start building mathematics.
 
-But how can we be sure that the foundation is consistent. The best way to prove consistency of a theory is to give a model. But we cannot give a model theory for the foundation itself. Even if we could somehow manage to prove consistency -- e.g., by giving a model the foundation within itself -- this would not help: Using the foundation to prove its own consistency is just circular reasoning -- of course, an inconsistent foundation can prove anything including its own consistency. In fact, G\"odel's theorem goes even further: It basically says that the only foundations that can prove their own consistency are the inconsistent ones.
+But how can we be sure that the foundation is consistent. The best way to prove consistency of a theory is to give a model. But we cannot give a model theory for the foundation itself. Even if we could somehow manage to prove consistency --- e.g., by giving a model the foundation within itself --- this would not help: Using the foundation to prove its own consistency is just circular reasoning --- of course, an inconsistent foundation can prove anything including its own consistency. In fact, G\"odel's theorem goes even further: It basically says that the only foundations that can prove their own consistency are the inconsistent ones.
 
 Therefore, we have to trust the consistency of the foundation. Understandably, this has led to a substantial amount of disagreement between scholars arguing which foundation to use. Usually, we try to use the weakest possible foundation, the one that requires the least trust. A foundation should only formalize ideas that are immediately obvious and somehow justified by our intuition and reality.
 
@@ -105,7 +104,7 @@ Secondly, the definitional method constructs the real numbers as objects in the 
 
 The axiomatic method can be seen as a complement to the definitional method that abstracts from the construction and only works with the final result. Axiomatically, we pick a logic $L$ and a theory $T$ and do some work in it, e.g., by proving $T\der^L F$. Definitionally, we fix a foundation $\mathcal{F}$ and give a sound model theory $M$ for $L$ and a model for $T$ in it. Because of soundness, we can port the axiomatic result to the definitional realm and conclude that $M\md^{\mathcal{F}} F$.
 
-Most importantly, the axiomatic result can be reused in any foundation, in which a model $M$ can be found. If $T$ is theory of the real numbers, it does not matter if $M$ is constructed in set theory using Cauchy sequences or in any other way in any other foundation. Scholars use this principle implicitly all the time and thus gain a certain degree of independence from the foundation.
+Most importantly, the axiomatic result can be reused in any foundation, in which a model $M$ can be found. If $T$ is the theory of the real numbers, it does not matter if $M$ is constructed in set theory using Cauchy sequences or in any other way in any other foundation. Scholars use this principle implicitly all the time and thus gain a certain degree of independence from the foundation.
 
 Most results in mathematics are separated from the foundation by several layers of axiomatic theories. It is understood that a result applies to any foundation in which these axiomatic theories can be modeled. Since most mathematically interesting axiomatic theories can be modeled in each foundation, (If not, it is arguably a bad foundation.), it often does not matter which foundation a result is based on.
 

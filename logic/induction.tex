@@ -254,7 +254,7 @@ For every $A\in V$, the set of words $L(A)\sq\Sigma^*$ is defined by
 \begin{remark}
 Note that the context-free induction principle defines finitely many sets at the same time: $L(A)$ for every $A\in V$.
 Typically we are only interested in $L(S)$ where $S$ is the start symbol.
-But it is not possible to define only $L(S)$ -- the definition of $L(S)$ must refer to $L(A)$ for other non-terminals $A$.
+But it is not possible to define only $L(S)$ --- the definition of $L(S)$ must refer to $L(A)$ for other non-terminals $A$.
 Therefore, we define $L(A)$ for all $A\in V$ together.
 We speak of \emph{mutual induction}.
 \end{remark}
@@ -334,7 +334,7 @@ But just like context-free induction requires a function for every non-terminal,
 \paragraph{Inductive Definition}
 
 Context-sensitive inductive definitions abound in theoretical computer science.
-Many non-trivial operations -- e.g., compiling a program -- are technically solved in this way (even if they are not called that way).
+Many non-trivial operations --- e.g., compiling a program --- are implemented in this way (even if that is not always obvious or mentioned explicitly).
 
 \begin{example}[Substitution]
 Def.~\ref{def:fol:subapp} uses context-sensitive induction to define substitution application.
@@ -560,7 +560,7 @@ Therefore, FOLEQ cannot fully capture case \ref{def:nat:coverage} of Def.~\ref{d
 
 Indeed, as we know from Ex.~\ref{ex:nat:incomplete}, even though the theory of Ex.~\ref{ex:nat:fol:induction} is complete (i.e., can prove or disprove every formula), there are non-standard models that satisfy the exact same FOLEQ formulas as the intended standard model $SN$.
 
-Moreover, and even worse, we know that Peano arithmetic -- i.e., the union of the theories from Ex.~\ref{ex:foldef:nat4} and~\ref{ex:nat:fol:induction} -- is not even a complete theory:
+Moreover, and even worse, we know that Peano arithmetic --- i.e., the union of the theories from Ex.~\ref{ex:foldef:nat4} and~\ref{ex:nat:fol:induction} --- is not even a complete theory:
 There are formulas that are true in the standard model but can be neither proved nor disproved in FOLEQ.
 The proofs of these formulas require induction hypotheses that FOLEQ's Peano arithmetic cannot express.
 \end{remark}

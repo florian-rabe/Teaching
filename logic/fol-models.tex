@@ -869,7 +869,7 @@ Additionally, we define
 \end{example}
 
 \begin{tabularfigure}{|p{7cm}|l|c|c|c|c|c|c|}{Data types for two binary function symbols (T marks theorems)}{fig:mod:binaryfunc2}
-\multicolumn{2}{c|}{symbol and/or axiom} & \sw{semi-ring} & \sw{ring} & \sw{field} & \sw{bounded lattice} & \sw{Boolean lattice}\\
+\multicolumn{2}{c|}{symbol and/or axiom} & \sw{semi-ring} & \sw{ring} & \sw{field\footnotemark} & \sw{bounded lattice} & \sw{Boolean lattice}\\
 \hline
 \multicolumn{2}{|c|}{binary functions $\circ$, $\ast$} & \multicolumn{5}{|c|}{\checkmark} \\[.2cm]
 \hline
@@ -931,7 +931,10 @@ $\forall x\; x\ast x^{-1}\doteq 0  \wedge x^{-1}\ast x\doteq 0$ & complement (no
 %                                  & \multicolumn{7}{|c|}{} & \checkmark \\[.2cm]
 %\hline
 \end{tabularfigure}
+\begin{multfootnotetext}{2}
+\footnotetext{In addition to the axioms listed in this table, the theory of fields has the axiom $\neg 0\doteq 1$.}
 \footnotetext{If present, the theory is called \emph{commutative (semi-)ring}.}
+\end{multfootnotetext}
 
 \begin{example}[Models based on two binary function symbols]\label{ex:mod:binaryfunc2:mod}
 Models of the data types from Ex.~\ref{ex:mod:binaryfunc2} are often obtained by combining models from Ex.~\ref{ex:mod:binaryfunc:mod}.

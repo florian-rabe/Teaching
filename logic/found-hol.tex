@@ -4,7 +4,7 @@ The variety of type theories is even bigger than that of set theories: The diffe
 
 In general, every symbol or axiom introduced in a foundational theory could alternatively be built into the foundational logic a priori. Thus, the formal border between foundational logic and foundational theory can be a bit blurry. This is specifically the case for HOL where different accounts vary regarding which features are present in HOL the logic and which are relegated to individual theories. The name ``HOL'' is commonly used for all of them.
 
-To avoid confusion, we will reserve the name HOL for ``HOL the logic'' as defined in introduced in Part~\ref{part:hol}
+To avoid confusion, we will reserve the name HOL for ``HOL the logic'' as defined in Part~\ref{part:hol}
 
 The foundational theory HOLF arises by adding choice and infinity to HOL. As mentioned above, there is some flexibility as to whether these features are hard-coded into HOL already or not. Our choice here tries to put all features that have a more mathematical flavor rather than a logical one into the foundational theory.
 
@@ -13,14 +13,14 @@ HOLF is the HOL-theory that consists of
 \begin{itemize}
  \item individuals: a single base type $\iota:\TYPE$ (in addition to the base type $o$ which is built into HOL),
  \item description operator: a family of constants $\delta_A:(A\arr o)\arr A$ for any HOLF-type $A$,
- \item description axiom: the axiom scheme
+ \item description axiom: the axiom schema
   \[\forall p:A\arr o.(\exists^! x:A.p\; x \impl p\;(\delta_A\;p))\]
    for any HOLF type $A$,
  \item choice operator: a family of constants $\epsilon_A:(A\arr o)\arr A$ for any HOLF-type $A$,
- \item choice axiom: the axiom scheme
+ \item choice axiom: the axiom schema
   \[\forall p:A\arr o.(\exists x:A.p\; x \impl p\;(\epsilon_A\;p))\]
    for any HOLF type $A$,
- \item infinity: an axiom forcing the infinity of $\iota$, e.g., by stating the existence of an injective function $\iota\arr\iota$.
+ \item infinity: an axiom forcing the infinity of $\iota$, e.g., by stating the Peano axioms for $\iota$.
 \end{itemize}
 \end{definition}
 
@@ -33,7 +33,7 @@ The choice operator is the characteristic feature of the HOL foundation. If $p:A
 HOLF does not run into inconsistencies due to these problems because the corresponding axioms are chosen carefully: It only states the property of $\epsilon x:A.p(x)$ (namely that it satisfies $p$) if $p$ is satisfiable at all, and then all we know about it is that it satisfies $p$. Otherwise, the result of $\epsilon x:A.p(x)$ is unspecified.
 Thus, we can prove that $\epsilon x:\iota.\false$ exists but nothing else about it. Therefore, as far as we know, the only tangible side effect of the choice operator is that all types are non-empty.
 
-The description operator is a special case of the choice operator and therefore redundant. But because it is less objectionable, it is preferable to use it whenever that is sufficient. In fact, often HOLF is often formulated without the choice operator because the description operator is enough for most applications.
+The description operator is a special case of the choice operator and therefore redundant. But because it is less objectionable, it is preferable to use it whenever that is sufficient. In fact, HOLF is often formulated without the choice operator because the description operator is enough for most applications.
 
 \section{Definition Principles}
 
@@ -56,6 +56,6 @@ For any well-formed closed term $p:A\arr o$ together with a proof of $\exists x:
 \end{itemize}
 \end{definition}
 
-The intuition behind this extension is that the new type $t$ represents the subtype of $A$ containing those objects that satisfy $p$. Since HOL cannot directly describe this type, a new base type $t$ is introduced and $r$ and $a$ map back and forth between $A$ and $t$. These map go is such a way that $t$ becomes indeed isomorphic to the subtype.
+The intuition behind this extension is that the new type $t$ represents the subtype of $A$ containing those objects that satisfy $p$. Since HOL cannot directly describe this type, a new base type $t$ is introduced and $r$ and $a$ map back and forth between $A$ and $t$. These map is axiomatized such that $t$ becomes indeed isomorphic to the subtype.
 
 This type definition is strong enough to define most useful types as derived notions, such as record types and inductive types.

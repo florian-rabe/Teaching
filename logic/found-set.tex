@@ -25,7 +25,7 @@ ZF is the FOLEQ theory consisting of no function symbols, a binary predicate sym
 \item comprehension or specification (``For all $X$ and any formula $F$ with free variable $x$, there is a set that we may call $\{x\in X\,|\,F(x)\}$.'')
  \[\mathcal{C}_\forall\big(\;\forall X \;\exists C\;\forall z\; (z\in C \darr (z\in X\wedge F(z)))\big)\]
  for all formulas $F$ with a least a free variable $x$; here $\mathcal{C}_\forall$ quantifies universally over all other free variables that occur in $F$
-\item replacement (``For all $X$ and any term $t$ with free variables $x$, there is a set that we may call $\{t(x)\,:\,x\in X\}$.'')
+\item replacement (``For all $X$ and any term $t$ with free variable $x$, there is a set that we may call $\{t(x)\,:\,x\in X\}$.'')
  \[\mathcal{C}_\forall\big(\forall X \;\exists R\;\forall z\; (z\in R \darr (\exists x\;(x\in X\wedge z\doteq t(x))))\big)\]
  for all terms $t$ with at least a free variable $x$
 \item regularity (which we will skip here)
@@ -34,9 +34,9 @@ ZF is the FOLEQ theory consisting of no function symbols, a binary predicate sym
 \end{itemize}
 \end{definition}
 
-Note that ZF is not a finite theory. It contains infinitely many instances of comprehension and replacement because they exist for any formula $F$ or term $t$. These are often called axiom \emph{schemes} to emphasize that they are actually infinite families of axioms.
+Note that ZF is not a finite theory. It contains infinitely many instances of comprehension and replacement because they exist for any formula $F$ or term $t$. These are often called axiom \emph{schemas} to emphasize that they are actually infinite families of axioms.
 
-The spirit of the axioms is as follows. Extensionality defines equality. Empty gets us off the ground by making sure that the simplest set exists; then pairing, union, and power set let us form bigger sets from existing ones. Comprehension goes backwards: If we have constructed a big set from small ones, comprehension gives us all the smaller ones in between. Replacement goes sideways: If we have constructed a set, it gives us one of the same size but with different elements.
+The spirit of the axioms is as follows. Extensionality defines equality. Empty gets us off the ground by making sure that the simplest set exists; then pairing, union, and power set let us form bigger sets from existing ones. Comprehension goes backwards: If we have constructed a big set from small ones, comprehension gives us all the smaller ones in between. Replacement goes sideways: If we have constructed a set, it gives us one of the same size (or smaller) but with different elements.
 
 Regularity avoids certain degenerate cases. In particular, regularity can be used to prove that there are no $\in$-cycles, i.e.,
  \[\neg\exists x_1\;\ldots\exists x_n\;(x_1\doteq x_n\wedge x_1\in x_2\wedge\ldots\wedge x_{n-1}\in x_n)\]
@@ -54,7 +54,7 @@ Our version of the replacement axiom scheme is not standard. It is usually state
 Note that our version is pointless if we do not have any non-trivial terms. Therefore, it is usually stated with a formula instead of a term. Our version makes sense in light of Rem.~\ref{rem:zf:terms}.
 \end{remark}
 
-There are many variants of ZF-style set theories using slightly different but equivalent axioms. In fact, ours is a new variant itself. It is usually not relevant which variant is used because they are all isomorphic in the sense that we have FOLEQ-theory morphisms between them. However, one variant is important: the axiom of choice:
+There are many variants of ZF-style set theories using slightly different but equivalent axioms. In fact, ours is a new variant itself. It is usually not relevant which variant is used because they are all isomorphic in the sense that we have $\FOLEQ$-theory isomorphisms between them. However, one variant is important: the axiom of choice:
 
 \begin{definition}
 ZFC arises from ZF by adding the axiom of choice, which we will only state informally: For any set $X$ of pairwise disjoint non-empty sets, there is a set $C$ such that $C$ contains exactly one element from every element of $X$.
@@ -62,11 +62,11 @@ ZFC arises from ZF by adding the axiom of choice, which we will only state infor
 
 In particular, if we think of $X$ as the set of classes of an equivalence relation, then we can think of $C$ as a system of representatives. So the axiom of choice lets us choose a system of representatives for any equivalence relation.
 
-The main objection to the axiom of choice is that it has many weird consequences such as the Banach–Tarski paradox \cite{banach_tarski_paradox}.
+The main objection to the axiom of choice is that it has many weird consequences such as the Banach-Tarski paradox \cite{banach_tarski_paradox}.
 
 \section{Definition Principles}
 
-ZF is a very weird FOLEQ theory because it does not have any function symbols and thus no terms except variables. Therefore, technically, we do not have any mathematical objects -- we only have theorem saying that certain objects exist, perhaps uniquely. Every mathematical statement has to be coded in terms of formulas and variables.
+ZF is a very weird FOLEQ theory because it does not have any function symbols and thus no terms except variables. Therefore, technically, we do not have any mathematical objects --- we only have theorem saying that certain objects exist, perhaps uniquely. Every mathematical statement has to be coded in terms of formulas and variables.
 
 Any set must be coded as a property $A(x)$ together with a proof of $\exists x\;\forall z\;(z\in A\darr A(z))$. Then, for example, a function from $A(x)$ to $B(x)$ is a formula $F(x,y)$ together with a proof of $\forall x\;(A(x)\arr \exists^! y\;B(y)\wedge F(x,y))$. Here $\exists^! y\;P(y)$ is the quantifier of unique existence defined as $\exists y\;(P(y)\wedge \forall z\;(P(z)\arr z\doteq y))$.
 
@@ -100,7 +100,7 @@ Using the axioms of ZF, it is easy to prove the unique existence of the unordere
 \[\forall X\;\forall Y\;\exists^! P\; \forall z\;(z\in P \darr (z\in X \vee z \in Y))\]
 Using the description principle, we obtain a binary function symbol $f$, and we denote $f(t,t')$ as $\{t,t'\}$
 
-Similarly, we proceed with the axioms of union, power set, comprehension, and replacement introducing new function symbols and notations as already indicated in Def.~\ref{def:zf}. Note that the two axiom schemes introduce infinite families of function symbols. For example, comprehension introduces a unary function symbol $f_{F(x)}$ for every formula $F(x)$, and we introduce the notation $\{x\in A \,|\, F(x)\}$ for $f_{F(x)}(A)$.
+Similarly, we proceed with the axioms of union, power set, comprehension, and replacement introducing new function symbols and notations as already indicated in Def.~\ref{def:zf}. Note that the two axiom schemas introduce infinite families of function symbols. For example, comprehension introduces a unary function symbol $f_{F(x)}$ for every formula $F(x)$, and we introduce the notation $\{x\in A \,|\, F(x)\}$ for $f_{F(x)}(A)$.
 \end{example}
 
 The description principle is accepted by virtually everybody. It already gets complicated when we generalize a bit:
