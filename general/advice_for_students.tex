@@ -253,15 +253,6 @@ This is important because many people will not actually read but only skim the p
 So make sure your paper is - at some abstract level - understandable even for a very cursory reader.
 \medskip
 
-Use the hyperref package to make sure a good table of contents is generated for your pdf.
-For example, use
-\begin{verbatim}
-\setcounter{tocdepth}{3}
-\usepackage[bookmarks,bookmarksopen,bookmarksnumbered,colorlinks,
-   linkcolor=blue,citecolor=red,urlcolor=gray,breaklinks]{hyperref}
-\end{verbatim}
-\medskip
-
 There are certain formulations that have important literal meanings.
 For example,``we would/could/should do'' means you cannot do it (yet).
 ``we can do'' means you have not tried it (yet).
@@ -293,6 +284,58 @@ Sometimes it is possible -- and then it is very strong -- to develop a little on
 For example, it can describe desirable but mutually exclusive properties where trade-offs are needed.
 Or it can describe fundamentally different approaches to a problem with their advantages and disadvantages.
 Based on such descriptions, you can concisely position your work within the field and relate it to other papers.
+
+\subsection{Process}
+
+Every paper should have one main author.
+Especially, when a paper is derived from a your work, you should be the main author.
+Besides the didactic benefit, this ensures you can later make the paper a part of your thesis even if you did not write every sentence in the paper.
+If the main author ends up doing significantly more work than the other authors, it makes sense to deviate from the alphabetical author order and make the main author the first author.
+
+The tasks of the main authors are
+\begin{compactitem}
+\item create the repository/folder, create an empty paper, and make sure it compiles for all authors
+\item look up the LaTeX style required by the venue and adjust the paper accordingly
+\item coordinate between all authors
+\item maintain the list of tasks for other authors and remind them as needed
+\item make sure everything said in the paper is true
+\item make sure the entire paper is consistent and pleasant to read, e.g.,
+ \begin{compactitem}
+  \item no concept, definition, notation should be used without being defined
+  \item repetitions should be avoided
+  \item concepts should be referred to consistently by the same word
+  \item all formatting (e.g., sectioning, use of boldface, LaTeX environments) should be consistent throughout the paper
+ \end{compactitem}
+\item keep track of deadlines
+\item do the final checks for formatting, spelling, duplicate references, compilation warnings, etc.
+\item submit the paper
+\item after the review, coordinate the response to the reviews, prepare the final version, and submit the copyright form.
+\end{compactitem}
+
+Note that when working with senior co-authors, it is not unusual that some authors will write a part without reading all the rest.
+For example, your thesis advisor might claim things in the introduction that are not backed up by the later text, e.g., because they expect you to still add those parts in the text or because they misunderstood exactly what you have implemented.
+Also sometimes there are co-authors who are only interested in one part of the paper, e.g., a particular case study.
+They might misunderstand what the rest of the paper is about.
+In those cases, the main author may have to do substantial edits to the other authors' text.
+In some cases, you may even have co-authors, who only give you feedback or instructions without directly writing text.
+
+Ideally, your senior co-authors can completely forget about the paper because you take care of everything and will let them know them exactly when they have to do what.
+This is particularly helpful for co-authors, who are very busy, e.g., writing multiple papers in parallel.
+The mental overhead of the above main-author-tasks can be very stressful whereas adding a little text here and there is a relatively relaxed task.
+If you make it easy for your them to write a paper with you, they'll be happy to write another one with you later.
+
+However, the main author may not on their own communicate with the outside --- the following decisions should be made jointly by all authors:
+\begin{compactitem}
+ \item whether to add or remove authors
+ \item when/where to submit or to withdraw a submitted paper
+ \item if/when to circulate a draft, e.g., on a mailing list or to get feedback from a colleague
+ \item if/when the paper is ready for submission
+ \item how to respond to the reviews (if a two-stage review is used where the authors send a response to the editors).
+\end{compactitem}
+
+In general, if you work with co-authors from outside your daily research environment (e.g., if you write a paper with a senior co-author who is not you thesis advisor), be careful about special sensitivities.
+Maybe they do not like it if you edit their text, or maybe they are annoyed if you introduce errors because you misunderstood their text.
+Most authors are friendly and understanding, but i
 
 \section{Thesis Writing Tips}
 
@@ -1093,9 +1136,11 @@ In Germany, if you have published a paper, you can report it to the VG-Wort and 
 \item You have to pay tax on the money you get.
 \end{compactitem}
 
-\section{Some Recurring LaTeX Issues}
+\section{Some LaTeX Tips}
 
 TeXstudio seems to be the best tex editor at the moment.
+But opinions vary.
+Make sure you use an editor that can jump from a LaTeX line to the corresponding pdf line and vice versa.
 \medskip
 
 Familiarize yourself with the following general LaTeX packages:
@@ -1116,6 +1161,17 @@ and these custom LaTeX packages by Florian, which you find at \url{https://svn.k
 \end{compactitem}
 \medskip
 
+Use the hyperref package to make sure a good table of contents is generated for your pdf.
+For example, use
+\begin{verbatim}
+\setcounter{tocdepth}{3}
+\usepackage[bookmarks,bookmarksopen,bookmarksnumbered,colorlinks,
+   linkcolor=blue,citecolor=red,urlcolor=gray,breaklinks]{hyperref}
+\end{verbatim}
+\medskip
+
+When submitting something for formal review or informal feedback, make sure you have line numbers.
+For CS conferences that use the llncs style, that means you have to add \verb|\pagestyle{plain}| (and remove it when submitting the final version).
 
 bibtex is a part of LaTeX for bibliographies.
 The following are important sources of bib entries:
