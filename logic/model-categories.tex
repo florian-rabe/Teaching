@@ -680,6 +680,99 @@ However, we know that the classification morphism is strong and epi.
 Therefore, Thm.~\ref{thm:univ:preserve} tells us that any formula that does not use $\impl$ or $\neg$ that holds in a model also holds in every quotient.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Subquotients}
+
+\subsection{The Analog for Sets: Partial Equivalence Relations}
+
+A binary relation $\Equiv$ on a set $M$ is a \textbf{partial equivalence} relation (PER) if it is symmetric and transitive.
+
+Contrary to an equivalence relation, a PER need not be reflexive.
+However, it is easy to see that if $\Equiv$ is a PER, then $x\Equiv x$ for every $x\in M$ for which $x\Equiv y$ or $y\Equiv x$ for any $y\in M$.
+Thus, the only counter-examples to reflexivity are those $x$ that are not in relation with any other element.
+Formally, we have: A PER on $M$ is exactly the same as an equivalence relation on a subset of $M$.
+
+PERs allow combining the subset and the quotient operation in one go.
+Moreover, they contain subsets and quotients as special case:
+If $\Equiv\sq \Delta_M$, then $\Equiv$ identifies a subset, namely the subset containing those $x\in M$ for which $x\Equiv x$.
+If $\Equiv\supseteq \Delta_M$, then $\Equiv$ is reflexive and thus an equivalence relation and identifies a quotient.
+
+\subsection{Formal Definition}
+
+It is straightforward to define the subquotients of a model $M$ as the quotient models of the submodels of $M$.
+But here we will give a more general definition: A subquotient of $M$ is any model $m$ that is \emph{isomorphic to} a quotient of a submodel of $M$.
+This allows $m$ to exist independently of $M$, which is often more practical.
+
+\begin{definition}[Subquotient]
+Consider two $\Sigma$-models $M$ and $m$ and a relation $\sim\sq\univ^m\times \univ^M$.
+$(m,\sim)$ is called a \textbf{subquotient} of $M$ if
+\begin{compactitem}
+\item $\sim$ is total and injective (equivalently: $\sim^{-1}$ is functional and surjective),
+\item for every $n$-ary function symbol $f$
+  \[\mif\tb x_1\sim X_1, \ldots, x_n\sim X_n \tb\mthen\tb f^m(x_1,\ldots,x_n)\sim f^M(X_1,\ldots,X_n)\]
+for all $x_i\in\univ^m$ and $X_i\in\univ^M$.
+\end{compactitem}
+\end{definition}
+
+Neither $\sim$ nor $\sim^{-1}$ is a function.
+But when implementing subquotients in computers, it is nicer to have only functions.
+Therefore, we use them like functions as follows:
+\begin{compactitem}
+ \item We write $r$ if we use $\sim^{-1}$ as a function: $r(X)=x$ iff $x\sim X$. There is at most one such $x$ but there may be none, i.e., $r$ is a partial function $\univ^M\to\univ^m$.
+ \item We write $l$ if we use $\sim$ as a function: $l(x)=X$ iff $x\sim X$. There is at least one such $X$ but there may be multiple, i.e., $l$ is a non-deterministic function $\univ^m\to\univ^M$ (which randomly returns one such $X$).
+\end{compactitem}
+The functions $l$ and $r$ are often called \textbf{lift} and \textbf{retract}.
+The condition that $\sim$ is total and injective means that $lr=\Delta_{\univ^m}$, i.e., that retraction undoes the effect of lifting.
+So we can lift elements of the subquotient $m$ to the base model $M$, and retraction pulls them back from $M$ to $m$.
+
+We will look at the special cases first:
+For submodels, $l$ is the embedding of the submodel $m$ into $M$, and $r$ is the partial function that undoes the embedding.
+For quotients, $l$ is the representative-selection that maps each equivalence class to any one of its elements, and $r$ undoes the representative-selection by projection all elements to their equivalence class.
+More precisely, we have:
+
+\begin{theorem}
+Consider a subquotient $(m,\sim)$ of $M$.
+
+If $\sim$ is additionally functional,
+\begin{compactitem}
+ \item $\sim$ and thus $l$ are functions,
+ \item $m$ is isomorphic to the submodel $S$ of $M$ given by the image of $l$,
+ \item $l$ is the isomorphism $m\to S$, and the restriction of $r$ to the image of $l$ is the inverse isomorphism $S\to m$.
+\end{compactitem}
+
+If $\sim$ is additionally surjective, then
+\begin{compactitem}
+ \item $\sim^{-1}$ and thus $r$ are functions,
+ \item $m$ is isomorphic to the quotient $Q$ of $M$ by the kernel of $r$,
+ \item The map $[X]_Q\mapsto r(X)$ is the isomorphism $Q\to m$, and the map $x\mapsto [l(x)]_Q$ is the inverse isomorphism $m\to Q$.
+\end{compactitem}
+
+If $\sim$ is both functional and surjective, then
+\begin{compactitem}
+\item $l$ and $r$ are functions,
+\item $m$ is isomorphic to $M$,
+\item $l:m\to M$ and $r:M\to m$ are the isomorphisms.
+\end{compactitem}
+\end{theorem}
+
+Now we state the general case:
+
+\begin{theorem}
+Consider a subquotient $(m,\sim)$ of $M$.
+Let \[s=\{X\in\univ^M \,|\, x\sim X\mforsome x\in\univ^m\}\] (i.e., $s$ is the image of $l$).
+Then $s$ is closed (wrt to all $\Sigma$-function symbols), and we define $S=M|s$.
+Now let \[q=\{(X,X')\in\univ^M\times\univ^M\,|\,x\sim X\mand x\sim X'\mforsome x\in\univ^m\}\]
+(i.e., $q$ is the kernel of $r$).
+Then $q$ is a congruence (wrt to all $\Sigma$-function symbols), and we define $Q=S/q$.
+
+Then
+\begin{compactitem}
+ \item $m$ is isomorphic to $Q$,
+ \item The map $[X]_Q\mapsto r(X)$ is the isomorphism $Q\to m$, and the map $x\mapsto [l(x)]_Q$ is inverse isomorphism $m\to Q$.
+\end{compactitem}
+\end{theorem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Factoring Models}
 %
 % theory with null elements
