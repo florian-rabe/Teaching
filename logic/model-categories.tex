@@ -771,6 +771,24 @@ Then
 \end{compactitem}
 \end{theorem}
 
+Above, we only defined what it means for a model $m$ to be a subquotient of $M$.
+But in practice, it is often more important to construct $m$ from $M$ if $l$ and $r$ are given.
+We have the following:
+\begin{theorem}
+Consider a $\Sigma$-model $M$ and a set $\univ^m$, a relations $l\sq\univ^m\times\univ^M$ and $r\sq\univ^M\times\univ^m$ such that $lr=\id{\univ^m}$ Then $l$ is a non-deterministic function $l:\univ^m\to\univ^M$ and $r$ is a partial function $r:\univ^m\to\univ^M$.
+
+Assume that $r$ is defined on the closure of the image of $l$ in $M$.
+
+Then it is well-defined to extend $m$ to a $\Sigma$-model by \[f^m(x_1,\ldots,x_n)=r(f^M(l(x_1),\ldots,l(x_n))\]
+And $(m,\sim)$ is a subquotient of $M$ for some relation $\sim$ that satisfies $l\sq\sim\sq r^{-1}$.
+\end{theorem}
+\begin{proof}
+$\sim$ is obtained by taking $r^{-1}$ restricted to the closure of the image of $l$.
+\end{proof}
+
+Because we can implement $l$ and $r$ as (non-deterministic or partial) functions in a programming language, they can be much easier to work with than the relation $\sim$.
+In this case, we can think of $l$ and $r$ as under- and over-approximations of $\sim$.
+Knowing that $m$ is a subquotient and being able to compute in $m$ (for which we need only $l$ and $r$ but not $\sim$) is usually sufficient in practice.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Factoring Models}

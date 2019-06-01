@@ -15,12 +15,17 @@ We say that $\#$ is \ldots if the following holds:
 Moreover, $\#$ is \ldots if it is \ldots:
  \begin{compactitem}
  \item a partial function: functional
- \item a (total) function: functional and total
+ \item a non-deterministic function: total
+ \item a (deterministic, total) function: functional and total
  \item bijective: total, functional, injective, and bijective
  \end{compactitem}
 
 If a $\#$ is functional, we write $\#(x)$ for the $y\in B$ such that $x\# y$ if such a (necessarily unique) $y$ exists.
 \end{definition}
+
+Non-deterministic and partial functions can be awkward to work with mathematically.
+They are usually avoided or paraphrased.
+But they are important when programming: a partial function is simply a programming language function that may throw and exception for some arguments (e.g., division by $0$), and a non-deterministic function is one that may return a different result each time it is called (e.g., a function to generate random numbers).
 
 Because relations are the subsets of some set (namely $A\times B$), they admit all operations of subsets:
 \begin{compactitem}
@@ -123,5 +128,5 @@ reflexive and transitive & $\Delta_A\sq r$ and $rr=r$\\
 
 \footnotetext{The concepts on the left are defined in Def.~\ref{def:math:binrel}.}
 
-Moreover, we have the following equalities for a function $f$\footnote{See Def.~\ref\label{def:kernel}.}:
+Moreover, we have the following equalities for a function $f$\footnote{See Def.~\label{def:kernel}.}:
 \[\ker\,f = f\,f^{-1} \tb\tb \image\,f\times \image\,f = f^{-1}\,f\]
