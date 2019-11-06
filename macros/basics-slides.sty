@@ -1,0 +1,49 @@
+\setbeamercolor{block title}{bg=blue!5}
+\setbeamercolor{block body}{bg=blue!5}
+\setbeamertemplate{blocks}[rounded]
+\setbeamercolor{title}{bg=blue!20}
+
+
+% customize header and footer
+%\setbeamertemplate{headline}{}
+%\setbeamertemplate{headline}{\begin{beamercolorbox}{title}\scriptsize\insertnavigation{\textwidth}\end{beamercolorbox}}
+\setbeamercolor{headline}{bg=blue!10,fg=black}
+\setbeamertemplate{headline}{\begin{beamercolorbox}{headline}\small\hfill\ifnonempty{\insertsection}{\insertsection} \hfill\insertframenumber\end{beamercolorbox}}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{navigation symbols}{}
+
+\newenvironment{blockitems}[1]{\begin{block}{#1}\begin{itemize}\small}{\end{itemize}\end{block}}
+\newenvironment{blockenum}[1]{\begin{block}{#1}\begin{enumerate}\small}{\end{enumerate}\end{block}}
+
+% line end comment
+\newcommand{\lec}[2][blue]{\strut\hfil\strut\null\nobreak\hfill\hbox{{\color{#1}#2}}\par}
+\newcommand{\glec}[1]{\strut\hfil\strut\null\nobreak\hfill\hbox{{\color{gray}#1}}\par}
+
+% make slides appear in toc
+\let\basics@beamer@frametitle\frametitle
+\renewcommand{\frametitle}[1]{\basics@beamer@frametitle{#1}\subsection{#1}}
+
+% make sections insert a new slide
+\let\basics@section\section
+\renewcommand{\section}[1]{\basics@section{#1}\begin{frame}\begin{center}\LARGE #1\end{center}\end{frame}}
+
+% better version than redefining frametitle
+\newenvironment{myframe}[1]{\subsection{#1}\begin{frame}\basics@beamer@frametitle{#1}}{\end{frame}}
+\newenvironment{myfragileframe}[1]{\subsection{#1}\begin{frame}[fragile]\basics@beamer@frametitle{{#1}}}{\end{frame}}
+
+\definecolor{myred}{RGB}{192,64,64}
+
+\newcommand{\highlight}[2]{{\color{#1}#2}}
+\newcommand{\hlA}[1]{\highlight{red}{#1}}
+\newcommand{\hlB}[1]{\highlight{purple}{#1}}
+\newcommand{\hlBB}[1]{\highlight{brown}{#1}}
+\definecolor{olive}{rgb}{0,0.4,0}
+\newcommand{\hlC}[1]{\highlight{olive}{#1}}
+\newcommand{\hlCC}[1]{\highlight{olive}{#1}}
+\newcommand{\hlD}[1]{\highlight{gray}{#1}}
+\newcommand{\hlE}[1]{\highlight{blue}{#1}}
+
+\newcommand{\hlOn}[3]{{\only<#1>{#2}#3}}
+\newcommand{\hlAOn}[2]{\hlOn{#1}{\color{red}}{#2}}
+
+\providecommand{\mmt}{MMT}
