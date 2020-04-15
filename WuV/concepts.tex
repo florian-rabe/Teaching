@@ -1,0 +1,128 @@
+\section{Motivation}
+
+\subsection{Knowledge}
+
+Human knowledge pervades all sciences including computer science, mathematics, natural sciences and engineering.
+That is not surprising: ``science'' is derived from the Latin word ``scire'' meaning ``to know''.
+Similarly, philosophy, from which all sciences derive, is named after the Greek words ``philo'' meaning loving and ``sophia'' meaning wisdom, and the for common ending ``-logy'' is derived from Greek ``logos'' meaning word (i.e., a representation of knowledge).
+
+In regards to knowledge, computer science is special in two ways:
+Firstly, many branches of computer science need to understand how knowledge representation and processing (KRP) as a prerequisite for teaching computers to do knowledge-based tasks.
+In some sense, KRP is the foundation and ultimate goal of all artificial intelligence.%
+\footnote{Indeed, a major problem with the currently very successful machine learning-based AI technology is that it remains unclear when and how it does KRP. That can be dangerous because it leads to AI systems recommending decisions without being able to explain why that decision should be trusted.}
+Secondly, modern information technology enables all sciences to apply computer-based KRP in order to vastly expand on the domain-specific tasks that can be automated.
+Currently all sciences are becoming more and more computerized, but most non-CS scientists (and many computer scientists for that matter) lack a systematic education and understanding of IT-KRP.
+That often leads to bad solutions when domain experts cannot see which KRP solutions are applicable or how to apply them.
+
+\subsection{Representation and Processing}
+
+It is no coincidence that this course uses the phrase ``Representation and Processing''.
+In fact, this is an instance of a universal duality.
+Consider the following table of analogous concept pairs, which could be extended with many more examples:
+
+\begin{center}
+\begin{tabular}{l|l}
+Representation & Processing \\
+\hline
+Static & Dynamic \\
+Situation & Change \\
+Be & Become \\
+Data Structures & Algorithms \\
+Set & Function \\
+State & Transition \\
+Space & Time
+\end{tabular}
+\end{center}
+
+Again and again, we distinguish a static concept that describes/represents what is a situation/state is and a dynamic concept that describes how it changes.
+If that change is a computer doing something with or acting on that representation, we speak of ``processing''.
+
+It is particular illuminating to contrast KRP to the standard CS course on Data Structures and Algorithms (DA).%
+\footnote{The course is typically called ``Algorithms and Data Structures'', but that is arguably awkward because algorithms can exist if there are data structure to work with. Compare my notes on that course in this repository, where I emphasize data structures much more than is commonly done in that course.}
+Generally speaking, DA teaches the methods, and KRP teaches how to apply them.
+Data structures are a critical prerequisite for representing knowledge.
+But data structures alone do not capture what the data means (i.e., the knowledge) or if a particular representation makes any sense.
+Similarly, algorithms are the critical prerequisite for processing knowledge.
+But while algorithms can be systematically analyzed for efficiency, it is much harder to analyze if an algorithm processes knowledge correctly.
+The latter requires understanding what the input and output data means.
+
+Capturing knowledge in computers is much harder than developing data structures and algorithms.
+It is ultimately the same challenge as figuring out if a computer system is working correctly --- a problem that is well-known to be undecidable in general and very difficult in each individual case.
+
+\section{Syntax and Semantics, Data and Knowledge}
+
+Four concepts are of particular relevance to understanding knowledge.
+They form a $2\times 2$-quadruple of concepts:
+
+\begin{center}
+\begin{tabular}{l|l}
+Syntax & Data \\
+\hline
+Semantics & Knowledge
+\end{tabular}
+\end{center}
+
+All four concepts are primitive, i.e., they cannot be defined in simpler terms.
+All sciences have few carefully-chosen primitive on which everything builds.
+This is done most systematically in mathematics (where primitives include set or function).
+While mathematical primitives as well as some primitives in physics or CS are specified formally, the above four concepts can only be described informally, ultimately appealing to pre-existing human understanding.
+Moreover, this description is not standardized --- different courses may use very different descriptions even they ultimately try to capture the same elusive ideas.
+
+\textbf{Data} (in the narrow sense of computer science) is any object that can be stored in a computer, typically combined with the ability to input/output, transfer, and change the object.
+This includes bits, strings, numbers, files, etc.
+
+Data by itself is useless because we would have no idea what to do with it.
+For example, the object $O=((49.5739143, 11.0264941), "2020-04-21T16:15:00CEST")$ is useless data without additional information about its syntax and semantics.
+Similarly, a file is useless data unless we know which file format it uses.
+
+\textbf{Syntax} is a system of rules that describes which data is \textbf{well-formed}.
+For $O$ above the syntax could be ``a pair of (a pair of two IEEE double precision floating point numbers) and a string encoding of an time stamp''. 
+For a file, the syntax is often indicated by the file name extension, e.g., the syntax of an \texttt{html} file is given in Section 12 of the current HTML standard\footnote{\url{https://html.spec.whatwg.org/multipage/}}.
+
+Syntax alone is useless unless we know what the semantics, i.e., what the data means and thus how to correctly interpret and process the data.
+For example, the syntax of $O$ allows to check that $O$ is well-formed, i.e., indeed contains two numbers and a timestamp string.
+That allows rejecting ill-formed data such as $((49.5739143, 11.0264941), "foo")$.
+The HTML syntax allows us to check that a file conforms to the standard.
+
+\textbf{Semantics} is a system of rules that determines the meaning of well-formed data.
+For example, ISO 8601 specifies that timestamp string refer to a particular date and time in a particular time zone.
+Further semantics for $O$ might be implicit in the algorithms that produce and consume it: such as ``the first component of the pair contains two numbers between $0$ and $180$ resp. $0$ and $360$ indicating latitude resp. longitude of a location on earth''.
+Semantics might be multi-staged, and further semantics about $O$ might be that $O$ indicates the location and time of the first lecture of this course.
+Similarly, Section 14 of the HTML standard specifies the semantics of well-formed HTML files by describing how they are to be rendered in a web browser.
+
+\textbf{Knowledge} is the combining of some data with its syntax and semantics.
+That allows applying the semantics to obtain the meaning of the data (if syntactically well-formed and signaling an error otherwise).
+In computer systems,
+\begin{compactitem}
+ \item data is represented using primitive data (ultimately the bits provided by the hardware) and encodings of more complex data (bytes, arrays, strings, etc.) in terms of simpler ones,
+ \item syntax is theoretically specified using grammars and practically implemented in programming languages using data structures,
+ \item semantics is represented using algorithms that process syntactically well-formed data,
+ \item knowledge is elusive and often emerges from executing the semantics, e.g., rendering of an HTML file.
+\end{compactitem}
+
+\section{Semantics as Syntax Transformation}
+
+In order to capture knowledge better in computer systems, we often use two syntax levels: one to represent the data itself and another to represent the knowledge.
+These can be seen as input and output data.
+In that case, semantics is a function that translates from the data syntax to the knowledge syntax, and knowledge is the pair of the data and the result of applying the semantics.
+The following table gives some examples.
+
+\begin{center}
+\begin{tabular}{l|l|l}
+Data syntax & Semantics function & Knowledge syntax \\
+\hline
+SPARQL query & evaluation & result set \\
+SQL query & evaluation & result table \\
+program & compiler & binary code \\
+program expression & interpreter & result value \\ 
+logical formula & interpretation in a model & mathematical object \\
+HTML document & rendering & graphical representation 
+\end{tabular}
+\end{center}
+
+Thus, the role of syntax vs. semantics may depend on the context: just like one function's output can be another function's input, one interpretation's knowledge can be another one's syntax.
+For example, we can first compile a program into binary and then execute it to returns its value.
+
+Such hierarchies of evaluation levels are very common in computer systems.
+In fact, most state-of-the-art compilers are subdivided into multiple phases each further interpreting the output of the previous one.
+Thus, if knowledge is represented in computers, it is invariably data itself but relative to a different syntax.
