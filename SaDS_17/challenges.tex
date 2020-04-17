@@ -73,7 +73,7 @@ Between 1985 and 1987, the Therac-25 machine for medical radiation therapy cause
 Patients received a radiation overdose because the high intensity energy beam was administered while using the protection meant for the low intensity beam.
 
 The cause was that the hardware protection was discontinued, relying exclusively on software to prevent a mismatch of beam and protection configuration.
-But the software had always been buggy due to a systemic failures in the software engineering process including complex systems (code written in assembly, machine had its own OS), lack of software review, insufficient testing (overall system could not be tested), bad documentation (error codes were not documented), and bad user interface (critical safety errors could be manually overridden, thus effectively being warnings).
+But the software had always been buggy due to systemic failures in the software engineering process including complex systems (code written in assembly, machine had its own OS), lack of software review, insufficient testing (overall system could not be tested), bad documentation (error codes were not documented), and bad user interface (critical safety errors could be overridden manually, thus effectively being warnings).
 
 Details: \url{https://en.wikipedia.org/wiki/Therac-25}
 
@@ -81,14 +81,14 @@ Details: \url{https://en.wikipedia.org/wiki/Therac-25}
 In 1991 during the Gulf war, a US Patriot anti-missile battery failed to track an incoming Iraqi Scud missile resulting the death of 28 people.
 
 The cause was a rounding error in the floating point computation used for analyzing the missile's path.
-The software had to divide a large integer (number of $0.1s$ clock cycles since boot $100$ hours ago) by $10$ to obtain the time.
-This was done using a floating-point multiplication by $0.1$---but $0.1$ is off by around $0.000000095$ when chopped to a $24$-bits binary float.
-The resulting time was off by $0.3$ seconds, which combined with the high speed of Scud missile led to a serious miscalculation of the flight path.
+The software had to divide a large integer (number of $0.1s$ clock cycles since boot $100$ hours ago) by $10$ to obtain the time in seconds.
+This was done using a floating-point multiplication by $0.1$ --- but $0.1$ is off by around $0.000000095$ when chopped to a $24$-bits binary float.
+The resulting time was off by $0.3$ seconds, which, combined with the high speed of Scud missile, led to a serious miscalculation of the flight path.
 
 Details: \url{http://www-users.math.umn.edu/~arnold/disasters/patriot.html}
 
 \paragraph{Ariane 5}
-In 1996, the first launch of an Ariane 5 rocket (at a cost of over \$$300$ million for rocket and payload) failed, and the rocket had to be destructed after launch.
+In 1996, the first launch of an Ariane 5 rocket (at a cost of over \$$300$ million for rocket and payload) failed, and the rocket had to be destroyed after launch.
 Both the primary and the backup system had shut down, each trying to transfer control to the other, after encountering the same behavior, which they interpreted as a hardware error.
 
 The cause was an overflow exception in the alignment system caused by converting a $64$-bit float to a $16$-bit integer, which was not caught and resulted in the display of diagnostic data that the autopilot could not interpret.
@@ -109,7 +109,7 @@ For example, $4195835.0/3145727.0$ yielded $1.333 739 068 902 037 589$ instead o
 The cause was a bug in the design of the floating point unit's circuit.
 
 \paragraph{Kerberos Random Number Generator}
-From 1988 to 1996, the network authentification protocol Kerberos used a mis-designed random number generation algorithm.
+From 1988 to 1996, the network authentication protocol Kerberos used a mis-designed random number generation algorithm.
 The resulting keys were so predictable that brute force attacks became trivial although it is unclear if the bug was ever exploited.
 
 The cause was the lack of a truly random seed value for the algorithm.
@@ -187,8 +187,8 @@ Details: \url{http://www.theregister.co.uk/2014/04/09/heartbleed_explained/}
 
 \paragraph{Shellshock}
 From 1998 to 2014, it was possible for any user to gain root access in the bash shell on Unix-based systems.
-The upgrade cost is unknown but was generally small because updates were rolled out within $1$ week of publication.
 Moreover, in certain server applications that passed data to bash, clients could execute arbitrary code on the server.
+The upgrade cost is unknown but was generally small because updates were rolled out within $1$ week of publication.
 
 The cause was the use of unvalidated strings to represent complex data.
 Bash allowed storing function definitions as environment variables in order to share function definitions across multiple instances.
@@ -241,7 +241,7 @@ fail:
 \end{lstlisting}
 
 In a better programming language that emphasizes the use of high-level data structures, the bug would likely not have happened or be caught easily.
-But even using C, it could have been caught by a variety of measures including unreachable code analysis, indentation style analysis, code coverage analysis, unit testing, or coding styles that enforce braces around one-command blocks.
+But even using C, it could have been caught by a variety of measures including unreachable code analysis, indentation style analysis, code coverage analysis, unit testing, or coding styles that enforce braces around single-command blocks.
  
 Details: \url{https://www.imperialviolet.org/2014/02/22/applebug.html}
 
@@ -274,7 +274,7 @@ This has caused dozens of human rights violations due to erroneous arrests or im
 This includes cases where people spent 20 days in jail based on warrants that had already been dismissed.
 
 The cause is a tight staffing situation combined with the switch to a new, more modern software system for recording court decisions.
-The new software expects uses more high-level data types (e.g., reference to a law instead of string) in many places.
+The new software uses more high-level data types (e.g., reference to a law instead of string) in many places.
 This has led to the erroneous recording of decisions and a backlog of converting old decisions into the new database (including decisions that invalidate decisions that are already in the database).
 
 Details: \url{https://arstechnica.com/tech-policy/2016/12/court-software-glitches-result-in-erroneous-arrests-defense-lawyers-say/}
