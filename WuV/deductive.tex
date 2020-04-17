@@ -1,0 +1,22 @@
+Various methods have been developed to represent and perform inferences.
+We structure our presentation by how each method relates to computation, the aspect most whose integration with inference has drawn the most attention.
+In general, the ubiquity of underspecified function symbols and quantified variables means that logical expressions usually do not normalize to unique values.
+At best, computations like $y:=f(x)$ can be represented as open-ended conjectures where different options for $y$ are produced, each together with a proof of the respective equality.
+Therefore, inference systems usually sacrifice computation or at least its efficiency.
+
+\emph{Proof assistants} sit at the extreme end of this spectrum.
+They employ strong logics and high-level declarations to provide a convenient way to formalize domain knowledge and reason about it.
+The reasoning is usually interactive in order to represent inferences that are too difficult to be fully automated.
+Most proof assistants integrate at least some of the other methods to overcome this weakness.
+
+Further along the spectrum, \emph{automated theorem provers} use simpler logics than interactive proof assistants.
+They are fully automatic and much faster, but can handle much fewer theorems, and typically do not check their proofs.
+\emph{Satisfiability checkers} continue this progression by aiming at decidable automation support, whereas theorem proving is usually an semi-decidable search problem.
+That limits them to propositional logic or specific theories of more expressive logics (usually of first-order logic) that are complete, i.e., where every formula can be proved or disproved.
+In the special cases, where satisfiability checkers are applicable, they come close to verified computation systems.
+
+Orthogonal to the above triplet, there are several methods for realizing Turing-complete computation naturally inside a logic.
+Here imperative and object-oriented computation are usually avoided in favor of other programming paradigms that are easier to reason about.
+\emph{Rewriting} aims at optimizing the $f(x)\rewrites y$ progression, allowing users to mark specific transformations as rewrite steps.
+\emph{Terminating recursion} is the method of adding recursive functions to a logic in order to make it a pure functional programming language.
+Finally, \emph{logic programming} restricts attention to theorems of a special form, for which proof search is simple and predictable so that users can represent computations by supplying axioms that guide the proof search.

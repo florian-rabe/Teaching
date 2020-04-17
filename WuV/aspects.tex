@@ -1,0 +1,39 @@
+In~\cite{CarFarKohRab:bmobb19} we have identified the following five basic \defemph{aspects} of mathematics:
+\begin{compactenum}[\em i\rm)]
+\item \defemph{Inference}: deriving statements by \emph{deduction} (i.e., proving), \emph{abduction} (i.e., conjecture formation from best explanations), and \emph{induction} (i.e., conjecture formation from examples).
+\item \defemph{Computation}: algorithmic manipulation and simplification of mathematical expressions and other representations of mathematical objects.
+\item \defemph{Concretization}: generating, collecting, maintaining, and accessing collections of examples that suggest patterns and relations and allow testing of conjectures.
+\item \defemph{Narration}: bringing the results into a form that can be digested by humans, usually in mathematical documents like articles, books, or preprints, that expose the ideas in natural language but also in diagrams, tables, and simulations.
+\item \defemph{Organization}, i.e., the modular structuring of mathematical knowledge.
+\end{compactenum}
+
+\begin{wrapfigure}r{6cm}\vspace*{-2em}
+\includegraphics[width=6cm]{tetrapod-arms.pdf}\vspace*{-.5em}
+\caption{Five Aspects of Math Artefacts}\label{fig:tetrapod}\vspace*{-1em}
+\end{wrapfigure}
+These aspects --- their existence and importance to mathematics --- should be rather uncontroversial. 
+\Cref{fig:tetrapod} illustrates their tight relation: we locate the organization aspect at the centre and the other four aspects at the corners of a tetrahedron, since the latter are all consumers and producers of the mathematical knowledge represented by the former. \cite{CarFarSharBerKohMueRab:somss20} gives a survey of paradigmatic mathematical software systems by the five aspects they address. 
+
+We use the term \textbf{symbolic} to cover deductive or computational in this paper.
+While these libraries are pragmatically very different and are thus distinguished in the classification above they can be treated in the same way for the purpose of search.
+Coming back to our running example OEIS, we see that it contains all five aspects of mathematical knowledge
+\begin{compactenum}
+\item symbolic knowledge: the formulae, even though in this case they are informal ASCII art; there is also computer code 
+\item concrete knowledge: the sequence prefix,
+\item narrative knowledge: the name and comments,
+\item organizational knowledge: the identifiers and references. 
+\end{compactenum}\medskip
+
+\emph{Mathematical information needs} typically involve combinations of these five aspects. A paradigmatic example is the quest for ``\emph{all published integer sequences that are not (yet) listed in the OEIS}'' of an OEIS editor who wants to extend OEIS coverage. Answering this information need will involve finding integer sequences in documents (a combination of concretized and narrative knowledge), determining whether these documents are published (i.e. part of the archival literature; this involves organizational metadata), and pruning out the OEIS sequences. An OEIS user might be interested in ``\emph{the integer sequences whose generating function is a rational polynomial in $\sin(x)$ that has a Maple implementation not affected by the bug in module $M$}''. This additionally involves symbolic knowledge about generating function (formula expressions), and Maple algorithms.  
+
+We take these examples as motivation to develop an approach for multi/cross-aspect information retrieval now.
+\iflong\Cref{sec:needs} develops a concrete example.\fi% long
+
+%%% Local Variables:
+%%% mode: latex
+%%% mode: visual-line
+%%% fill-column: 5000
+%%% TeX-master: "paper"
+%%% End:
+
+%  LocalWords:  CarFarKohRab:bmobb19 defemph CarFarSharBerKohMueRab:somss20 medskip

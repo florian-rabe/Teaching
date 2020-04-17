@@ -5,7 +5,7 @@
 \usepackage{multirow}
 %\usepackage{bm} %% bold face math symbols
 %\usepackage{listings}
-%\usepackage{../macros/mytikz}
+\usepackage{../macros/mytikz}
 %\usepackage{multicol}
 %\usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
 %\usepackage{rotating} \newcommand{\sw}[1]{\begin{sideways}#1\end{sideways}}
@@ -49,11 +49,11 @@ It integrated current directions and recent results in research on knowledge rep
   \input{overview}
 
 \chapter{Representing Syntax and Semantics}\label{sec:wuv:syntax}
-\footnote{This chapter is grouped with the general parts to whom it belongs conceptually. But in the lecture it was treated later.}
+%\footnote{This chapter is grouped with the general parts to whom it belongs conceptually. But in the lecture it was treated later.}
   \input{syntax}
 
 \chapter{Encoding Data}\label{sec:wuv:codecs}
-\footnote{This chapter is grouped with the general parts to whom it belongs conceptually. But in the lecture it was treated after the parts on ontological and concretized knowledge, which motivate it.}
+%\footnote{This chapter is grouped with the general parts to whom it belongs conceptually. But in the lecture it was treated after the parts on ontological and concretized knowledge, which motivate it.}
   \input{codecs}
 
 \part{Ontological Knowledge}\label{sec:wuv:ont}
@@ -63,6 +63,8 @@ It integrated current directions and recent results in research on knowledge rep
 \part{Computational Knowledge}\label{sec:wuv:comp}
 
 \part{Deductive Knowledge}\label{sec:wuv:ded}
+
+\input{deductive}
 
 \part{Narrative Knowledge}\label{sec:wuv:narr}
 
@@ -78,8 +80,8 @@ It integrated current directions and recent results in research on knowledge rep
 %\tocentryBib
 %
 %\input{\currfilebase.bblp}
-%\bibliographystyle{alpha}
-%\bibliography{../../../../../frabe/Program_Data/Latex/bib/rabe,../../../../../frabe/Program_Data/Latex/bib/historical}
+\bibliographystyle{alpha}
+\bibliography{../../../../../frabe/Program_Data/Latex/bib/rabe,../../../../../frabe/Program_Data/Latex/bib/historical,../../../../../frabe/Program_Data/Latex/bib/pub_rabe,}
 %\bibliography{../../../../../homedir/Program_Data/Latex/bib/rabe,../../../../../homedir/Program_Data/Latex/bib/historical}
 
 \end{document}
