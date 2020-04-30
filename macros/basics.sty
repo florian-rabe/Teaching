@@ -57,6 +57,7 @@
 \newcommand{\larr}{\leftarrow}
 \newcommand{\darr}{\leftrightarrow}
 \newcommand{\harr}{\hookrightarrow}
+\newcommand{\jraa}{\longrightarrow}
 \newcommand{\marr}{\mapsto}
 \newcommand{\caret}{\hat{\;}}
 \newcommand{\nin}{\not\in}
@@ -114,6 +115,10 @@
 \newcommand{\motherwise}{\;\mathrm{otherwise}\;}
 \newcommand{\mtext}[1]{\;\mathrm{#1}\;}
 
+% symbol names
+\providecommand{\cn}[1]{\ensuremath{\mathtt{#1}}}
+\newcommand{\makecn}[1]{\expandafter\def\csname#1\endcsname{\cn{#1}}}
+
 %categories, general
 \newcommand{\id}[1]{\op{id}_{#1}}
 \newcommand{\ö}[2]{{#2}\circ {#1}}
@@ -163,8 +168,10 @@
 \newcommand{\bnfalt}{\ensuremath{\;\bnf{|}\;}}
 \providecommand{\alt}{\ensuremath{\;\bnf{|}\;}} % already used by beamer
 \newcommand{\opt}[1]{\bnf{[}#1\bnf{]}}
+\newcommand{\bopt}[1]{\opt{\bnfbracket{#1}}}
 \newcommand{\bnfbracket}[1]{\bnf{(}#1\bnf{)}}
 \newcommand{\rep}[1]{#1^{\bnf{\ast}}}
+\newcommand{\brep}[1]{\rep{\bnfbracket{#1}}}
 \newcommand{\bnfchoice}[1]{\bnf{[}#1\bnf{]}}
 \newcommand{\bnfnegchoice}[1]{\bnf{[\caret}#1\bnf{]}}
 
@@ -179,4 +186,6 @@
 \newcommand{\omdoc}{{\scshape{OMDoc}}\xspace}
 \newcommand{\mathml}{{\scshape{MathML}}\xspace}
 \newcommand{\openmath}{{\scshape{OpenMath}}\xspace}
+\newcommand{\latex}{\LaTeX\xspace}
+
 
