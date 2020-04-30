@@ -1,0 +1,6 @@
+https://gitlab.cs.fau.de/
+
+end a little earlier, leave room for general discussion
+
+create simple slides, don't show notes
+
