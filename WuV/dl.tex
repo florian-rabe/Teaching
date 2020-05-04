@@ -32,9 +32,9 @@ Instead, an ontology language is a formal language that standardizes the syntax 
 The details of the syntax vary between ontology languages.
 But as a general rule, every \textbf{ontology} declares
 \begin{compactitem}
- \item \textbf{individuals} --- concrete objects that exist in the real world, e.g., "Florian Rabe" or "WuV"
- \item \textbf{concepts} --- abstract groups of individuals, e.g., "instructor" or "course"
- \item \textbf{relations} --- binary relations between two individuals, e.g., "teaches"
+ \item \textbf{individual} --- concrete objects that exist in the real world, e.g., "Florian Rabe" or "WuV"
+ \item \textbf{concept} --- abstract groups of individuals, e.g., "instructor" or "course"
+ \item \textbf{relation} --- binary relations between two individuals, e.g., "teaches"
  \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "has-credits"
  \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
  \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
@@ -69,6 +69,12 @@ Ontologies are often divided into two parts:
  \item The \textbf{concrete} part contains everything that depends on the choice of individuals: individuals and assertions.
  It populates the world with inhabitants.
  This part is commonly called the \textbf{ABox} (A for assertional).
+\end{compactitem}
+
+A separate division into two parts is the following:
+\begin{compactitem}
+ \item The \textbf{signature} part contains everything that introduces a \textbf{named entity}: individuals, concepts, relations, and properties.
+ \item The \textbf{theory} part contains everything that describes which statements about the named entities are true: assertions and axioms.
 \end{compactitem}
 
 
@@ -171,12 +177,10 @@ It is well-formed if
 \end{compactitem}
 \end{definition}
 
-
-
 The above grammar exhibits some general structure that we find throughout formal KR languages.
-In particular, an ontology consists of \textbf{named declarations} of four different kinds as well as some axioms.
-Each declaration clarifies which kind it is (in our case by starting with a keyword) and introduces a new identifier.
-For each kind, there are complex expression.
+In particular, an ontology consists of \textbf{named declarations} of four different kinds of entities as well as some assertions and axioms about them.
+Each entity declaration clarifies which kind it is (in our case by starting with a keyword) and introduces a new entity identifier.
+For each kind, there are complex expressions.
 These are anonymous and built inductively; their base cases are references to the corresponding identifiers.
 Sometimes (in our case: individuals and properties), the references are the only expressions of the kind.
 Sometimes (in our case: concepts and relations), there can be many productions for complex expressions.
@@ -249,3 +253,11 @@ $i$ & $i(x,y)$\\
 \caption{Interpretation Function for BOL}\label{fig:bolsem}
 \end{center}
 \end{figure}
+
+\section{Representing Ontologies as Triples}
+
+\subsection{Assertions as Triples}
+
+We have already indicated above 
+
+\subsection{Entity Declaration as 
