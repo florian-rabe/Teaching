@@ -1,0 +1,55 @@
+\section{The OWL Language}
+
+\paragraph{Abstract Syntax and Semantics}
+Due to their central in knowledge representation, a number of languages for ontology writing exist.
+Most importantly, the syntax and semantics of OWL, including several sublanguages, are standardized by the W3C.
+
+OWL includes a number of built-in special entities.
+Most importantly, "owl:Thing" corresponds to "rdfs:Resource" as the concept of all individuals.
+
+\paragraph{Concrete Syntax}
+Several concrete syntaxes have been defined and are commonly used for OWL.
+APIs for OWL implement the abstract syntax along with good support for reading/writing ontologies in any of the concrete syntaxes.
+
+\section{The Protege Tool}
+
+A widely used tool for writing ontologies in OWL is Protege\footnote{\url{https://protege.stanford.edu/}}.
+
+To get started with Protege without getting confused, we need to continue understand how its key terminology maps to other contexts.
+\begin{center}
+\begin{tabular}{l|ll}
+ Here       & Protege & Edited in WebProtege via \\
+\hline
+ individual & individual & listed in "Individuals" tab\\
+ concept    & class   & listed in "Classes" tab  \\
+ relation   & object property & listed in "Properties" tab\\
+ property   & data property & listed in "Properties" tab\\
+ concept assertion & Type & detail area of the individual in "Individuals" tab \\
+ relation assertion & Relationship & detail area of the subject in "Individuals" tab \\
+ property assertion & Relationship & detail area of the subject in "Individuals" tab \\
+\end{tabular}
+\end{center}
+
+Protege's interface treats some parts of the ontology specially:
+\begin{compactitem}
+ \item The "Classes" tab organizes concepts using a tree view based on the subconcept relationship.
+ Superclasses of a class can also be edited directed by listing parents.
+ \item The "Properties" tab organizes properties using a tree view based on the subproperty (i.e., implication, subset) relationship.
+ \item Axioms describing the domain and range of a property can be given directly in its details view.
+\end{compactitem}
+
+Note that classes can be in relationships with other classes as well even though that was not considered in the course so far.
+
+\section{Exercise}
+
+The topic of Exercise 1 is to use Protege to write an OWL ontology for a university.
+
+Protege is a graphical editor for the abstract syntax of OWL.
+Familiarize yourself with the various concrete syntaxes of OWL by writing an ontology that uses every feature once, downloading it in all available concrete syntaxes, and comparing those.
+
+The minimal goal of the exercise session is to get a Hello World example going, at which point the task transitions into homework.
+There will be no homework submission, but you will use your ontology throughout the course.
+
+You should make sure you understand and setup the process in a way that supports you when you revisit and change your ontology many times throughout the semester.
+
+Other than that, the task is deliberately unconstrained to mimic the typical situation at the beginning of a big project, where it is unclear what the ultimate requirements will be.
