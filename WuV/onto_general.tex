@@ -107,18 +107,6 @@ grammar & proper noun & common noun \\
 
 \section{A Basic Ontology Language}
 
-\newcommand{\kw}[1]{\textbf{#1}}
-\renewcommand{\bnf}[1]{{\color{red}#1}}
-%\newcommand{\sem}[1]{\llbrack #1 \rrbrack}
-
-\newcommand{\ID}{\texttt{ID}}
-\newcommand{\dom}{\mathrm{dom}}
-\newcommand{\rng}{\mathrm{rng}}
-\newcommand{\itg}{\cn{int}}
-\makecn{bool}
-\makecn{float}
-\newcommand{\strg}{\cn{string}}
-
 \begin{figure}[hbt]
 \begin{commgrammar}
 \gcomment{Ontologies}\\
@@ -230,7 +218,7 @@ $I_1\; R\; I_2$ & axiom $\sem{R}(\sem{I_1},\sem{I_2})$\\
 $I\; P\; V$ & axiom $\sem{P}(\sem{I},\sem{V})$\\
 $F$ & axiom $\sem{F}$\\
 \hline
-Formula & Formula\\
+Formula & Formula without free variables\\
 $C_1 \Equiv C_2$ & $\forall x:\iota.\sem{C_1}(x)\Leftrightarrow \sem{C_2}(x)$\\
 $C_1 \sqsubseteq C_2$ & $\forall x:\iota.\sem{C_1}(x)\impl \sem{C_2}(x)$\\
 \hline
@@ -241,8 +229,8 @@ Concept & Formula with free variable $x:\iota$\\
 $i$ & $i(x)$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}(x)\vee\sem{C_2}(x)$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}(x)\wedge\sem{C_2}(x)$\\
-$\forall R.C$    & $\forall y:\iota.\sem{R}(x,y)\impl C(y)$\\
-$\exists R.C$    & $\exists y:\iota.\sem{R}(x,y)\wedge C(y)$\\
+$\forall R.C$    & $\forall y:\iota.\sem{R}(x,y)\impl \sem{C}(y)$\\
+$\exists R.C$    & $\exists y:\iota.\sem{R}(x,y)\wedge \sem{C}(y)$\\
 $\dom R$ & $\exists y:\iota.\sem{R}(x,y)$\\
 $\rng R$ & $\exists y:\iota.\sem{R}(y,x)$\\
 \hline

@@ -1,21 +1,25 @@
 \documentclass{beamer}
 \usepackage{graphicx,url}
+
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{xkeyval}
 
 \usepackage{mytikz}
 \usepgflibrary{shapes}
+\usepackage{stmaryrd}
 
 \usepackage{basics}
 \usepackage{basics-slides}
 \usepackage{mmt_listings}
 \usepackage{twelf-math}
 
-%\usepackage{local}
+\usepackage{macros}
+\usepackage{../macros}
 
 \newcommand{\lf}{\mathit{LF}}
 \newcommand{\kity}{\mathit{type}}
+
 
 \renewcommand{\emph}[1]{\alert{#1}}
 
@@ -371,4 +375,187 @@ comp./narr. & Turing completeness \\\hline
 \end{blockitems}
 \end{frame}
 
+\section{Ontological Knowledge}
+
+\begin{frame}\frametitle{Components of an Ontology}
+8 main declarations
+\begin{itemize}
+ \item \textbf{individual} --- concrete objects that exist in the real world, e.g., "Florian Rabe" or "WuV"
+ \item \textbf{concept} --- abstract groups of individuals, e.g., "instructor" or "course"
+ \item \textbf{relation} --- binary relations between two individuals, e.g., "teaches"
+ \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "has-credits"
+ \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
+ \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
+ \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
+ \item \textbf{axioms} --- statements about relations between concepts, e.g., "instructor" $\sqsubseteq$ "person"
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Divisions of an Ontology}
+\begin{blockitems}{Abstract vs. concrete}
+ \item TBox: concepts, relations, properties, axioms
+  \lec{everything that does not use individuals}
+ \item ABox: individuals and assertions
+\end{blockitems}
+
+\begin{blockitems}{Named vs. unnamed}
+ \item Signature: individuals, concepts, relations, properties \lec{together called entities or resources}
+ \item Theory: assertions, axioms
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Comparison of Terminology}
+\begin{center}
+\tiny
+\begin{tabular}{l|llll|l}
+ Here       & OWL      & Description logics & ER model & UML & semantics via logics\\
+\hline
+ individual & instance & individual & entity & object, instance & constant\\
+ concept    & class    & concept &  entity-type & class & unary predicate\\
+ relation   & object property & role & role & association & binary predicate \\
+ property   & data property   & (not common) & attribute & field of base type & binary predicate\\
+\end{tabular}
+\medskip
+
+\begin{tabular}{l|ll}
+ domain & individual & concept \\
+\hline
+type theory, logic & constant, term & type \\
+set theory  & element & set \\
+database    & row & table \\
+philosophy\footnote{as in \url{https://plato.stanford.edu/entries/object/}} & object & property \\
+grammar & proper noun & common noun \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Ontologies as Sets of Triples}
+\begin{center}
+\begin{tabular}{l|lll}
+Assertion & \multicolumn{3}{c}{Triple} \\
+          & Subject & Predicate & Object \\
+\hline
+concept assertion  & "Florian Rabe" & \texttt{is-a} & "instructor" \\
+relation assertion & "Florian Rabe" & "teaches" & "WuV" \\
+property assertion & "WuV" & "has credits" & 7.5 \\
+\end{tabular}
+\medskip
+
+Efficient representation of ontologies using RDF and RDFS standardized special entities.
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Special Entities}
+RDF and RDFS define special entities for use in ontologies:
+\begin{itemize}
+ \item "rdfs:Resource": concept of which all individuals are an instance and thus of which every concept is a subconcept
+ \item "rdf:type": relates an entity to its type:
+  \begin{itemize}
+   \item an individual to its concept (corresponding to \texttt{is-a} above)
+   \item other entities to their special type (see below)
+  \end{itemize}
+ \item "rdfs:Class": special class for the type of classes
+ \item "rdf:Property": special class for the type of properties
+ \item "rdfs:subClassOf": a special relation that relates a subconcept to a superconcept
+% \item "rdfs:subPropertyOf": a special relation that relates a relation to one that it implies
+ \item "rdfs:domain": a special relation that relates a relation to the concepts of its subjects
+ \item "rdfs:range": a special relation that relates a relation/property to the concept/type of its objects
+\end{itemize}
+
+Goal/effect: capture as many parts as possible as RDF triples.
+\end{frame}
+
+\begin{frame}\frametitle{Declarations as Triples using Special Entities}
+\begin{center}
+\begin{tabular}{l|lll}
+Assertion & \multicolumn{3}{c}{Triple} \\
+          & Subject & Predicate & Object \\
+\hline
+individual & individual & "rdf:type" & "rdfs:Resource" \\
+concept  & concept & "rdf:type" & "rdf:Class" \\
+relation & relation & "rdf:type" & "rdf:Property" \\
+property & property & "rdf:type" & "rdf:Property" \\
+concept assertion  & individual & "rdf:type" & concept \\
+relation assertion & individual & relation & individual \\
+property assertion & individual & property & value \\
+\hline
+\multicolumn{4}{l}{for special forms of axioms}\\
+$c\sqsubseteq d$ & $c$ & "rdfs:subClassOf" & $d$ \\
+%$r\sqsubseteq s$ & $r$ & "rdfs:subPropertyOf" & s \\
+$\dom\,r\Equiv c$ & $r$ & "rdfs:domain" & $c$ \\
+$\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language}
+see syntax and semantics in the lecture notes
+\end{frame}
+
+\section{Representing Formal Languages}
+
+\begin{frame}\frametitle{Example: Syntax of Arithmetic Language}
+Syntax: represented as formal grammar
+
+\begin{commgrammar}
+\gcomment{Numbers}\\
+\gprod{N}{0\bnfalt 1}{literals}\\
+\galtprod{N+N}{sum}\\
+\galtprod{N*N}{product}\\
+\gcomment{Formulas}\\
+\gprod{F}{N\doteq N}{equality}\\
+\galtprod{N\leq N}{ordering by size}\\
+\end{commgrammar}
+
+Implementation as inductive data type
+\end{frame}
+
+
+\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
+Semantics: represented as translation into known language
+\medskip
+
+Problem: Need to choose a known language first\\
+Here: unary numbers represented as strings
+
+Built-in data (strings and booleans):
+\begin{commgrammar}
+%\gcomment{Strings}\\
+\gprod{S}{\epsilon}{empty}\\
+\galtprod{(\texttt{Unicode)}}{characters}\\
+%\gcomment{Booleans}\\
+\gprod{B}{\cn{true}}{truth}\\
+\galtprod{\cn{false}}{falsity}\\
+\end{commgrammar}
+
+Built-in operations to work on the data:
+\begin{itemize}
+\item concatenation of strings $S\bbc \cn{conc}(S,S)$
+\item replacing all occurrences of $c$ in $S_1$ with $S_2$ $S\bbc \cn{replace}(S_1,c,S_2)$
+\item equality test: $B\bbc S_1==S_2$
+\item prefix test: $B\bbc \cn{startsWith}(S_1,S_2)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
+\begin{blockitems}{Represented as function from syntax to semantics}
+\item mutually recursive, inductive functions for each non-terminal symbol
+\item compositional: recursive call on immediate subterms of argument
+\end{blockitems}
+
+For numbers $n$: semantics $\sem{n}$ is a string
+\begin{itemize}
+\item $\sem{0}=\epsilon$
+\item $\sem{1}="|"$
+\item $\sem{m+n}=\cn{conc}(\sem{m},\sem{n})$
+\item $\sem{m*n}=\cn{replace}(\sem{m},"|",\sem{n})$
+\end{itemize}
+\medskip
+
+For formulas $f$: semantics $\sem{f}$ is a boolean
+\begin{itemize}
+\item $\sem{m\doteq n}=\sem{m}==\sem{n}$
+\item $\sem{m\leq n}=\cn{startsWith}(\sem{n},\sem{m})$
+\end{itemize}
+\end{frame}
 \end{document}
