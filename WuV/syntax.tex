@@ -1,8 +1,434 @@
-\section{Context-Free Grammars}
+\section{Context-Free Syntax}
 
-\section{Inductive Data Types}
+Abstractly, context-free syntax is specified using grammars.
+Concretely, it is implemented using inductive types.
+
+In the sequel, we will start with the standard definitions and then make a series of variation to each of these definitions until they become equivalent.
+The intended equivalence is as follows:
+\begin{center}
+\begin{tabular}{l|l}
+CFG & IDT \\
+\hline
+non-terminal & type \\
+production & constructor \\
+non-terminal on left of production & return type of constructor \\
+non-terminals on right of production & arguments types of constructor \\
+terminals on right of production & notation of constructor
+\end{tabular}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Context-Free Grammars}
+
+We start with the usual definition:
+
+\begin{definition}[Context-Free Grammar]
+Given a set $\Sigma$ of characters (containing the terminal symbols), a \textbf{context-free grammar} consists of
+\begin{compactitem}
+\item a set $N$ of names called \textbf{non-terminal symbols}
+\item a set of \textbf{productions} each consisting of
+ \begin{compactitem}
+  \item an element of $N$, called the \textbf{left-hand side}\\
+  \item a word over $\Sigma\cup N$, called the \textbf{right-hand side}
+ \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+\begin{example}
+Let $\Sigma=\{0,1,+,\cdot,\doteq,\leq\}$.
+We give a grammar for arithmetic expressions and formulas about them:
+\begin{commgrammar}
+\gprod{E}{0}{}\\
+\gprod{E}{1}{}\\
+\galtprod{E+E}{}\\
+\galtprod{E\cdot E}{}\\
+\gprod{F}{E\doteq E}{}\\
+\galtprod{E\leq E}{}\\
+\end{commgrammar}
+Here we use the BNF style of writing grammars, where the productions are grouped by their left-hand side and written with $\bbc$ and $\bnfalt$.
+We have $N=\{E,F\}$.
+\end{example}
+
+First, we give a name to each production of a CFG:
+
+\begin{definition}[Context-Free Grammar with Named Productions]
+Given a set $\Sigma$ of characters (containing the terminal symbols), a \textbf{context-free grammar} consists of
+\begin{compactitem}
+\item a set $N$ of names called \emph{non-terminal symbols}
+\item a set of \emph{productions} each consisting of
+ \begin{compactitem}
+  \item a name
+  \item an element of $N$, called the \textbf{left-hand side}
+  \item a word over $\Sigma\cup N$, called the \textbf{right-hand side}
+ \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+\begin{example}
+The grammar from above with names written to the right of each production
+\begin{commgrammar}
+\gprod{E}{0}{zero}\\
+\gprod{E}{1}{one}\\
+\galtprod{E+E}{sum}\\
+\galtprod{E\cdot E}{product}\\
+\gprod{F}{E\doteq E}{equality}\\
+\galtprod{E\leq E}{lessOrEqual}\\
+\end{commgrammar}
+This is not common BNF anymore.
+\end{example}
+
+Then we add base types to the productions:
+
+\begin{definition}[Context-Free Grammar with Named Productions and Base Types]
+Given a set $\Sigma$ of characters (containing the terminal symbols) and a set $T$ of names (containing the base types allowed in productions), a \textbf{context-free grammar} consists of
+\begin{compactitem}
+\item a set $N$ of names called \emph{non-terminal symbols}
+\item a set of \emph{productions} each consisting of
+ \begin{compactitem}
+  \item a name
+  \item an element of $N$, called the \textbf{left-hand side}
+  \item a word over $\Sigma\cup T\cup N$, called the \textbf{right-hand side}
+ \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+The intuition behind base types is that we commonly like to delegate some primitive parts of the grammar to be defined elsewhere.
+A typical example are literals such as numbers $0, 1, 2,\ldots$: We could give regular expression syntax for digit-strings.
+Instead, it is nicer to just assume we have a set of base types that we can use to insert an infinite set of literals into the grammar.
+
+\begin{example}
+Let $Nat$ be the type of natural numbers and let $T=\{Nat\}$.
+Then we can improve the grammar from above as follows:
+\begin{commgrammar}
+\gprod{E}{Nat}{literal}\\
+\galtprod{E+E}{sum}\\
+\galtprod{E*E}{product}\\
+\gprod{F}{E\doteq E}{equality}\\
+\galtprod{E\leq E}{lessOrEqual}\\
+\end{commgrammar}
+\end{example}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Inductive Data Types}
+
+We start with the usual definition:
+
+\begin{definition}[Inductive Data Type]
+Given a set of names $T$ (containing the types known in the current context), An \emph{inductive data type} consists of
+\begin{compactitem}
+ \item a name, called the \textbf{type},
+ \item a set of \textbf{constructors} each consisting of
+ \begin{compactitem}
+  \item a name
+  \item a list of elements of $T$, called the \textbf{argument} types
+ \end{compactitem} 
+\end{compactitem}
+\end{definition}
+
+\newcommand{\cons}[2]{\mathtt{#1}\,\kw{of}\,\fold{*}{#2}}
+\newcommand{\indtype}[2]{#1\,=\,\fold{\;\tb|\tb}{#2}}
+\newcommand{\consnot}[3]{\mathtt{#1}\,\kw{of}\,\fold{*}{#2}\,\#\,#3}
+\newcommand{\consn}[2]{\mathtt{#1}\,\#\,#2}
+
+\begin{example}
+Let $Nat$ be the type of natural numbers and $T=\{Nat\}$.
+We give an inductive type for arithmetic expressions:
+\[
+\indtype{E}{\cons{literal}{Nat}, \cons{sum}{E,E}, \cons{product}{E,E}} \\
+\]
+Here we use ML-style notation for inductive data types, which separates constructors by $|$ and writes them as \texttt{name of argument-type-product}.
+\end{example}
+
+First we generalize to mutually inductive types:
+
+\begin{definition}[Mutually Inductive Data Types]
+Given a set $T$ of names (containing the types known in the current context), a family of \textbf{mutually inductive data type} consists of
+\begin{compactitem}
+ \item a set $N$ of names, called the \textbf{types},
+ \item a set of \emph{constructors} each consisting of
+ \begin{compactitem}
+  \item a name
+  \item an element of $I$, called the \textbf{return type}
+  \item a list of elements of $N\cup I$, called the \textbf{argument} types
+ \end{compactitem} 
+\end{compactitem}
+\end{definition}
+
+\begin{example}
+We extend the type definition from above by adding a second type for formulas.
+Thus, $N=\{E,F\}$.
+\[\mathll{
+\indtype{E}{\cons{literal}{Nat}, \cons{sum}{E,E}, \cons{product}{E,E}} \\
+\indtype{F}{\cons{equality}{E,E}, \cons{lessOrEqual}{E,E}}
+}\]
+\end{example}
+
+%It may look $T$ and $\Sigma$ correspond to each other.
+%But that is not true, we need to add them to each definition.
+
+Then we add notations to the constructors:
+
+\begin{definition}[Mutually Inductive Data Types with Notations]
+Given a set $\Sigma$ of characters (containing the terminal symbols) and a set $T$ of names (containing the types known in the current context), a family of \textbf{mutually inductive data type with notations} consists of
+\begin{compactitem}
+ \item a set $N$ of names, called the \textbf{types},
+ \item a set of \emph{constructors} each consisting of
+ \begin{compactitem}
+  \item a name
+  \item an element of $N$, called the \textbf{return type}
+  \item a list of elements of $T\cup N$, called the \textbf{argument} types
+  \item a word over the alphabet $\Sigma\cup T\cup N$ containing the argument types in order and only elements from $\Sigma$ otherwise, called the \textbf{notation} of the constructor
+ \end{compactitem} 
+\end{compactitem}
+\end{definition}
+
+The intuition behind notations is that it can get cumbersome to write all constructor applications as $Name(arguments)$.
+It is more convenient to attach a notation to  such as 
+
+\begin{example}
+We extend the type definitions from above by adding notations to each constructor.
+We use the set $\Sigma=\{+,\cdot,\doteq,\leq\}$ as terminals in the notations.
+\[\mathll{
+\indtype{E}{\consnot{literal}{Nat}{Nat}, \consnot{sum}{E,E}{E+E}, \consnot{product}{E,E}{E\cdot E}} \\
+\indtype{F}{\consnot{equality}{E,E}{E\doteq E}, \consnot{lessOrEqual}{E,E}{E\leq E}}
+}\]
+Here we write the constructors as \texttt{name of argument-type-product \# notation}.
+It is easy to see that this has introduced redundancy: we can infer the argument types from the notation.
+So we can just drop the argument types:
+\[\mathll{
+\indtype{E}{\consn{literal}{Nat}, \consn{sum}{E+E}, \consn{product}{E\cdot E}} \\
+\indtype{F}{\consn{equality}{E\doteq E}, \consn{lessOrEqual}{E\leq E}}
+}\]
+\end{example}
+
+
+\subsection{Merged Definition}
+
+With the variation from above we have arrived at the following equivalence:
+
+\begin{theorem}
+Given a set $\Sigma$ of characters and a set $T$ of names, the following notions are equivalent:
+\begin{compactitem}
+\item a family of mutually inductive data types in the context of types $T$ with notations using characters from $\Sigma$,
+\item a context-free grammar with named productions, terminal symbols from $\Sigma$, and base types $T$.
+\end{compactitem}
+\end{theorem}
+\begin{proof}
+The key idea is that
+\begin{compactitem}
+ \item the types and constructors of the former correspond to the non-terminals and productions of the latter
+ \item for each constructor-production pair
+  \begin{compactitem}
+   \item the right-hand side of the latter corresponds to the notation of the former,
+   \item the argument types of the former correspond to the non-terminals occurring on the right-hand side of the latter.
+  \end{compactitem}
+\end{compactitem}
+\end{proof}
+
+In implementations in programming languages, we often drop the notations.
+Instead, those are handled, if needed, by special parsing and serialization functions.
+
+However, in an implementation, it is often helpful to additionally give names to each argument of a production/constructor.
+That yields the following definition:
+
+\begin{definition}[Context-Free Syntax]
+Given a set $\Sigma$ of characters and a set $T$ of names, a context-free syntax consists of
+\begin{compactitem}
+ \item a set $N$ of names, called the \textbf{non-terminals/types},
+ \item a set of \emph{productions/constructors} each consisting of
+ \begin{compactitem}
+  \item a name
+  \item an element of $N$, called the \textbf{left-hand side/return type}
+  \item a sequence of objects, called the \textbf{right-hand side/arguments} which are one of the following
+   \begin{compactitem}
+    \item an element of $\Sigma$
+    \item a pair written $(n:t)$ of a name $n$, called the \textbf{argument name}, and an element $t\in T\cup N$ called the \textbf{argument type}.
+   \end{compactitem}
+ \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+\begin{example}
+Our example from above as a context-free syntax finally looks as follows:
+\[\mathll{
+\indtype{E}{\consn{literal}{(value:Nat)}, \consn{sum}{(left:E)+(right:E)}, \consn{product}{(left:E)\cdot (right:E)}} \\
+\indtype{F}{\consn{equality}{(left:E)\doteq (right:E)}, \consn{lessOrEqual}{(left:E)\leq (right:E)}}
+}\]
+\end{example}
+
+
+\section{Implementation}
+
+Context-free syntax can be implemented systematically in all programming languages.
+But, depending on the style of the language, they make drastically different.
+We give the two most important paradigms as examples.
+
+\subsection{Functional Programming Languages}
+
+In a function programming language, inductive data types are a primitive feature.
+However, notations and named arguments are not available.
+So helper functions must be used.
+
+The basic recipe is as follows:
+\begin{compactitem}
+\item The types and constructors (without the notations and named arguments) are implemented as family of mutually inductive data types.
+\item For each argument of each constructor, a partial projective function is defined.
+\item A set of mutually recursive string rendering functions are define, one for each constructor, that implement the notations.
+\end{compactitem}
+
+\begin{example}
+We define our example syntax in ML.
+
+First the inductive types (assuming a type $Nat$ already exists in the context):
+\[\mathll{
+\kw{data}\, \indtype{E}{\cons{literal}{Nat}, \cons{sum}{E,E}, \cons{product}{E,E}} \\
+\kw{and}\,\indtype{F}{\cons{equality}{E,E}, \cons{lessOrEqual}{E,E}}
+}\]
+
+Now the projection functions:
+\[\mathll{
+ \kw{fun}\; \mathtt{literal\_value}(\mathtt{literal}(v)) = SOME\; v \\
+ |\tb \mathtt{literal\_value}(\_)= NONE \\
+ \kw{fun}\; \mathtt{sum\_left}(\mathtt{sum}(x,\_)) = SOME\; x \\
+ |\tb \mathtt{sum\_left}(\_)= NONE\\
+ \kw{fun}\; \mathtt{sum\_right}(\mathtt{sum}(\_,x)) = SOME\; x \\
+ |\tb \mathtt{sum\_right}(\_)= NONE
+}\]
+and so on for each constructor argument.
+
+Finally, the string rendering functions (assuming a function $natToString$ already exists in the context):
+\[\mathll{
+ \kw{fun}\; \mathtt{E\_toString}(\mathtt{literal}(v)) = natToString\;v \\
+ |\tb \mathtt{E\_toString}(\mathtt{sum}(x,y))= \mathtt{E\_toString}(x) + "+" + \mathtt{E\_toString}(y) \\
+ |\tb \mathtt{E\_toString}(\mathtt{product}(x,y))= \mathtt{E\_toString}(x) + "\cdot" + \mathtt{E\_toString}(y) \\
+ \kw{and}\; \mathtt{F\_toString}(\mathtt{equality}(x,y)) = \mathtt{E\_toString}(x) + "\doteq" + \mathtt{E\_toString}(y)\\
+ |\tb \mathtt{F\_toString}(\mathtt{lessOrEqual}(x,y)) = \mathtt{E\_toString}(x) + "\leq" + \mathtt{E\_toString}(y)
+}\]
+\end{example}
+
+Because ML has inductive data types as primitives, pattern-matching on our syntax comes for free.
+We will get back to that when defining the semantics.
+
+\subsection{Object-Oriented Programming Languages}
+
+In a object-oriented programming language, inductive data types are not available.
+Therefore, they must be mimicked using classes.
+On the positive side, this supports arguments names, and notations are a bit easier.
+
+The basic recipe is as follows:
+\begin{compactitem}
+\item Each types is implemented as an abstract class.
+\item Each constructor of type $t$ is implemented as a concrete class that extends the abstract class $t$.
+\item The arguments names and type of each constructor $c$ are exactly the argument names and types of the class $c$.
+The constructor arguments are stored as fields in the class.
+\item The abstract classes require a \texttt{toString} method, which is implemented in every concrete class according to its notation.
+\end{compactitem}
+
+
+\begin{example}
+We define our example syntax in a generic OO-language somewhat similar to Scala.\footnote{We could use Java or C++ here. But their concrete syntax makes this less clear than it could be. It is straightforward to refine the syntax into that of any specific OO-language.}
+
+In particular, we assume that the sy
+
+\begin{lstlisting}
+abstract class E {
+  def toString: String
+}
+class literal extends E {
+  field value: Nat
+  constructor (value: Nat) {
+    this.value = value
+  }
+  def toString = value.toString
+}
+class sum extends E {
+  field left: Nat
+  field right: Nat
+  constructor (left: E, right: E) {
+    this.left = left
+    this.right = right
+  }
+  def toString = left.toString + "+" + right.toString
+}
+class product extends E {
+  field left: Nat
+  field right: Nat
+  constructor (left: E, right: E) {
+    this.left = left
+    this.right = right
+  }
+  def toString = left.toString + "\cdot" + right.toString
+}
+
+abstract class F {
+  def toString: String
+}
+class equality extends E {
+  field left: Nat
+  field right: Nat
+  constructor (left: E, right: E) {
+    this.left = left
+    this.right = right
+  }
+  def toString = left.toString + "\doteq" + right.toString
+}
+class product extends E {
+  field left: Nat
+  field right: Nat
+  constructor (left: E, right: E) {
+    this.left = left
+    this.right = right
+  }
+  def toString = left.toString + "\leq" + right.toString
+}
+\end{lstlisting}
+\end{example}
+
+Because OO-languages do not have inductive data types as primitives, pattern-matching on our syntax requires awkward switch statements.
+We will get back to that when defining the semantics.
+
+\subsection{Combining Paradigms}
+
+The Scala language combines ideas from functional and OO-programming.
+That makes its representation of context-free syntax particularly elegant.
+
+In Scala, the constructor arguments are listed right after the class name.
+These are automatically fields of the class, and a default constructor always exists that defines those fields.
+That gets rid of a lot of boilerplate.
+
+If we want to make those fields public (and we do because those are the projection functions, we add the keyword \texttt{val} in front of them.
+But even if that is too much boilerplate. So Scala defines a convenience modifier: if we put \texttt{case} in front of the classes corresponding to constructors of our syntax, Scala puts in the \texttt{val} automatically.
+It also generates a default implementation of \texttt{toString}, which we have to override if we want to implement notations, too.
+Finally, Scala also generates pattern-matching functions so that we can pattern-match in the same way as in ML.
+
+Then our example becomes (as usual, assuming a class \texttt{Nat} already exists):
+
+\begin{lstlisting}
+abstract class E {
+  def toString: String
+}
+case class literal(value: Nat) extends E {
+  override def toString = value.toString
+}
+case class sum(left: Nat, right: Nat) extends E {
+  override def toString = left.toString + "+" + right.toString
+}
+case class product(left: Nat, right: Nat) extends E {
+  override def toString = left.toString + "$\cdot$" + right.toString
+}
+
+abstract class F {
+  def toString: String
+}
+case class equality(left: Nat, right: Nat) extends E {
+  override def toString = left.toString + "$\doteq$" + right.toString
+}
+case class lessOrEqual(left: Nat, right: Nat) extends E {
+  override def toString = left.toString + "$\leq$" + right.toString
+}
+\end{lstlisting}
 
 \section{Semantics as a Recursive Function}
 
-\section{Context-Sensitive Syntax}
+%\section{Context-Sensitive Syntax}
 
