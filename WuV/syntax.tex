@@ -28,7 +28,7 @@ Given a set $\Sigma$ of characters (containing the terminal symbols), a \textbf{
 \item a set $N$ of names called \textbf{non-terminal symbols}
 \item a set of \textbf{productions} each consisting of
  \begin{compactitem}
-  \item an element of $N$, called the \textbf{left-hand side}\\
+  \item an element of $N$, called the \textbf{left-hand side}
   \item a word over $\Sigma\cup N$, called the \textbf{right-hand side}
  \end{compactitem}
 \end{compactitem}
@@ -249,11 +249,12 @@ Given a set $\Sigma$ of characters and a set $T$ of names, a context-free syntax
 \end{definition}
 
 \begin{example}
-Our example from above as a context-free syntax finally looks as follows:
+Using ad hoc language to write the constructors, our example from above as a context-free syntax could look as follows:
 \[\mathll{
 \indtype{E}{\consn{literal}{(value:Nat)}, \consn{sum}{(left:E)+(right:E)}, \consn{product}{(left:E)\cdot (right:E)}} \\
 \indtype{F}{\consn{equality}{(left:E)\doteq (right:E)}, \consn{lessOrEqual}{(left:E)\leq (right:E)}}
 }\]
+This uses an ad hoc 
 \end{example}
 
 

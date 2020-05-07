@@ -105,6 +105,7 @@ grammar & proper noun & common noun \\
 \end{tabular}
 \end{center}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Basic Ontology Language}
 
 \begin{figure}[hbt]
@@ -179,10 +180,11 @@ Sometimes (in our case: individuals and properties), the references are the only
 Sometimes (in our case: concepts and relations), there can be many productions for complex expressions.
 The complex expressions are used to build axioms; in our case, these are the three kinds of assertions and other formulas.
 
-\subsection{Semantics}
+\subsection{Deductive Semantics}
 
-We give the semantics of BOL as an example of a semantics by translation.
+We give a semantics of BOL as an example of a semantics by translation.
 We fix one language that we have already understood and define an interpretation function that maps all complex expression of the syntax into the semantic language.
+Specifically, we give a deductive/logical semantics, i.e., the semantic language is a logic.
 
 For simple ontology languages like BOL, ALC, OWL, etc., it is common to use first-order logic (FOL) as the semantic language.
 More specifically, we use SFOL, the typed variant of FOL with
@@ -198,6 +200,7 @@ Like with the syntax, we can observe some general principles.
 Every BOL-declaration is translated to a FOL declaration for the same name, and ontologies are translated declaration-wise.
 For every kind of complex expression, there is one inductive function mapping BOL-expressions to FOL-expressions.
 The base cases of references to declared identifiers are translated to themselves, i.e., to the identifiers of the same name declared in the FOL theory.
+The other cases are compositional: every case for a complex expression recurses only into the semantics of the direct subexpressions.
 
 \begin{figure}
 \begin{center}
@@ -231,8 +234,8 @@ $C_1 \sqcup C_2$ & $\sem{C_1}(x)\vee\sem{C_2}(x)$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}(x)\wedge\sem{C_2}(x)$\\
 $\forall R.C$    & $\forall y:\iota.\sem{R}(x,y)\impl \sem{C}(y)$\\
 $\exists R.C$    & $\exists y:\iota.\sem{R}(x,y)\wedge \sem{C}(y)$\\
-$\dom R$ & $\exists y:\iota.\sem{R}(x,y)$\\
-$\rng R$ & $\exists y:\iota.\sem{R}(y,x)$\\
+$\dom\, R$ & $\exists y:\iota.\sem{R}(x,y)$\\
+$\rng\, R$ & $\exists y:\iota.\sem{R}(y,x)$\\
 \hline
 Relation & Formula with free variables $x:\iota,y:\iota$\\
 $i$ & $i(x,y)$\\
@@ -246,10 +249,84 @@ $\Delta_C$     & $x\doteq y\wedge \sem{C}(x)$\\
 Property of type $T$ & Formula with free variables $x:\iota,y:T$\\
 $i$ & $i(x,y)$\\
 \end{tabular}
-\caption{Interpretation Function for BOL}\label{fig:bolsem}
+\caption{Interpretation Function for BOL into FOL}\label{fig:bolsem}
 \end{center}
 \end{figure}
 
+\subsection{Concretized Semantics}
+
+We give an alternative semantics using a semantic language for concrete data.
+Specifically we focus on the SQL database language.
+
+Even though this is a very different knowledge aspect, the general principles of the semantics are the same:
+Every BOL-declaration is translated to an SQL declaration, and ontologies are translated declaration-wise.
+For every kind of complex expression, there is one inductive function mapping BOL-expressions to SQL-expressions.
+
+In SQL, we can nicely see the difference between declarations and expressions: the former are translated to side effect-ful statements, the latter to side effect-free queries.
+
+\begin{definition}[Concretized Semantic of BOL]
+Every BOL-ontology $O$ is interpreted as an SQL-theory $\sem{O}$ according to Fig.~\ref{fig:bolsemsql} where we assume that
+\begin{compactitem}
+ \item the underlying database supports a type $ID$ of identifiers as well as all base types and values of BOL,
+ \item $\sem{O}$ starts with CREATE TABLE individuals (id ID, name string), where the id field is unique and automatically generated when inserting values.
+\end{compactitem}
+\end{definition}
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{l|l}
+BOL Syntax $X$ & Semantics $\sem{X}$ in SQL\\
+\hline
+\hline
+ontology & SQL statements \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration ($I$, $C$, $R$ atomic) & SQL statement \\
+\kw{individual}\,$i$ & INSERT INTO individuals (name) VALUES ($i$) \\
+\kw{concept}\,$i$  & CREATE TABLE $i$ (id ID)\\
+\kw{relation}\,$i$ & CREATE TABLE $i$ (subject ID, object ID) \\
+\kw{property}\,$i:T$ & CREATE TABLE $i$ (subject ID, object $T$) \\
+$I\; \texttt{is-a}\; C$ & INSERT INTO $C$ VALUES ($\sem{I}$)\\
+$I_1\; R\; I_2$ & INSERT INTO $R$ (subject, object) VALUES ($\sem{I_1}$, $\sem{I_2}$)\\
+$I\; P\; V$ & INSERT INTO $P$ (subject, object) VALUES ($\sem{I}$, $V$)\\
+$F$ & consistency check, omitted\\
+\hline
+Formula & Formula without free variables\\
+$C_1 \Equiv C_2$ & check equality of query results\\
+$C_1 \sqsubseteq C_2$ & check subset of query results\\
+\hline
+Individual & an identifier from the table individuals \\
+$i$ & SELECT id FROM individuals WHERE name=$i$ \\
+\hline
+Concept & SQL query for one-column table\\
+$i$ & SELECT * FROM $i$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
+$\forall R.C$    & $\sem{R}$ ??? $\sem{C}$\\ 
+$\exists R.C$    & $\sem{R}$ ??? $\sem{C}$\\ % SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object=id
+$\dom\, R$ & SELECT subject FROM $\sem{R}$\\
+$\rng\, R$ & SELECT object FROM $\sem{R}$\\
+\hline
+Relation & SQL query for two-column table\\
+$i$ & SELECT * FROM $i$\\
+$R_1 \cup R_2$ & $\sem{R_1}$ UNION $\sem{R_2}$\\
+$R_1 \cap R_2$ & $\sem{R_1}$ INTERSECT $\sem{R_2}$\\
+$R_1 ; R_2$ & $\sem{R_1}$ ??? $\sem{R_2}$ \\
+%SELECT DISTINCT l.subject, r.object FROM $\sem{R_1}$ AS l, $\sem{R_2}$ AS r \\
+%            & \tb\tb WHERE l.object = r.subject\\
+$R^{-1}$          & SELECT object, subject FROM $\sem{R}$\\
+$R^*$          & ???\\
+$\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
+\hline
+Property of type $T$ & SQL query for two-column table\\
+$i$ & SELECT * FROM $i$\\
+\end{tabular}
+\caption{Interpretation Function for BOL into SQL}\label{fig:bolsemsql}
+\end{center}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Representing Ontologies as Triples}
 
 It is common to represent an entire ontology as a set of subject-predicate-object triples.
