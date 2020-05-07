@@ -302,20 +302,19 @@ Concept & SQL query for one-column table\\
 $i$ & SELECT * FROM $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
-$\forall R.C$    & $\sem{R}$ ??? $\sem{C}$\\ 
-$\exists R.C$    & $\sem{R}$ ??? $\sem{C}$\\ % SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object=id
-$\dom\, R$ & SELECT subject FROM $\sem{R}$\\
-$\rng\, R$ & SELECT object FROM $\sem{R}$\\
+$\forall R.C$    & $\sem{R}$ ???{\footnotemark} $\sem{C}$\\ 
+$\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object= id\\
+$\dom\, R$ & SELECT DISTINCT subject FROM $\sem{R}$\\
+$\rng\, R$ & SELECT DISTINCT object FROM $\sem{R}$\\
 \hline
 Relation & SQL query for two-column table\\
 $i$ & SELECT * FROM $i$\\
 $R_1 \cup R_2$ & $\sem{R_1}$ UNION $\sem{R_2}$\\
 $R_1 \cap R_2$ & $\sem{R_1}$ INTERSECT $\sem{R_2}$\\
-$R_1 ; R_2$ & $\sem{R_1}$ ??? $\sem{R_2}$ \\
-%SELECT DISTINCT l.subject, r.object FROM $\sem{R_1}$ AS l, $\sem{R_2}$ AS r \\
-%            & \tb\tb WHERE l.object = r.subject\\
+$R_1 ; R_2$ & SELECT DISTINCT l.subject, r.object FROM $\sem{R_1}$ AS l, $\sem{R_2}$ AS r \\
+            & \tb\tb WHERE l.object = r.subject\\
 $R^{-1}$          & SELECT object, subject FROM $\sem{R}$\\
-$R^*$          & ???\\
+$R^*$          & (tricky, omitted)\\
 $\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
 \hline
 Property of type $T$ & SQL query for two-column table\\
@@ -325,6 +324,7 @@ $i$ & SELECT * FROM $i$\\
 \end{center}
 \end{figure}
 
+\footnotetext{This case is a mini homework.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Representing Ontologies as Triples}
