@@ -188,12 +188,14 @@ Specifically, we give a deductive/logical semantics, i.e., the semantic language
 
 For simple ontology languages like BOL, ALC, OWL, etc., it is common to use first-order logic (FOL) as the semantic language.
 More specifically, we use SFOL, the typed variant of FOL with
-\begin{definition}[Semantic of BOL]
-Every BOL-ontology $O$ is interpreted as a FOL-theory $\sem{O}$ according to Fig.~\ref{fig:bolsem} where we assume that $\sem{O}$ contains
+\begin{definition}[Logical Semantics of BOL]
+The \textbf{semantic prefix} $P$ is the FOL-theory containing
 \begin{compactitem}
  \item a type $\iota$ (for individuals),
  \item additional types and constants corresponding to base types and values of BOL.
 \end{compactitem}
+
+Then every BOL-ontology $O$ is interpreted as the FOL-theory $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem}.
 \end{definition}
 
 Like with the syntax, we can observe some general principles.
@@ -201,6 +203,10 @@ Every BOL-declaration is translated to a FOL declaration for the same name, and 
 For every kind of complex expression, there is one inductive function mapping BOL-expressions to FOL-expressions.
 The base cases of references to declared identifiers are translated to themselves, i.e., to the identifiers of the same name declared in the FOL theory.
 The other cases are compositional: every case for a complex expression recurses only into the semantics of the direct subexpressions.
+
+The role of the semantic prefix $P$ is to define once and for all the FOL material that we need in general to interpret ontologies.
+It occurs at the beginning of all interpretations of ontologies.
+In particular, it is equal to the interpretation of empty ontology.
 
 \begin{figure}
 \begin{center}
@@ -265,11 +271,14 @@ For every kind of complex expression, there is one inductive function mapping BO
 In SQL, we can nicely see the difference between declarations and expressions: the former are translated to side effect-ful statements, the latter to side effect-free queries.
 
 \begin{definition}[Concretized Semantic of BOL]
-Every BOL-ontology $O$ is interpreted as an SQL-theory $\sem{O}$ according to Fig.~\ref{fig:bolsemsql} where we assume that
+The \textbf{semantic prefix} consists of the following SQL statements
 \begin{compactitem}
- \item the underlying database supports a type $ID$ of identifiers as well as all base types and values of BOL,
- \item $\sem{O}$ starts with CREATE TABLE individuals (id ID, name string), where the id field is unique and automatically generated when inserting values.
+ \item a type $ID$ of identifiers (if not already supported anyway by the underlying database)
+ \item declarations of all base types and values of BOL (if not already supported anyway by the underlying database)
+ \item CREATE TABLE individuals (id ID, name string), where the id field is unique and automatically generated when inserting values
 \end{compactitem}
+
+Every BOL-ontology $O$ is interpreted as a sequence $P,\sem{O}$ of SQL statements, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsemsql}.
 \end{definition}
 
 \begin{figure}
@@ -289,7 +298,7 @@ BOL declaration ($I$, $C$, $R$ atomic) & SQL statement \\
 $I\; \texttt{is-a}\; C$ & INSERT INTO $C$ VALUES ($\sem{I}$)\\
 $I_1\; R\; I_2$ & INSERT INTO $R$ (subject, object) VALUES ($\sem{I_1}$, $\sem{I_2}$)\\
 $I\; P\; V$ & INSERT INTO $P$ (subject, object) VALUES ($\sem{I}$, $V$)\\
-$F$ & consistency check, omitted\\
+$F$ & consistency check, consequence closure (omitted)\\
 \hline
 Formula & Formula without free variables\\
 $C_1 \Equiv C_2$ & check equality of query results\\
@@ -325,6 +334,111 @@ $i$ & SELECT * FROM $i$\\
 \end{figure}
 
 \footnotetext{This case is a mini homework.}
+
+\paragraph{Translation of Formulas}
+The interpretation of formulas into SQL is less obvious because SQL is not a logic.
+We have to consider two subtleties.
+
+Firstly, a formula may express a consistency condition that must not violated by the ontology.
+For example, ontologies may contain contradictory assertions or violations of uniqueness constraints such as a person should only have one father or fathers should be male.
+In FOL, this amounts to $\sem{O}$ being an inconsistent theory, which can be reasoned about as usual.
+In SQL, we can mimic it by checking the consistency of the database.
+(Consistency is undecidable for FOL in general but often decidable for ontology languages.)
+
+Secondly, a formula may express a closure operation that must be mimicked by adding implied assertions to the ontology.
+For example, if there is a subconcept axiom "instructor" $\sqsubseteq$ "person" and a concept assertion "Florian Rabe" is-a "instructor", we have to add the implied concept assertion "Florian Rabe" is-a "person".
+In FOL, this happens automatically by the calculus of FOL, which adds all theorems of a theory.
+In SQL, we have to mimic it manually. (Consequence is undecidable for FOL in general but often decidable for ontology languages.)
+
+\subsection{Compositionality}
+
+\paragraph{Definition}
+An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
+
+The interpretations of BOL in FOL and SQL are compositional.
+For example, consider the case of composition of relations:
+ \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
+We have $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
+The semantics is a relatively complicated FOL-formula, but it only depends on $\sem{R_1}$ and $\sem{R_2}$ --- everything else is fixed.
+We have $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$, i.e., the interpretation of the $;$-operator is the function that maps two predicates $p_1,p_2$ to the formula $\exists m:\iota.p_1(x,m)\wedge p_2(m,y)$.
+Then we have \[\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2}).\]
+
+
+It is highly desirable but not always possible to give a compositional translation.
+Sometimes a feature of the syntactic language cannot be directly interpreted in the semantic language.
+In that case, it may still be possible to give a non-compositional translation.
+
+\begin{example}[Non-Compositional Translation via Sub-Induction]
+A simple example of non-compositionality is the translation of natural numbers based on zero, one, and addition (i.e., $N\bbc 0\bnfalt 1\bnfalt N+N$) into natural numbers based on zero and successor (i.e., $N\bbc 0\bnfalt\cn{succ}(N)$):
+It is straightforward to translate zero and one compositionally:
+\[\sem{0}=0 \tb\sem{1}=\cn{succ}(0)\]
+Now we would like to translate \[\sem{m+n}=\sem{+}(\sem{m},\sem{n}),\] but there is no way to define $\sem{+}$ in terms of zero and successor.
+Instead, we need subcases:
+\[\sem{m+n}=\cas{\sem{m}\mifc n=0 \\ \cn{succ}(\sem{m})\mifc n=1 \\ \sem{(m+n_1)+n_2}\mifc n=n_1+n_2}\]
+This corresponds to the usually definition of addition, i.e., $\sem{+}$, by induction.
+\end{example}
+
+Other common examples of non-compositional translations are
+\begin{compactitem}
+ \item several important logical theorems such as
+  \begin{compactitem}
+   \item cut elimination, which is he translation from sequent calculus with cut to sequent calculus without cut,
+   \item the deduction theorem, which is the translation from natural deduction to Hilbert calculus,
+  \end{compactitem}
+ \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,
+ \item query optimization done by a database, e.g., turning a WHERE of a join into a join of WHEREs,
+ \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context.
+\end{compactitem}
+
+Typical sources of non-compositionality in formal language translations are:
+\begin{compactitem}
+ \item A case in the translation function requires subcases which inspect the $e_i$ and treat them differently.
+ \item A case in the translation function requires subcases which translate an expression differently based on the context in which it occurs.
+ \item The translation function requires nested inductions, i.e., a case in the translation function (which is already inductive) requires a sub-induction on one of the sub-expressions.
+ \item The semantic prefix is not fixed but depends on the translated object, i.e, the top-level case of the translation scans through the entire argument $X$ to collect all occurrences of a particular feature and then custom-builds the semantic prefix of $\sem{X}$.
+\end{compactitem}
+
+In Fig.~\ref{fig:bolsem}, we omitted the case for the transitive closure.
+That was because it is not possible to translate it compositionally into FOL.
+We can only do it non-compositionally with a custom semantic prefix:
+
+\begin{example}[Non-Compositional Translation via Custom Semantic Prefix]
+We define the FOL-interpretation of an ontology $O$ by $\sem{O}=P_O,\sem{O}$, where $P_O$ is a custom semantic prefix.
+$P_O$ is different for every ontology $O$ and is defined as follows:
+
+\begin{compactenum}
+ \item We scan through $O$ and collect all occurrences of $R^*$ for any (not necessarily atomic) relation $R$.
+ \item $P_O$ contains the following declarations for each $R$:
+  \begin{compactitem}
+  \item A binary predicate symbol $C_R\sq i\times i$. Note that $R$ may be a complex expression; so we have to generate a fresh name $C_R$ here.
+  \item The axiom $\forall x:\iota,y:\iota:R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
+  \item The axiom $\forall x:\iota,y:\iota,z:\iota.C_R(x,y)\wedge C_R(y,z)\impl C_R(x,x)$, i.e., $C_R$ is transitive.
+  \end{compactitem}
+ \item We add the case $\sem{R^*}=C_R(x,y)$ to the interpretation function.
+\end{compactenum}
+
+Intuitively, every occurrence of the $^*$-operator is removed from the language and replaced with a fresh name that is axiomatized to have the needed properties.
+All of these axioms are added to the semantic prefix.
+\end{example}
+
+Such non-compositional translations are undesirable for multiple reasons:
+\begin{compactitem}
+ \item The implementation is more complicated and error-prone.
+ \item Reasoning about the translation is more difficult.
+ \item The custom semantic prefix can be large.
+\end{compactitem}
+
+But most importantly, non-compositional translations are less robust.
+Firstly, if we add a production to the syntax, a compositional translation is easy to extend: just add a case to the translation.
+But a non-compositional translation may additionally require a new subcase wherever subcases/subinductions are used.
+Moreover, if a custom semantic prefix is used, its definition may have to be amended, at least it must be rechecked.
+
+Secondly, in practice there are two sources of complex expressions: the ones already mentioned in the language, and the ones used later for other reasons.
+For example, in BOL some complex expressions occur already \emph{statically} in the definition of an ontology $O$.
+But others might be appear \emph{dynamically} later, e.g., when talking about $O$, proving properties of $O$, or running queries on $O$.
+Thus, the definition of $O$ and the use of complex expressions are decoupled: $O$ is defined statically once and for all, and complex expressions relative to $O$ can be created and used dynamically.
+But if a custom semantic prefix is used, only the static occurrences inside $O$ can be considered for building the prefix.
+Thus, it is not possible to translate the dynamic occurrences of the transitive closure unless the semantic prefix is extended all the time as $O$ is used.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Representing Ontologies as Triples}
@@ -412,3 +526,49 @@ It would be better if RDFS were described in a way that is consistent under the 
 But the more pragmatic approach has the advantage of being more flexible.
 For example, being able to treat every class, relation, or property also as an individual makes it easy to annotate metadata to them.
 Metadata is a set of properties such as "rdfs:seeAlso" or "owl:versionInfo", whose subjects can be any entity.
+
+
+\paragraph{Subject-Centered Representations}
+When giving a set of triples, there are usually a lot of triples with the same subject.
+For example, we could use a simple concrete syntax with one triple per line and whitespace separating subject, predicate, and object:
+\begin{lstlisting}
+"Florian Rabe" is-a "Instructor"
+"Florian Rabe" is-a "male"
+"Florian Rabe" "teaches" "WuV"
+"Florian Rabe" "teaches" "KRMT"
+"Florian Rabe" "age" 40
+"Florian Rabe" "office" "11.137"
+\end{lstlisting}
+
+It is more human-friendly to group these triples in such a way that the subject only has to be listed once.
+For example, we could use a concrete syntax like this, where the subject occurs first and then predicate-object pairs occur on indented lines:
+\begin{lstlisting}
+"Florian Rabe"
+  is-a "Instructor"
+  is-a "male"
+  "teaches" "WuV"
+  "teaches" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+If the same predicate occurs with multiple values, we can group those as well.
+For example, we could give the objects for the same predicates as a list following the predicate:
+\begin{lstlisting}
+"Florian Rabe"
+  is-a "Instructor" "male"
+  "teaches" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+Concrete syntaxes based on the triple representation of ontologies will usually adopt some kind of structure like this.
+The details may vary.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Type Systems for Ontologies}
+
+\subsection{Concepts as Types}
+
+
+\subsection{Record Types}
