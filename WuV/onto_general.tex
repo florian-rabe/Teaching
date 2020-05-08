@@ -300,9 +300,9 @@ $I_1\; R\; I_2$ & INSERT INTO $R$ (subject, object) VALUES ($\sem{I_1}$, $\sem{I
 $I\; P\; V$ & INSERT INTO $P$ (subject, object) VALUES ($\sem{I}$, $V$)\\
 $F$ & consistency check, consequence closure (omitted)\\
 \hline
-Formula & Formula without free variables\\
-$C_1 \Equiv C_2$ & check equality of query results\\
-$C_1 \sqsubseteq C_2$ & check subset of query results\\
+Formula & Query that returns empty result iff formula is true \\
+$C_1 \Equiv C_2$ & $(\sem{C_1}\sm\sem{C_2})$ UNION $(\sem{C_2}\sm\sem{C_1})$\\
+$C_1 \sqsubseteq C_2$ & $\sem{C_1}\sm\sem{C_2}$\\
 \hline
 Individual & an identifier from the table individuals \\
 $i$ & SELECT id FROM individuals WHERE name=$i$ \\
@@ -311,8 +311,8 @@ Concept & SQL query for one-column table\\
 $i$ & SELECT * FROM $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
-$\forall R.C$    & $\sem{R}$ ???{\footnotemark} $\sem{C}$\\ 
-$\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object= id\\
+$\forall R.C$    & individuals $\sm$ (SELECT subject FROM $\sem{R}$ WHERE object NOT IN $\sem{C})$ \\
+$\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object=id\\
 $\dom\, R$ & SELECT DISTINCT subject FROM $\sem{R}$\\
 $\rng\, R$ & SELECT DISTINCT object FROM $\sem{R}$\\
 \hline
@@ -329,11 +329,23 @@ $\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
 Property of type $T$ & SQL query for two-column table\\
 $i$ & SELECT * FROM $i$\\
 \end{tabular}
+\medskip
+
+Using the abbreviation: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
 \caption{Interpretation Function for BOL into SQL}\label{fig:bolsemsql}
 \end{center}
 \end{figure}
 
-\footnotetext{This case is a mini homework.}
+%\footnotetext{This case is a mini homework.}
+
+\paragraph{Complex Expressions in Assertions}
+Our interpretation of BOL in SQL is restricted assertions using only atomic expressions.
+For example, in the case for $I$ \texttt{is-a} $C$, we assume that $I$ and $C$ are names.
+Thus, we have already created an individual for $I$ and a table for $C$, and we can thus insert the former into the latter.
+
+The general case would be more complicated but is much less important in practice.
+For example, the concept assertion "Florian Rabe" \texttt{is-a} "instructor" $\sqcap$ "male" could be handled by adding the individual to both tables.
+But other expressions very quickly become more difficult.
 
 \paragraph{Translation of Formulas}
 The interpretation of formulas into SQL is less obvious because SQL is not a logic.
