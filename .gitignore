@@ -11,6 +11,8 @@
 *.cb
 *.cb2
 
+auto
+
 ## Intermediate documents:
 *.dvi
 *-converted-to.*
