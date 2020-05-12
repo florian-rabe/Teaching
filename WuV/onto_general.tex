@@ -358,18 +358,70 @@ For example, if there is a subconcept axiom "instructor" $\sqsubseteq$ "person" 
 In FOL, this happens automatically by the calculus of FOL, which adds all theorems of a theory.
 In SQL, we have to mimic it manually. (Consequence is undecidable for FOL in general but often decidable for ontology languages.)
 
-\subsection{Narrative Semantics of BOL}
+\subsection{Narrative Semantics}
 
-We will now look at still another ``semantics'' for BOL: the \textbf{narrative semantics} is given by translation in to a natural language -- here English.
+We will now look at still another semantics for BOL: the \textbf{narrative semantics} is given by translation into a natural language --- here English.
 
 Note that we are relatively open of what kind of English we want to use as a target language.
 The simplest choice would be to use plain English, as you could find in a novel or newspaper article.
-But for many applications (e.g. STEM ontologies) we would rather use ``STEM English'', i.e. English interspersed with formulae,  diagrams, and epistemic cues like ``Definition'', ``Theorem'', ``Proof'', and even $\Box$.
-For this kind of English, {\LaTeX} might be a good target format.
-Finally, we can use ``flexiformal'' formats like \sTeX~\cite{Kohlhase:ulsmf08,URL:sTeX:github}, where we can annotate more of the semantical properties 
+But for many applications (e.g. STEM ontologies), we would rather use STEM English, i.e. English interspersed with formulas, diagrams, and epistemic cues like ``Definition'', ``Theorem'', ``Proof'', and even $\Box$.
+For this kind of English, {\LaTeX} is a good target format.
+Finally, we can use flexiformal formats like \sTeX~\cite{stex}, where we can capture more of the semantic properties.
 
 In \Cref{fig:bolsem:narrative} we present a translation into plain in the style of the other aspect semantics translations above.
 It recursively goes over the BOL expressions and generates strings, using a lexicon function $lex$ (for lexicon) that maps BOL identifiers into (lemmata $\hat=$ base forms of) English words of the appropriate syntactic category for the base cases.
+
+\begin{figure}\centering
+\begin{tabular}{l|l}
+BOL Syntax $X$ & Narrative Semantics $\sem{X}$ in English\\
+\hline\hline
+ontology & English document \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration & dictionary entry or true sentence\\
+\kw{individual}\,$i$ & $i$ is a proper noun\\
+\kw{concept}\,$i$  & $i$ is a common noun\\
+\kw{relation}\,$i$ & $i$ is a transitive verb \\
+\kw{property}\,$i:T$ & $i$ is a common noun for a property that can take $T$-values \\
+%$I\; \texttt{is-a}\; \forall R.C$ & all those that $\sem{I}$ $\sem{R}$s are $\sem{C}$\\
+%$I\; \texttt{is-a}\; \exists R. C$ & $\sem{I}$ $\sem{R}$s a $\sem{C}$\\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$ $\sem{I_2}$\\
+$I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$\\ 
+$F$ & $\sem{F}$\\
+\hline
+Formula & Sentence \\
+$C_1 \Equiv C_2$ & $\sem{C_1}$ing is the same as $\sem{C_2}$ing\\
+%$c \Equiv C$ & $\sem{C_2}$ abbreviates $\sem{C}$ & $c$ a constant\\
+$C_1 \sqsubseteq C_2$ & everything that $\sem{C_1}$s also $\sem{C_2}$s\\
+\hline
+Individual & noun phrase (to be used as a subject or object)\\
+$i$ & $lex(i)$ \\
+\hline
+Concept & intransitive verb phrase (to be plugged after a subject) \\
+$i$ & is a $lex(i)$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$s or $\sem{C_2}$s\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$s and $\sem{C_2}$s\\
+%$C_1 \sqcap C_2$ & is a $\sem{C_1}$ that $\sem{C_2}$s & $C_1$ simple\\
+$\forall R.C$    & $\sem{R}$s only $\sem{C}$s \\
+$\exists R.C$    & $\sem{R}$s a $\sem{C}$\\
+$\dom\, R$ & $\sem{R}$s something\\
+$\rng\, R$ & is $\sem{R}$ed by something\\
+\hline
+Relation & transitive verb phrase (to be plugged between subject and object)\\
+$i$ & $lex(i)$\\
+$R_1 \cup R_2$ & $\sem{R_1}$s or $\sem{R_2}$s\\
+$R_1 \cap R_2$ & $\sem{R_1}$s and $\sem{R_2}$s\\
+$R_1 ; R_2$ & $\sem{R_1}$s something that $\sem{R_2}$s\\
+$R^{-1}$    & is $\sem{R}$ed by\\
+$R^*$       & $\sem{R}$s something that $\sem{R}$s something and so on that $\sem{R}$s\\
+$\Delta_C$  & $\sem{C}$s and is the same as\\
+\hline
+Property of type $T$ & property phrase\\
+$i$ & $lex(i)$\\
+\end{tabular}
+\caption{Interpretation Function for BOL into English}\label{fig:bolsem:narrative}
+\end{figure}
 
 \begin{figure}\centering
 \begin{tabular}{l|l|l}
@@ -419,8 +471,9 @@ $\Delta_C$     & is itself\\
 Property of type $T$ & noun phrase or adjectival phrase\\
 $i$ & $lex(i)$\\
 \end{tabular}
-\caption{Interpretation Function for BOL into English}\label{fig:bolsem:narrative}
+\caption{Interpretation Function for BOL into English}\label{fig:bolsem:narrative2}
 \end{figure}
+
 
 \begin{example}
   Consider an ontology with declarations $\kw{individual}\; P$, $\kw{individual}\; M$, $\kw{relation}\; l$, $\kw{relation}\; h$ and a lexicon function $P\mapsto\text{Peter}, M\mapsto\text{Mary}, l\mapsto\text{love}$, then  $\sem{P\; l\; M}$ = ``Peter loves Mary''. 
@@ -438,7 +491,7 @@ Let us have a look at some of the problems that appear.
 \end{itemize}
 
 A way out here is to utilize special systems for dealing with the surface structure of natural language.
-An example of this is the GF system (Grammatical Framework~\cite{Ranta:gfpmg11,GF:url}) which allows to specify a rich formal language \textbf{abstract syntax trees} (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
+An example of this is the GF system (Grammatical Framework~\cite{gf}) which allows to specify a rich formal language \textbf{abstract syntax trees} (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
 GF comes with  a large resource library~\cite{GFResourceGrammar:url} that provides a comprehensive, language-independent AST specification and  linearlizations for over 35 languages. 
 
 
