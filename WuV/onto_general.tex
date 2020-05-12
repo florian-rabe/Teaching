@@ -308,7 +308,7 @@ Concept & SQL query for one-column table\\
 $i$ & SELECT * FROM $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
-$\forall R.C$    & individuals $\sm$ (SELECT subject FROM $\sem{R}$ WHERE object NOT IN $\sem{C})$ \\
+$\forall R.C$    & mini homework\\ %individuals $\sm$ (SELECT subject FROM $\sem{R}$ WHERE object NOT IN $\sem{C})$ \\
 $\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object=id\\
 $\dom\, R$ & SELECT DISTINCT subject FROM $\sem{R}$\\
 $\rng\, R$ & SELECT DISTINCT object FROM $\sem{R}$\\
@@ -368,7 +368,7 @@ But for many applications (e.g. STEM ontologies), we would rather use STEM Engli
 For this kind of English, {\LaTeX} is a good target format.
 Finally, we can use flexiformal formats like \sTeX~\cite{Kohlhase:ulsmf08,URL:sTeX:github}, where we can capture more of the semantic properties.
 
-In \Cref{fig:bolsem:narrative1} we present a translation into plain English in the style of the other aspect semantics translations above.
+In \Cref{fig:bolsem:narrative} we present a translation into plain English in the style of the other aspect semantics translations above.
 It recursively goes over the BOL expressions and generates strings, using a lexicon function $lex$ (for lexicon) that maps BOL identifiers into (lemmata $\hat=$ base forms of) English words of the appropriate syntactic category for the base cases.
 
 \begin{figure}\centering
@@ -379,16 +379,16 @@ ontology & English document \\
 $D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
 \hline
 BOL declaration & dictionary entry or true sentence\\
-\kw{individual}\,$i$ & $lex(i)$ is a proper noun\\
-\kw{concept}\,$i$  & $lex(i)$ is a common noun\\
-\kw{relation}\,$i$ & $lex(i)$ is a transitive verb \\
+\kw{individual}\,$i$ & $lex(i)$ is a proper name\\
+\kw{concept}\,$i$  & $lex(i)$ is an intransitive verb phrase\\
+\kw{relation}\,$i$ & $lex(i)$ is a transitive verb phrase\\
 \kw{property}\,$i:T$ & $lex(i)$ is a common noun for a property that can take $T$-values \\
 %$I\; \texttt{is-a}\; \forall R.C$ & all those that $\sem{I}$ $\sem{R}$s are $\sem{C}$\\
 %$I\; \texttt{is-a}\; \exists R. C$ & $\sem{I}$ $\sem{R}$s a $\sem{C}$\\
-$I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$\\
-$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$ $\sem{I_2}$\\
-$I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$\\ 
-$F$ & $\sem{F}$\\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$.\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$ $\sem{I_2}$.\\
+$I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
+$F$ & $\sem{F}$.\\
 \hline
 Formula & Sentence \\
 $C_1 \Equiv C_2$ & $\sem{C_1}$ing is the same as $\sem{C_2}$ing\\
@@ -404,7 +404,7 @@ $C_1 \sqcup C_2$ & $\sem{C_1}$ or $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ and $\sem{C_2}$\\
 %$C_1 \sqcap C_2$ & is a $\sem{C_1}$ that $\sem{C_2}$s & $C_1$ simple\\
 $\forall R.C$    & $\sem{R}$s only things that $\sem{C}$ \\
-$\exists R.C$    & $\sem{R}$s something that $\sem{C}$s\\
+$\exists R.C$    & $\sem{R}$s something that $\sem{C}$\\
 $\dom\, R$ & $\sem{R}$s something\\
 $\rng\, R$ & is $\sem{R}$ed by something\\
 \hline
@@ -412,7 +412,7 @@ Relation & transitive verb phrase (to be plugged between subject and object)\\
 $i$ & $lex(i)$\\
 $R_1 \cup R_2$ & $\sem{R_1}$s or $\sem{R_2}$s\\
 $R_1 \cap R_2$ & $\sem{R_1}$s and $\sem{R_2}$s\\
-$R_1 ; R_2$ & $\sem{R_1}$s something that $\sem{R_2}$s\\
+$R_1 ; R_2$ & $\sem{R_1}$s something that $\sem{R_2}$\\
 $R^{-1}$    & is $\sem{R}$ed by\\
 $R^*$       & $\sem{R}$s something that $\sem{R}$s something and so on that $\sem{R}$s\\
 $\Delta_C$  & $\sem{C}$s and is the same as\\
@@ -420,7 +420,7 @@ $\Delta_C$  & $\sem{C}$s and is the same as\\
 Property of type $T$ & property phrase\\
 $i$ & $lex(i)$\\
 \end{tabular}
-\caption{Interpretation Function for BOL into English (intransitive VP version)}\label{fig:bolsem:narrative1}
+\caption{Interpretation Function for BOL into English (intransitive VP version)}\label{fig:bolsem:narrative}
 \end{figure}
 
 \begin{example}
@@ -428,31 +428,32 @@ $i$ & $lex(i)$\\
 \end{example}
 
 \begin{example}
-  If we extend the ontology above with $\kw{concept} d$ and $\kw{concept} c$ and the lexicon with $lex(d)=\text{is a dog}$ and $lex(c)=\text{is a cat}$, then $M\; \mathtt{is-a}\; c$ translates to ``Mary is a cat'', and  $P\; \mathtt{is-a}\; c\sqcap d$ translates to ``Peter is a cat or is a dog''.
+  If we extend the ontology above with $\kw{concept} d$ and $\kw{concept} c$ and the lexicon with $lex(d)=\text{is a dog}$ and $lex(c)=\text{is a cat}$, then $M\; \mathtt{is-a}\; c$ translates to ``Mary is a cat'', and  $P\; \mathtt{is-a}\; c\sqcup d$ translates to ``Peter is a cat or is a dog''.
 \end{example}
 
 But while the target languages in the other translations are formal languages engineered for regularity (see also the discussion in \Cref{sec:compositionality}) and simplicity (in terms of language primitives), while natural languages have evolved in practical human communication.
 As a consequence, the translation in \Cref{fig:bolsem:narrative} results in English that is clumsy at best and non-grammatical in general.
-We can think of this as \textbf{BOL-pidgin} English.
+We can think of the result as \textbf{BOL-pidgin} English.
 
 Let us have a look at some of the problems that appear in both translations:
 \begin{itemize}
-\item our lexicon does not have any inflection information and the translation tries to remedy that by appending ``s'' in various places. This works for the example above but not for relations that verbalize to ``has a'' or ``has as child''.
-\item We have introduced some pattern matching and conditional rules in \Cref{fig:bolsem:narrative} to alleviate the greatest awkwardnesses, but much more would be needed, which would lead to things like ``Peter hass Mary'' or ``Peter has as childs Mary''. 
+\item our lexicon does not have any inflection information and the translation tries to remedy that by appending ``s'', ``ing'', or ``ed'' in various places. This works for the examples above but not for relations that verbalize to ``has a'' or ``has as child''.
 \item there are many linguistic devices that serve an important role in natural language, but which we are not tageting. An example is plural objects for aggregation. Say we have $P \mathtt{is-a} C$, $P \mathtt{is-a} C$, this would translate to ``Peter is a $\sem{C}$, Mary is a $\sem{C}$'' in BOL-pidgin, whereas in natural English would aggregate this to ``Peter and Mary are $\sem{C}$s''.
 \end{itemize}
 
 A way out here is to utilize special systems for dealing with the surface structure of natural language.
 An example of this is the GF system (Grammatical Framework~\cite{Ranta:gfpmg11,GF:url}) which allows to specify a rich formal language \textbf{abstract syntax trees} (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
-GF comes with  a large resource library~\cite{GFResourceGrammar:url} that provides a comprehensive, language-independent AST specification and  linearlizations for over 35 languages.
-We will not pursue this here, there is a special course ``Logic-based Natural Languge Semantics'' at FAU in the Winter Semesters that covers these and related topics.   
+GF comes with  a large resource library~\cite{GFResourceGrammar:url} that provides a comprehensive, language-independent AST specification and  linearizations for over 35 languages.
+We will not pursue this here, there is a special course ``Logic-based Natural Language Semantics'' at FAU in the Winter Semesters that covers these and related topics.
+
+One of the major issues that need to be adressed there and here is the notion of compositionality, which is central to all processing and semantics. We will address it next, and come back to it time and again later.   
 
 \subsection{Compositionality}\label{sec:compositionality}
 
 \paragraph{Definition}
 An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
 
-The interpretations of BOL in FOL and SQL are compositional.
+The interpretations of BOL in FOL and SQL are compositional, and even the narrative semantics into BOL-pidgin is. 
 For example, consider the case of composition of relations:
  \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
 We have $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
@@ -472,7 +473,7 @@ It is straightforward to translate zero and one compositionally:
 Now we would like to translate \[\sem{m+n}=\sem{+}(\sem{m},\sem{n}),\] but there is no way to define $\sem{+}$ in terms of zero and successor.
 Instead, we need subcases:
 \[\sem{m+n}=\cas{\sem{m}\mifc n=0 \\ \cn{succ}(\sem{m})\mifc n=1 \\ \sem{(m+n_1)+n_2}\mifc n=n_1+n_2}\]
-This corresponds to the usually definition of addition, i.e., $\sem{+}$, by induction.
+This corresponds to the usual definition of addition, i.e., $\sem{+}$, by induction.
 \end{example}
 
 Other common examples of non-compositional translations are
@@ -485,6 +486,7 @@ Other common examples of non-compositional translations are
  \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,
  \item query optimization done by a database, e.g., turning a WHERE of a join into a join of WHEREs,
  \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context.
+   The introduction of richer intermediate structures like ASTs and functions as values into the translation can recover some compositionality here. 
 \end{compactitem}
 
 Typical sources of non-compositionality in formal language translations are:
