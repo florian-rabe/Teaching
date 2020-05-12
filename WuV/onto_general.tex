@@ -454,10 +454,10 @@ An interpretation function is compositional if the interpretation of any kind of
 
 The interpretations of BOL in FOL and SQL are compositional.
 For example, consider the case of composition of relations:
- \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
+ \[\sem{R_1 ; R_2}= \exists m:\iota.\ \sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
 We have $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
 The semantics is a relatively complicated FOL-formula, but it only depends on $\sem{R_1}$ and $\sem{R_2}$ --- everything else is fixed.
-We have $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$, i.e., the interpretation of the $;$-operator is the function that maps two predicates $p_1,p_2$ to the formula $\exists m:\iota.p_1(x,m)\wedge p_2(m,y)$.
+We have $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.\ p_1(x,m)\wedge p_2(m,y)$, i.e., the interpretation of the $;$-operator is the function that maps two predicates $p_1,p_2$ to the formula $\exists m:\iota.\ p_1(x,m)\wedge p_2(m,y)$.
 Then we have \[\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2}).\]
 
 
@@ -508,8 +508,8 @@ $P_O$ is different for every ontology $O$ and is defined as follows:
  \item $P_O$ contains the following declarations for each $R$:
   \begin{compactitem}
   \item A binary predicate symbol $C_R\sq i\times i$. Note that $R$ may be a complex expression; so we have to generate a fresh name $C_R$ here.
-  \item The axiom $\forall x:\iota,y:\iota:R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
-  \item The axiom $\forall x:\iota,y:\iota,z:\iota.C_R(x,y)\wedge C_R(y,z)\impl C_R(x,x)$, i.e., $C_R$ is transitive.
+  \item The axiom $\forall x:\iota,y:\iota.\ R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
+  \item The axiom $\forall x:\iota,y:\iota,z:\iota.\ C_R(x,y)\wedge C_R(y,z)\impl C_R(x,z)$, i.e., $C_R$ is transitive.
   \end{compactitem}
  \item We add the case $\sem{R^*}=C_R(x,y)$ to the interpretation function.
 \end{compactenum}
