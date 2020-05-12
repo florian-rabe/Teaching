@@ -14,9 +14,11 @@
 %\usepackage{../macros/algorithm}
 %\usepackage{ded}
 
+\usepackage{stex-logo}
 \usepackage{../mylecturenotes}
 \usepackage{../macros}
 \usepackage{macros}
+\usepackage{cleveref}
 
 \title{Lectures Notes on Knowledge Representation and Processing}
 \author{Florian Rabe (for a course given with Michael Kohlhase)}
@@ -90,11 +92,19 @@ It integrated current directions and recent results in research on knowledge rep
 %
 %\input{\currfilebase.bblp}
 \bibliographystyle{alpha}
-\bibliography{../../../../../frabe/Program_Data/Latex/bib/rabe,../../../../../frabe/Program_Data/Latex/bib/historical,../../../../../frabe/Program_Data/Latex/bib/pub_rabe,}
+\bibliography{
+  % ../../../../../frabe/Program_Data/Latex/bib/rabe,
+  % ../../../../../frabe/Program_Data/Latex/bib/historical,
+  % ../../../../../frabe/Program_Data/Latex/bib/pub_rabe,
+  kwarc}
 %\bibliography{../../../../../homedir/Program_Data/Latex/bib/rabe,../../../../../homedir/Program_Data/Latex/bib/historical}
 
 \end{document}
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
+%%% mode: visual-line
+%%% fill-column: 5000
 %%% End:
+
+%  LocalWords:  generalremarks tocentryBib currfilebase.bblp

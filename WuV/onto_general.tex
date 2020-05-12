@@ -208,8 +208,7 @@ The role of the semantic prefix $P$ is to define once and for all the FOL materi
 It occurs at the beginning of all interpretations of ontologies.
 In particular, it is equal to the interpretation of empty ontology.
 
-\begin{figure}
-\begin{center}
+\begin{figure}\centering
 \begin{tabular}{l|l}
 BOL Syntax $X$ & Semantics $\sem{X}$ in FOL\\
 \hline
@@ -256,7 +255,6 @@ Property of type $T$ & Formula with free variables $x:\iota,y:T$\\
 $i$ & $i(x,y)$\\
 \end{tabular}
 \caption{Interpretation Function for BOL into FOL}\label{fig:bolsem}
-\end{center}
 \end{figure}
 
 \subsection{Concretized Semantics}
@@ -281,8 +279,7 @@ The \textbf{semantic prefix} consists of the following SQL statements
 Every BOL-ontology $O$ is interpreted as a sequence $P,\sem{O}$ of SQL statements, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsemsql}.
 \end{definition}
 
-\begin{figure}
-\begin{center}
+\begin{figure}\centering
 \begin{tabular}{l|l}
 BOL Syntax $X$ & Semantics $\sem{X}$ in SQL\\
 \hline
@@ -333,7 +330,6 @@ $i$ & SELECT * FROM $i$\\
 
 Using the abbreviation: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
 \caption{Interpretation Function for BOL into SQL}\label{fig:bolsemsql}
-\end{center}
 \end{figure}
 
 %\footnotetext{This case is a mini homework.}
@@ -362,7 +358,91 @@ For example, if there is a subconcept axiom "instructor" $\sqsubseteq$ "person" 
 In FOL, this happens automatically by the calculus of FOL, which adds all theorems of a theory.
 In SQL, we have to mimic it manually. (Consequence is undecidable for FOL in general but often decidable for ontology languages.)
 
-\subsection{Compositionality}
+\subsection{Narrative Semantics of BOL}
+
+We will now look at still another ``semantics'' for BOL: the \textbf{narrative semantics} is given by translation in to a natural language -- here English.
+
+Note that we are relatively open of what kind of English we want to use as a target language.
+The simplest choice would be to use plain English, as you could find in a novel or newspaper article.
+But for many applications (e.g. STEM ontologies) we would rather use ``STEM English'', i.e. English interspersed with formulae,  diagrams, and epistemic cues like ``Definition'', ``Theorem'', ``Proof'', and even $\Box$.
+For this kind of English, {\LaTeX} might be a good target format.
+Finally, we can use ``flexiformal'' formats like \sTeX~\cite{Kohlhase:ulsmf08,URL:sTeX:github}, where we can annotate more of the semantical properties 
+
+In \Cref{fig:bolsem:narrative} we present a translation into plain in the style of the other aspect semantics translations above.
+It recursively goes over the BOL expressions and generates strings, using a lexicon function $lex$ (for lexicon) that maps BOL identifiers into (lemmata $\hat=$ base forms of) English words of the appropriate syntactic category for the base cases.
+
+\begin{figure}\centering
+\begin{tabular}{l|l|l}
+BOL Syntax $X$ & Narrative Semantics $\sem{X}$ in English& condition\\\hline\hline
+ontology & English Document \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration & FOL declaration \\
+\kw{individual}\,$i$ & proper name\\
+\kw{concept}\,$i$  & noun phrase\\
+\kw{relation}\,$i$ & transitive verb \\
+\kw{property}\,$i:T$ & noun phrase or adjective \\
+$I\; \texttt{is-a}\; \forall R.C$ & all those that $\sem{I}$ $\sem{R}$s are $\sem{C}$\\
+$I\; \texttt{is-a}\; \exists R. C$ & $\sem{I}$ has something he/she/it $\sem{R}$s that is a $\sem{C}$\\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ is a $\sem{C}$\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$\\
+$I\; P\; V$ & $\sem{I}$ $\sem{P}$s $\sem{V}$\\ 
+$F$ & $\sem{F}$\\
+\hline
+Formula & Sentence \\
+$C_1 \Equiv C_2$ & $\sem{C_1}$s are exactly the $\sem{C_2}$s\\
+$C_1 \Equiv C_2$ & an $\sem{C_2}$ is called an $\sem{C_1}$ & $C_1$ new constant\\
+$C_1 \sqsubseteq C_2$ & $\sem{C_1}$s are $\sem{C_2}$s\\
+\hline
+Individual & noun phrase \\
+$i$ & $lex(i)$ \\
+\hline
+Concept & common noun phrase \\
+$i$ & $i(x)$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$ or $\sem{C_2}$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$ and $\sem{C_2}$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$ such that $\sem{C_2}$ & $C_1$ simple\\
+$\forall R.C$    & object whose $\sem{R}$ed ones are $\sem{C}$ \\
+$\exists R.C$    & object that $\sem{R}$ a $\sem{C}$\\
+$\dom\, R$ & all who $\sem{R}$ someone/something\\
+$\rng\, R$ & all who are $\sem{R}$ed by someone/something\\
+\hline
+Relation & Formula with free variables $x:\iota,y:\iota$\\
+$i$ & $lex(i)$\\
+$R_1 \cup R_2$ & $\sem{R_1}$ or $\sem{R_2}$\\
+$R_1 \cap R_2$ & $\sem{R_1}$ and $\sem{R_2}$\\
+$R_1 ; R_2$ & (tricky; omitted)\\
+$R^{-1}$          & is $\sem{R}$ed by\\
+$R^*$       $$   & (tricky, omitted)\\
+$\Delta_C$     & is itself\\
+\hline
+Property of type $T$ & noun phrase or adjectival phrase\\
+$i$ & $lex(i)$\\
+\end{tabular}
+\caption{Interpretation Function for BOL into English}\label{fig:bolsem:narrative}
+\end{figure}
+
+\begin{example}
+  Consider an ontology with declarations $\kw{individual}\; P$, $\kw{individual}\; M$, $\kw{relation}\; l$, $\kw{relation}\; h$ and a lexicon function $P\mapsto\text{Peter}, M\mapsto\text{Mary}, l\mapsto\text{love}$, then  $\sem{P\; l\; M}$ = ``Peter loves Mary''. 
+\end{example}
+
+But while the target languages in the other translations are formal languages engineered for regularity (see also the discussion in \Cref{sec:compositionality}) and simplicity (in terms of language primitives), while natural languages have evolved in practical human communication.
+As a consequence, the translation in \Cref{fig:bolsem:narrative} results in English that is clumsy at best and non-grammatical in general.
+We can think of this as \textbf{BOL-pidgin} English.
+
+Let us have a look at some of the problems that appear.
+\begin{itemize}
+\item our lexicon does not have any inflection information and the translation tries to remedy that by appending ``s'' in various places. This works for the example above but not for relations that verbalize to ``has a'' or ``has as child''.
+\item We have introduced some pattern matching and conditional rules in \Cref{fig:bolsem:narrative} to alleviate the greatest awkwardnesses, but much more would be needed, which would lead to things like ``Peter hass Mary'' or ``Peter has as childs Mary''. 
+\item there are many linguistic devices that serve an important role in natural language, but which we are not tageting. An example is plural objects for aggregation. Say we have $P \mathtt{is-a} C$, $P \mathtt{is-a} C$, this would translate to ``Peter is a $\sem{C}$, Mary is a $\sem{C}$'' in BOL-pidgin, whereas in natural English would aggregate this to ``Peter and Mary are $\sem{C}$s''.
+\end{itemize}
+
+A way out here is to utilize special systems for dealing with the surface structure of natural language.
+An example of this is the GF system (Grammatical Framework~\cite{Ranta:gfpmg11,GF:url}) which allows to specify a rich formal language \textbf{abstract syntax trees} (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
+GF comes with  a large resource library~\cite{GFResourceGrammar:url} that provides a comprehensive, language-independent AST specification and  linearlizations for over 35 languages. 
+
+
+\subsection{Compositionality}\label{sec:compositionality}
 
 \paragraph{Definition}
 An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
@@ -584,3 +664,12 @@ The details may vary.
 
 
 \subsection{Record Types}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "WuV_notes"
+%%% mode: visual-line
+%%% fill-column: 5000
+%%% End:
+
+%  LocalWords:  ontologization sqsubseteq commgrammar gcomment gprod galtprod Equiv sqcup sqcap relativization rng itg strg fig:bolsem sq impl x,y y,x iota,y m,y doteq fig:bolsemsql medskip Kohlhase:ulsmf08 Compositionality sec:compositionality bnfalt bnfalt bnfalt succ mifc mifc mifc iota,z y,z x,x subinductions rdfs:Resource rdf:type rdfs:Class rdf:Property rdfs:subClassOf rdfs:subPropertyOf rdfs:domain rdfs:range rdf rdfs Subject-Centered
