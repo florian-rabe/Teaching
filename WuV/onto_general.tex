@@ -366,9 +366,9 @@ Note that we are relatively open of what kind of English we want to use as a tar
 The simplest choice would be to use plain English, as you could find in a novel or newspaper article.
 But for many applications (e.g. STEM ontologies), we would rather use STEM English, i.e. English interspersed with formulas, diagrams, and epistemic cues like ``Definition'', ``Theorem'', ``Proof'', and even $\Box$.
 For this kind of English, {\LaTeX} is a good target format.
-Finally, we can use flexiformal formats like \sTeX~\cite{stex}, where we can capture more of the semantic properties.
+Finally, we can use flexiformal formats like \sTeX~\cite{Kohlhase:ulsmf08,URL:sTeX:github}, where we can capture more of the semantic properties.
 
-In \Cref{fig:bolsem:narrative} we present a translation into plain in the style of the other aspect semantics translations above.
+In \Cref{fig:bolsem:narrative1} we present a translation into plain English in the style of the other aspect semantics translations above.
 It recursively goes over the BOL expressions and generates strings, using a lexicon function $lex$ (for lexicon) that maps BOL identifiers into (lemmata $\hat=$ base forms of) English words of the appropriate syntactic category for the base cases.
 
 \begin{figure}\centering
@@ -379,10 +379,10 @@ ontology & English document \\
 $D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
 \hline
 BOL declaration & dictionary entry or true sentence\\
-\kw{individual}\,$i$ & $i$ is a proper noun\\
-\kw{concept}\,$i$  & $i$ is a common noun\\
-\kw{relation}\,$i$ & $i$ is a transitive verb \\
-\kw{property}\,$i:T$ & $i$ is a common noun for a property that can take $T$-values \\
+\kw{individual}\,$i$ & $lex(i)$ is a proper noun\\
+\kw{concept}\,$i$  & $lex(i)$ is a common noun\\
+\kw{relation}\,$i$ & $lex(i)$ is a transitive verb \\
+\kw{property}\,$i:T$ & $lex(i)$ is a common noun for a property that can take $T$-values \\
 %$I\; \texttt{is-a}\; \forall R.C$ & all those that $\sem{I}$ $\sem{R}$s are $\sem{C}$\\
 %$I\; \texttt{is-a}\; \exists R. C$ & $\sem{I}$ $\sem{R}$s a $\sem{C}$\\
 $I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$\\
@@ -400,8 +400,8 @@ $i$ & $lex(i)$ \\
 \hline
 Concept & intransitive verb phrase (to be plugged after a subject) \\
 $i$ & is a $lex(i)$\\
-$C_1 \sqcup C_2$ & $\sem{C_1}$s or $\sem{C_2}$s\\
-$C_1 \sqcap C_2$ & $\sem{C_1}$s and $\sem{C_2}$s\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$ or $\sem{C_2}$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$ and $\sem{C_2}$\\
 %$C_1 \sqcap C_2$ & is a $\sem{C_1}$ that $\sem{C_2}$s & $C_1$ simple\\
 $\forall R.C$    & $\sem{R}$s only things that $\sem{C}$ \\
 $\exists R.C$    & $\sem{R}$s something that $\sem{C}$s\\
@@ -420,70 +420,22 @@ $\Delta_C$  & $\sem{C}$s and is the same as\\
 Property of type $T$ & property phrase\\
 $i$ & $lex(i)$\\
 \end{tabular}
-\caption{Interpretation Function for BOL into English}\label{fig:bolsem:narrative}
+\caption{Interpretation Function for BOL into English (intransitive VP version)}\label{fig:bolsem:narrative1}
 \end{figure}
-
-\begin{figure}\centering
-\begin{tabular}{l|l|l}
-BOL Syntax $X$ & Narrative Semantics $\sem{X}$ in English& condition\\\hline\hline
-ontology & English Document \\
-$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
-\hline
-BOL declaration & FOL declaration \\
-\kw{individual}\,$i$ & proper name\\
-\kw{concept}\,$i$  & noun phrase\\
-\kw{relation}\,$i$ & transitive verb \\
-\kw{property}\,$i:T$ & noun phrase or adjective \\
-$I\; \texttt{is-a}\; \forall R.C$ & all those that $\sem{I}$ $\sem{R}$s are $\sem{C}$\\
-$I\; \texttt{is-a}\; \exists R. C$ & $\sem{I}$ has something he/she/it $\sem{R}$s that is a $\sem{C}$\\
-$I\; \texttt{is-a}\; C$ & $\sem{I}$ is a $\sem{C}$\\
-$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$\\
-$I\; P\; V$ & $\sem{I}$ $\sem{P}$s $\sem{V}$\\ 
-$F$ & $\sem{F}$\\
-\hline
-Formula & Sentence \\
-$C_1 \Equiv C_2$ & $\sem{C_1}$s are exactly the $\sem{C_2}$s\\
-$C_1 \Equiv C_2$ & an $\sem{C_2}$ is called an $\sem{C_1}$ & $C_1$ new constant\\
-$C_1 \sqsubseteq C_2$ & $\sem{C_1}$s are $\sem{C_2}$s\\
-\hline
-Individual & noun phrase \\
-$i$ & $lex(i)$ \\
-\hline
-Concept & common noun phrase \\
-$i$ & $i(x)$\\
-$C_1 \sqcup C_2$ & $\sem{C_1}$ or $\sem{C_2}$\\
-$C_1 \sqcap C_2$ & $\sem{C_1}$ and $\sem{C_2}$\\
-$C_1 \sqcap C_2$ & $\sem{C_1}$ such that $\sem{C_2}$ & $C_1$ simple\\
-$\forall R.C$    & object whose $\sem{R}$ed ones are $\sem{C}$ \\
-$\exists R.C$    & object that $\sem{R}$ a $\sem{C}$\\
-$\dom\, R$ & all who $\sem{R}$ someone/something\\
-$\rng\, R$ & all who are $\sem{R}$ed by someone/something\\
-\hline
-Relation & Formula with free variables $x:\iota,y:\iota$\\
-$i$ & $lex(i)$\\
-$R_1 \cup R_2$ & $\sem{R_1}$ or $\sem{R_2}$\\
-$R_1 \cap R_2$ & $\sem{R_1}$ and $\sem{R_2}$\\
-$R_1 ; R_2$ & (tricky; omitted)\\
-$R^{-1}$          & is $\sem{R}$ed by\\
-$R^*$       $$   & (tricky, omitted)\\
-$\Delta_C$     & is itself\\
-\hline
-Property of type $T$ & noun phrase or adjectival phrase\\
-$i$ & $lex(i)$\\
-\end{tabular}
-\caption{Interpretation Function for BOL into English}\label{fig:bolsem:narrative2}
-\end{figure}
-
 
 \begin{example}
   Consider an ontology with declarations $\kw{individual}\; P$, $\kw{individual}\; M$, $\kw{relation}\; l$, $\kw{relation}\; h$ and a lexicon function $P\mapsto\text{Peter}, M\mapsto\text{Mary}, l\mapsto\text{love}$, then  $\sem{P\; l\; M}$ = ``Peter loves Mary''. 
+\end{example}
+
+\begin{example}
+  If we extend the ontology above with $\kw{concept} d$ and $\kw{concept} c$ and the lexicon with $lex(d)=\text{is a dog}$ and $lex(c)=\text{is a cat}$, then $M\; \mathtt{is-a}\; c$ translates to ``Mary is a cat'', and  $P\; \mathtt{is-a}\; c\sqcap d$ translates to ``Peter is a cat or is a dog''.
 \end{example}
 
 But while the target languages in the other translations are formal languages engineered for regularity (see also the discussion in \Cref{sec:compositionality}) and simplicity (in terms of language primitives), while natural languages have evolved in practical human communication.
 As a consequence, the translation in \Cref{fig:bolsem:narrative} results in English that is clumsy at best and non-grammatical in general.
 We can think of this as \textbf{BOL-pidgin} English.
 
-Let us have a look at some of the problems that appear.
+Let us have a look at some of the problems that appear in both translations:
 \begin{itemize}
 \item our lexicon does not have any inflection information and the translation tries to remedy that by appending ``s'' in various places. This works for the example above but not for relations that verbalize to ``has a'' or ``has as child''.
 \item We have introduced some pattern matching and conditional rules in \Cref{fig:bolsem:narrative} to alleviate the greatest awkwardnesses, but much more would be needed, which would lead to things like ``Peter hass Mary'' or ``Peter has as childs Mary''. 
@@ -491,14 +443,14 @@ Let us have a look at some of the problems that appear.
 \end{itemize}
 
 A way out here is to utilize special systems for dealing with the surface structure of natural language.
-An example of this is the GF system (Grammatical Framework~\cite{gf}) which allows to specify a rich formal language \textbf{abstract syntax trees} (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
-GF comes with  a large resource library~\cite{GFResourceGrammar:url} that provides a comprehensive, language-independent AST specification and  linearlizations for over 35 languages. 
-
+An example of this is the GF system (Grammatical Framework~\cite{Ranta:gfpmg11,GF:url}) which allows to specify a rich formal language \textbf{abstract syntax trees} (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
+GF comes with  a large resource library~\cite{GFResourceGrammar:url} that provides a comprehensive, language-independent AST specification and  linearlizations for over 35 languages.
+We will not pursue this here, there is a special course ``Logic-based Natural Languge Semantics'' at FAU in the Winter Semesters that covers these and related topics.   
 
 \subsection{Compositionality}\label{sec:compositionality}
 
 \paragraph{Definition}
-An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
+An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
 
 The interpretations of BOL in FOL and SQL are compositional.
 For example, consider the case of composition of relations:
@@ -725,4 +677,4 @@ The details may vary.
 %%% fill-column: 5000
 %%% End:
 
-%  LocalWords:  ontologization sqsubseteq commgrammar gcomment gprod galtprod Equiv sqcup sqcap relativization rng itg strg fig:bolsem sq impl x,y y,x iota,y m,y doteq fig:bolsemsql medskip Kohlhase:ulsmf08 Compositionality sec:compositionality bnfalt bnfalt bnfalt succ mifc mifc mifc iota,z y,z x,x subinductions rdfs:Resource rdf:type rdfs:Class rdf:Property rdfs:subClassOf rdfs:subPropertyOf rdfs:domain rdfs:range rdf rdfs Subject-Centered
+%  LocalWords:  ontologization sqsubseteq commgrammar gcomment gprod galtprod Equiv sqcup sqcap relativization rng itg strg fig:bolsem sq impl x,y y,x iota,y m,y doteq fig:bolsemsql medskip Kohlhase:ulsmf08 Compositionality sec:compositionality bnfalt bnfalt bnfalt succ mifc mifc mifc iota,z y,z x,x subinductions rdfs:Resource rdf:type rdfs:Class rdf:Property rdfs:subClassOf rdfs:subPropertyOf rdfs:domain rdfs:range rdf rdfs Subject-Centered childs Ranta:gfpmg11,GF:url linearizations
