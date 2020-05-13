@@ -151,7 +151,7 @@ The \textbf{semantic prefix} consists of the following SQL-statements
  \item CREATE TABLE individuals (id ID, name string), where the id field is unique and automatically generated when inserting values
 \end{compactitem}
 
-Every BOL-ontology $O$ is interpreted as the sequence $P,\sem{O}$ of SQL statements, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsemsql}.
+Every BOL-ontology $O$ is interpreted as the sequence $P,\sem{O}$ of SQL statements, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:sql}.
 \end{definition}
 
 \begin{figure}\centering
@@ -285,7 +285,7 @@ val individuals = new HashSet[String]
 \end{lstlisting}
 \end{compactitem}
 
-Every BOL-ontology $O$ is interpreted as the Scala program $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsemscala}.
+Every BOL-ontology $O$ is interpreted as the Scala program $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:scala}.
 \end{definition}
 
 \newcommand{\rA}{\Rightarrow}
@@ -433,7 +433,7 @@ The \textbf{semantic prefix} consists of English statements explaining
  \item that we rely on a lexicon to correctly form plurals (indicated by -s) and verb forms (indicated by -s, -ing, -ed).
 \end{compactitem}
 
-Every BOL-ontology $O$ is interpreted as the English text $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:narrative}.
+Every BOL-ontology $O$ is interpreted as the English text $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:eng}.
 \end{definition}
 
 %It recursively goes through the BOL expressions and generates strings.
@@ -622,7 +622,7 @@ Typical sources of non-compositionality in formal language translations are:
  \item The semantic prefix is not fixed but depends on the translated object, i.e, the top-level case of the translation scans through the entire argument $X$ to collect all occurrences of a particular feature and then custom-builds the semantic prefix of $\sem{X}$.
 \end{compactitem}
 
-In Fig.~\ref{fig:bolsem}, we omitted the case for the transitive closure.
+In Fig.~\ref{fig:bolsem:sfol}, we omitted the case for the transitive closure.
 That was because it is not possible to translate it compositionally into FOL.
 We can only do it non-compositionally with a custom semantic prefix:
 
