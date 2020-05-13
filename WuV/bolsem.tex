@@ -553,7 +553,7 @@ We can even use special \latex dialects like \sTeX~\cite{stex} where we can capt
 \begin{remark}[Better Language Generation]
 While the target languages in the other translations are formal languages engineered for regularity and simplicity (in terms of language primitives), natural languages have evolved in practical human communication.
 As a consequence, the translation in Def.~\ref{def:bolsem:eng} results in English that is clumsy at best and non-grammatical in general.
-We can think of this as \textbf{BOL-pidgin} English.
+We can think of the result as \textbf{BOL-pidgin} English.
 
 Let us have a look at some of the problems that appear in both translations:
 \begin{itemize}
@@ -569,6 +569,7 @@ A way out is to utilize special systems for dealing with the surface structure o
 An example of this is the Grammatical Framework~ (GF, \cite{gf}): it allows specifying a rich formal language of \textbf{abstract syntax trees} for natural language (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
 GF comes with  a large resource library that provides a comprehensive, language-independent AST specification and linearizations for over 35 languages.
 We will not pursue this here, but there is a special course ``Logic-based Natural Language Semantics'' at FAU in the Winter Semesters that covers these and related topics.
+One of the major issues that need to be addressed there and here is the notion of compositionality, which is central to all processing and semantics. We will address it next, and come back to it time and again later. 
 \end{remark}
 
 \section{Discussion}
@@ -578,7 +579,7 @@ We will not pursue this here, but there is a special course ``Logic-based Natura
 \paragraph{Definition}
 An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
 
-The interpretations of BOL in FOL and SQL are compositional.
+The interpretations of BOL given above are compositional.
 For example, consider the case of composition of relations:
  \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
 We have $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
@@ -598,7 +599,7 @@ It is straightforward to translate zero and one compositionally:
 Now we would like to translate \[\sem{m+n}=\sem{+}(\sem{m},\sem{n}),\] but there is no way to define $\sem{+}$ in terms of zero and successor.
 Instead, we need subcases:
 \[\sem{m+n}=\cas{\sem{m}\mifc n=0 \\ \cn{succ}(\sem{m})\mifc n=1 \\ \sem{(m+n_1)+n_2}\mifc n=n_1+n_2}\]
-This corresponds to the usually definition of addition, i.e., $\sem{+}$, by induction.
+This corresponds to the usual definition of addition, i.e., $\sem{+}$, by induction.
 \end{example}
 
 Other common examples of non-compositional translations are
@@ -610,7 +611,7 @@ Other common examples of non-compositional translations are
   \end{compactitem}
  \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,
  \item query optimization done by a database, e.g., turning a WHERE of a join into a join of WHEREs,
- \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context.
+ \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context (The introduction of richer intermediate structures like ASTs and functions as values into the translation can recover some compositionality here).
 \end{compactitem}
 
 Typical sources of non-compositionality in formal language translations are:
