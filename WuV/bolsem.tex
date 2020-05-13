@@ -1,0 +1,668 @@
+\section{Overview}
+
+A semantics by translation consists of the following parts:
+\begin{compactitem}
+ \item syntax: a formal language $l$
+ \item semantic language: a formal language $L$ (from a different or the same aspect as $l$)
+ \item semantic prefix: a theory $P$ in $L$, which is prefixed to the translation of all theories of $l$
+ \item interpretation: a function that translates every $l$-theory $T$ to an $L$-theory $P,\sem{T}$.
+\end{compactitem}
+
+Critically, the semantic language (which is itself a formal language and can thus have a semantics itself) must be a language whose semantics we already know.
+Therefore, it is often important to give multiple equivalent semantics --- choosing a different semantics for different audiences, who might be familiar with different languages.
+
+The role of the semantic prefix $P$ is to define once and for all the $L$-material that we need in general to interpret $l$-theories (in our case: ontologies).
+It occurs at the beginning of all interpretations of ontologies.
+In particular, it is equal to the interpretation of empty ontology.
+
+There are some general principles shared by all translations:
+\begin{compactitem}
+ \item Every $l$-declaration is translated to an $L$-declaration for the same name, and ontologies are translated declaration-wise.
+ \item For every kind of complex $l$-expression, there is one inductive function mapping $l$-expressions to $L$-expressions.
+ \item The base cases of references to declared $l$-identifiers are translated to themselves, i.e., to the identifiers of the same name declared in $L$.
+ \item The other cases are compositional: every case for a complex $l$-expression recurses only into the semantics of the direct subexpressions.
+\end{compactitem}
+
+In the sequel, we give four different semantics of BOL --- using the four other aspects:
+\begin{center}
+\begin{tabular}{llll}
+Section & Aspect & kind of semantic language & semantic language\\
+\hline
+\ref{sec:bolsem:ded} & deduction & logic & SFOL \\
+\ref{sec:bolsem:conc} & concretization & database language & SQL \\
+\ref{sec:bolsem:comp} & computation & programming language & Scala \\
+\ref{sec:bolsem:narr} & narration & natural language & English \\
+\end{tabular}
+\end{center}
+
+Note that we could also give an ontological semantics of BOL, e.g., by using OWL as the semantic language.
+BOL and OWL are already so similar that the translation would be rather straightforward.
+Therefore, we omit it.
+
+\section{Deductive Semantics}\label{sec:bolsem:ded}
+
+We fix one language that we have already understood and define an interpretation function that maps all complex expression of BOL to the semantic language.
+For simple ontology languages like BOL, ALC, OWL, etc., it is common to use first-order logic (FOL) as the deductive semantic language.
+More specifically, we use SFOL, the typed variant of FOL:
+
+\begin{definition}[Deductive Semantics of BOL]\label{def:bolsem:sfol}
+The semantic prefix is the SFOL-theory containing
+\begin{compactitem}
+ \item a type $\iota$ (for individuals),
+ \item additional types and constants corresponding to base types and values of BOL.
+\end{compactitem}
+
+Every BOL-ontology $O$ is interpreted as the SFOL-theory $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:sfol}.
+\end{definition}
+
+As foreshadowed above, we can observe some general principles:
+Every BOL-declaration is translated to an SFOL-declaration for the same name, and ontologies are translated declaration-wise.
+For every kind of complex BOL-expression, there is one inductive function mapping BOL-expressions to SFOL-expressions.
+The base cases of references to declared BOL-identifiers are translated to themselves, i.e., to the identifiers of the same name declared in the SFOL-theory.
+The other cases are compositional: every case for a complex BOL-expression recurses only into the semantics of the direct subexpressions.
+
+\begin{figure}\centering
+\begin{tabular}{l|l}
+BOL Syntax $X$ & Semantics $\sem{X}$ in SFOL\\
+\hline
+\hline
+ontology & SFOL theory \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration & FOL declaration \\
+\kw{individual}\,$i$ & nullary function symbol $i:\iota$ \\
+\kw{concept}\,$i$  & unary predicate symbol $i\sq\iota$ \\
+\kw{relation}\,$i$ & binary predicate symbol $i\sq\iota\times \iota$ \\
+\kw{property}\,$i:T$ & binary predicate symbol $i\sq\iota\times T$ \\
+$I\; \texttt{is-a}\; C$ & axiom $\sem{C}(\sem{I})$\\
+$I_1\; R\; I_2$ & axiom $\sem{R}(\sem{I_1},\sem{I_2})$\\
+$I\; P\; V$ & axiom $\sem{P}(\sem{I},\sem{V})$\\
+$F$ & axiom $\sem{F}$\\
+\hline
+Formula & Formula without free variables\\
+$C_1 \Equiv C_2$ & $\forall x:\iota.\sem{C_1}(x)\Leftrightarrow \sem{C_2}(x)$\\
+$C_1 \sqsubseteq C_2$ & $\forall x:\iota.\sem{C_1}(x)\impl \sem{C_2}(x)$\\
+\hline
+Individual & Terms of type $\iota$ \\
+$i$ & $i$ \\
+\hline
+Concept & Formula with free variable $x:\iota$\\
+$i$ & $i(x)$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}(x)\vee\sem{C_2}(x)$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}(x)\wedge\sem{C_2}(x)$\\
+$\forall R.C$    & $\forall y:\iota.\sem{R}(x,y)\impl \sem{C}(y)$\\
+$\exists R.C$    & $\exists y:\iota.\sem{R}(x,y)\wedge \sem{C}(y)$\\
+$\dom\, R$ & $\exists y:\iota.\sem{R}(x,y)$\\
+$\rng\, R$ & $\exists y:\iota.\sem{R}(y,x)$\\
+$\dom\, P$ & $\exists y:T.\sem{P}(x,y)$  \tb($T$ is type of $P$)\\
+\hline
+Relation & Formula with free variables $x:\iota,y:\iota$\\
+$i$ & $i(x,y)$\\
+$R_1 \cup R_2$ & $\sem{R_1}(x,y)\vee \sem{R_2}(x,y)$\\
+$R_1 \cap R_2$ & $\sem{R_1}(x,y)\wedge \sem{R_2}(x,y)$\\
+$R_1 ; R_2$ & $\exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)$\\
+$R^{-1}$          & $\sem{R}(y,x)$\\
+$R^*$          & (tricky, omitted)\\
+$\Delta_C$     & $x\doteq y\wedge \sem{C}(x)$\\
+\hline
+Property of type $T$ & Formula with free variables $x:\iota,y:T$\\
+$i$ & $i(x,y)$\\
+\end{tabular}
+\caption{Interpretation Function for BOL into SFOL}\label{fig:bolsem:sfol}
+\end{figure}
+
+The consequence closure of SFOL, using the usual semantics of SFOL, induces the desired consequence closure for BOL:
+\begin{definition}[Consequence Closure]
+We say that a BOL-statement $F$ is a consequence of an ontology $O$ if $\sem{F}$ is an SFOL-theorem of $P,\sem{O}$.
+%A BOL-ontology $O$ is consistent if $P,\sem{O}$ is consistent as an SFOL-theory.
+\end{definition}
+
+\begin{example}
+We interpret the example ontology from Ex.~\ref{ex:bol}.
+Excluding the semantic prefix, it results in
+\[\mathll{
+\FR:\iota,\; \WuV\sq \iota,\; \person\sq\iota,\;\instr\sq\iota,\;\crs\sq\iota,\;\tch\sq \iota\times\iota,\;\hc\sq\iota\times \float \\
+\instr(\FR)\wedge\male(\FR),\;\crs(\WuV)\;\tch(\FR,\WuV)\;\hc(\WuV,7.5)\\
+\forall x:\iota.\male(x)\impl\person(x),\\
+\forall x:\iota.\instr(x)\impl\person(x),\\
+\forall x:\iota.(\exists y:\iota.\tch(x,y))\impl\instr(x),\\
+\forall x:\iota.(\exists y:\iota.\tch(y,x))\impl\crs(x),\\
+\forall x:\iota.(\exists y:\iota.\tch(y,x))\Darr\crs(x),\\
+\forall x:\iota.\crs(x)\impl\exists y:\iota.\tch(y,x)\wedge\instr(y)
+}\]
+\end{example}
+
+\section{Concretized Semantics}\label{sec:bolsem:conc}
+
+We give an alternative semantics using a semantic language for concrete data.
+Specifically we use the database language SQL.
+
+Even though this is a very different knowledge aspect, the general principles of the semantics are the same:
+Every BOL-declaration is translated to an SQL declaration, and ontologies are translated declaration-wise.
+For every kind of complex expression, there is one inductive function mapping BOL-expressions to SQL-expressions.
+
+In SQL, we can nicely see the difference between declarations and expressions: the former are translated to side effect-ful statements, the latter to side effect-free queries.
+
+\begin{definition}[Concretized Semantic of BOL]\label{def:bolsem:sql}
+The \textbf{semantic prefix} consists of the following SQL-statements
+\begin{compactitem}
+ \item a type $ID$ of identifiers (if not already supported anyway by the underlying database)
+ \item declarations of all base types and values of BOL (if not already supported anyway by the underlying database)
+ \item CREATE TABLE individuals (id ID, name string), where the id field is unique and automatically generated when inserting values
+\end{compactitem}
+
+Every BOL-ontology $O$ is interpreted as the sequence $P,\sem{O}$ of SQL statements, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsemsql}.
+\end{definition}
+
+\begin{figure}\centering
+\begin{tabular}{l|l}
+BOL Syntax $X$ & Semantics $\sem{X}$ in SQL\\
+\hline
+\hline
+ontology & SQL statements \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration ($I$, $C$, $R$, $P$ atomic) & SQL statement \\
+\kw{individual}\,$i$ & INSERT INTO individuals (name) VALUES ("$i$") \\
+\kw{concept}\,$i$  & CREATE TABLE $i$ (id ID)\\
+\kw{relation}\,$i$ & CREATE TABLE $i$ (subject ID, object ID) \\
+\kw{property}\,$i:T$ & CREATE TABLE $i$ (subject ID, object $T$) \\
+$I\; \texttt{is-a}\; C$ & INSERT INTO $C$ VALUES ($\sem{I}$)\\
+$I_1\; R\; I_2$ & INSERT INTO $R$ (subject, object) VALUES ($\sem{I_1}$, $\sem{I_2}$)\\
+$I\; P\; V$ & INSERT INTO $P$ (subject, object) VALUES ($\sem{I}$, $V$)\\
+$F$ & consistency check, consequence closure (omitted)\\
+\hline
+Formula & Query that returns empty result iff formula is true \\
+$C_1 \Equiv C_2$ & $(\sem{C_1}\sm\sem{C_2})$ UNION $(\sem{C_2}\sm\sem{C_1})$\\
+$C_1 \sqsubseteq C_2$ & $\sem{C_1}\sm\sem{C_2}$\\
+\hline
+Individual & an identifier from the table individuals \\
+$i$ & SELECT id FROM individuals WHERE name="$i$" \\
+\hline
+Concept & SQL query for one-column table\\
+$i$ & SELECT * FROM $i$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
+$\forall R.C$    & individuals $\sm$ (SELECT subject FROM $\sem{R}$ WHERE object NOT IN $\sem{C})$ \\
+$\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object=id\\
+$\dom\, R$ & SELECT DISTINCT subject FROM $\sem{R}$\\
+$\rng\, R$ & SELECT DISTINCT object FROM $\sem{R}$\\
+$\dom\, P$ & SELECT DISTINCT subject FROM $\sem{P}$\\
+\hline
+Relation & SQL query for two-column table\\
+$i$ & SELECT * FROM $i$\\
+$R_1 \cup R_2$ & $\sem{R_1}$ UNION $\sem{R_2}$\\
+$R_1 \cap R_2$ & $\sem{R_1}$ INTERSECT $\sem{R_2}$\\
+$R_1 ; R_2$ & SELECT DISTINCT l.subject, r.object FROM $\sem{R_1}$ AS l, $\sem{R_2}$ AS r \\
+            & \tb\tb WHERE l.object = r.subject\\
+$R^{-1}$          & SELECT object AS subject, subject AS object FROM $\sem{R}$\\
+$R^*$          & (tricky, omitted)\\
+$\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
+\hline
+Property of type $T$ & SQL query for two-column table\\
+$i$ & SELECT * FROM $i$\\
+\end{tabular}
+\medskip
+
+Using the abbreviation: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
+\caption{Interpretation Function for BOL into SQL}\label{fig:bolsem:sql}
+\end{figure}
+
+\begin{remark}[Limitations]
+Our interpretation of BOL in SQL is restricted assertions using only atomic expressions.
+For example, in the case for $I$ \texttt{is-a} $C$, we assume that $I$ and $C$ are names.
+Thus, we have already created an individual for $I$ and a table for $C$, and we can thus insert the former into the latter.
+The general case would be more complicated but is much less important in practice.
+But other expressions very quickly become more difficult.
+
+The interpretation of formulas into SQL is less obvious because SQL is not a logic and therefore does not define a consequence closure.
+Thus, we can only use axioms for consistency checks in SQL.
+But that requires first carrying out an explicit consequence closure that adds all implied assertions to the database.
+\end{remark}
+
+\begin{example}
+We interpret the example ontology from Ex.~\ref{ex:bol}.
+Excluding the semantic prefix, the entity declarations and assertions result in the following
+\begin{lstlisting}
+INSERT INTO individuals(name) VALUES ("FlorianRabe")
+INSERT INTO individuals(name) VALUES ("WuV")
+CREATE TABLE person (id ID)
+CREATE TABLE male (id ID)
+CREATE TABLE instructor (id ID)
+CREATE TABLE course (id ID)
+CREATE TABLE teach (subject ID, object ID)
+CREATE TABLE creditValue (subject ID, object float)
+INSERT INTO course VALUES (2)
+INSERT INTO teach VALUES (1, 2)
+INSERT INTO creditValue VALUES (1, 7.5)
+\end{lstlisting}
+
+Here we assume that inserting into the table individuals has automatically assigned the ids $1$ and $2$ to our two individuals.
+
+The concept assertion about $\FR$ using $\sqcap$ cannot be handled by this semantics.
+Therefore, we skip that assertion.
+The two missing assertions
+\begin{lstlisting}
+INSERT INTO instructor VALUES (1)
+INSERT INTO male VALUES (1)
+\end{lstlisting}
+must then be provided by performing the consequence closure.
+
+Moreover, the axioms result in the following consistency checks, i.e., queries that should be empty:
+\begin{lstlisting}
+SELECT * FROM male $\sm$ SELECT * FROM person
+SELECT * FROM instructor $\sm$ SELECT * FROM person
+SELECT * FROM (SELECT DISTINCT subject FROM teach) $\sm$ SELECT * FROM instructor
+SELECT * FROM (SELECT DISTINCT object FROM teach) $\sm$ SELECT * FROM course
+(SELECT * FROM (SELECT DISTINCT subject FROM creditValue) $\sm$ SELECT * FROM course)
+   UNION (SELECT * FROM course $\sm$ SELECT DISTINCT subject FROM creditValue)
+SELECT * FROM course $\sm$
+  (SELECT DISTINCT subject
+   FROM (SELECT object AS subject, subject AS object FROM teach), instructor
+   WHERE object=id)
+\end{lstlisting}
+Some of these checks will only succeed after performing the consequence closure.
+In particular, the table \verb|person| misses the entry $1$ for the individual $\FR$ because the assertion {\FR\;\texttt{is-a}\;\person} is only present as a consequence
+\end{example}
+
+\section{Computational Semantics}\label{sec:bolsem:comp}
+
+We give an alternative semantics using computation, i.e., by using a programming language as the semantic language.
+Specifically, we use the programming language Scala.
+
+Again, the general principles are the same:
+Every BOL-declaration is translated to a Scala-declaration, and ontologies are translated declaration-wise to Scala-programs.
+For every kind of complex expression, there is one inductive function mapping BOL-expressions to Scala-objects.
+
+\begin{definition}[Computational Semantic of BOL]\label{def:bolsem:scala}
+The \textbf{semantic prefix} consists of the following Scala statements
+\begin{compactitem}
+ \item classes for all BOL-base types and values for them (if not already present in Scala)
+ \item classes for individuals and hash sets of objects:
+\begin{lstlisting}
+import scala.collection.mutable.HashSet
+val individuals = new HashSet[String]
+\end{lstlisting}
+\end{compactitem}
+
+Every BOL-ontology $O$ is interpreted as the Scala program $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsemscala}.
+\end{definition}
+
+\newcommand{\rA}{\Rightarrow}
+
+\begin{figure}\centering
+\begin{tabular}{l|l}
+BOL Syntax $X$ & Semantics $\sem{X}$ in Scala\\
+\hline
+\hline
+ontology & Scala program \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration ($I$, $C$, $R$, $P$ atomic) & Scala declaration \\
+\kw{individual}\,$i$ & val i = "$i$"; individuals += $i$ \\
+\kw{concept}\,$i$  & val $i$ = new HashSet[String]\\
+\kw{relation}\,$i$ & val $i$ = new HashSet[(String,String)] \\
+\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,T) \\
+$I\; \texttt{is-a}\; C$ & $\sem{C}$ += $\sem{I}$\\
+$I_1\; R\; I_2$ & $\sem{R}$ += $(\sem{I_1},\sem{I_2})$\\
+$I\; P\; V$ & $\sem{P}$ += $(\sem{I},\sem{V})$\\
+$F$ & assertions, consequence closure (omitted)\\
+\hline
+Formula & Program that evaluates the formula to a Boolean \\
+$C_1 \Equiv C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; \\
+                 & \tb $c_1$.forall(x $\rA$ $c_2$.contains(x)) \&\& $c_2$.forall(x $\rA$ $c_1$.contains(x))\}\\
+$C_1 \sqsubseteq C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; $c_1$.forall(x$\rA$ $c_2$.contains(x))\}\\
+\hline
+Individual & String object\\
+$i$ & $i$ \\
+\hline
+Concept & HashSet[String] object\\
+$i$ & $i$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$.union($\sem{C_2}$)\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$.diff($\sem{C_2}$)\\
+$\forall R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = individuals.clone; \\
+                 & \tb r.foreach(x $\rA$ if (!c.contains(x.\_2)) e -= x.\_1); e\} \\
+$\exists R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = new HashSet[String]; \\
+                 & \tb r.foreach(x$ \rA$ if (c.contains(x.\_2)) e += x.\_1); e\}\\
+$\dom\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_1); c\}\\
+$\rng\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_2); c\}\\
+$\dom\, P$ & \{val c = new HashSet[String]; $\sem{P}$.foreach(x $\rA$ c += x.\_1); c\}\\
+\hline
+Relation & HashSet[(String,String)] object\\
+$i$ & $i$\\
+$R_1 \cup R_2$ & $\sem{R_1}$.union($\sem{R_2}$)\\
+$R_1 \cap R_2$ & $\sem{R_1}$.diff($\sem{R_2}$)\\
+$R_1 ; R_2$ & \{val r1 = $\sem{R_1}$; val r2 = new $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
+            & \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); r\}\\
+$R^{-1}$    & \{val r = new HashSet[(String,String)]; $\sem{R}$.foreach(x $\rA$ r += (x.\_2,x.\_1)); r\}\\
+$R^*$          & (tricky, omitted)\\
+$\Delta_C$     & \{val r = new HashSet[(String,String)]; $\sem{C}$.foreach(x $\rA$ r += (x,x)); r\}\\
+\hline
+Property of type $T$ & HashSet[(String,T)] object\\
+$i$ & $i$\\
+\end{tabular}
+\caption{Interpretation Function for BOL into Scala}\label{fig:bolsem:scala}
+\end{figure}
+
+\begin{remark}[Scala Syntax]
+In Scala, val $x=e$ evaluates $e$ and stores the result in $x$.
+$\{d_1; \ldots; d_n\}$ is evaluated by executing all $d_i$ in order and returning the result of $d_n$.
+
+$(A,B)$ is the product type $A\times B$ with pairing operator $(x,y)$ and projection functions $\_1$ and $\_2$. $x\rA F(x)$ is $\lambda x.F(x)$.
+
+The class HashSet is part of the standard library and offers function += and -= to add/remove elements, contains to test elementhood, and forall, foreach to quantifiy/iterate over elements.
+
+Types of variables are inferred if omitted.
+\end{remark}
+
+\begin{remark}[Limitations]
+Our interpretation of BOL in Scala has similar problems as the one in SQL.
+We restrict entities in assertions to be atomic.
+And we assume that all assertions implied by the consequence closure have already been obtained and added to the ontology.
+\end{remark}
+
+\begin{example}
+We interpret the example ontology from Ex.~\ref{ex:bol}.
+Excluding the semantic prefix, the entity declarations and assertions result in the following
+\begin{lstlisting}
+individuals += "FlorianRabe"
+individuals += "WuV"
+val person = new HashSet[String]
+val male = new HashSet[String]
+val person = new HashSet[String]
+val course = new HashSet[String]
+val teach = new new HashSet[(String,String)]
+val creditValue = new HashSet[(String,float)]
+course += WuV
+teach += ("FlorianRabe", WuV)
+creditValue += (WuV, 7.5)
+\end{lstlisting}
+
+Like for SQL, the two statements
+\begin{lstlisting}
+instructor += "FlorianRabe"
+male += "FlorianRabe"
+\end{lstlisting}
+must be obtained by consequence closure because we cannot handle the $\sqcap$ assertion.
+Note that we could easily compute the hash set \verb|instructor.diff(male)| and add to it.
+But that would not add anything to the two constituent sets.
+
+If we thing of the axioms as consistency checks, we can translate them to assertions, i.e., Boolean expressions that must be true.
+We only give some examples:
+\begin{lstlisting}
+{val c1 = male; val c2 = person; c1.forall(x $\rA$ c2.contains(x))}
+
+{
+  val c1 = course;
+  val c2 = {
+    val c = instructor;
+    val r = {
+      val r = new HashSet[(String,String)];
+      teach.foreach(x $\rA$ r += (x._2,x._1));
+      r
+    }
+    val e = new HashSet[String];
+    r.foreach(x $\rA$ if (c.contains(x._2)) e += x._1);
+    e
+  };
+  c1.forall(x $\rA$ c2.contains(x))
+}
+\end{lstlisting}
+
+%instructor $\sqsubseteq$ person
+%dom teach $\sqsubseteq$ instructor
+%rng teach $\sqsubseteq$ course
+%dom hasCredits $\Equiv$ course
+%course $\sqsubseteq$ $\exists$ teach$^{-1}$ instructor
+
+\end{example}
+
+\section{Narrative Semantics}\label{sec:bolsem:narr}
+
+We give an alternative semantics using narration, i.e., by using a natural language as the semantic language.
+Specifically, we use the natural language English.
+
+Again, the general principles are the same:
+Every BOL-declaration is translated to an English sentence, and ontologies are translated declaration-wise to English texts.
+For every kind of complex expression, there is one inductive function mapping BOL-expressions to English phrases.
+
+\begin{definition}[Narrative Semantic of BOL]\label{def:bolsem:eng}
+The \textbf{semantic prefix} consists of English statements explaining
+\begin{compactitem}
+ \item the base types of BOL (if they are not universally known),
+ \item that we rely on a lexicon to correctly form plurals (indicated by -s) and verb forms (indicated by -s, -ing, -ed).
+\end{compactitem}
+
+Every BOL-ontology $O$ is interpreted as the English text $P,\sem{O}$, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:narrative}.
+\end{definition}
+
+%It recursively goes through the BOL expressions and generates strings.
+%It uses a lexicon function $lex$ (for lexicon) that maps BOL identifiers into (lemmata $\hat=$ base forms of) English words of the appropriate syntactic category for the base cases.
+
+% @MK: The lexicon corresponds to the model of a logical semantics, and I've defered its explanation to do it jointly later.
+
+\begin{figure}\centering
+\begin{tabular}{l|l}
+BOL Syntax $X$ & Semantics $\sem{X}$ in English\\
+\hline\hline
+ontology & English text \\
+$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+\hline
+BOL declaration & dictionary entry or true sentence\\
+\kw{individual}\,$i$ & $i$ is a proper noun.\\
+\kw{concept}\,$i$  & $i$ is a common noun.\\
+\kw{relation}\,$i$ & $i$ is a transitive verb. \\
+\kw{property}\,$i:T$ & $i$ is a common noun for a property that can take $T$-values. \\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$.\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$.\\
+$I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
+$F$ & $\sem{F}$.\\
+\hline
+Formula & Sentence \\
+$C_1 \Equiv C_2$ & $\sem{C_1}$ is the same as $\sem{C_2}$\\
+$C_1 \sqsubseteq C_2$ & everything that $\sem{C_1}$s also $\sem{C_2}$s\\
+\hline
+Individual & noun phrase (to be used as a subject or object)\\
+$i$ & $i$ \\
+\hline
+Concept & intransitive verb phrase (to be plugged after a subject) \\
+$i$ & is a $i$\\
+$C_1 \sqcup C_2$ & $\sem{C_1}$ or $\sem{C_2}$\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$ and $\sem{C_2}$\\
+%$C_1 \sqcap C_2$ & is a $\sem{C_1}$ that $\sem{C_2}$s & $C_1$ simple\\
+$\forall R.C$    & $\sem{R}$s only things that $\sem{C}$ \\
+$\exists R.C$    & $\sem{R}$s something that $\sem{C}$s\\
+$\dom\, R$ & $\sem{R}$s something\\
+$\rng\, R$ & is $\sem{R}$ed by something\\
+$\dom\, P$ & has some $\sem{P}$\\
+\hline
+Relation & transitive verb phrase (to be plugged between subject and object)\\
+$i$ & $i$\\
+$R_1 \cup R_2$ & $\sem{R_1}$s or $\sem{R_2}$s\\
+$R_1 \cap R_2$ & $\sem{R_1}$s and $\sem{R_2}$s\\
+$R_1 ; R_2$ & $\sem{R_1}$s something that $\sem{R_2}$s\\
+$R^{-1}$    & is $\sem{R}$ed by\\
+$R^*$       & $\sem{R}$s something that $\sem{R}$s something and so on that $\sem{R}$s\\
+$\Delta_C$  & $\sem{C}$s and is the same as\\
+\hline
+Property of type $T$ & property phrase\\
+$i$ & $i$\\
+\end{tabular}
+\caption{Interpretation Function for BOL into English (intransitive VP version)}\label{fig:bolsem:eng}
+\end{figure}
+
+Natural language defines a consequence closure by appealing to consequence in natural language.
+That is well-defined as long as we express ourselves precisely enough.
+\begin{definition}[Consequence Closure]
+We say that a BOL-statement $F$ is a consequence of an ontology $O$ if $\sem{F}$ is a consequence of $P,\sem{O}$.
+\end{definition}
+
+\begin{example}
+We interpret the example ontology from Ex.~\ref{ex:bol}.
+Excluding the semantic prefix and the lexicon lookup, it results in the following text:
+\medskip
+
+FlorianRabe is a proper noun.\\
+WuV is a proper noun.\\
+person is a common noun.\\
+male is a common noun.\\
+instructor is a common noun.\\
+course is a common noun.\\
+teach is a transitive verb.\\
+property is a common noun for a property that can take $\float$-values.\\
+FlorianRabe is a instructor and is a male.\\
+WuV is a course.\\
+FlorianRabe teachs WuV.\\
+WuV has creditValue 7.5.\\
+everything that is a male also is a person.\\
+everything that is a instructor also is a person.\\
+everything that teachs is a instructor.\\
+everything that is teached by something is a instructor.\\
+has some creditValue is the same as is a course.\\
+everything that is a course also is teached by something that is a instructor.
+\medskip
+
+This English is very clunky of course.
+Multiple tweaks would be needed to get the grammar right:
+\begin{compactitem}
+ \item It is "teaches" and "taught" instead of "teachs" and "teached",
+ \item It is "an instructor" instead of "a instructor",
+ \item Sentences start with upper case letters.
+ \item Proper nouns often have different names in the ontology than in reality, e.g., it should be "Florian Rabe" and "credit value" instead of "FlorianRabe" and "creditValue".
+\end{compactitem}
+Moreover, the language could be polished in many places.
+For example, "is a instructor and is a male" could become "is a instructor and a male" with a relatively easy special case treatment, or it could become "is a male instructor" with a more complex semantics that interprets some concepts via nouns and some via adjectives.
+\end{example}
+
+%\begin{example}
+%  Consider an ontology with declarations $\kw{individual}\; P$, $\kw{individual}\; M$, $\kw{relation}\; l$, $\kw{relation}\; h$ and a lexicon function $P\mapsto\text{Peter}, M\mapsto\text{Mary}, l\mapsto\text{love}$, then  $\sem{P\; l\; M}$ = ``Peter loves Mary''. 
+%\end{example}
+%
+%\begin{example}
+%  If we extend the ontology above with $\kw{concept} d$ and $\kw{concept} c$ and the lexicon with $lex(d)=\text{is a dog}$ and $lex(c)=\text{is a cat}$, then $M\; \mathtt{is-a}\; c$ translates to ``Mary is a cat'', and  $P\; \mathtt{is-a}\; c\sqcap d$ translates to ``Peter is a cat or is a dog''.
+%\end{example}
+
+\begin{remark}[Variants of English]
+We are relatively open as to what kind of English we want to use as the semantic language.
+The simplest choice would be to use plain English as you could find in a novel or newspaper article.
+But for many applications (e.g., formal ontologies in the STEM fields), we would rather use STEM English, i.e., English interspersed with formulas, diagrams, and epistemic cues like ``Definition'', ``Theorem'', ``Proof'', and even $\Box$.
+For this kind of English, \latex is a good target format.
+We can even use special \latex dialects like \sTeX~\cite{stex} where we can capture more of the semantic properties.
+\end{remark}
+
+\begin{remark}[Better Language Generation]
+While the target languages in the other translations are formal languages engineered for regularity and simplicity (in terms of language primitives), natural languages have evolved in practical human communication.
+As a consequence, the translation in Def.~\ref{def:bolsem:eng} results in English that is clumsy at best and non-grammatical in general.
+We can think of this as \textbf{BOL-pidgin} English.
+
+Let us have a look at some of the problems that appear in both translations:
+\begin{itemize}
+\item We need a lexicon to obtain inflection information and the translation tries to remedy that by appending ``s'' in various places.
+This works in some cases but not in others.
+%\item We have introduced some pattern matching and conditional rules in \Cref{fig:bolsem:eng} to alleviate the greatest awkwardnesses, but much more would be needed, which would lead to things like ``Peter hass Mary'' or ``Peter has as childs Mary''. 
+\item there are many linguistic devices that serve an important role in natural language, but which we are not targeting.
+An example is plural objects for aggregation.
+Say we have $P \mathtt{is-a} C$, $M \mathtt{is-a} C$, this would translate to ``P is a $\sem{C}$, M is a $\sem{C}$'' in BOL-pidgin, whereas in natural English we would aggregate this to ``P and M are $\sem{C}$s''.
+\end{itemize}
+
+A way out is to utilize special systems for dealing with the surface structure of natural language.
+An example of this is the Grammatical Framework~ (GF, \cite{gf}): it allows specifying a rich formal language of \textbf{abstract syntax trees} for natural language (ASTs) together with language-specific \textbf{linearizations}, which amount to recursive functions that translate ASTs to language-specific strings.
+GF comes with  a large resource library that provides a comprehensive, language-independent AST specification and linearizations for over 35 languages.
+We will not pursue this here, but there is a special course ``Logic-based Natural Language Semantics'' at FAU in the Winter Semesters that covers these and related topics.
+\end{remark}
+
+\section{Discussion}
+
+\subsection{Compositionality}\label{sec:compositionality}
+
+\paragraph{Definition}
+An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
+
+The interpretations of BOL in FOL and SQL are compositional.
+For example, consider the case of composition of relations:
+ \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
+We have $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
+The semantics is a relatively complicated FOL-formula, but it only depends on $\sem{R_1}$ and $\sem{R_2}$ --- everything else is fixed.
+We have $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$, i.e., the interpretation of the $;$-operator is the function that maps two predicates $p_1,p_2$ to the formula $\exists m:\iota.p_1(x,m)\wedge p_2(m,y)$.
+Then we have \[\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2}).\]
+
+
+It is highly desirable but not always possible to give a compositional translation.
+Sometimes a feature of the syntactic language cannot be directly interpreted in the semantic language.
+In that case, it may still be possible to give a non-compositional translation.
+
+\begin{example}[Non-Compositional Translation via Sub-Induction]
+A simple example of non-compositionality is the translation of natural numbers based on zero, one, and addition (i.e., $N\bbc 0\bnfalt 1\bnfalt N+N$) into natural numbers based on zero and successor (i.e., $N\bbc 0\bnfalt\cn{succ}(N)$):
+It is straightforward to translate zero and one compositionally:
+\[\sem{0}=0 \tb\sem{1}=\cn{succ}(0)\]
+Now we would like to translate \[\sem{m+n}=\sem{+}(\sem{m},\sem{n}),\] but there is no way to define $\sem{+}$ in terms of zero and successor.
+Instead, we need subcases:
+\[\sem{m+n}=\cas{\sem{m}\mifc n=0 \\ \cn{succ}(\sem{m})\mifc n=1 \\ \sem{(m+n_1)+n_2}\mifc n=n_1+n_2}\]
+This corresponds to the usually definition of addition, i.e., $\sem{+}$, by induction.
+\end{example}
+
+Other common examples of non-compositional translations are
+\begin{compactitem}
+ \item several important logical theorems such as
+  \begin{compactitem}
+   \item cut elimination, which is he translation from sequent calculus with cut to sequent calculus without cut,
+   \item the deduction theorem, which is the translation from natural deduction to Hilbert calculus,
+  \end{compactitem}
+ \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,
+ \item query optimization done by a database, e.g., turning a WHERE of a join into a join of WHEREs,
+ \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context.
+\end{compactitem}
+
+Typical sources of non-compositionality in formal language translations are:
+\begin{compactitem}
+ \item A case in the translation function requires subcases which inspect the $e_i$ and treat them differently.
+ \item A case in the translation function requires subcases which translate an expression differently based on the context in which it occurs.
+ \item The translation function requires nested inductions, i.e., a case in the translation function (which is already inductive) requires a sub-induction on one of the sub-expressions.
+ \item The semantic prefix is not fixed but depends on the translated object, i.e, the top-level case of the translation scans through the entire argument $X$ to collect all occurrences of a particular feature and then custom-builds the semantic prefix of $\sem{X}$.
+\end{compactitem}
+
+In Fig.~\ref{fig:bolsem}, we omitted the case for the transitive closure.
+That was because it is not possible to translate it compositionally into FOL.
+We can only do it non-compositionally with a custom semantic prefix:
+
+\begin{example}[Non-Compositional Translation via Custom Semantic Prefix]
+We define the FOL-interpretation of an ontology $O$ by $\sem{O}=P_O,\sem{O}$, where $P_O$ is a custom semantic prefix.
+$P_O$ is different for every ontology $O$ and is defined as follows:
+
+\begin{compactenum}
+ \item We scan through $O$ and collect all occurrences of $R^*$ for any (not necessarily atomic) relation $R$.
+ \item $P_O$ contains the following declarations for each $R$:
+  \begin{compactitem}
+  \item A binary predicate symbol $C_R\sq i\times i$. Note that $R$ may be a complex expression; so we have to generate a fresh name $C_R$ here.
+  \item The axiom $\forall x:\iota,y:\iota:R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
+  \item The axiom $\forall x:\iota,y:\iota,z:\iota.C_R(x,y)\wedge C_R(y,z)\impl C_R(x,x)$, i.e., $C_R$ is transitive.
+  \end{compactitem}
+ \item We add the case $\sem{R^*}=C_R(x,y)$ to the interpretation function.
+\end{compactenum}
+
+Intuitively, every occurrence of the $^*$-operator is removed from the language and replaced with a fresh name that is axiomatized to have the needed properties.
+All of these axioms are added to the semantic prefix.
+\end{example}
+
+Such non-compositional translations are undesirable for multiple reasons:
+\begin{compactitem}
+ \item The implementation is more complicated and error-prone.
+ \item Reasoning about the translation is more difficult.
+ \item The custom semantic prefix can be large.
+\end{compactitem}
+
+But most importantly, non-compositional translations are less robust.
+Firstly, if we add a production to the syntax, a compositional translation is easy to extend: just add a case to the translation.
+But a non-compositional translation may additionally require a new subcase wherever subcases/subinductions are used.
+Moreover, if a custom semantic prefix is used, its definition may have to be amended, at least it must be rechecked.
+
+Secondly, in practice there are two sources of complex expressions: the ones already mentioned in the language, and the ones used later for other reasons.
+For example, in BOL some complex expressions occur already \emph{statically} in the definition of an ontology $O$.
+But others might be appear \emph{dynamically} later, e.g., when talking about $O$, proving properties of $O$, or running queries on $O$.
+Thus, the definition of $O$ and the use of complex expressions are decoupled: $O$ is defined statically once and for all, and complex expressions relative to $O$ can be created and used dynamically.
+But if a custom semantic prefix is used, only the static occurrences inside $O$ can be considered for building the prefix.
+Thus, it is not possible to translate the dynamic occurrences of the transitive closure unless the semantic prefix is extended all the time as $O$ is used.
+
+\subsection{Equivalence of Semantics}
+
+% open vs. closed world; BOL and FOL are open; SQL, comp., and Herbrand model close the world
