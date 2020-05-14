@@ -212,7 +212,7 @@ male $\sqsubseteq$ person
 instructor $\sqsubseteq$ person
 dom teach $\sqsubseteq$ instructor
 rng teach $\sqsubseteq$ course
-dom hasCredits $\Equiv$ course
+dom creditValue $\Equiv$ course
 course $\sqsubseteq$ $\exists$ teach$^{-1}$ instructor
 \end{lstlisting}
 
@@ -225,8 +225,8 @@ Otherwise, the axioms would not be true.
 
 If we use axioms for the consequence closure, we can even omit the two concept assertions --- they should be inferred using the domain and range axioms for the relation.
 
-The assertion \verb|FlorianRabe is-a instructor $\sqcap$ male| could also be split into two assertions
-\verb|FlorianRabe is-a instructor| and \verb|FlorianRabe is-a male|.
+The assertion \lstinline|FlorianRabe is-a instructor $\sqcap$ male| could also be split into two assertions
+\lstinline|FlorianRabe is-a instructor| and \lstinline|FlorianRabe is-a male|.
 That will be important as some semantics might have difficulties handling all cases.
 So it can be helpful to use a variant that does not need $\sqcap$ operator.
 \end{example}

@@ -489,10 +489,10 @@ $\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
 \end{frame}
 
 \begin{frame}\frametitle{An Example Ontology Language}
-see syntax and semantics in the lecture notes
+see syntax of BOL in the lecture notes
 \end{frame}
 
-\section{Representing Formal Languages}
+\section{Semantics as Translation}
 
 \begin{frame}\frametitle{Example: Syntax of Arithmetic Language}
 Syntax: represented as formal grammar
@@ -558,6 +558,143 @@ For formulas $f$: semantics $\sem{f}$ is a boolean
 \item $\sem{m\leq n}=\cn{startsWith}(\sem{n},\sem{m})$
 \end{itemize}
 \end{frame}
+
+\begin{frame}\frametitle{Semantics of BOL}
+\begin{center}
+\begin{tabular}{lll}
+Aspect & kind of semantic language & semantic language\\
+\hline 
+deduction & logic & SFOL \\
+concretization & database language & SQL \\
+computation & programming language & Scala \\
+narration & natural language & English \\
+\end{tabular}
+\end{center}
+
+see details of each translation in the lecture notes
+\end{frame}
+
+\begin{frame}\frametitle{General Definition}
+A semantics by translation consists of
+\begin{itemize}
+ \item syntax: a formal language $l$
+ \item semantic language: a formal language $L$
+  \glec{different or same aspect as $l$}
+ \item semantic prefix: a theory $P$ in $L$
+  \glec{formalizes fundamentals that are needed to represent $l$-objects}
+ \item interpretation: translates every $l$-theory $T$ to an $L$-theory $P,\sem{T}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Common Principles}
+Properties shared by all semantics of BOL
+\lec{not part of formal definition, but best practices}
+\begin{itemize}
+ \item $l$-declaration translated to $L$-declaration for the same name
+ \item ontologies translated declaration-wise
+ \item one inductive function for every kind of complex $l$-expression
+  \begin{itemize}
+   \item individuals, concepts, relations, properties, formulas
+   \item maps $l$-expressions to $L$-expressions
+  \end{itemize}
+ \item atomic cases (base cases): $l$-identifier translated to $L$-identifier of the same name
+  \glec{or something very similar}
+ \item complex cases (step cases): compositional
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Compositionality}
+Case for operator $*$ in interpretation function compositional iff \\
+interpretation of $*(e_1,\ldots,e_n)$ only depends on on the interpretation of the $e_i$
+
+\[\sem{*(e_1,\ldots,e_n)}=\sem{*}(\sem{e_1},\ldots,\sem{e_n})\]
+for some function $\sem{*}$
+\bigskip
+
+Example: $;$-operator of BOL in translation to FOL
+\begin{itemize}
+ \item translation: $\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)$
+ \item special case of the above via
+  \begin{itemize}
+  \item $*=;$
+  \item $n=2$
+  \item $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$
+  \end{itemize}
+ \item Indeed, we have $\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2})$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Compositionality (2)}
+Translation compositional iff
+\begin{itemize}
+\item one translation function for each non-terminal
+ \glec{all written $\sem{-}$}
+\item each defined by one induction on syntax
+ \glec{i.e., one case for production}
+ \glec{mutually recursive}
+\item all cases compositional
+\end{itemize}
+\bigskip
+
+Substitution theorem: a compositional translation satisfies
+\[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\]
+for
+\begin{itemize}
+\item every expression $E(N_1,\ldots,N_n)$ with non-terminals $N_i$
+\item some function $\sem{E}$ that only depends on $E$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Compositionality (3)}
+\[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\]
+for every expression $E(N_1,\ldots,N_n)$ with non-terminals $N_i$
+\bigskip
+
+Now think of
+\begin{itemize}
+\item variable $x_i$ of type $N_i$ instead of non-terminal $N_i$
+\item $E(x_1,\ldots,x_n)$ as expression with free variables $x_i$ of type $N_i$
+\item expressions $e$ derived from $N$ as expressions of type $N$
+\item $E(e_1,\ldots,e_n)$ as result of substituting $e_i$ for $x_i$
+\item $\sem{E}(x_1,\ldots,x_n)$ as (semantic) expression with free variables $x_i$
+\end{itemize}
+
+Then:
+\begin{itemize}
+\item $\sem{E(e_1,\ldots,e_n)}$ is
+\begin{itemize}
+\item first substitution $e_i$ for $x_i$
+\item then semantics $\sem{-}$
+\end{itemize}
+\item $\sem{E}(\sem{e_1},\ldots,\sem{e_n})$ is
+\begin{itemize}
+\item first semantics $\sem{-}$
+\item then substitution $\sem{e_i}$ for $x_i$
+\end{itemize}
+\end{itemize}
+\lec{semantics commutes with substitution}
+\end{frame}
+
+\begin{frame}\frametitle{Non-Compositionality}
+\begin{blockitems}{Examples}
+ \item deduction: cut elimination, translation from natural deduction to Hilbert calculus
+ \item computation: optimizing compiler, e.g., loop unrolling
+ \item concretization: query optimization, e.g., turning a WHERE of a join into a join of WHEREs,
+ \item narration: ambiguous words are translated based on context
+\end{blockitems}
+
+\begin{blockitems}{Typical sources}
+ \item subcases in a case of translation function
+  \begin{itemize}
+  \item based on inspecting the arguments, e.g., subinduction
+  \item based on context
+  \end{itemize}
+ \item custom-built semantic prefix
+\end{blockitems}
+\end{frame}
+
 \end{document}
 
 %%% Local Variables:

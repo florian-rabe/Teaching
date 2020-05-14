@@ -322,8 +322,9 @@ $C_1 \sqcup C_2$ & $\sem{C_1}$.union($\sem{C_2}$)\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$.diff($\sem{C_2}$)\\
 $\forall R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = individuals.clone; \\
                  & \tb r.foreach(x $\rA$ if (!c.contains(x.\_2)) e -= x.\_1); e\} \\
-$\exists R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = new HashSet[String]; \\
-                 & \tb r.foreach(x$ \rA$ if (c.contains(x.\_2)) e += x.\_1); e\}\\
+$\exists R.C$    %& \{val c = $\sem{C}$; val r = $\sem{R}$; val e = new HashSet[String]; \\
+                 %& \tb r.foreach(x$ \rA$ if (c.contains(x.\_2)) e += x.\_1); e\}\\
+                 \\
 $\dom\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_1); c\}\\
 $\rng\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_2); c\}\\
 $\dom\, P$ & \{val c = new HashSet[String]; $\sem{P}$.foreach(x $\rA$ c += x.\_1); c\}\\
@@ -332,10 +333,11 @@ Relation & HashSet[(String,String)] object\\
 $i$ & $i$\\
 $R_1 \cup R_2$ & $\sem{R_1}$.union($\sem{R_2}$)\\
 $R_1 \cap R_2$ & $\sem{R_1}$.diff($\sem{R_2}$)\\
-$R_1 ; R_2$ & \{val r1 = $\sem{R_1}$; val r2 = new $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
-            & \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); r\}\\
+$R_1 ; R_2$ %&  \{val r1 = $\sem{R_1}$; val r2 = new $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
+            %& \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); r\}\\
+            \\
 $R^{-1}$    & \{val r = new HashSet[(String,String)]; $\sem{R}$.foreach(x $\rA$ r += (x.\_2,x.\_1)); r\}\\
-$R^*$          & (tricky, omitted)\\
+$R^*$          & (omitted)\\
 $\Delta_C$     & \{val r = new HashSet[(String,String)]; $\sem{C}$.foreach(x $\rA$ r += (x,x)); r\}\\
 \hline
 Property of type $T$ & HashSet[(String,T)] object\\
@@ -579,6 +581,8 @@ One of the major issues that need to be addressed there and here is the notion o
 \paragraph{Definition}
 An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with direct subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
 
+Compositionality is also called the substitution property or the homomorphisms property.
+
 The interpretations of BOL given above are compositional.
 For example, consider the case of composition of relations:
  \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
@@ -587,6 +591,35 @@ The semantics is a relatively complicated FOL-formula, but it only depends on $\
 We have $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$, i.e., the interpretation of the $;$-operator is the function that maps two predicates $p_1,p_2$ to the formula $\exists m:\iota.p_1(x,m)\wedge p_2(m,y)$.
 Then we have \[\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2}).\]
 
+
+More rigorously, we define a compositional translation as follows:
+\begin{definition}[Compositional Semantics]
+Consider a semantics for syntax grammar $l$ and interpretation function $\sem{-}$.
+
+$\sem{-}$ is compositional if it is defined as follows:
+\begin{compactitem}
+ \item a family of functions $\sem{-}_N$, one for every non-terminal $N$ of $l$,
+ \item for every expressions $E$ derived from $N$, we put $\sem{E}=\sem{E}_N$
+ \item each $\sem{-}_N$ is defined by induction on the productions for $N$
+ \item for each production $N\bbc *(N_1,\ldots,N_r)$ and all expressions $e_i$ derived from $N_i$
+   \[\sem{*(e_1,\ldots,e_r)}_N=\sem{*}(\sem{e_1}_{N_1},\ldots,\sem{e_r}_{N_r})\]
+   for some $\sem{*}$
+\end{compactitem}
+
+Without loss of generality, we can assume that every production is of the form $N\bbc *(N_1,\ldots,N_r)$ where the $N_i$ are all the non-terminals on the right-hand side and $*$ is a stand-in for all the terminal symbols.
+\end{definition}
+
+The main value of compositionality is the following:
+\begin{theorem}[Substitution Theorem]
+Consider a compositional semantics.
+
+For every syntax expression $E(N_1,\ldots,N_r)$ derived from $N$ that contains non-terminals $N_1,\ldots,N_r$,
+there is a $\sem{E}$ such that for all expressions $e_i$ derived from $N_i$
+\[\sem{E(e_1,\ldots,e_n)}_N=\sem{E}(\sem{e_1}_{N_1},\ldots,\sem{e_n}_{N_r})\]
+\end{theorem}
+Simply put, a semantics is compositional iff it is defined by mutually inductive translation functions with only compositional cases.
+The latter is very easy to check by inspecting the shape of the finitely many cases of the definition.
+The former is a powerful property because it applies to any of the infinitely many expressions of the syntax.
 
 It is highly desirable but not always possible to give a compositional translation.
 Sometimes a feature of the syntactic language cannot be directly interpreted in the semantic language.
