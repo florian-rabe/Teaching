@@ -299,10 +299,10 @@ ontology & Scala program \\
 $D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
 \hline
 BOL declaration ($I$, $C$, $R$, $P$ atomic) & Scala declaration \\
-\kw{individual}\,$i$ & val i = "$i$"; individuals += $i$ \\
+\kw{individual}\,$i$ & val $i$ = "$i$"; individuals += $i$ \\
 \kw{concept}\,$i$  & val $i$ = new HashSet[String]\\
 \kw{relation}\,$i$ & val $i$ = new HashSet[(String,String)] \\
-\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,T) \\
+\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,T)] \\
 $I\; \texttt{is-a}\; C$ & $\sem{C}$ += $\sem{I}$\\
 $I_1\; R\; I_2$ & $\sem{R}$ += $(\sem{I_1},\sem{I_2})$\\
 $I\; P\; V$ & $\sem{P}$ += $(\sem{I},\sem{V})$\\
@@ -311,7 +311,7 @@ $F$ & assertions, consequence closure (omitted)\\
 Formula & Program that evaluates the formula to a Boolean \\
 $C_1 \Equiv C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; \\
                  & \tb $c_1$.forall(x $\rA$ $c_2$.contains(x)) \&\& $c_2$.forall(x $\rA$ $c_1$.contains(x))\}\\
-$C_1 \sqsubseteq C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; $c_1$.forall(x$\rA$ $c_2$.contains(x))\}\\
+$C_1 \sqsubseteq C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; $c_1$.forall(x $\rA$ $c_2$.contains(x))\}\\
 \hline
 Individual & String object\\
 $i$ & $i$ \\
@@ -319,12 +319,11 @@ $i$ & $i$ \\
 Concept & HashSet[String] object\\
 $i$ & $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$.union($\sem{C_2}$)\\
-$C_1 \sqcap C_2$ & $\sem{C_1}$.diff($\sem{C_2}$)\\
+$C_1 \sqcap C_2$ & $\sem{C_1}$.inter($\sem{C_2}$)\\
 $\forall R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = individuals.clone; \\
                  & \tb r.foreach(x $\rA$ if (!c.contains(x.\_2)) e -= x.\_1); e\} \\
-$\exists R.C$    %& \{val c = $\sem{C}$; val r = $\sem{R}$; val e = new HashSet[String]; \\
-                 %& \tb r.foreach(x$ \rA$ if (c.contains(x.\_2)) e += x.\_1); e\}\\
-                 \\
+$\exists R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = new HashSet[String]; \\
+                 & \tb r.foreach(x$ \rA$ if (c.contains(x.\_2)) e += x.\_1); e\}\\
 $\dom\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_1); c\}\\
 $\rng\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_2); c\}\\
 $\dom\, P$ & \{val c = new HashSet[String]; $\sem{P}$.foreach(x $\rA$ c += x.\_1); c\}\\
@@ -332,10 +331,9 @@ $\dom\, P$ & \{val c = new HashSet[String]; $\sem{P}$.foreach(x $\rA$ c += x.\_1
 Relation & HashSet[(String,String)] object\\
 $i$ & $i$\\
 $R_1 \cup R_2$ & $\sem{R_1}$.union($\sem{R_2}$)\\
-$R_1 \cap R_2$ & $\sem{R_1}$.diff($\sem{R_2}$)\\
-$R_1 ; R_2$ %&  \{val r1 = $\sem{R_1}$; val r2 = new $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
-            %& \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); r\}\\
-            \\
+$R_1 \cap R_2$ & $\sem{R_1}$.inter($\sem{R_2}$)\\
+$R_1 ; R_2$ &  \{val r1 = $\sem{R_1}$; val r2 = $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
+            & \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); e\}\\
 $R^{-1}$    & \{val r = new HashSet[(String,String)]; $\sem{R}$.foreach(x $\rA$ r += (x.\_2,x.\_1)); r\}\\
 $R^*$          & (omitted)\\
 $\Delta_C$     & \{val r = new HashSet[(String,String)]; $\sem{C}$.foreach(x $\rA$ r += (x,x)); r\}\\
