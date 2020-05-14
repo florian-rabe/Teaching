@@ -1,4 +1,4 @@
-\section{General Principles}
+\section{General Principles}\label{sec:onto:principles}
 
 \paragraph{Motivation}
 An ontology is an abstract representation of the main concepts in some domain.
@@ -34,8 +34,8 @@ But as a general rule, every \textbf{ontology} declares
 \begin{compactitem}
  \item \textbf{individual} --- concrete objects that exist in the real world, e.g., "Florian Rabe" or "WuV"
  \item \textbf{concept} --- abstract groups of individuals, e.g., "instructor" or "course"
- \item \textbf{relation} --- binary relations between two individuals, e.g., "teaches"
- \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "has-credits"
+ \item \textbf{relation} --- binary relations between two individuals, e.g., "teach"
+ \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "creditValue"
  \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
  \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
  \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
@@ -49,8 +49,8 @@ Assertion & \multicolumn{3}{c}{Triple} \\
           & Subject & Predicate & Object \\
 \hline
 concept assertion  & "Florian Rabe" & \texttt{is-a} & "instructor" \\
-relation assertion & "Florian Rabe" & "teaches" & "WuV" \\
-property assertion & "WuV" & "has credits" & 7.5 \\
+relation assertion & "Florian Rabe" & "teach" & "WuV" \\
+property assertion & "WuV" & "creditValue" & 7.5 \\
 \end{tabular}
 \end{center}
 This uses a special relation \texttt{is-a} between individuals and concepts.
@@ -232,7 +232,7 @@ So it can be helpful to use a variant that does not need $\sqcap$ operator.
 \end{example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Representing Ontologies as Triples}
+\section{Representing Ontologies as Triples}\label{sec:onto:triple}
 
 It is common to represent an entire ontology as a set of subject-predicate-object triples.
 That makes handling ontologies very simple and efficient.
@@ -323,10 +323,10 @@ Metadata is a set of properties such as "rdfs:seeAlso" or "owl:versionInfo", who
 When giving a set of triples, there are usually a lot of triples with the same subject.
 For example, we could use a simple concrete syntax with one triple per line and whitespace separating subject, predicate, and object:
 \begin{lstlisting}
-"FlorianRabe" is-a "Instructor"
+"FlorianRabe" is-a "instructor"
 "FlorianRabe" is-a "male"
-"FlorianRabe" "teaches" "WuV"
-"FlorianRabe" "teaches" "KRMT"
+"FlorianRabe" "teach" "WuV"
+"FlorianRabe" "teach" "KRMT"
 "FlorianRabe" "age" 40
 "FlorianRabe" "office" "11.137"
 \end{lstlisting}
@@ -335,10 +335,10 @@ It is more human-friendly to group these triples in such a way that the subject 
 For example, we could use a concrete syntax like this, where the subject occurs first and then predicate-object pairs occur on indented lines:
 \begin{lstlisting}
 "Florian Rabe"
-  is-a "Instructor"
+  is-a "instructor"
   is-a "male"
-  "teaches" "WuV"
-  "teaches" "KRMT"
+  "teach" "WuV"
+  "teach" "KRMT"
   "age" 40
   "office" "11.137"
 \end{lstlisting}
@@ -347,8 +347,8 @@ If the same predicate occurs with multiple values, we can group those as well.
 For example, we could give the objects for the same predicates as a list following the predicate:
 \begin{lstlisting}
 "Florian Rabe"
-  is-a "Instructor" "male"
-  "teaches" "WuV" "KRMT"
+  is-a "instructor" "male"
+  "teach" "WuV" "KRMT"
   "age" 40
   "office" "11.137"
 \end{lstlisting}

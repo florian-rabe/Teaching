@@ -1,0 +1,337 @@
+\section{Intrinsic vs. Extrinsic Typing}
+
+\subsection{Overview}
+
+We write $x:A$ to say that $x$ has type $A$.
+There are two fundamentally different methods for introducing the types $A$, which are summarized in the following table:
+
+\begin{center}
+\begin{tabular}{l|ll}
+& intrinsic & extrinsic \\
+\hline
+goes back to $\lambda$-calculus by & Church & Curry \\
+general idea & objects carry their type with them & types are designated by the environment \\
+typing is a & function from objects to types & relation between objects and types \\
+objects have & unique type & any number of types \\
+types often interpreted as & disjoint sets & unary predicates on a universal set \\
+\hline
+type inference for $x$ & uniquely infer $A$ from $x$ & try to find minimal $A$ such that $x:A$ \\
+type checking & compare inferred and expected type & prove $x:A$ \\
+subtyping $A<:B$ & mimicked by casting from $A$ to $B$ & defined by $x:A$ implies $x:B$ for all $x$ \\
+typing decidable & yes unless too expressive & no unless expressivity restricted \\
+typing errors are detected & usually statically (compile-time) & dynamically (run-time)\\
+\hline
+type of name introduced as & part of declaration & additional axiom \\
+ \tb example               &  \kw{individual} "WuV":"course"  & \kw{individual} "Wuv", \; "WuV" \texttt{is-a} "course"\\
+\hline
+advantages & easy & flexible \\
+           & unique type inference & allows subtyping \\
+\hline
+examples   & SFOL, SQL & OWL, Scala, English \\
+           & most logics, functional PLs & ontology, OO, natural languages \\
+           & many type theories & set theories
+\end{tabular}
+\end{center}
+
+\begin{example}[Extrinsically Typed Ontology Language]
+In BOL, the objects are the individuals, the types are the concepts, and \texttt{is-a} is the typing relation between them.
+The typing is intrinsic:
+\begin{compactitem}
+ \item Individuals and their concept assertions are introduced in separate declarations.
+ \item An individual may be an instance of any number of concepts.
+ \item There is no primary concept that could be returned as the inferred type of an individual.
+ \item Concepts are subject to subtyping $C\sqsubseteq C'$.
+ \item Whether an individual is an instance of a concept, must be checked by reasoning about the \texttt{is-a} relation.
+\end{compactitem}
+
+Therefore, all semantics must interpret individuals as elements of a universal collection, and types as unary predicates on that.
+Specifically, we have
+\begin{center}
+\begin{tabular}{l|lll}
+semantics in  & universal collection & unary predicate & typing relation $i$ \texttt{is-a} $c$\\
+\hline
+FOL & type $\iota$  & predicate $c\sq\iota$ & $c(i)$ true\\
+SQL & table Individuals & table containing ids & id of i in table $c$ \\
+Scala & String & hash set of strings & $c$.contains($i$) \\
+English & proper nouns & common nouns & "$i$ is a $c$" is true
+\end{tabular}
+
+We can also think of relations as objects.
+However, BOL cannot express relation types at all, and there is no intrinsic typing.
+Instead, the domain and range of a relation $r$ are given extrinsically via axioms about $\dom\,r$ and $\rng\,r$.
+Like for individuals that allows flexibility as the same relations may have multiple types.
+\end{center}
+\end{example}
+
+\begin{example}[Intrinsically Typed Ontology Language]
+We could define TOL, a typed ontology language that arises as a variant of BOL.
+The main differences would be
+\begin{compactitem}
+ \item Individuals are declared with a concept that serves as their type: \kw{individual} $i:C$.
+ \item Concept assertions are dropped. They are now part of the individual declarations.
+ \item Relations are declared with two concepts for their domain $D$ and range $R$: \kw{relation} $r<:D\times R$.
+ \item Properties are declared with a concept for their domain $C$: \kw{property} $p<:C\times T$.
+\end{compactitem}
+
+TOL would make many ontologies more concise.
+For example, we could simply write
+\begin{lstlisting}
+concept instructor
+concept course
+individual FlorianRabe : instructor
+teach <: instrctor $\times$ course
+\end{lstlisting}
+
+However, we would lose flexibility.
+If we want to add the concept "male", it would be difficult to make {\FR} have both types.
+We might be able to remedy that by allowing intersections and declaring \verb|individual FlorianRabe: instructor $\sqcap$ male|.
+But even then, we would have to commit to the type of each individual right away --- we cannot add different concept assertions for the same individual in different places, a common occurrence in building large ontologies.
+
+Allowing $\sqcap$ would also introduce subtyping.
+If we are careful in the design of TOL, that may still result in an elegant scalable language.
+In particular, typing may remain decidable (depending on what other operations we allow).
+But if we go too far, it may end up so complex that it would have been easier to go with extrinsic typing.
+
+That is why we use intrinsic typing only in two related places in BOL:
+\begin{compactitem}
+ \item The base types and values use an intrinsic type system (whose details we omitted).
+ \item The range of properties is given intrinsically by a base type.
+\end{compactitem}
+\end{example}
+
+\begin{remark}[Subtyping]
+Languages with subtyping usually have to use extrinsic type systems.
+Typical sources of subtyping are
+\begin{compactitem}
+ \item explicit subtyping as in $\N<:\Z$
+ \item comprehension/refinement as in $\{x:\N|x\neq 0\}$
+ \item operations like union and intersection on types
+ \item inheritance between classes, in which case subclass = subtype
+ \item anonymous record types as in $\{x:\N,y:\Z\}<:\{x:\N\}$
+\end{compactitem}
+\end{remark}
+
+\subsection{Combined Definition}
+
+Neither intrinsic nor extrinsic typing is strictly better than the other.
+The choice of type system is a very difficult trade-off when designing a language.
+
+Many practical languages even combine both methods.
+In that case, an intrinsic system is used for the most important high-level types and an extrinsic system is used to refine (some of) the high-level types:
+
+\begin{definition}[Type System]
+A \textbf{type system} consists of
+\begin{compactitem}
+ \item a collection, whose elements are called objects,
+ \item a collection, whose elements are called intrinsic types,
+ \item a function assigning to every object $x$ its intrinsic type $I$, in which case we write $x:I$,
+ \item for some intrinsic types $I$
+  \begin{compactitem}
+   \item an intrinsic type $E_I$
+   \item a relation $\in_I$ between objects with intrinsic types $I$ and $E_I$, called the extrinsic typing relation for $I$.
+  \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+We can now recover the intuitions from above as special cases:
+\begin{compactitem}
+ \item A purely intrinsic type system is one in which $E_I$ and $\in_I$ are not given for any $I$.
+ Thus, only objects and their intrinsic types remain.
+ \item A purely extrinsic type system has two intrinsic types, namely $O$ (for objects) and $E_O$ (for types).
+ $\in_O$ is the extrinsic typing relation between objects and types.
+\end{compactitem}
+
+\begin{example}
+We can think of BOL as a combined type system.
+The objects are all complex expressions.
+The intrinsic types are the non-terminals $I$, $C$, $R$, $P$, and $F$, which separate the objects into the five kinds of individuals, concepts, relations, properties, and formulas.
+
+An extrinsic typing relation exists only for $I$: we have $E_I=C$ and $\in_I$ is the \texttt{is-a} relation.
+\end{example}
+
+\begin{example}
+In set theory, only a few intrinsic types are used for the high-level grouping of objects.
+These include at least $set$ and $prop$.
+Objects of these intrinsic types are called sets and propositions.
+Some set theories also use an intrinsic type $class$.
+Moreover, types like $set\to prop$ can be allowed as the types of unary predicates on sets.
+
+Extrinsic typing is used only for the type $set$: we have $E_{set}=set$ and $\in_{set}$ is the usual elementhood relation between sets.
+\end{example}
+
+\section{Abstract Data Types}
+
+\subsection{Motivation}
+
+Recall the subject-centered representation of individuals described in Sect.~\ref{sec:onto:triple}.
+Here we introduce an individual together with all assertions of which it is the subject as in
+\begin{lstlisting}
+individual "FlorianRabe"
+  is-a "instructor" "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+It is often desirable to use types to force the presence of such assertions.
+We might wish require that every instructor teaches a list of things, and has an office.
+Moreover, we can use types to specify the objects of the respective assertions: we can specify that only courses are taught and that the office is a string.
+Rather than the relations with subjects "FlorianRabe" just happening to be around as well, the type system would now force their existence and the type of the object.
+Forgetting to give such an assertion or giving it with the wrong object could be detected statically (i.e., without applying the semantics) and flagged as a typing error.
+
+This leads to the idea of \textbf{subject-centered types}.
+This could looks as follows:
+\begin{lstlisting}
+concept instructor
+  teach course$^*$
+  age: int
+  office: string
+
+individual "FlorianRabe": "instructor"
+  is-a "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+Now the type "instructor" forces the presence of a list of taught courses (The $^*$ is meant to indicate a list.), an integer for the age, and a string for the office.
+
+We can now see that, in fact, every person should have an age, and not just every instructor.
+Because every instructor is meant to be a person, we could try to capture this as well to avoid redundancy.
+Moreover, every male is meant to be a person, too.
+
+That leads to the idea of \textbf{modular types}.
+This could look as follows:
+
+\begin{lstlisting}
+concept person
+  age: int
+  
+concept male <: person
+
+concept instructor <: person
+  teach course$^*$
+  office: string
+
+individual "FlorianRabe": "instructor" $\sqcap$ "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+Incidentally, that eliminates the need to independently declare relations and properties.
+Instead, we can treat their occurrences inside the concept definitions as their declarations.
+
+That has the added benefit that two relations/properties of the same name declared in different concepts can be distinguished and can have different types.
+%For example, the relation "person.parent" could relate between a subject of type "person" and an object of type "person", and the relation
+
+\subsection{Examples}
+
+The general thrust of these ideas is to shift more and more information into an increasingly complex type system.
+This is part of a trade-off: the more the type system can do,
+\begin{compactitem}
+ \item the more requirements can be expressed and violations thereof detected statically,
+ \item the more complex the type system and its documentation and implementation become.
+\end{compactitem}
+
+Abstract data types have proved to be a particularly interesting trade-off on this expressivity-simplicity spectrum and are --- in one way or another --- part of many type systems
+The following table gives an overview:
+\begin{center}
+\begin{tabular}{l|ll}
+aspect & language & abstract data type \\
+\hline
+ontologization & UML & class \\
+concretization & SQL & table schema \\
+computation & Scala & class \\
+deduction & various & theories, modules \\
+narration & various & emergent feature
+\end{tabular}
+\end{center}
+
+\subsection{Rigorous Definition}
+
+There are many subtle design choices in defining abstract data types.
+Therefore, they tend to look and behave a little differently in every type system that features them.
+Here, we introduce a fairly general definition that subsumes many practical languages.
+
+\begin{definition}[Abstract Data Type]
+Consider an arbitrary type system.
+
+An \textbf{abstract data type} (ADT) is
+\begin{compactitem}
+\item a \textbf{flat} type of the form
+  \[\{c_1:T_1[=t_i],\ldots,c_n:T_n[=t_i]\}\]
+  where the $c_i$ are distinct names, the $T_i$ are types, and the $t_i$ are optional and wherever given must have type $T_i$, or
+\item a \textbf{mixin} type of the form $A_1*A_2$ for ADTs $A_i$.
+\end{compactitem}
+
+We say that a type system has \textbf{internal ADT} if all ADTs are types (and thus may in particular occur as the $T_i$ in a record type).
+\end{definition}
+
+The most important special case of an ADT are classes:
+
+\begin{definition}[Class]
+A class definition defines an ADT abbreviation of the form
+\[a = a_1*\ldots*a_m*\{c_1:T_1,\ldots,c_n:T_n\}\]
+where the $a_i$ are names of previously defined ADTs.
+
+We call the $a_i$ the \textbf{superclasses} or \textbf{parent classes} and say that $a$ inherits from the $a_i$.
+We call the $c_i$ the \textbf{fields} or \textbf{members} of $a$.
+\end{definition}
+
+In an OO-language, a class definition is more commonly written somehow like
+\begin{lstlisting}
+class $a$ extends $a_1$ with $\ldots$ with $a_m$ {
+  $c_1$: $T_1$
+  $\vdots$
+  $c_n$: $T_n$
+}
+\end{lstlisting}
+The details can vary, and special care must be taken in programming languages where initialization may have side effects.
+
+Flat ADTs are the standard case, and all mixin ADTs can be simplified into flat ones.
+This can be seen as a semantics in the sense that the language of flat and mixin ADT is translated to the language of flat ADTs.
+\begin{definition}[Mixin Semantics]\label{def:mixinflat}
+The \textbf{flattening} $\flt{A}$ of an ADT $A$ is defined as follows:
+\begin{compactitem}
+ \item if $A$ is flat: $\flt{A}=A$
+ \item if $A$ is of the form $A_1*\ldots*A_n$:
+ $\flt{A}$ arises by concatenating the fields of all $\flt{A_i}$ where duplicate field names are handled as follows:
+  \begin{compactitem}
+   \item if the same field (same name, types equal, definitions equal or both absent) occurs more than once, only the first occurrence is kept,
+   \item if the fields $c:T_1[=t_i]$ and $c:T_2[=t_2]$ occur for inequal types $T_i$, $A$ is ill-formed,
+   \item if the fields $c:T=t_1$ and $c:T=t_2$ occur for inequal objects $t_i$, $A$ is ill-formed,
+   \item if the fields $c:T=t$ and $c:T$ occur, only the defined one is kept $(\ast)$.
+  \end{compactitem}
+\end{compactitem}
+\end{definition}
+
+\begin{remark}[Dependency Between Fields]
+Our definition sweeps a very important but subtle detail under the rug: in a flat ADT with a field $c:T=t$, may $T$ and/or $t$ refer to fields declared later?
+We sketch a few possible answers.
+
+In the simplest case, we forbid such forward references.
+Then ADTs are very well-behaved.
+But we have a problem with the case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields may refer to $c$.
+A straightforward solution would be to declare the ADT to be ill-formed.
+But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class $c:T=t$ in a concrete class implementing it.
+
+A more common solution is to allow the fields to be mutually recursive.
+Consider a flat ADT with fields $\Gamma, c:T[=t], \Delta$ where $\Gamma$ and $\Delta$ are lists of fields.
+Let $\Gamma'$ and $\Delta'$ arise by dropping all definitions.
+Then we require that
+\begin{compactitem}
+ \item $T$ must be a well-formed type in context $\Gamma'$.
+ Thus, the types may only refer to previous fields.
+ \item $t$ must have type $T$ in context $\Gamma',c:T,\Delta'$.
+ Thus, the definitions may be mutually recursive.
+\end{compactitem}
+This makes the case $(\ast)$ work.
+But it comes at the price of recursion, which allows writing non-terminating fields (a feature in a programming language, but potentially undesirable in other settings).
+
+Even so, the mutual-recursion solution is problematic in the presence of dependent types.
+Here, dropping definitions is not always allowed:
+$T$ might be well-formed in context $\Gamma$, but $\Gamma'$ might not even be a well-formed context at all.
+Because OO-languages are usually not dependently-typed, this is not an issue in most settings.
+\end{remark}
+
+% \section{Concrete Data Types} = inductive types
