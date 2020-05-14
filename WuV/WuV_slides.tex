@@ -661,16 +661,16 @@ Now think of
 \item $\sem{E}(x_1,\ldots,x_n)$ as (semantic) expression with free variables $x_i$
 \end{itemize}
 
-Then:
+Then both sides of equations act on $E(x_1,\ldots,x_n)$:
 \begin{itemize}
-\item $\sem{E(e_1,\ldots,e_n)}$ is
+\item left side yields $\sem{E(e_1,\ldots,e_n)}$ by
 \begin{itemize}
 \item first substitution $e_i$ for $x_i$
-\item then semantics $\sem{-}$
+\item then semantics $\sem{-}$ of the whole
 \end{itemize}
-\item $\sem{E}(\sem{e_1},\ldots,\sem{e_n})$ is
+\item right side yields $\sem{E}(\sem{e_1},\ldots,\sem{e_n})$ by
 \begin{itemize}
-\item first semantics $\sem{-}$
+\item first semantics $\sem{-}$ of all parts
 \item then substitution $\sem{e_i}$ for $x_i$
 \end{itemize}
 \end{itemize}
