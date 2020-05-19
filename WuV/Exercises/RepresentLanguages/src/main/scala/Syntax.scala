@@ -23,14 +23,3 @@ case class Equality(left: N, right: N) extends F {
 case class Ordering(left: N, right: N) extends F {
   override def toString = left.toString + "<=" + right.toString
 }
-
-
-
-
-
-object Test {
-  def main(args: Array[String]) {
-    println("hello")
-  }
-}
-

@@ -25,7 +25,8 @@ object SBOperations {
   def replace(x:S, c: Char, y:S): S = x match {
     case Empty() => Empty()
     case Character(h,t) =>
-      if (h == c) conc(y, t) else Character(h, replace(t, c, y))
+      val tR = replace(t, c, y)
+      if (h == c) conc(y, tR) else Character(h, tR)
   }
   /** equality is obtained from Scala equality */
   def equal(x:S, y:S): B =
@@ -69,7 +70,7 @@ object SBSemantics {
       case Ordering(m,n) =>
         val mT = translate_N(m)
         val nT = translate_N(n)
-        startsWith(mT,nT)
+        startsWith(nT,mT)
     }
   }
 }

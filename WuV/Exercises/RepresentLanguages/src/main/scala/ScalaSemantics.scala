@@ -3,10 +3,10 @@ package wuv.languages.example
 object ScalaOperations {
   def conc(x:String, y: String): String = x+y
   def replace(x:String, c: Char, y:String): String = {
-    x.transform(i => if (i == c) y else i)
+    x.flatMap(i => if (i == c) y else i.toString)
   }
   def equal(x:String, y:String): Boolean = x == y
-  def startsWith(x:String, y:String): Boolean = x.startsWith(y)
+  def startsWith(x:String, y:String): Boolean = y.startsWith(x)
 }
 
 import ScalaOperations._
