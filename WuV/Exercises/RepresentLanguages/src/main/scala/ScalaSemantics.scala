@@ -1,6 +1,6 @@
 package wuv.languages.example
 
-object Operations {
+object ScalaOperations {
   def conc(x:String, y: String): String = x+y
   def replace(x:String, c: Char, y:String): String = {
     x.transform(i => if (i == c) y else i)
@@ -9,7 +9,7 @@ object Operations {
   def startsWith(x:String, y:String): Boolean = x.startsWith(y)
 }
 
-import Operations._
+import ScalaOperations._
 
 object ScalaSemantics {
   def translate_N(x: N): String = {
