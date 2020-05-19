@@ -39,7 +39,7 @@ Let $\Sigma=\{0,1,+,\cdot,\doteq,\leq\}$.
 We give a grammar for arithmetic expressions and formulas about them:
 \begin{commgrammar}
 \gprod{E}{0}{}\\
-\gprod{E}{1}{}\\
+\galtprod{1}{}\\
 \galtprod{E+E}{}\\
 \galtprod{E\cdot E}{}\\
 \gprod{F}{E\doteq E}{}\\
@@ -68,7 +68,7 @@ Given a set $\Sigma$ of characters (containing the terminal symbols), a \textbf{
 The grammar from above with names written to the right of each production
 \begin{commgrammar}
 \gprod{E}{0}{zero}\\
-\gprod{E}{1}{one}\\
+\galtprod{1}{one}\\
 \galtprod{E+E}{sum}\\
 \galtprod{E\cdot E}{product}\\
 \gprod{F}{E\doteq E}{equality}\\
@@ -114,13 +114,13 @@ Then we can improve the grammar from above as follows:
 We start with the usual definition:
 
 \begin{definition}[Inductive Data Type]
-Given a set of names $T$ (containing the types known in the current context), An \emph{inductive data type} consists of
+Given a set of names $T$ (containing the types known in the current context), an \emph{inductive data type} consists of
 \begin{compactitem}
  \item a name, called the \textbf{type},
  \item a set of \textbf{constructors} each consisting of
  \begin{compactitem}
-  \item a name
-  \item a list of elements of $T$, called the \textbf{argument} types
+  \item a name $n$
+  \item a list of elements of $T\cup\{n\}$, called the \textbf{argument} types
  \end{compactitem} 
 \end{compactitem}
 \end{definition}
@@ -148,8 +148,8 @@ Given a set $T$ of names (containing the types known in the current context), a 
  \item a set of \emph{constructors} each consisting of
  \begin{compactitem}
   \item a name
-  \item an element of $I$, called the \textbf{return type}
-  \item a list of elements of $N\cup I$, called the \textbf{argument} types
+  \item an element of $N$, called the \textbf{return type}
+  \item a list of elements of $N\cup T$, called the \textbf{argument} types
  \end{compactitem} 
 \end{compactitem}
 \end{definition}
@@ -430,6 +430,22 @@ case class lessOrEqual(left: Nat, right: Nat) extends E {
 \end{lstlisting}
 
 \section{Semantics as a Recursive Function}
+
+The correspondence for the syntax between context-free grammars and inductive data types can be extended to the semantics.
+Now we have a correspondence between case-based function definitions and inductive functions.
+%The equivalence is as follows:
+%\begin{center}
+%\begin{tabular}{l|l}
+%syntax & case-based function & recursive function \\
+%\hline
+%non-terminal $N$ & function $N$ & function with input $x:N$\\ 
+%production & constructor \\
+%non-terminal on left of production & return type of constructor \\
+%non-terminals on right of production & arguments types of constructor \\
+%terminals on right of production & notation of constructor
+%\end{tabular}
+%\end{center}
+
 
 %\section{Context-Sensitive Syntax}
 

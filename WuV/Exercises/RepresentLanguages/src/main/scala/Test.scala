@@ -5,12 +5,10 @@ object Test {
   val a2 = Product(a1,a1)
   val a3 = Ordering(a1,a2)
 
-  val a = List(a1,a2,a3)
-
   def main(args: Array[String]) {
     println("concrete syntax")
-    a.foreach(x =>
-      println(a.toString)
+    List(a1,a2,a3).foreach(x =>
+      println(x.toString)
     )
 
     println("\nScala semantics")

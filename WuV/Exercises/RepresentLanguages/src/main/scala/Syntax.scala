@@ -14,6 +14,11 @@ case class Zero() extends N {
 case class One() extends N {
   override def toString = "1"
 }
+
+case class Literal(value: Int) extends N {
+  override def toString = value.toString
+}
+
 /* one constructor argument per occurrence of a non-terminal on the right-hand side of the production */
 /* we need to invent names for the constructor arguments (here 'left', 'right') */
 case class Sum(left: N, right: N) extends N {
