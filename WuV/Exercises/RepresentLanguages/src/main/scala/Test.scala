@@ -26,3 +26,20 @@ object Test {
     List(a1SB,a2SB,a3SB).foreach(x => println(x.toString)) // using auto-generated toString methods
   }
 }
+
+/** expected output:
+concrete syntax
+List(1+1, 1+1*1+1, 1+1<=1+1*1+1)
+List(1+1, 1+1*1+1, 1+1<=1+1*1+1)
+List(1+1, 1+1*1+1, 1+1<=1+1*1+1)
+
+Scala semantics
+||
+||||
+true
+
+SB semantics
+Character(|,Character(|,Empty()))
+Character(|,Character(|,Character(|,Character(|,Empty()))))
+True()
+*/
