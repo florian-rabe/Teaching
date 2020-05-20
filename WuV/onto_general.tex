@@ -108,6 +108,8 @@ grammar & proper noun & common noun \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Basic Ontology Language}\label{sec:bolsyn}
 
+\newcommand{\galtprodg}[2]{\galtprod{\color{gray}#1}{\color{gray}#2}}
+
 \begin{figure}[hbt]
 \begin{commgrammar}
 \gcomment{Ontologies}\\
@@ -124,6 +126,9 @@ grammar & proper noun & common noun \\
 \gcomment{Formulas}\\
 \gprod{F}{C \Equiv C}{concept equality}\\
 \galtprod{C \sqsubseteq C}{concept subsumption}\\
+\galtprodg{I\; \texttt{is-a}\; C}{concept formula}\\
+\galtprodg{I\; R\; I}{relation formula}\\
+\galtprodg{I\; P\; V}{property formula}\\
 \gcomment{Individual expressions}\\
 \gprod{I}{\ID}{atomic individuals}\\
 \gcomment{Concept expressions}\\
@@ -156,11 +161,12 @@ grammar & proper noun & common noun \\
 
 \clearpage
 
+
 We could study practical ontology languages like ALC or OWL now.
 But those feature a lot of other details that can block the view onto the essential parts.
 Therefore, we first define a basic ontology language ourselves in order to have full control over the details.
 
-\begin{definition}[Syntax of BOL]
+\begin{definition}[Syntax of BOL]\label{def:bolsyn}
 A BOL-ontology is given by the grammar in Fig.~\ref{fig:bol}.
 It is well-formed if
 \begin{compactitem}
@@ -178,6 +184,19 @@ These are anonymous and built inductively; their base cases are references to th
 Sometimes (in our case: individuals and properties), the references are the only expressions of the kind.
 Sometimes (in our case: concepts and relations), there can be many productions for complex expressions.
 The complex expressions are used to build axioms; in our case, these are the three kinds of assertions and other formulas.
+
+\begin{remark}[Formulas vs. Assertions]\label{rem:bol:ass}
+In Fig.~\ref{fig:bol}, the three productions in {\color{gray}gray} are duplicated: they occur both as assertions and as formulas.
+
+We could remove the three productions for assertions and treat them as special cases of axioms.
+But We keep the duplication here because assertions are often treated differently from the other axioms.
+They are grouped with the individuals in the ABox whereas the other axioms are seen as part of the TBox.
+Moreover, when used as assertions, they may have to be interpreted differently than when used as formulas as we will see in Ch.~\ref{sec:bolsem}.
+
+Alternatively, we could remove the three productions in gray.
+But then we would lose the ability to talk about formulas that are not true.
+That will become relevant in Ch.~\ref{sec:bolquery}.
+\end{remark}
 
 \paragraph{Axioms}
 The role of the axioms is two-fold:

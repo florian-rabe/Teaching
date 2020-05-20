@@ -1,0 +1,200 @@
+\section{Overview}
+
+Let us assume we have a semantics for our syntax.
+We again write $l$ for the syntax, $L$ for the semantic, and $\sem{-}$ for the translation function.
+
+We can now use the semantics to answer questions asked in the syntax.
+Here we use the syntax to phrase a question and the semantics to determine the answer.
+
+We call this \emph{querying}.
+Contrary to standard practice, we will use that word in a very broad sense that covers all aspects.
+It is more common to use the word only for concretized querying, where SQL has been developed, which has shaped many intuitions about querying.
+
+Usually, querying requires the syntax to designate some non-terminals as \emph{propositional}.
+A non-terminal is propositional if the semantics can make its words true.
+Without a notion of propositions, it is impossible to define what questions and answers even are.
+
+\begin{definition}[Propositions]
+A context-free syntax with propositions is a context-free syntax with some designated non-terminal symbols.
+\end{definition}
+
+That definition does not mean that any kind of logic is needed for querying.
+Many languages use highly restricted notions of propositions that would not generally be considered as logic.
+For example, languages might use equalities between objects or even equalities between certain objects as the only propositions.
+The following table gives an overview:
+
+\begin{center}
+\begin{tabular}{l|l}
+aspect & typical propositions\\
+\hline
+ontology language & assertions, concept equality/subsumption \\
+programming language & equality for some types, booleans operators\\
+database language & equality for base types, boolean operators \\
+logic & equality for all types, boolean operators, quantifiers\\
+natural language & sentences \\
+\end{tabular}
+\end{center}
+
+Often the development of querying for a language leads to the discovery of omissions in the syntax: certain objects that are helpful to ask questions were omitted from the syntax because they were not needed to describe the data.
+Then sometimes the syntax is extended with non-terminals or productions that seem like dead code: they are not needed for or not allowed in the official data.
+The following table gives some examples:
+
+\begin{center}
+\begin{tabular}{l|l}
+aspect & typical extensions\\
+\hline
+ontology language & conjunction of assertions \\
+programming language & quantifiers\\
+database language & membership in a table \\
+logic & (already tries to capture all possible propositions)\\
+natural language & (already captures all possible propositions) \\
+\end{tabular}
+\end{center}
+
+\begin{example}[Propositions in BOL]
+The obvious choice of propositions for BOL are the formulas.
+
+In Rem.~\ref{fig:bol}, we mentioned that the BOL syntax from Fig.~\ref{rem:bol:ass} had some redundant parts that were grayed out.
+Assertions are needed for writing ontologies only in such that they behave like axioms, i.e., they are automatically true.
+But for querying BOL, we also need them to behave like formulas so that we can use them as questions, i.e., we must allow them to be true or false.
+
+Moreover, it is common to also allow conjunctions.
+Therefore, the BOL propositions are the conjunctions of formulas.
+\end{example}
+
+In the sequel, we will use each of the four kinds of semantics to 
+
+\begin{center}
+\begin{tabular}{lllll}
+Section & builds on Section & query & result\\
+\hline
+\ref{sec:bolquery:ded}  & \ref{sec:bolsem:ded} & deduction & proposition & yes/no \\
+\ref{sec:bolquery:conc} & \ref{sec:bolsem:conc} & concretization & proposition with free variables & true ground instances \\
+\ref{sec:bolquery:comp} & \ref{sec:bolsem:comp} & computation & term & value \\
+\ref{sec:bolquery:narr} & \ref{sec:bolsem:narr} & narration & question & answer \\
+\end{tabular}
+\end{center}
+
+
+\begin{remark}[Meta-Level Questions]
+Finally, any semantics admits a meta-level where additional questions can be asked.
+Examples are asking for the consistency of a theory or the equivalence of two theories/programs/queries.
+At the next-higher meta-level, we can ask about the completeness of a semantics or the equivalence of two semantics (of which completeness is a special case).
+These meta-questions can usually not be expressed in the syntax, and we do not consider them a part of querying here.
+But it is worth mentioning that the need to use yet another language (a meta-language) to ask these questions can be annoying, and some advancements in language design are about trying to integrate them into the syntax.
+For example, reflection is the process of representing a language in itself so that the language can talk about itself.
+That way meta-questions become regular questions.
+\end{remark}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Deductive Querying}\label{sec:bolquery:ded}
+
+\subsection{Method}
+
+We assume that $l$ is a syntax with propositions and that $L$ is a logic (and thus in particular has propositions).
+
+It is not guaranteed $\sem{-}$ translates $l$-propositions to $L$-propositions.
+If not, we assume there is some operation $\truelift$ in $L$ that we can use to lift the translations of $l$-propositions to $L$-propositions.
+
+A \textbf{deductive query} consists of a proposition.
+The answer to the query is yes or no.
+
+Thus, the deductive semantics must determine which propositions are true and which are false.
+This is usually done in one of two ways.
+
+\textbf{Proof theory} uses the calculus of $L$ to derive true propositions.
+Thus, we can say that an $l$-proposition $F$ is true if $\truelift(\sem{F})$ is derivable in $L$.
+Accordingly, if $L$ has a negation operator $\neg$, we can say that $F$ is false if $\truelift(\neg\sem{F})$ is derivable in $L$.
+
+\textbf{Model theory} uses a second deductive semantics, namely a translation from $L$ to an even stronger deductive language $M$, usually some form of set theory.
+Then, we can say that $l$-propositions are true if the composition of the two translations yields a true $M$-proposition.
+
+Either way, it is determined whether to answer an $l$-proposition with yes or no.
+
+\subsection{Challenges}
+
+\paragraph{Decidability}
+Deductive semantics is usually undecidable, i.e., there is no algorithm that takes in $F$ returns yes or no.
+
+Therefore, deductive querying is very difficult in general.
+One has to run heuristics (theorem provers) to see if a prove of $F$ or $\neg F$ can be found.
+
+A common compromise is to allow only a restricted set of propositions as queries for which decision procedures exist.
+However, it can be tricky to find good restrictions, especially if the syntax allows for function symbols and equality.
+
+For example, SFOL is undecidable.
+But many fragments of SFOL are decidable, such as propositional logic and various fragments in between.
+
+When giving a deductive semantics into SFOL, it is therefore important to check whether the image of $\sem{-}$ falls inside a decidable fragment.
+This is typically the case for ontology languages.
+
+\paragraph{Completeness}
+Deductive semantics is usually incomplete, i.e., there are unanswered questions.
+More precisely, the $L$-calculus typically derives $F$ for some propositions, $\neg F$ for some, but neither for some others.
+The third kind of proposition cannot be answered by the semantics.
+
+\begin{remark}
+The work "complete" is used for two different things in logic.
+
+Firstly, it can be a relation between two semantics, typically proof theory and a model theory.
+That is the dominant meaning of the word as in, e.g., the completeness theorem for SFOL and G\"odel's incompleteness theorem.
+
+Secondly, it can mean that a logic proves or disproves every proposition, i.e., there is no $F$ such that neither $F$ nor $\neg F$ are derivable.
+That is the sense we use above.
+This kind of completeness rarely holds, usually only in very restricted circumstances.
+\end{remark}
+
+Decidability and completeness are essentially the same problem.
+Specifically, if completeness holds, we already obtain a decision procedure for the logic: to decide the truth of $F$, enumerate all proofs until a proof of $F$ or $\neg F$ is found.
+Vice versa, if we have a sound decision procedure, running it on $F$ will prove either $F$ or $\neg F$.
+
+\paragraph{Complexity of Theorem Proving}
+Independent of whether the semantics is complete/decidable, theorem proving is typically very expensive.
+
+Therefore, in addition to identify decidable fragments of a logic, it is desirable to identify \emph{efficiently} decidable fragments.
+Typically, a semantics meant for efficient practical querying aims for polynomially decidable fragments.
+This is the case for most ontology languages.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Concretized Querying}\label{sec:bolquery:conc}
+%  SQL, SPARQL
+
+\subsection{Method}
+
+\subsection{Challenges}
+
+\paragraph{Infinite Results}
+
+\paragraph{Open World}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computational Querying}\label{sec:bolquery:comp}
+
+\subsection{Method}
+
+\subsection{Challenges}
+
+\subsection{Infinite Types}
+
+\paragraph{Termination}
+
+\paragraph{Confluence}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Narrative Querying}\label{sec:bolquery:narr}
+
+\subsection{Method}
+
+\subsection{Challenges}
+
+\paragraph{Natural Language Understanding}
+
+\paragraph{Implementing Common Sense}
+
+\paragraph{Consistency of Knowledge Base}
+
+%\subsection{Equivalence of Semantics}
+
+% open vs. closed world; BOL and FOL are open; SQL, comp., and Herbrand model close the world
+

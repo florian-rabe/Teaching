@@ -82,6 +82,9 @@ $F$ & axiom $\sem{F}$\\
 Formula & Formula without free variables\\
 $C_1 \Equiv C_2$ & $\forall x:\iota.\sem{C_1}(x)\Leftrightarrow \sem{C_2}(x)$\\
 $C_1 \sqsubseteq C_2$ & $\forall x:\iota.\sem{C_1}(x)\impl \sem{C_2}(x)$\\
+$I\; \texttt{is-a}\; C$ & $\sem{C}(\sem{I})$\\
+$I_1\; R\; I_2$ & $\sem{R}(\sem{I_1},\sem{I_2})$\\
+$I\; P\; V$ & $\sem{P}(\sem{I},\sem{V})$\\
 \hline
 Individual & Terms of type $\iota$ \\
 $i$ & $i$ \\
@@ -175,6 +178,9 @@ $F$ & consistency check, consequence closure (omitted)\\
 Formula & Query that returns empty result iff formula is true \\
 $C_1 \Equiv C_2$ & $(\sem{C_1}\sm\sem{C_2})$ UNION $(\sem{C_2}\sm\sem{C_1})$\\
 $C_1 \sqsubseteq C_2$ & $\sem{C_1}\sm\sem{C_2}$\\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ IN $C$\\
+$I_1\; R\; I_2$ & ($\sem{I_1}$, $\sem{I_2}$) IN $R$ \\
+$I\; P\; V$ & ($\sem{I}$, $V$) IN $P$ \\
 \hline
 Individual & an identifier from the table individuals \\
 $i$ & SELECT id FROM individuals WHERE name="$i$" \\
@@ -312,6 +318,9 @@ Formula & Program that evaluates the formula to a Boolean \\
 $C_1 \Equiv C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; \\
                  & \tb $c_1$.forall(x $\rA$ $c_2$.contains(x)) \&\& $c_2$.forall(x $\rA$ $c_1$.contains(x))\}\\
 $C_1 \sqsubseteq C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; $c_1$.forall(x $\rA$ $c_2$.contains(x))\}\\
+$I\; \texttt{is-a}\; C$ & $\sem{C}$.contains($\sem{I}$)\\
+$I_1\; R\; I_2$ & $\sem{R}$.contains($(\sem{I_1},\sem{I_2})$)\\
+$I\; P\; V$ & $\sem{P}$.contains($(\sem{I},\sem{V})$)\\
 \hline
 Individual & String object\\
 $i$ & $i$ \\
@@ -458,9 +467,12 @@ $I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$.\\
 $I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
 $F$ & $\sem{F}$.\\
 \hline
-Formula & Sentence \\
-$C_1 \Equiv C_2$ & $\sem{C_1}$ is the same as $\sem{C_2}$\\
-$C_1 \sqsubseteq C_2$ & everything that $\sem{C_1}$s also $\sem{C_2}$s\\
+Formula & sentence \\
+$C_1 \Equiv C_2$ & $\sem{C_1}$ is the same as $\sem{C_2}$.\\
+$C_1 \sqsubseteq C_2$ & everything that $\sem{C_1}$s also $\sem{C_2}$s.\\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$.\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$.\\
+$I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
 \hline
 Individual & noun phrase (to be used as a subject or object)\\
 $i$ & $i$ \\

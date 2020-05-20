@@ -358,7 +358,7 @@ class product extends E {
     this.left = left
     this.right = right
   }
-  def toString = left.toString + "\cdot" + right.toString
+  def toString = left.toString + "$\cdot$" + right.toString
 }
 
 abstract class F {
@@ -371,7 +371,7 @@ class equality extends E {
     this.left = left
     this.right = right
   }
-  def toString = left.toString + "\doteq" + right.toString
+  def toString = left.toString + "$\doteq$" + right.toString
 }
 class product extends E {
   field left: Nat
@@ -380,7 +380,7 @@ class product extends E {
     this.left = left
     this.right = right
   }
-  def toString = left.toString + "\leq" + right.toString
+  def toString = left.toString + "$\leq$" + right.toString
 }
 \end{lstlisting}
 \end{example}
