@@ -24,14 +24,14 @@ For example, languages might use equalities between objects or even equalities b
 The following table gives an overview:
 
 \begin{center}
-\begin{tabular}{l|l}
-aspect & typical propositions\\
+\begin{tabular}{l|l|l}
+aspect & typical propositions & proposition operators\\
 \hline
-ontology language & assertions, concept equality/subsumption \\
-programming language & equality for some types, booleans operators\\
-database language & equality for base types, boolean operators \\
-logic & equality for all types, boolean operators, quantifiers\\
-natural language & sentences \\
+ontology language & assertions, concept equality/subsumption &\\
+programming language & equality for some types &  boolean operators\\
+database language & equality for base types &  boolean operators \\
+logic & equality for all types & boolean operators, quantifiers\\
+natural language & sentences & and, or, some, everty, \ldots\\
 \end{tabular}
 \end{center}
 
@@ -115,10 +115,11 @@ Either way, it is determined whether to answer an $l$-proposition with yes or no
 \subsection{Challenges}
 
 \paragraph{Decidability}
-Deductive semantics is usually undecidable, i.e., there is no algorithm that takes in $F$ returns yes or no.
+Deductive semantics is usually undecidable, i.e., there is no algorithm that takes in $F$
+and always returns yes or no in finite time. 
 
 Therefore, deductive querying is very difficult in general.
-One has to run heuristics (theorem provers) to see if a prove of $F$ or $\neg F$ can be found.
+One has to run heuristics (theorem provers) to see if a proof of $F$ or $\neg F$ can be found.
 
 A common compromise is to allow only a restricted set of propositions as queries for which decision procedures exist.
 However, it can be tricky to find good restrictions, especially if the syntax allows for function symbols and equality.
@@ -152,9 +153,10 @@ Vice versa, if we have a sound decision procedure, running it on $F$ will prove 
 \paragraph{Complexity of Theorem Proving}
 Independent of whether the semantics is complete/decidable, theorem proving is typically very expensive.
 
-Therefore, in addition to identify decidable fragments of a logic, it is desirable to identify \emph{efficiently} decidable fragments.
+Therefore, in addition to identifying decidable fragments of a logic, it is desirable to identify \emph{efficiently} decidable fragments.
 Typically, a semantics meant for efficient practical querying aims for polynomially decidable fragments.
-This is the case for most ontology languages.
+This is the case for most ontology languages.\ednote{MK: that is not true, most ontology
+  languages are decidable, but satisfiability is  (at least) exponential.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Concretized Querying}\label{sec:bolquery:conc}
@@ -198,3 +200,8 @@ This is the case for most ontology languages.
 
 % open vs. closed world; BOL and FOL are open; SQL, comp., and Herbrand model close the world
 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "WuV_notes"
+%%% End:
