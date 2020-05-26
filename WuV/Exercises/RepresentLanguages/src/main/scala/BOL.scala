@@ -1,105 +1,176 @@
 package wuv.exercise2
 
-/** some ideas about the translation from BOL to FOL that were discussed in the lecture in response to strudent questions */
+/** the syntax of BOL that was implemented in the practice session */
 
 object BOL {
-  sealed abstract class Concept
-  case class AtomicConcept(name: String) extends Concept
-  case class Forall(r: Relation,c: Concept) extends Concept
-  sealed abstract class Relation
-  case class AtomicRelation(name: String) extends Relation
-}
 
-object FOL {
-  sealed abstract class Formula
-  case class Forall(variable: String, body: Formula) extends Formula
-  case class Impl(left: Formula, right: Formula) extends Formula
-  case class Atom(predicate: String, args: List[Term]) extends Formula
-  sealed abstract class Term
-  case class Variable(name: String) extends Term
-
-  /** capture-avoiding substitution */
-  def sub(f: Formula, n: String, t: Term): Formula = ???
-}
-
-/** using meta-level (= Scala) functions to represent free variables */
-object BOL2FOLFunctions {
-  private var num = 0
-  private def next = {num += 1; "x_" + num.toString}
-  def apply_Concept(c: BOL.Concept): FOL.Term => FOL.Formula = x => c match {
-    case BOL.AtomicConcept(n) => FOL.Atom(n, List(x))
-    case BOL.Forall(r,c) =>
-      val rT = apply_Relation(r)
-      val cT = apply_Concept(c)
-      val freshName = next
-      val f = FOL.Variable(freshName)
-      FOL.Forall(freshName, FOL.Impl(rT(x, f), cT(f)))
+  // the pre-existing types, here implemented from scratch
+  case class ID(id: String) {
+    override def toString = id
   }
-  def apply_Relation(r: BOL.Relation): (FOL.Term, FOL.Term) => FOL.Formula = {case (x,y) => r match {
-    case BOL.AtomicRelation(r) => FOL.Atom(r, List(x,y))
-  }}
-}
 
-/** using open terms to represent free variables */
-object BOL2FOLOpenTerms {
-  def apply_Concept(c: BOL.Concept): (String,FOL.Formula) = c match {
-    case BOL.AtomicConcept(n) => ("x", FOL.Atom(n, List(FOL.Variable("x"))))
-    case BOL.Forall(r,c) =>
-      val (x,y,rT) = apply_Relation(r)
-      val (b, cT) = apply_Concept(c)
-      val name = "x"
-      val v = FOL.Variable(name)
-      val f = FOL.Forall(name, FOL.Impl(FOL.sub(rT,y,v), FOL.sub(cT,b,v)))
-      (x, f)
+  sealed abstract class Type
+  case class IntType() extends Type {
+    override def toString = "int"
   }
-  def apply_Relation(r: BOL.Relation): (String,String,FOL.Formula) = r match {
-    case BOL.AtomicRelation(r) => ("x","y", FOL.Atom(r, List(FOL.Variable("x"),FOL.Variable("y"))))
+  case class StringType() extends Type {
+    override def toString = "string"
+  }
+
+  sealed abstract class Value
+  case class IntValue(value: Int) extends Value {
+    override def toString = value.toString
+  }
+  case class StringValue(value: String) extends Value {
+    override def toString = value.toString
+  }
+
+  // the theory part
+
+  case class Ontology(decls: List[Declaration]) { // O ::= D^*
+    override def toString = {
+      // function that takes Declaration d and returns d.toString:   (d: Declaration) => d.toString
+      // variable type can be inferred: d => d.toString
+      // short-cut for lambda-abstraction that uses the variable only once: _.toString
+      val declStrings = decls.map(_.toString)
+      declStrings.mkString("[", "\n", "]")  // stringList.mkString(before, between, after)
+
+      /* if we just wrote "decls.mkString("[","\n","]")",
+         the Scala type checker would insert the .map(_.toString) automatically
+         because toString is an implicit function;
+         those can be omitted if they can be inferred during type-checking
+       */
+    }
+  }
+  sealed abstract class Declaration // D ::=
+
+  sealed abstract class NamedDeclaration(keyword: String) extends Declaration {
+    val name: ID
+    override def toString = keyword + " " + name.toString
+  }
+
+  case class IndividualDecl(name: ID) extends NamedDeclaration("individual") {// :: = individual ID
+  }
+  case class ConceptDecl(name: ID) extends NamedDeclaration("concept") { // :: = concept ID
+  }
+  case class RelationDecl(name: ID) extends NamedDeclaration("relation") { // :: = relation ID
+  }
+  case class PropertyDecl(name: ID, tp: Type) extends NamedDeclaration("property") { // :: = property ID
+  }
+
+  // the expression part
+
+  sealed abstract class Formula // F ::=
+
+  case class Subsumption(con1: ConceptExpr, con2: ConceptExpr) extends Formula {// ::= C1 \sqsubseteq C2
+    override def toString = con1.toString + " sub " + con2.toString
+  }
+
+  sealed abstract class ConceptExpr   // C ::=
+  case class AtomicConcept(name: ID) extends ConceptExpr { // ::= ID
+    override def toString = name.toString
+  }
+  case class UnionConcept(con1: ConceptExpr, con2: ConceptExpr) extends ConceptExpr { // ::= C \cup C
+    override def toString = "(" + con1.toString + " cup " + con2.toString + ")"
+  }
+  case class Forall(r: RelationExpr,c: ConceptExpr) extends ConceptExpr { // ::= \forall R.C
+    override def toString = "forall " + r.toString + "." + c.toString
+  }
+  sealed abstract class RelationExpr // R ::=
+  case class AtomicRelation(name: ID) extends RelationExpr { // ::= ID
+    override def toString = name.toString
+  }
+  case class UnionRelation(rel1: RelationExpr, rel2: RelationExpr) extends RelationExpr { // ::= R \cup R
+    override def toString = "(" + rel1.toString + " cup " + rel2.toString + ")"
   }
 }
 
-/** FOL using fake HOAS using the Scala function space */
-object FOLHOAS {
-  sealed abstract class Formula
-  case class Forall(body: Term => Formula) extends Formula
-  case class Impl(left: Formula, right: Formula) extends Formula
-  case class Atom(predicate: String, args: List[Term]) extends Formula
-  sealed abstract class Term
-  case class Variable(name: String) extends Term
+// the semantics of BOL in Scala, i.e., a translation from BOL to Scala
 
-  /** capture-avoiding substitution */
-  def sub(f: Formula, n: String, t: Term): Formula = ???
-}
+class BOL2Scala {
+  // get rid of "BOL." prefix
+  import BOL._
+  import scala.collection.mutable.{HashSet,HashMap}
 
-/** FOL using de Bruijn indices */
-object FOLdeBruijn {
-  sealed abstract class Formula
-  case class Forall(body: Formula) extends Formula
-  case class Impl(left: Formula, right: Formula) extends Formula
-  case class Atom(predicate: String, args: List[Term]) extends Formula
-  sealed abstract class Term
-  case class Variable(index: Int) extends Term
+  val individuals = new HashSet[ID]
+  val concepts = new HashMap[ID,HashSet[ID]]
+  val relations = new HashMap[ID,HashSet[(ID,ID)]]
+  val properties = new HashMap[ID,(Type,HashSet[(ID,Value)])]
 
-  /** refers to the innermost visible bound variable */
-  val v0 = FOLdeBruijn.Variable(0)
-  /** refers to the innermost-but-one visible bound variable */
-  val v1 = FOLdeBruijn.Variable(1)
-
-  /* substitute for variables 0, 1, ... */
-  def sub(f: Formula, t: Term*): Formula = ???
-}
-
-object BOL2FOLdeBruijn {
-  import FOLdeBruijn._
-
-  def apply_Concept(c: BOL.Concept): Formula = c match {
-    case BOL.AtomicConcept(n) => Atom(n, List(FOLdeBruijn.v0))
-    case BOL.Forall(r,c) =>
-      val rT = apply_Relation(r)
-      val cT = apply_Concept(c)
-      val f = Forall(Impl(sub(rT,v1,v0), sub(cT,v0)))
-      f
+  // one inductive function per non-terminal
+  /* 3 options for return value:
+     a) Scala syntax (using scala.compiler library)
+     b) Strings holding Scala syntax (that's the one from the lecture notes)
+     c) execute Scala code directly (only possible because we implement the semantics in the target languge itself)ß
+   */
+  def applyOntology(o: Ontology) {
+    // no case distinction needed because there is only one case
+    o.decls.foreach(d => applyDeclaration(d))
   }
-  def apply_Relation(r: BOL.Relation): Formula = r match {
-    case BOL.AtomicRelation(r) => Atom(r, List(v0,v1))
+
+  def applyDeclaration(d: Declaration) {
+    // one case per production
+    d match {
+      case IndividualDecl(id) =>
+        individuals += id
+      case ConceptDecl(id) =>
+        val hs = new HashSet[ID]
+        concepts(id) = hs // Scala parser turns this into concepts.update(id,hs)
+      case RelationDecl(id) =>
+        val hs = new HashSet[(ID,ID)]
+        relations(id) = hs
+      case PropertyDecl(id,tp) =>
+        val hs = new HashSet[(ID,Value)]
+        properties(id) = (tp,hs)
+    }
+  }
+
+  // formulas are translated to Booleans, true if the formula holds about the ontology
+  def applyFormula(f: Formula): Boolean = {
+    f match {
+      case Subsumption(c1, c2) =>
+        val c1Sem = applyConcept(c1)
+        val c2Sem = applyConcept(c2)
+        c1Sem.forall(i => c2Sem.contains(i))
+    }
+  }
+
+  // formulas are translated to HashSets containing the ids of the individuals in the concept
+  def applyConcept(c: ConceptExpr): HashSet[ID] = {
+    c match {
+      case AtomicConcept(id) =>
+        concepts(id)  // Scala parser turns this into concepts.apply(id)
+      case UnionConcept(c1,c2) =>
+        val c1Sem = applyConcept(c1)
+        val c2Sem = applyConcept(c2)
+        val hs = new HashSet[ID]
+        c1Sem.foreach(i => hs += i)
+        c2Sem.foreach(i => hs += i)
+        hs
+    }
+  }
+}
+
+// an executable program; create Run configuration with class wuv.exercise2.Test
+object Test {
+  import BOL._
+  def main(args: Array[String]) {
+    // an example ontology
+    val d1 = ConceptDecl(ID("Instructor"))
+    val d2 = ConceptDecl(ID("Course"))
+    val d3 = IndividualDecl(ID("FlorianRabe"))
+    val d4 = RelationDecl(ID("teach"))
+    val o = Ontology(List(d1,d2,d3,d4))
+
+    // the semantics of o
+    val sem = new BOL2Scala
+    sem.applyOntology(o)
+    // test with one example concept
+    val c = UnionConcept(AtomicConcept(ID("Instructor")),AtomicConcept(ID("Course")))
+    val cSem = sem.applyConcept(c)
+    cSem.foreach(i => println(i))
+    // test with one example formula
+    val f = Subsumption(AtomicConcept(ID("Instructor")),AtomicConcept(ID("Course")))
+    println(sem.applyFormula(f))
   }
 }
