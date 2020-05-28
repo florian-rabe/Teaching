@@ -241,11 +241,88 @@ aspect & language & abstract data type \\
 \hline
 ontologization & UML & class \\
 concretization & SQL & table schema \\
-computation & Scala & class \\
-deduction & various & theories, modules \\
+computation & Scala & class, interface \\
+deduction & various & theory, specification, module, locale \\
 narration & various & emergent feature
 \end{tabular}
 \end{center}
+
+\subsection{Abstract vs. Concrete}
+
+The words \emph{abstract} and \emph{concrete} do not have standard definitions for types.
+I like the intuitions described below.
+
+A type is called \textbf{concrete} if its values are
+\begin{compactitem}
+\item given by their internal form,
+\item defined along with the type, typically built from already-known pieces.
+\end{compactitem}
+
+\begin{example}
+Simple products are concrete types.
+
+They are introduced by (among other rules)
+\begin{compactitem}
+ \item $A\times B$ is a type if $A$ and $B$ are
+ \item values of type $A\times B$ are of the form $(a,b)$ for $a:A$ and $b:B$.
+\end{compactitem}
+\end{example}
+
+\begin{example}
+Inductive data types as seen in Def.~\ref{def:idt} are concrete types.
+Their values are formed by applying constructors to other values.
+
+I like calling them \textbf{concrete data types}.
+\end{example}
+
+A type is called \textbf{abstract} if its values are
+\begin{compactitem}
+\item given by their externally visible properties,
+\item defined in any environment that understands the type definition.
+\end{compactitem}
+
+This is the case for \textbf{abstract data types}.
+
+\begin{example}[Classes]
+A UML class is an abstract data type.
+Its values are the instances of implementing classes.
+
+A UML class only defines what methods should be available.
+How they are implemented by specific values of the type is left to the programming languages.
+
+Thus, different programming languages could have different values for the same abstract data type.
+They certainly look different, e.g., in Java and Scala implementations of the same UML class.
+But the languages might also be fundamentally different in expressivity, e.g., a Turing-complete programming language might have strictly more values for the same abstract data type than a non-Turing-complete one.
+
+Moreover, which instances actually exist changes during the run time of the program.
+If we take this into account, the values of the abstract data type are not even fixed within a programming language.
+\end{example}
+
+\begin{example}[Schemas]
+An SQL table schema is an abstract data type.
+Its values are the rows.
+
+The schema only defines what types the columns of a table have.
+Different database systems might theoretically provide different ways to build rows for the table.
+
+However, this does not happen in practice because SQL table columns are typed by base types, which have the same values across database systems.
+This would be different if we allowed table columns to have function types.
+\end{example}
+
+\begin{example}[Theories]
+A logical theory (e.g., Monoid) is an abstract data type.
+Its values are the models of the theory (e.g., for Monoid: $(\N,+,0)$ or $(\N,*,1)$).
+
+The theory only defines what operations a model must provide (for Monoid: binary operation and neutral element) and which axioms it must satisfy (for Monoid: associativity, neutrality).
+How we build the models is left open.
+
+We usually build models in mathematical language and naively assume that fixes the models once and for all.
+But that is too naive: depending on which mathematical foundation we use (e.g., set theory with or without axioms of choice), we can build different models.
+Moreover, we can also build models in type theories (which underly many deduction systems such as Coq or Isabelle).
+We can even build them in programming languages, e.g., by implementing theories as classes (typically moving the axioms into comments).
+
+The choice of language substantially changes what the values of the abstract data type are.
+\end{example}
 
 \subsection{Rigorous Definition}
 
@@ -264,8 +341,11 @@ An \textbf{abstract data type} (ADT) is
 \item a \textbf{mixin} type of the form $A_1*A_2$ for ADTs $A_i$.
 \end{compactitem}
 
-We say that a type system has \textbf{internal ADT} if all ADTs are types (and thus may in particular occur as the $T_i$ in a record type).
+We say that a type system has \textbf{internal ADT}s if all ADTs are types (and thus may in particular occur as the $T_i$ in a record type).
 \end{definition}
+
+The intuition of a mixin $A*B$ is that we merge the fields of $A$ and $B$.
+However, this union dependent: if $B$ is flat, its fields may refer to fields introduced in $A$.
 
 The most important special case of an ADT are classes:
 
@@ -280,7 +360,7 @@ We call the $c_i$ the \textbf{fields} or \textbf{members} of $a$.
 
 In an OO-language, a class definition is more commonly written somehow like
 \begin{lstlisting}
-class $a$ extends $a_1$ with $\ldots$ with $a_m$ {
+abstract class $a$ extends $a_1$ with $\ldots$ with $a_m$ {
   $c_1$: $T_1$
   $\vdots$
   $c_n$: $T_n$
