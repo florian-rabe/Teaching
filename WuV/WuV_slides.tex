@@ -1047,6 +1047,61 @@ We gloss over several major issues:
 \lec{incarnations of ADTs subtly different across languages}
 \end{frame}
 
+\section{Context-Sensitive Syntax}
+
+\begin{frame}\frametitle{Definition}
+A \textbf{language system} consists of
+\begin{itemize}
+ \item context-free syntax
+ \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
+ \item some distinguished non-terminal symbols $\ExpSym$ \glec{words called $\ExpSym$-\textbf{expressions}}
+ \item unary predicate $\wft{\Theta}$ on vocabularies $\Theta$ \glec{well-formed vocabulary $\Theta$}
+ \item unary predicates $\wff{\Theta}{\ExpSym}{E}$ \glec{well-formed $\ExpSym$-expressions $E$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Typical Structure}
+Vocabularies
+\begin{itemize}
+\item lists of declarations
+\end{itemize}
+
+Declarations
+\begin{itemize}
+\item named
+\item at least one for each expression kind
+\item may contain other expressions \glec{e.g., type, definition}
+\item may contain nested declarations \glec{e.g., fields in an ADT}
+\end{itemize}
+
+Expressions
+\begin{itemize}
+\item inductive data type
+\item relative to vocabulary \glec{names occur as base cases}
+\item formulas as special case
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Vocabularies and Expressions}
+\begin{center}
+\footnotesize
+\begin{tabular}{l|ll}
+Aspect & vocabulary $\Theta$ & expression kinds $\ExpSym$ \\
+\hline
+Ontologization  & ontology & individual, concept, relation, property, formula \\
+Concretization & database schema & cell, row, table, formula \\
+Computation & program & term, type, object, class, \ldots \\
+Logic & signature, theory & term, type, formula, \ldots \\
+Narration & dictionary & phrases, sentences, texts \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+See notes made during the lecture for examples
+\end{frame}
+
+
 \end{document}
 
 %%% Local Variables:

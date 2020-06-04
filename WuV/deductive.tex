@@ -1,22 +1,66 @@
-Various methods have been developed to represent and perform inferences.
-We structure our presentation by how each method relates to computation, the aspect most whose integration with inference has drawn the most attention.
-In general, the ubiquity of underspecified function symbols and quantified variables means that logical expressions usually do not normalize to unique values.
-At best, computations like $y:=f(x)$ can be represented as open-ended conjectures where different options for $y$ are produced, each together with a proof of the respective equality.
-Therefore, inference systems usually sacrifice computation or at least its efficiency.
+%\section{Overview}
+%
+%Various methods have been developed to represent and perform inferences.
+%We structure our presentation by how each method relates to computation, the aspect most whose integration with inference has drawn the most attention.
+%In general, the ubiquity of underspecified function symbols and quantified variables means that logical expressions usually do not normalize to unique values.
+%At best, computations like $y:=f(x)$ can be represented as open-ended conjectures where different options for $y$ are produced, each together with a proof of the respective equality.
+%Therefore, inference systems usually sacrifice computation or at least its efficiency.
+%
+%\emph{Proof assistants} sit at the extreme end of this spectrum.
+%They employ strong logics and high-level declarations to provide a convenient way to formalize domain knowledge and reason about it.
+%The reasoning is usually interactive in order to represent inferences that are too difficult to be fully automated.
+%Most proof assistants integrate at least some of the other methods to overcome this weakness.
+%
+%Further along the spectrum, \emph{automated theorem provers} use simpler logics than interactive proof assistants.
+%They are fully automatic and much faster, but can handle much fewer theorems, and typically do not check their proofs.
+%\emph{Satisfiability checkers} continue this progression by aiming at decidable automation support, whereas theorem proving is usually an semi-decidable search problem.
+%That limits them to propositional logic or specific theories of more expressive logics (usually of first-order logic) that are complete, i.e., where every formula can be proved or disproved.
+%In the special cases, where satisfiability checkers are applicable, they come close to verified computation systems.
+%
+%Orthogonal to the above triplet, there are several methods for realizing Turing-complete computation naturally inside a logic.
+%Here imperative and object-oriented computation are usually avoided in favor of other programming paradigms that are easier to reason about.
+%\emph{Rewriting} aims at optimizing the $f(x)\rewrites y$ progression, allowing users to mark specific transformations as rewrite steps.
+%\emph{Terminating recursion} is the method of adding recursive functions to a logic in order to make it a pure functional programming language.
+%Finally, \emph{logic programming} restricts attention to theorems of a special form, for which proof search is simple and predictable so that users can represent computations by supplying axioms that guide the proof search.
 
-\emph{Proof assistants} sit at the extreme end of this spectrum.
-They employ strong logics and high-level declarations to provide a convenient way to formalize domain knowledge and reason about it.
-The reasoning is usually interactive in order to represent inferences that are too difficult to be fully automated.
-Most proof assistants integrate at least some of the other methods to overcome this weakness.
+\section{Syntax}
 
-Further along the spectrum, \emph{automated theorem provers} use simpler logics than interactive proof assistants.
-They are fully automatic and much faster, but can handle much fewer theorems, and typically do not check their proofs.
-\emph{Satisfiability checkers} continue this progression by aiming at decidable automation support, whereas theorem proving is usually an semi-decidable search problem.
-That limits them to propositional logic or specific theories of more expressive logics (usually of first-order logic) that are complete, i.e., where every formula can be proved or disproved.
-In the special cases, where satisfiability checkers are applicable, they come close to verified computation systems.
+We give typed first-order logic (SFOL) as a language system.
 
-Orthogonal to the above triplet, there are several methods for realizing Turing-complete computation naturally inside a logic.
-Here imperative and object-oriented computation are usually avoided in favor of other programming paradigms that are easier to reason about.
-\emph{Rewriting} aims at optimizing the $f(x)\rewrites y$ progression, allowing users to mark specific transformations as rewrite steps.
-\emph{Terminating recursion} is the method of adding recursive functions to a logic in order to make it a pure functional programming language.
-Finally, \emph{logic programming} restricts attention to theorems of a special form, for which proof search is simple and predictable so that users can represent computations by supplying axioms that guide the proof search.
+\begin{definition}
+Fig.~\ref{fig:sfol} gives the context-free grammar.
+The vocabulary symbol is $Thy$. The expression symbols are $Y$, $T$, and $F$.
+\end{definition}
+
+\begin{figure}[hbt]
+\begin{commgrammar}
+\gcomment{Vocabularies: theories}\\
+\gprod{Thy}{\rep{D}}{}\\
+\gcomment{Declarations}\\
+\gprod{D}{\kw{type}\; \ID:\kw{type}}{type declaration}\\
+\galtprod{\kw{fun}\; \ID:\rep{Y}\to Y}{function symbol declaration}\\
+\galtprod{\kw{pred}\; \ID:\rep{Y}\to \kw{prop}}{predicate symbol declaration}\\
+\galtprod{\kw{axiom}\;F}{axiom}\\
+\gcomment{type expressions}\\
+\gprod{Y}{\ID}{atomic type} \\
+\gcomment{term expressions}\\
+\gprod{T}{\ID(\rep{T})}{function symbol applied to arguments} \\
+\galtprod{\ID}{term variables} \\
+\gcomment{formulas expressions}\\
+\gprod{F}{\ID(\rep{T})}{predicate symbol applied to arguments} \\
+\galtprod{T\doteq_Y T}{equality of terms at a type} \\
+\galtprod{\top}{truth} \\
+\galtprod{\bot}{falsity} \\
+\galtprod{F\wedge F}{conjunction} \\
+\galtprod{F\vee F}{disjunction} \\
+\galtprod{F\impl F}{implication} \\
+\galtprod{\neg F}{negation} \\
+\galtprod{\forall \ID:Y.F}{universal quantification at a type} \\
+\galtprod{\exists \ID:Y.F}{existential quantification at a type} \\
+\gcomment{Identifiers}\\
+\gprod{\ID}{\text{alphanumeric string}}{}\\
+\end{commgrammar}
+\caption{Syntax of SFOL}\label{fig:sfol}
+\end{figure}
+
+\section{Semantics}

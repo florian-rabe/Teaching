@@ -447,5 +447,72 @@ Now we have a correspondence between case-based function definitions and inducti
 %\end{center}
 
 
-%\section{Context-Sensitive Syntax}
+\section{Context-Sensitive Syntax}
 
+It is common to define a language as the set of words that can be produced from the syntax, i.e., from a distinguished non-terminal (the start symbol) of the context-free grammar.
+It is common to define a context-sensitive language as a special case: the set of words that can be produced from a context-sensitive grammar.
+
+This is, however, not helpful in practice.
+While the above remains the official definition of what the context-sensitive languages are, all practical definitions are entirely different.
+In fact, context-sensitive grammars are virtually never used to define a specific language.
+Instead, more restrictive definitions are used that capture more properties of practical languages.
+In the sequel, we give one possible definition.\footnote{This definition works well in the context of this lecture but is non-standard. There is no standard definition at all. Instead, various similar definitions exist.}
+
+\begin{definition}
+A \textbf{language system} consists of
+\begin{compactitem}
+ \item a context-free syntax,
+ \item a distinguished non-terminal symbol $\ThySym$, whose words are called \textbf{vocabularies},
+ \item a set of distinguished non-terminal symbols $\ExpSym$, whose words are called $\ExpSym$-\textbf{expressions},
+ \item a unary predicate $\wft{\Theta}$ on vocabularies $\Theta$,
+ \item for every vocabulary $\Theta$ and every $\ExpSym$, a unary predicate $\wff{\Theta}{\ExpSym}{E}$ on $\ExpSym$-expressions $E$.
+\end{compactitem}
+
+In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
+In case of $\wff{\Theta}{\ExpSym}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
+\end{definition}
+
+\begin{remark}[Terminology]
+``language system'' is not a standard term. We usually just say ``language''.
+
+``Well-formed $\ExpSym$-expression over $\Theta$'' can be a mouthful.
+Therefore, it is common to simply say that $E$ is an $\ExpSym$-expression, or that $E$ is a $\Theta$-expression, and expect readers to fill in the details.
+
+It is also common to give the non-terminal $\ExpSym$ names, such as ``term'', ``type'', or ``formula''.
+Then we simply say ``term'' instead of ``term-expression'' and so on.
+\end{remark}
+
+The vocabularies are typically lists of typically named declarations.
+They introduce the names that can be used to form expressions.
+The expression kinds almost always include formulas.
+
+Often declarations contain additional expressions, most importantly types or definitions.
+In general, all expressions may occur in declarations, but many language systems do not use all of them.
+
+Very different names are used for the vocabularies in different communities.
+The following table gives an overview:
+
+\begin{center}
+\begin{tabular}{l|ll}
+Aspect & vocabulary $\Theta$ & expression kinds $\ExpSym$ \\
+\hline
+Ontologization  & ontology & individual, concept, relation, property, formula \\
+Concretization & database schema & cell, row, table, formula \\
+Computation & program & term, type, object, class, \ldots \\
+Logic & theory & term, type, formula, \ldots \\
+Narration & dictionary & phrases, sentences, texts \\
+\end{tabular}
+\end{center}
+
+In practice, it is most useful to think of a language system as family of languages: one language (containing the expressions) for every vocabulary.
+
+\section{Semantics as an Inference System}
+
+To define a language system, we need to define the well-formedness predicates.
+One way to do that is by translating the context-free syntax into another language and then use existing definitions of well-formedness there.
+
+But we also need to be able to get off the ground, i.e., to define a semantics from scratch when we do not have another language available.
+This is usually done by giving an inference system for the predicates for well-formedness, also called a type system.
+
+We can also do both: if we have a semantics via an inference system and another one via translation, we can show that the latter respects the former.
+That leads to the concepts of soundness (everything well-formed is translated to something well-formed) and its dual completeness.

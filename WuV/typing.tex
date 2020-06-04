@@ -414,4 +414,33 @@ $T$ might be well-formed in context $\Gamma$, but $\Gamma'$ might not even be a 
 Because OO-languages are usually not dependently-typed, this is not an issue in most settings.
 \end{remark}
 
-% \section{Concrete Data Types} = inductive types
+%\section{A Typed Ontology Language}
+%
+%\begin{figure}[hbt]
+%\begin{commgrammar}
+%\gcomment{Ontologies}\\
+%\gprod{O}{\rep{D}}{}\\
+%\gcomment{Declarations}\\
+%\gprod{D}{\kw{adt}\; \ID\; \kw{extends}\;\rep{\ID} \{\rep{D}\}}{ADT definition}\\
+%\galtprod{\kw{obj}\; \ID\; \kw{implements}\;\ID \{\rep{D}\}}{object definition}\\
+%\galtprod{\kw{val}\; \ID : A \opt{= E}}{value declaration/definition}\\
+%\galtprod{F}{axioms}\\
+%\gcomment{Formulas}\\
+%\gprod{F}{E:A}{typing}\\
+%\galtprod{A<:A}{subtyping}\\
+%\galtprod{E\doteq_A E}{equality at a type}\\
+%\gcomment{Type expressions}\\
+%\gprod{A}{\ID}{ADTs}\\
+%\galtprod{T}{base types}\\
+%\gcomment{Value expressions}\\
+%\gprod{E}{\ID}{objects}\\
+%\galtprod{V}{base values}\\
+%\gcomment{Identifiers}\\
+%\gprod{\ID}{\text{alphanumeric string}}{}\\
+%\gcomment{Basic types and values}\\
+%\gprod{T}{\itg \alt \float \alt \bool \alt \strg}{types}\\
+%\gprod{V}{\text{(omitted)}}{values}
+%\end{commgrammar}
+%\caption{Syntax of TOL}\label{fig:tol}
+%\end{figure}
+
