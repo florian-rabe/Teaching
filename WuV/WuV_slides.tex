@@ -1101,6 +1101,195 @@ Narration & dictionary & phrases, sentences, texts \\
 See notes made during the lecture for examples
 \end{frame}
 
+\section{Concrete Knowledge}
+
+\begin{frame}\frametitle{Motivation}
+\begin{blockitems}{Main ideas}
+\item Ontology abstractly describes concepts and relations
+\item Tool maintains concrete data set
+\item Focus on efficiently
+  \begin{itemize}
+  \item identifying (i.e., assign names)
+  \item representing
+  \item processing
+  \item querying
+  \end{itemize}
+  large sets of concrete data
+\end{blockitems}
+
+\begin{blockitems}{Recall: TBox-ABox distinction}
+  \item TBox: general parts, abstract, fixed
+   \lec{main challenge: correct modeling of domain}
+  \item ABox: concrete individuals and assertions about them, growing
+   \lec{main challenge: aggregate them all}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Concrete Data}
+\begin{blockitems}{Concrete is}
+\item Base values: integers, strings, booleans, etc.
+\item Collections: sets, multisets, lists (always finite)
+\item Finite aggregations: tuples, records
+\item User-defined concrete data: enumerations, inductive types
+\item Advanced objects: finite maps, graphs, etc.
+\end{blockitems}
+
+\begin{blockitems}{Concrete is not}
+\item Free symbols to be interpreted by a model
+ \lec{exception: foreign function interfaces}
+\item Variables (free or bound)
+ \lec{$\lambda$-abstraction, quantification}
+\item Symbolic expressions
+ \lec{formulas, algorithms}
+ Exceptions:
+  \begin{itemize}
+  \item expressions of inductive type
+  \item application of built-in functions
+  \item queries that return concrete data
+  \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout question}
+What is the difference between
+\begin{itemize}
+\item an OWL ontolgoy
+\item an SQL database
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Two Approaches}
+\begin{blockitems}{Based on \emph{untyped} ontology languages}
+\item Representation based on \emph{knowledge graph}
+\item Ontology written in BOL-like language
+\item Data maintained as \emph{set of triples}
+  \glec{system = triple store}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{separate}
+  \glec{e.g., OWL, SPARQL}
+ \item triple store and query engine integrated
+  \glec{e.g., Virtuoso tool}
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Based on \emph{typed} ontology languages}
+\item Representation based on \emph{abstract data types}
+\item Ontology written as database schema
+\item Data maintained as \emph{tables}
+  \glec{system = (relational) database}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{integrated}
+  \glec{e.g., SQL}
+ \item table store and query engine integrated
+  \glec{e.g., MySQL tool}
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Evolution of Approaches}
+\begin{blockitems}{Our usage is non-standard}
+ \item Common
+  \begin{itemize}
+  \item ontologies = untyped approach, OWL, triples,  SPARQL
+  \item databases = typed approach, tables, SQL
+  \end{itemize}
+ \item Our understanding: two approaches evolved from same idea
+	\begin{itemize}
+	\item triple store = untyped database
+	\item SQL schema = typed ontology
+	\end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Evolution}
+\item Typed-untyped distinction minor technical difference
+\item Optimization of respective advantages causes speciation
+\item Today segregation into different
+ \begin{itemize}
+ \item jargons
+ \item languages, tools
+ \item communities, conferences
+ \item courses
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Untyped concrete data}
+\begin{blockitems}{Knowledge graph}
+\item nodes = individuals
+ \begin{itemize}
+ \item identifier
+ \item sets of concepts
+ \item key-value sets of properties
+ \end{itemize}
+\item edges = relation assertions
+ \begin{itemize}
+ \item from subject to objects
+ \item labeled with name of relation
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Easy to}
+\item store (as triple set)
+\item edit: Protege-style or graph-based
+\item visualize as graph
+  \glec{different colors for concepts, relations}
+\item query: use graph intuition to find needed data
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Typed concrete data}
+\begin{blockitems}{Schema}
+\item tables = abstract data type
+\item rows = objects of that type
+\item columns = fields of ADT
+\item cells = values of fields
+\end{blockitems}
+
+\begin{blockitems}{Identifiers}
+\item table, column names given by schema
+\item row key = distinguished column \\
+options
+ \begin{itemize}
+ \item preexistent characteristic column
+ \item generated, e.g. UUID, incremental numbering
+ \item concatenation of characteristic set of columns
+ \end{itemize}
+\item column/row identifiers formed by qualifying with table name
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout question}
+When using typed concrete data,\\
+how to fully realize abstract data types
+\begin{itemize}
+\item nesting: ADTs occurring as field types
+\item inheritance between ADTs
+\item mixins
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{ADTs in Typed Concrete Data}
+\begin{blockitems}{Nesting: field $a:A$ in ADT $B$}
+\item field types must be base types, $a:A$ not allowed
+\item allow $ID$ as additional base type
+\item use field $a:ID$ in table $B$
+\item store value of $b$ in table $A$
+\end{blockitems}
+
+\begin{blockitems}{Inheritance: $B$ inherits from $A$}
+\item add field $parent_A$ to table $B$
+\item store values of inherited fields of $B$ in table $A$
+\end{blockitems}
+\lec{general principle: all objects of type $A$ stored in same table}
+
+\begin{blockitems}{Mixin: $A*B$}
+\item essentially join of tables $A$ and $B$ on common fields
+\item some subtleties depending on ADT flattening
+\end{blockitems}
+\end{frame}
+
 
 \end{document}
 
