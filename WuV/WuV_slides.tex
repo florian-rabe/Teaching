@@ -1129,7 +1129,7 @@ See notes made during the lecture for examples
 \begin{blockitems}{Concrete is}
 \item Base values: integers, strings, booleans, etc.
 \item Collections: sets, multisets, lists (always finite)
-\item Finite aggregations: tuples, records
+\item Aggregations: tuples, records (always finite)
 \item User-defined concrete data: enumerations, inductive types
 \item Advanced objects: finite maps, graphs, etc.
 \end{blockitems}
@@ -1153,13 +1153,13 @@ See notes made during the lecture for examples
 \begin{frame}\frametitle{Breakout question}
 What is the difference between
 \begin{itemize}
-\item an OWL ontolgoy
+\item an OWL ontology
 \item an SQL database
 \end{itemize}
 \end{frame}
 
 \begin{frame}\frametitle{Two Approaches}
-\begin{blockitems}{Based on \emph{untyped} ontology languages}
+\begin{blockitems}{Based on \emph{untyped} (Curry-typed) ontology languages}
 \item Representation based on \emph{knowledge graph}
 \item Ontology written in BOL-like language
 \item Data maintained as \emph{set of triples}
@@ -1173,7 +1173,7 @@ What is the difference between
  \end{itemize}
 \end{blockitems}
 
-\begin{blockitems}{Based on \emph{typed} ontology languages}
+\begin{blockitems}{Based on \emph{typed} (Church-typed) ontology languages}
 \item Representation based on \emph{abstract data types}
 \item Ontology written as database schema
 \item Data maintained as \emph{tables}
@@ -1215,7 +1215,7 @@ What is the difference between
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Untyped concrete data}
+\begin{frame}\frametitle{Curry-typed concrete data}
 \begin{blockitems}{Central data structure = knowledge graph}
 \item nodes = individuals $i$
  \begin{itemize}
@@ -1240,8 +1240,8 @@ What is the difference between
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Typed concrete data}
-\begin{blockitems}{central data structure = relational database}
+\begin{frame}\frametitle{Church-typed concrete data}
+\begin{blockitems}{Central data structure = relational database}
 \item tables = abstract data type
 \item rows = objects of that type
 \item columns = fields of ADT
@@ -1258,12 +1258,12 @@ What is the difference between
 \end{frame}
 
 \begin{frame}\frametitle{Identifiers}
-\begin{blockitems}{Knowledge graph}
+\begin{blockitems}{Curry-Typed Knowledge graph}
 \item concept, relation, property names given in TBox
 \item individual names attached to nodes
 \end{blockitems}
 
-\begin{blockitems}{Database}
+\begin{blockitems}{Church-Typed Database}
 \item table, column names given in schema
 \item row identified by distinguished column (= key) \\
 options
@@ -1277,6 +1277,22 @@ options
   \end{itemize} 
  \end{itemize}
 \item column/row identifiers formed by qualifying with table name
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Axioms}
+\begin{blockitems}{Curry-Typed Knowledge Graph}
+\item traditionally very expressive axioms
+\item yields inferred assertions
+\item triple store must do consequence closure to return correct query results
+\item not all axioms supported by every triple store
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item typically no axioms
+\item instead consistency constraints, triggers
+\item allows limited support for axioms without calling it that way
+\item stronger need for users to program the consequence closure manually
 \end{blockitems}
 \end{frame}
 
