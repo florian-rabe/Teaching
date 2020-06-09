@@ -1163,7 +1163,7 @@ What is the difference between
 \item Representation based on \emph{knowledge graph}
 \item Ontology written in BOL-like language
 \item Data maintained as \emph{set of triples}
-  \glec{system = triple store}
+  \glec{tool = triple store}
 \item Typical language/tool design
  \begin{itemize}
  \item ontology and query language \emph{separate}
@@ -1177,13 +1177,13 @@ What is the difference between
 \item Representation based on \emph{abstract data types}
 \item Ontology written as database schema
 \item Data maintained as \emph{tables}
-  \glec{system = (relational) database}
+  \glec{tool = (relational) database}
 \item Typical language/tool design
  \begin{itemize}
  \item ontology and query language \emph{integrated}
   \glec{e.g., SQL}
  \item table store and query engine integrated
-  \glec{e.g., MySQL tool}
+  \glec{e.g., SQLite tool}
  \end{itemize}
 \end{blockitems}
 \end{frame}
@@ -1217,15 +1217,15 @@ What is the difference between
 
 \begin{frame}\frametitle{Untyped concrete data}
 \begin{blockitems}{Central data structure = knowledge graph}
-\item nodes = individuals
+\item nodes = individuals $i$
  \begin{itemize}
  \item identifier
- \item sets of concepts
- \item key-value sets of properties
+ \item sets of concepts of $i$
+ \item key-value sets of properties of $i$
  \end{itemize}
 \item edges = relation assertions
  \begin{itemize}
- \item from subject to objects
+ \item from subject to object
  \item labeled with name of relation
  \end{itemize}
 \end{blockitems}
@@ -1249,7 +1249,7 @@ What is the difference between
 \end{blockitems}
 
 \begin{blockitems}{Processing strengths}
-\item store: as JSON, CSV, or similar
+\item store: as CSV text files, or similar
 \item edit: SQL commands or table editors
 \item visualize: as table view
 \item query: relational algebra
@@ -1265,12 +1265,16 @@ What is the difference between
 
 \begin{blockitems}{Database}
 \item table, column names given in schema
-\item row key = distinguished column \\
+\item row identified by distinguished column (= key) \\
 options
  \begin{itemize}
  \item preexistent characteristic column
- \item generated, e.g. UUID, incremental numbering
- \item concatenation of characteristic set of columns
+ \item added upon insertion
+  \begin{itemize}
+  \item UUID string
+  \item incremental integers
+  \item concatenation of characteristic list of columns
+  \end{itemize} 
  \end{itemize}
 \item column/row identifiers formed by qualifying with table name
 \end{blockitems}
