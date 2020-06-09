@@ -1216,7 +1216,7 @@ What is the difference between
 \end{frame}
 
 \begin{frame}\frametitle{Untyped concrete data}
-\begin{blockitems}{Knowledge graph}
+\begin{blockitems}{Central data structure = knowledge graph}
 \item nodes = individuals
  \begin{itemize}
  \item identifier
@@ -1230,25 +1230,41 @@ What is the difference between
  \end{itemize}
 \end{blockitems}
 
-\begin{blockitems}{Easy to}
-\item store (as triple set)
+\begin{blockitems}{Processing strengths}
+\item store: as triple set
 \item edit: Protege-style or graph-based
-\item visualize as graph
+\item visualize: as graph
   \glec{different colors for concepts, relations}
-\item query: use graph intuition to find needed data
+\item query: match, traverse graph structure
+\item untyped data simplifies integration, migration
 \end{blockitems}
 \end{frame}
 
 \begin{frame}\frametitle{Typed concrete data}
-\begin{blockitems}{Schema}
+\begin{blockitems}{central data structure = relational database}
 \item tables = abstract data type
 \item rows = objects of that type
 \item columns = fields of ADT
 \item cells = values of fields
 \end{blockitems}
 
-\begin{blockitems}{Identifiers}
-\item table, column names given by schema
+\begin{blockitems}{Processing strengths}
+\item store: as JSON, CSV, or similar
+\item edit: SQL commands or table editors
+\item visualize: as table view
+\item query: relational algebra
+\item typed data simplifies selecting, sorting, aggregating
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Identifiers}
+\begin{blockitems}{Knowledge graph}
+\item concept, relation, property names given in TBox
+\item individual names attached to nodes
+\end{blockitems}
+
+\begin{blockitems}{Database}
+\item table, column names given in schema
 \item row key = distinguished column \\
 options
  \begin{itemize}
@@ -1290,6 +1306,52 @@ how to fully realize abstract data types
 \end{blockitems}
 \end{frame}
 
+\begin{frame}\frametitle{Open/Closed World}
+\begin{itemize}
+\item Question: is the data complete?
+ \begin{itemize}
+ \item closed world: yes
+ \item open world: not necessarily
+ \end{itemize}
+\item Dimensions of openness
+ \begin{itemize}
+  \item existence of individual objects
+  \item assertions about them
+ \end{itemize}
+\item Sources of openness
+  \begin{itemize}
+  \item more exists but has not yet been added
+  \item more could be created later
+  \end{itemize}
+\item Orthogonal to typed/untyped distinction, but in practice
+ \begin{itemize}
+ \item knowledge graphs use open world
+ \item databases use closed world
+ \end{itemize}
+\end{itemize}
+\lec{Open world is natural state, closing adds knowledge}
+\end{frame}
+
+\begin{frame}\frametitle{Closing the World}
+\begin{blockitems}{Derivable consequences}
+ \item induction: prove universal property by proving for each object
+ \item negation by failure: atomic property false if not provable
+ \item term-generation constraint: only nameable objects exist
+\end{blockitems}
+
+\begin{blockitems}{Enabled operations}
+ \item universal set: all objects
+ \item complement of concept/type
+ \item defaults: assume default value for property if not otherwise asserted
+\end{blockitems}
+
+\begin{blockitems}{Monotonicity problem}
+ \item monotone operation: bigger world = more results
+ \item examples: union, intersection, $\exists R.C$, join, IN conditions
+ \item counter-examples: complement, $\forall R.C$, NOT IN conditions
+\end{blockitems}
+\lec{technically, non-monotone operations in open world dubious}
+\end{frame}
 
 \end{document}
 
