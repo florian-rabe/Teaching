@@ -1373,6 +1373,212 @@ how to fully realize abstract data types
 \lec{technically, non-monotone operations in open world dubious}
 \end{frame}
 
+\section{Primitive Types and Encoding Data}
+
+\begin{frame}\frametitle{Primitive vs. Declared}
+\begin{blockitems}{Primitive Types}
+ \item built-into the language
+ \item assumed to exist a priori \lec{fundamentals of nature}
+ \item fixed semantics (usually interpreted by identity function)
+ \end{blockitems}
+ 
+\begin{blockitems}{Triple Structure: 3 kinds of named objects}
+ \item the type \glec{eg: 'int'}
+ \item values of the type \glec{eg: 0, 1, -1, \ldots}
+ \item operations on type \glec{eg: addition, multiplication, \ldots}
+\end{blockitems}
+
+\begin{center}
+\begin{tabular}{l|ll}
+& primitive & declared \\
+\hline
+introduced by & language designer & user \\
+introduced in & grammar & vocabulary $V$ \\
+visible in & all vocabularies & $V$ only \\
+semantics given & explicitly & implicitly \\
+\tb\ldots by & translation function & axioms \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+\begin{blockitems}{Typical primitive types}
+ \item natural numbers (= $\N$)
+ \item arbitrary precision integers (= $\Z$)
+ \item fixed precision integers (32 bit, 64 bit, \ldots)
+ \item floating point (float, double, \ldots)
+ \item Booleans
+ \item characters (ASCII, Unicode)
+ \item strings
+\end{blockitems}
+
+Observation:
+\begin{itemize}
+\item essentially the same in every language
+ \lec{including whatever language used for semantics}
+\item semantics by translation trivial
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Quasi-Primitive = Declared in standard library}
+\begin{blockitems}{Standard library}
+ \item present in every language
+  \glec{assumed empty vocabulary by default}
+ \item one fixed vocabulary
+  \begin{itemize}
+  \item implicitly included into every other vocabulary
+  \item implicitly fixed by any translation between vocabularies
+  \end{itemize}
+ \item objects technically declared
+ \item but practically part of primitive objects
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item sufficiently expressive languages
+ \begin{itemize}
+ \item push many primitive objects to standard library \glec{never all}
+ \item simplifies language, especially when defining operations
+ \end{itemize}
+ \lec{strings in C, BigInteger in Java, inductive type for $\N$}
+\item inexpressive languages
+\begin{itemize}
+\item many primitives \lec{SQL, spreadsheet software}
+\item few (quasi)-primitives \lec{few operations available in OWL}
+\end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Treatment in this Course}
+\begin{blockitems}{BOL syntax and semantics so far}
+\item primitive objects omitted in syntax
+\item assumed reasonable collection available
+\item assumed same (quasi-)primitive objects in semantic languages
+ \lec{irrelevant if interpreting primitive objects as primitive or quasi-primitive}
+\end{blockitems}
+\lec{largely justified by practical languages}
+
+\begin{blockitems}{But what exactly is the standard?}
+\item will present possible solution
+\item uses special ontology language just for specifying primitive objects
+  \begin{itemize}
+   \item name
+   \item type
+   \item semantics
+    \glec{typically narrative; alternatively deductive, computational}
+  \end{itemize}
+\item current research, not standard practice
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Encoding Primitive Types}
+\begin{blockitems}{Problem}
+ \item quickly encounter primitive types not supported by common languages
+ \item need to encode them using existing types
+  \lec{typically as strings, ints, or prodcuts/lists thereof}
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item date, time, color, location on earth
+\item graph, function
+\item picture, audio, video
+\item gene, person
+\end{blockitems}
+
+\begin{center}
+Breakout questions: What primitive types do we need for univis?
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Failures of Encodings}
+\begin{blockitems}{Genes in Excel}
+ \item 2016 study found errors in 20\% of spreadsheets accompanying genomics journal papers
+ \item gene names encoded as strings but auto-converted to other types by Excel
+ \begin{itemize}
+ \item "SEPT2" (Septin 2) converted to September 02)
+ \item REKIN identifiers, e.g., "2310009E13", converted to float $2.31E+1$
+ \end{itemize}
+ \glec{\url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}}
+\end{blockitems}
+
+\begin{blockitems}{Y2K bug}
+\item date encoded as tuple of integers, using $2$ digits for year
+\item needed fixing in year 2000
+\item estimated $\$300$ billion spent to change software
+\item possible repeat: in 2038, number of seconds since 1970-01-01 (used by Unix to encode time as integer) overflows 32-bit integers
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
+\begin{blockitems}{Standardization of Common Data Types}
+ \item Ontology language optimized for declaring types, values, operations
+ \glec{semantics must exist but can be extra-linguistic}
+ \item Vocabulary declaring such objects
+ \glec{should be standardized, modular, extensible}
+\end{blockitems}
+
+\begin{blockitems}{Standardization of Codecs}
+\item Fixed small set of primitive objects
+ \glec{should be (quasi-)primitive in every language}
+ \glec{not too expressive, possibly untyped}
+\item Standard codecs for translating common types to primitive ones
+\end{blockitems}
+
+\begin{blockitems}{Codec for type $A$}
+\item coding function $A$-values $\to$ primitive objects
+\item partial decoding function primitive objects $\to$ $A$-values
+\item inverse to each other \glec{in some sense}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Complex Data Types}
+\begin{itemize}
+ \item relatively easy if all primitive types atomic
+  \lec{int, string, etc.}
+ \item but need to allow for complex types
+\end{itemize}
+
+\begin{blockitems}{Finite Collection Types}
+ \item lists
+ \item fixed-length lists (= Cartesian power, $n$-tuple)
+ \item sets
+ \item multisets (= bags)
+ \lec{all homogeneous, e.g. $list\;A$ is type of lists over $A$}
+\end{blockitems}
+
+\begin{blockitems}{Aggregation Types}
+ \item Cartesian product of some types $A\times B$
+ \item disjoint union of some types $A\cup B$
+ \item labeled Cartesian product (= record) $\{a: A, b: B\}$
+  \glec{unordered, named projections}
+ \item labeled disjoint union $a(A)|b(B)$
+  \glec{uncommon, only mentioned for systematics}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Subtyping}
+\begin{itemize}
+ \item relatively easy if all data types disjoint
+ \item better with subtyping
+ \lec{open problem how to do it nicely}
+\end{itemize}
+
+\begin{blockitems}{Subtyping Atomic Types}
+ \item $\N <: \Z$
+ \item ASCII $<:$ Unicode
+\end{blockitems}
+
+\begin{blockitems}{Subtyping Complex Types}
+ \item Covariance subtyping (= vertical subtyping)
+ \glec{same for disjoint unions}
+  \[A <: A' \impl list\,A <: list\, A'\]
+  \[A_i <: A_i' \impl \{\ldots, a_i:A_i,\ldots\} <: \{\ldots, a_i:A'_i,\ldots\}\]
+ \item structural subtyping (= horizontal subtyping)
+  \[\{a:A,b:B\} :> \{a:A,b:B,c:C\}\]
+  \[a(A)|b(B) <: a(A)|b(B)|c(C)\]
+\end{blockitems}
+\end{frame}
+
+
 \end{document}
 
 %%% Local Variables:
