@@ -1375,11 +1375,36 @@ how to fully realize abstract data types
 \lec{technically, non-monotone operations in open world dubious}
 \end{frame}
 
-\section{Primitive Types and Encoding Data}
+\part{Primitive Types and Encoding Data}
+
+\section{Motivation}
+
+\begin{frame}\frametitle{Data Interoperability}
+\begin{blockitems}{Situation}
+ \item languages systems focus on different aspects
+  \lec{frequent need to exchange data}
+ \item generally, lots of aspect/language-specific objects
+  \lec{proofs, programs, tables, sentences}
+ \item but same/similar \emph{primitive} data types used across systems
+  \lec{should be easy to exchange}
+ \end{blockitems}
+ 
+\begin{blockitems}{Problem}
+ \item crossing system barriers usually require interchange language
+  \lec{serialize as string and reparse}
+ \item interchange languages typically untyped
+  \lec{XML, JSON, YAML, \ldots}
+\end{blockitems}
+
+\begin{blockitems}{Solution}
+ \item standardize primitive data types
+ \item standardize encoding in interchange languages
+\end{blockitems}
+\end{frame}
 
 \begin{frame}\frametitle{Primitive vs. Declared}
 \begin{blockitems}{Primitive Types}
- \item built-into the language
+ \item built into the language
  \item assumed to exist a priori \lec{fundamentals of nature}
  \item fixed semantics (usually interpreted by identity function)
  \end{blockitems}
@@ -1483,6 +1508,7 @@ Observation:
 \item date, time, color, location on earth
 \item graph, function
 \item picture, audio, video
+\item physical quantities ($1m$, $1in$, etc.)
 \item gene, person
 \end{blockitems}
 
@@ -1492,6 +1518,13 @@ Breakout questions: What primitive types do we need for univis?
 \end{frame}
 
 \begin{frame}\frametitle{Failures of Encodings}
+\begin{blockitems}{Y2K bug}
+\item date encoded as tuple of integers, using $2$ digits for year
+\item needed fixing in year 2000
+\item estimated $\$300$ billion spent to change software
+\item possible repeat: in 2038, number of seconds since 1970-01-01 (used by Unix to encode time as integer) overflows 32-bit integers
+\end{blockitems}
+
 \begin{blockitems}{Genes in Excel}
  \item 2016 study found errors in 20\% of spreadsheets accompanying genomics journal papers
  \item gene names encoded as strings but auto-converted to other types by Excel
@@ -1501,13 +1534,24 @@ Breakout questions: What primitive types do we need for univis?
  \end{itemize}
  \glec{\url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}}
 \end{blockitems}
+\end{frame}
 
-\begin{blockitems}{Y2K bug}
-\item date encoded as tuple of integers, using $2$ digits for year
-\item needed fixing in year 2000
-\item estimated $\$300$ billion spent to change software
-\item possible repeat: in 2038, number of seconds since 1970-01-01 (used by Unix to encode time as integer) overflows 32-bit integers
+\begin{frame}\frametitle{Failures of Encodings (2)}
+\begin{blockitems}{Mars Climate Orbiter}
+\item two components exchanged physical quantity
+\item specification required encoding as number using unit Newton seconds
+\item one component used wrong encoding (with pound seconds as unit)
+\item led to false trajectory and loss of $\$300$ million device
 \end{blockitems}
+
+\begin{blockitems}{Shellshock}
+\item bash allowed gaining root access from 1998 to 2014
+\item function definitions were encoded as source code
+\item not decoded at all; instead, code simply run (as root)
+\item allowed appending "; ..." to function definitions
+\end{blockitems}
+\lec{SQL injection similar: complex data encoded as string, no decoding}
+
 \end{frame}
 
 \begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
@@ -1522,14 +1566,63 @@ Breakout questions: What primitive types do we need for univis?
 \item Fixed small set of primitive objects
  \glec{should be (quasi-)primitive in every language}
  \glec{not too expressive, possibly untyped}
-\item Standard codecs for translating common types to primitive ones
+\item Standard codecs for translating common types to interchange languages
 \end{blockitems}
 
-\begin{blockitems}{Codec for type $A$}
-\item coding function $A$-values $\to$ primitive objects
-\item partial decoding function primitive objects $\to$ $A$-values
+\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
+\item coding function $A$-values $\to$ $L$-objects
+\item partial decoding function $L$-objects $\to$ $A$-values
 \item inverse to each other \glec{in some sense}
 \end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Overview}
+Next steps
+\begin{enumerate}
+\item Data types
+\item Data interchange languages
+\item Codecs
+\end{enumerate}
+\end{frame}
+
+\section{Data Types}
+
+\begin{frame}{Breakout Question}
+What types do we need?
+\end{frame}
+
+\begin{frame}\frametitle{Atomic Data Types: basic}
+\begin{blockitems}{typical in IT systems}
+ \item fixed precision integers (32 bit, 64 bit, \ldots)
+ \item IEEE float, double
+ \item Booleans
+ \item Unicode characters
+ \item strings \glec{could be list of characters but usually bad idea}
+\end{blockitems}
+
+\begin{blockitems}{typical in math}
+ \item natural numbers (= $\N$)
+ \item arbitrary precision integers (= $\Z$)
+ \item rational, real, complex numbers
+ \item graphs, trees
+\end{blockitems}
+\lec{clear: language must be modular, extensible}
+\end{frame}
+
+\begin{frame}\frametitle{Atomic Data Types: advanced}
+
+\begin{blockitems}{general purpose}
+ \item date, time, color, location on earth
+ \item picture, audio, video
+\end{blockitems}
+
+\begin{blockitems}{domain-specific}
+ \item physical quantities ($1m$, $1in$, etc.)
+ \item gene, person
+ \item semester, course id, \ldots
+\end{blockitems}
+
+\lec{clear: language must be modular, extensible}
 \end{frame}
 
 \begin{frame}\frametitle{Complex Data Types}
@@ -1539,22 +1632,65 @@ Breakout questions: What primitive types do we need for univis?
  \item but need to allow for complex types
 \end{itemize}
 
-\begin{blockitems}{Finite Collection Types}
+Two kinds
+\begin{itemize}
+\item type operators: take \emph{only type arguments}, return types
+ \begin{itemize}
+ \item type operator $\times$
+ \item takes two types $A,B$
+ \item returns type $A\times B$
+ \end{itemize}
+\item dependent types: take \emph{also data arguments}, return types
+ \begin{itemize}
+ \item dependent type operator $vector$
+ \item takes natural number $n$, type $A$
+ \item returns type $A^n$ of $n$-tuples over $A$
+ \end{itemize}
+\end{itemize}
+\lec{dependent types much more complicated, less uniformly used}
+\lec{harder to starndardize}
+\end{frame}
+
+\begin{frame}\frametitle{Collection Data Types}
+\begin{blockitems}{Homogeneous Collection Types}
+ \item sets
+ \item multisets (= bags)
+ \item lists
+ \lec{all unary type operators, e.g. $list\;A$ is type of lists over $A$}
+ \item fixed-length lists (= Cartesian power, vector $n$-tuple)
+  \glec{dependent type operator}
+\end{blockitems}
+
+\begin{blockitems}{Heterogeneous Collection Types}
  \item lists
  \item fixed-length lists (= Cartesian power, $n$-tuple)
  \item sets
  \item multisets (= bags)
- \lec{all homogeneous, e.g. $list\;A$ is type of lists over $A$}
+ \lec{all atomic types, e.g., $list$ is type of lists over any objects}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Aggregation Data Types}
+\begin{blockitems}{Products}
+ \item Cartesian product of some types $A\times B$ \\
+ values are pairs $(x,y)$ 
+ \glec{numbered projections $_1$, $_2$ --- order relevant}
+ \item labeled Cartesian product (= record) $\{a: A, b: B\}$ \\
+ values are records $\{a=x, b=y\}$
+  \glec{named projections $a$, $b$ --- order irrelevant}
 \end{blockitems}
 
-\begin{blockitems}{Aggregation Types}
- \item Cartesian product of some types $A\times B$
- \item disjoint union of some types $A\cup B$
- \item labeled Cartesian product (= record) $\{a: A, b: B\}$
-  \glec{unordered, named projections}
- \item labeled disjoint union $a(A)|b(B)$
-  \glec{uncommon, only mentioned for systematics}
+\begin{blockitems}{Disjoint Unions}
+ \item disjoint union of some types $A\uplus B$\\
+  values are $inj_1(x)$, $inj_2(y)$
+  \glec{numbered injections $_1$, $_2$ --- order relevant}
+ \item labeled disjoint union $a(A)|b(B)$ \\
+  values are constructor applications $a(x)$, $b(y)$
+  \glec{named injections $a$, $b$ --- order irrelevant}
 \end{blockitems}
+
+\glec{labeled disjoint unions uncommon}
+\glec{but recursive labeled disjoint union = inductive data type}
 \end{frame}
 
 \begin{frame}\frametitle{Subtyping}
@@ -1570,7 +1706,7 @@ Breakout questions: What primitive types do we need for univis?
 \end{blockitems}
 
 \begin{blockitems}{Subtyping Complex Types}
- \item Covariance subtyping (= vertical subtyping)
+ \item covariance subtyping (= vertical subtyping)
  \glec{same for disjoint unions}
   \[A <: A' \impl list\,A <: list\, A'\]
   \[A_i <: A_i' \impl \{\ldots, a_i:A_i,\ldots\} <: \{\ldots, a_i:A'_i,\ldots\}\]
@@ -1580,6 +1716,198 @@ Breakout questions: What primitive types do we need for univis?
 \end{blockitems}
 \end{frame}
 
+\section{Data Representation Languages}
+
+\begin{frame}\frametitle{Overview}
+\begin{blockitems}{General Properties}
+ \item general purpose or domain-specific
+ \item typed or untyped
+  \lec{typical: Church-typed but no type operators, quasi untyped}
+ \item text or binary serialization
+ \item libraries for many programming languages
+  \begin{itemize}
+  \item data structures
+  \item serialization (data structure to string)
+  \item parsing (string to data structure, partial)
+  \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Candidates}
+ \item XML: standard on the web, notoriously verbose
+ \item JSON: JavaScript objects, more human-friendly text syntax
+  \lec{older than XML, probably better choice than XML in retrospect}
+ \item YAML: line/indentation-based
+\end{blockitems}
+\end{frame}
+
+\begin{frame}{Breakout Question}
+What is the difference between JSON, YAML, XML?
+\end{frame}
+
+\begin{frame}\frametitle{Typical Data Representation Languages}
+XML, JSON, YAML essentially the same
+ \lec{except for concrete syntax}
+
+\begin{blockitems}{Atomic Types}
+ \item integer, float, boolean, string
+ \item need to read fine-print on precision
+\end{blockitems}
+ 
+\begin{blockitems}{(Not Very) Complex Types}
+ \item heterogeneous lists
+  \glec{a single type for all lists}
+ \item records
+  \glec{a single type for all records}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Example: JSON}
+JSON:
+\[\mathll{
+ \{\\
+ \tb "individual": "Florian Rabe",\\
+ \tb "age": 40,\\
+ \tb "concepts": ["instructor", "male"],\\
+ \tb "teach": [\\
+ \tb\tb\{"name":"Wuv",credits:7.5\},\\
+ \tb\tb\{"name":"KRMT",credits:5\}\\
+ \tb]\\
+\}
+}\]
+
+
+Weirdnesses:
+\begin{itemize}
+\item atomic/list/record = basic/array/object
+\item record field names are arbitrary strings, must be quoted
+\item records use $:$ instead of $=$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: YAML}
+inline syntax: same as JSON but without quoted field names
+
+alternative: indentation-sensitive syntax
+\[\mathll{
+ individual: "Florian Rabe"\\
+ age: 40\\
+ concepts:\\
+ \tb  -\; "instructor"\\
+ \tb  -\; "male"\\
+ teach:\\
+ \tb -\; name: "WuV"\\
+ \tb\phantom{-}\; credits: 7.5\\
+ \tb  -\; name: "KRMT"\
+ \tb\phantom{-}\; credits: 5\\
+}\]
+
+Weirdnesses:
+\begin{itemize}
+\item atomic/list/record = scalar/collection/structure
+\item records use $:$ instead of $=$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example: XML}
+Weird structure but very similar
+\begin{itemize}
+\item elements both record (= attributes) and list (= children)
+\item elements carry name of type (= tag)
+\end{itemize}
+
+\begin{lstlisting}[basicstyle=\footnotesize]
+<Person individual="Florian Rabe" age="40">
+ <concepts>
+   <Concept>instructor</Concept/>
+   <Concept>male</Concept/>
+ </concepts>
+ <teach>
+   <Course name="WuV" credits="7.5"/>
+   <Course name="KRMT" credits="5"/>
+ </teach>
+</Person>
+\end{lstlisting}
+
+\begin{itemize}
+\item Good: \lstinline|Person|, \lstinline|Course|, \lstinline|Concept| give type of object
+ \glec{easier to decode}
+\item Bad: value of record field must be string
+ \glec{concepts cannot be given in attribute}
+ \glec{integers, Booleans, whitespace-separated lists coded as strings}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{A Basic Data Representation Language}
+Let BDL be given by
+\begin{commgrammar}
+\gcomment{Data}\\
+\gprod{D}{int}{64 bit integers}\\
+\galtprod{float}{IEEE double precision floating point}\\
+\galtprod{string}{Unicode strings}\\
+\galtprod{bool}{true or false}\\
+\galtprod{\rep{D}}{lists}\\
+\galtprod{\rep{(\ID=D)}}{records}\\
+\end{commgrammar}
+
+Exercise 4: Implement BDL using JSON as concrete syntax
+\begin{itemize}
+ \item data structures
+ \item serializer to JSON strings
+ \item parser from JSON strings
+\end{itemize}
+ \glec{you may/should use an existing JSON library}
+\end{frame}
+
+\begin{frame}\frametitle{Structure Sharing}
+\begin{blockitems}{Problem}
+\item Large objects are often redundant
+ \glec{specially when machine-produced}
+\item Same string, URL, mathematical objects occurs in multiple places
+\item Handled in memory via pointers
+\item Size of serialization can explode
+\end{blockitems}
+
+\begin{blockitems}{Solution 1: in language}
+\item Add definitions to language
+ \glec{common part of most languages anyway}
+\item Users should introduce name whenever object used twice
+\item Problem: only works
+ \begin{itemize}
+  \item duplication anticipated
+  \item users introduced definition
+  \item duplication within same context
+   \glec{structure-sharing most powerful if across contexts}
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Structure Sharing (2)}
+\begin{blockitems}{Solution 2: in tool}
+\item Use factory methods instead of constructors
+\item Keep huge hash set of all objects
+\item Reuse existing object if already in hash set
+\item Advantages
+ \begin{itemize}
+  \item allows optimization
+  \item transparent to users
+ \end{itemize}
+\item Problem: only works
+ \begin{itemize}
+  \item for immutable data structures
+  \item if no occurrence-specific metadata \glec{e.g., source reference}
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{In data representation language}
+\item Allow any subobject to carry identifier
+\item Allow identifier references as subobjects
+\lec{allows preserving structure-sharing in serialization}
+\end{blockitems}
+\lec{supported by XML, YAML}
+
+\end{frame}
+
+\section{Codecs}
 
 \end{document}
 

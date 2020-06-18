@@ -8,7 +8,7 @@
 %\setbeamertemplate{headline}{}
 %\setbeamertemplate{headline}{\begin{beamercolorbox}{title}\scriptsize\insertnavigation{\textwidth}\end{beamercolorbox}}
 \setbeamercolor{headline}{bg=blue!10,fg=black}
-\setbeamertemplate{headline}{\begin{beamercolorbox}{headline}\small\hfill\ifnonempty{\insertsection}{\insertsection} \hfill\insertframenumber\end{beamercolorbox}}
+\setbeamertemplate{headline}{\begin{beamercolorbox}{headline}\small\hfill\ifnonempty{\insertpart}{\insertpart: }\ifnonempty{\insertsection}{\insertsection} \hfill\insertframenumber\end{beamercolorbox}}
 \setbeamertemplate{footline}{}
 \setbeamertemplate{navigation symbols}{}
 
@@ -23,9 +23,14 @@
 \let\basics@beamer@frametitle\frametitle
 \renewcommand{\frametitle}[1]{\basics@beamer@frametitle{#1}\subsection{#1}}
 
+% make parts and sections insert a new slide
+\let\basics@part\part
+\renewcommand{\part}[1]{\basics@part{#1}\begin{frame}\begin{center}\LARGE #1\end{center}\end{frame}}
+
 % make sections insert a new slide
 \let\basics@section\section
-\renewcommand{\section}[1]{\basics@section{#1}\begin{frame}\begin{center}\LARGE #1\end{center}\end{frame}}
+\renewcommand{\section}[1]{\basics@section{#1}\begin{frame}\LARGE\ifnonempty{\insertpart}{\begin{center}\insertpart\end{center}} \begin{center}\LARGE#1\end{center}\end{frame}}
+
 
 % better version than redefining frametitle
 \newenvironment{myframe}[1]{\subsection{#1}\begin{frame}\basics@beamer@frametitle{#1}}{\end{frame}}
