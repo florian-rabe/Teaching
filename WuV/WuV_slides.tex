@@ -1837,27 +1837,6 @@ Weird structure but very similar
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{A Basic Data Representation Language}
-Let BDL be given by
-\begin{commgrammar}
-\gcomment{Data}\\
-\gprod{D}{int}{64 bit integers}\\
-\galtprod{float}{IEEE double precision floating point}\\
-\galtprod{string}{Unicode strings}\\
-\galtprod{bool}{true or false}\\
-\galtprod{\rep{D}}{lists}\\
-\galtprod{\rep{(\ID=D)}}{records}\\
-\end{commgrammar}
-
-Exercise 4: Implement BDL using JSON as concrete syntax
-\begin{itemize}
- \item data structures
- \item serializer to JSON strings
- \item parser from JSON strings
-\end{itemize}
- \glec{you may/should use an existing JSON library}
-\end{frame}
-
 \begin{frame}\frametitle{Structure Sharing}
 \begin{blockitems}{Problem}
 \item Large objects are often redundant
@@ -1904,10 +1883,69 @@ Exercise 4: Implement BDL using JSON as concrete syntax
 \lec{allows preserving structure-sharing in serialization}
 \end{blockitems}
 \lec{supported by XML, YAML}
+\end{frame}
 
+\begin{frame}\frametitle{A Basic Data Representation Language}
+Let BDL be given by
+\begin{commgrammar}
+\gcomment{Data}\\
+\gprod{D}{int}{64 bit integers}\\
+\galtprod{float}{IEEE double precision floating point}\\
+\galtprod{string}{Unicode strings}\\
+\galtprod{bool}{true or false}\\
+\galtprod{\rep{D}}{lists}\\
+\galtprod{\rep{(\ID=D)}}{records}\\
+\end{commgrammar}
+
+Exercise 4: Implement BDL using JSON as concrete syntax
+\begin{itemize}
+ \item data structures
+ \item serializer to JSON strings
+ \item parser from JSON strings
+\end{itemize}
+ \glec{you may/should use an existing JSON library}
 \end{frame}
 
 \section{Codecs}
+
+\begin{frame}\frametitle{General Definition}
+Throughout this section, we fix a data representation language $L$.
+\lec{$L$-words called codes}
+
+Given a data type $T$, a codec for $T$ consists
+\begin{itemize}
+ \item coding function: $c:T \to L$
+ \item partial decoding function: $d:L\to T^?$
+ \item such that
+  \[d(c(x))=x\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{General Definition}
+Given a data type operator $T$ taking $n$ type arguments,\\
+a codec operator $C$ for $T$
+\begin{itemize}
+ \item takes $n$ codecs $C_i$ for $T_i$
+ \item returns a codec $C(C_1,\ldots,C_n)$ for $T(T_1,\ldots,T_n)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Trivial Codecs}
+\begin{itemize}
+ \item From now on, we fix $L$ as BDL
+ \item Trivial codecs for types close to BDL
+\end{itemize}
+
+Examples:
+\begin{itemize}
+\item \cn{StandardString}: encodes strings as themselves
+\item \cn{StandardBool}: encodes booleans as themselves
+\item \cn{StandardDobule}: encodes double floats as themselves
+\item \cn{StandardInt}: encodes 64-bit integers as themselves
+\item \cn{StandardList}$(C)$ for codec $C$ for $T$: codec for $list\,T$ that encodes list $[t_1,\ldots,t_n]$ as BDL-list $C(t_i)$
+\end{itemize}
+
+\end{frame}
 
 \end{document}
 
