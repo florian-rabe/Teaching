@@ -61,7 +61,7 @@ These include
 \begin{compactitem}
  \item 1962, Mariner 1 rocket lost: misread specification (overlooked bar over a variable) was implemented (damage around \$$20$ million)
  \item 1982, Viking I lost: software update written to wrong memory area overriding vital parameters for antenna
- \item 1988, Phobos 1 lost: one character missing in software update led to accidentally executing a testing routing at the wrong time
+ \item 1988, Phobos 1 lost: one character missing in software update led to accidentally executing a testing routine at the wrong time
  \item 1996, Mars Global Surveyor lost: data written to wrong memory addresses
  \item 1999, Mars Polar Lander lost: presumably software not accounting for false positive when detecting shutdown even though the possibility was known
  \item 2004, Mars Rover Spirit lost for 16 days: delay in deleting obsolete files led to lack of available flash memory, which triggered a reboot, which led to a reboot cycle
@@ -83,13 +83,13 @@ In 1991 during the Gulf war, a US Patriot anti-missile battery failed to track a
 The cause was a rounding error in the floating point computation used for analyzing the missile's path.
 The software had to divide a large integer (number of $0.1s$ clock cycles since boot $100$ hours ago) by $10$ to obtain the time in seconds.
 This was done using a floating-point multiplication by $0.1$ --- but $0.1$ is off by around $0.000000095$ when chopped to a $24$-bits binary float.
-The resulting time was off by $0.3$ seconds, which, combined with the high speed of Scud missile, led to a serious miscalculation of the flight path.
+The resulting time was off by $0.3$ seconds, which, combined with the high speed of the Scud missile, led to a serious miscalculation of the flight path.
 
 Details: \url{http://www-users.math.umn.edu/~arnold/disasters/patriot.html}
 
 \paragraph{Ariane 5}
 In 1996, the first launch of an Ariane 5 rocket (at a cost of over \$$300$ million for rocket and payload) failed, and the rocket had to be destroyed after launch.
-Both the primary and the backup system had shut down, each trying to transfer control to the other, after encountering the same behavior, which they interpreted as a hardware error.
+Both the primary and the backup system had shut down, each trying to transfer control to the other after encountering the same behavior, which they falsely interpreted as a hardware error.
 
 The cause was an overflow exception in the alignment system caused by converting a $64$-bit float to a $16$-bit integer, which was not caught and resulted in the display of diagnostic data that the autopilot could not interpret.
 The programmers were aware of the problem but had falsely concluded that no conversion check was needed (and therefore omitted the check to speed up processing).
