@@ -1716,6 +1716,25 @@ Two kinds
 \end{blockitems}
 \end{frame}
 
+\begin{frame}\frametitle{A Basic Language for Typed Data}
+Let BDL be given by
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
+\galtprod{\cn{list}\,T}{homogeneous lists}\\
+\galtprod{\rep{(\ID:T)}}{record types}\\
+\galtprod{\ldots}{additional types}\\
+\gcomment{Data}\\
+\gprod{D}{(64\, bit\, integers)}{}\\
+\galtprod{(IEEE\, double)}{}\\
+\galtprod{"(Unicode\, strings)"}{}\\
+\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
+\galtprod{\rep{D}}{lists}\\
+\galtprod{\rep{(\ID=D)}}{records}\\
+\galtprod{\ldots}{constructors for additional types}\\
+\end{commgrammar}
+\end{frame}
+
 \section{Data Representation Languages}
 
 \begin{frame}\frametitle{Overview}
@@ -1885,25 +1904,6 @@ Weird structure but very similar
 \lec{supported by XML, YAML}
 \end{frame}
 
-\begin{frame}\frametitle{A Basic Language for Typed Data}
-Let BDL be given by
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
-\galtprod{\cn{list}\,T}{homogeneous lists}\\
-\galtprod{\rep{(\ID:T)}}{record types}\\
-\galtprod{\ldots}{additional types}\\
-\gcomment{Data}\\
-\gprod{D}{(64\, bit\, integers)}{}\\
-\galtprod{(IEEE\, double\, precision\, floating\, point)}{}\\
-\galtprod{"(Unicode\, strings)"}{}\\
-\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
-\galtprod{\rep{D}}{lists}\\
-\galtprod{\rep{(\ID=D)}}{records}\\
-\galtprod{\ldots}{constructors for additional types}\\
-\end{commgrammar}
-\end{frame}
-
 \section{Codecs}
 
 \begin{frame}\frametitle{General Definition}
@@ -1919,7 +1919,7 @@ Given a data type $T$, a codec for $T$ consists
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{General Definition}
+\begin{frame}\frametitle{Codec Operators}
 Given a data type operator $T$ taking $n$ type arguments,\\
 a codec operator $C$ for $T$
 \begin{itemize}
@@ -1945,7 +1945,145 @@ Then,
   \end{itemize}
  \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
 \end{enumerate}
+\end{frame}
 
+\begin{frame}\frametitle{Codecs for Base Types}
+We define codecs for the base types using strings as the data representation language $L$.
+
+Easy cases:
+\begin{itemize}
+\item StandardFloat: as specified in IEEE floating point standard
+\item StandardString: as themselves, quoted
+\item StandardBool: as $true$ or $false$
+\item StandardInt (64-bit): decimal digit-sequences as usual
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout Question}
+How to encode unlimited precision integers?
+\end{frame}
+
+\begin{frame}\frametitle{Codecs for Unlimited Precision Integers}
+Encode $z\in\Z$
+\begin{itemize}
+\item $L$ is strings: decimal digit sequence as usual
+\item $L$ is JSON:
+ \begin{itemize}
+ \item IntAsInt: decimal digit sequence as usual
+   \glec{JSON does not specify precision}
+   \glec{but target systems may get in trouble}
+ \item IntAsString: string containing decimal digit sequence
+   \glec{safe but awkward}
+ \item IntAsDecList: list of decimal digits
+   \glec{safe but awkward}
+ \item IntAsList1: as list of digits for base $2^{64}$
+   \glec{OK, but we can do better}
+ \item IntAsList2: as list of
+   \begin{itemize}
+   \item integer for the number of digits, sign indicate sign of $z$
+   \item list of digits of $|z|$ for base $2^{64}$
+   \end{itemize}
+   Question: Why is this smart?
+   
+   \onslide<2>{Can use lexicographic ordering for size comparison}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Codecs for Lists}
+Encode list $x$ of elements of type $T$
+\begin{itemize}
+\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
+\item $L$ is JSON:
+ \begin{itemize}
+ \item ListAsString: like for strings above
+ \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Additional Types}
+Examples: semester
+
+Extend BDL:
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{Sem}{semester}\\
+\gcomment{Data}\\
+\gprod{D}{sem(int, bool)}{i.e., year + summer$^?$}\\
+\end{commgrammar}
+
+Define standard codec:
+\[sem(y,true) \rewrites "SSY"\]
+\[sem(y,false) \rewrites "WSY"\]
+where $Y$ is encoding of $y$
+\end{frame}
+
+\begin{frame}\frametitle{Additional Types (2)}
+Examples: timestamps
+
+Extend BDL:
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{timestamp}{}\\
+\gcomment{Data}\\
+\gprod{D}{\text{(productions for dates, times, etc.)}}{}
+\end{commgrammar}
+
+Standard codec: encode as string as defined in ISO 8601
+\end{frame}
+
+\section{Data Interchange}
+
+\begin{frame}\frametitle{Design}
+\begin{enumerate}
+\item Specify type system, e.g., BDL
+ \begin{itemize}
+ \item types
+ \item constructors
+ \item operations
+ \end{itemize}
+ \glec{can be done in appropriate type theory}
+\item Pick data representation language $L$
+\item Specify codecs for type system and $L$
+ \begin{itemize}
+ \item at least one codec per base type
+ \item at least one codec operator per type operator
+ \end{itemize}
+ \glec{on paper}
+\item Every system implements
+ \begin{itemize}
+ \item type system (as they like)
+  \glec{typically aspect-specific constraints}
+ \item codecs as specified
+ \item function mapping types to codecs
+ \end{itemize}
+\item Systems can exchange data by encoding-decoding
+ \lec{type-safe because codecs chosen by type}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}\frametitle{Example}
+Implementation in Scala part of course resources
+\end{frame}
+
+\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
+\includegraphics[width=\textwidth]{MitM.png}
+\end{frame}
+
+\begin{frame}\frametitle{Example Application: Codecs in Database Schemas}
+\begin{blockitems}{SQL table schema = list of fields where field is}
+\item name
+\item type \glec{only types of database supported}
+\end{blockitems}
+
+\begin{blockitems}{Semantic table schema = list of fields where field is}
+\item name
+\item type $T$ of \emph{type system} \glec{independent of database}
+\item codec for $T$ using primitive objects of database as codes
+\glec{see research paper \url{https://kwarc.info/people/frabe/Research/WKR_virtual_17.pdf}}
+\end{blockitems}
 \end{frame}
 
 
