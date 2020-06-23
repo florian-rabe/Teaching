@@ -1885,25 +1885,23 @@ Weird structure but very similar
 \lec{supported by XML, YAML}
 \end{frame}
 
-\begin{frame}\frametitle{A Basic Data Representation Language}
+\begin{frame}\frametitle{A Basic Language for Typed Data}
 Let BDL be given by
 \begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
+\galtprod{\cn{list}\,T}{homogeneous lists}\\
+\galtprod{\rep{(\ID:T)}}{record types}\\
+\galtprod{\ldots}{additional types}\\
 \gcomment{Data}\\
-\gprod{D}{int}{64 bit integers}\\
-\galtprod{float}{IEEE double precision floating point}\\
-\galtprod{string}{Unicode strings}\\
-\galtprod{bool}{true or false}\\
+\gprod{D}{(64\, bit\, integers)}{}\\
+\galtprod{(IEEE\, double\, precision\, floating\, point)}{}\\
+\galtprod{"(Unicode\, strings)"}{}\\
+\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
 \galtprod{\rep{D}}{lists}\\
 \galtprod{\rep{(\ID=D)}}{records}\\
+\galtprod{\ldots}{constructors for additional types}\\
 \end{commgrammar}
-
-Exercise 4: Implement BDL using JSON as concrete syntax
-\begin{itemize}
- \item data structures
- \item serializer to JSON strings
- \item parser from JSON strings
-\end{itemize}
- \glec{you may/should use an existing JSON library}
 \end{frame}
 
 \section{Codecs}
@@ -1915,7 +1913,7 @@ Throughout this section, we fix a data representation language $L$.
 Given a data type $T$, a codec for $T$ consists
 \begin{itemize}
  \item coding function: $c:T \to L$
- \item partial decoding function: $d:L\to T^?$
+ \item partial decoding function: $d:L\to^? T$
  \item such that
   \[d(c(x))=x\]
 \end{itemize}
@@ -1930,22 +1928,26 @@ a codec operator $C$ for $T$
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Trivial Codecs}
-\begin{itemize}
- \item From now on, we fix $L$ as BDL
- \item Trivial codecs for types close to BDL
-\end{itemize}
+\begin{frame}\frametitle{Exercise 4}
+We fix strings as the data representation language $L$.
 
-Examples:
-\begin{itemize}
-\item \cn{StandardString}: encodes strings as themselves
-\item \cn{StandardBool}: encodes booleans as themselves
-\item \cn{StandardDobule}: encodes double floats as themselves
-\item \cn{StandardInt}: encodes 64-bit integers as themselves
-\item \cn{StandardList}$(C)$ for codec $C$ for $T$: codec for $list\,T$ that encodes list $[t_1,\ldots,t_n]$ as BDL-list $C(t_i)$
-\end{itemize}
+Then, 
+\begin{enumerate}
+ \item Jointly specify
+  \begin{itemize}
+  \item additional BDL types and constructors for univis-specific data
+  \item codecs and codec operators for all types resp. type operators
+  \end{itemize}
+ \item Individually, in any programming language, implement
+  \begin{itemize}
+   \item data structures for BDL
+   \item string codecs (operators) for all BDL base types (operators)
+  \end{itemize}
+ \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
+\end{enumerate}
 
 \end{frame}
+
 
 \end{document}
 
