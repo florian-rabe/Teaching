@@ -75,7 +75,7 @@ object AbstractCodecs {
   }
 
   abstract class RecCodecOperator {
-    def makeCodec(fieldCodecs: List[Codec]): Codec
+    def makeCodec(fieldCodecs: List[(String,Codec)]): Codec
   }
 }
 
@@ -217,7 +217,7 @@ object Coding {
       val op = lstCodecOp.getOrElse(throw NoCodecFound(tp))
       op.makeCodec(elemCodec)
     case RecType(fs) =>
-      val fieldCodecs = fs.map {case (k,t) => chooseCodec(t)}
+      val fieldCodecs = fs.map {case (k,t) => (k,chooseCodec(t))}
       val op = recCodecOp.getOrElse(throw NoCodecFound(tp))
       op.makeCodec(fieldCodecs)
   }
