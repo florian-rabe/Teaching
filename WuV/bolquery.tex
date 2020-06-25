@@ -31,7 +31,7 @@ ontology language & assertions, concept equality/subsumption &\\
 programming language & equality for some types &  boolean operators\\
 database language & equality for base types &  boolean operators \\
 logic & equality for all types & boolean operators, quantifiers\\
-natural language & sentences & and, or, some, everty, \ldots\\
+natural language & sentences & and, or, some, every, \ldots\\
 \end{tabular}
 \end{center}
 
@@ -63,12 +63,12 @@ Therefore, the BOL propositions are the conjunctions of formulas.
 \end{example}
 
 In the sequel, we will use each of the four kinds of semantics to 
-
+% add evidence: proof/model, proofs+completeness proof, trace, denn-Satz
 \begin{center}
 \begin{tabular}{lllll}
 Section & builds on Section & query & result\\
 \hline
-\ref{sec:bolquery:ded}  & \ref{sec:bolsem:ded} & deduction & proposition & yes/no \\
+\ref{sec:bolquery:ded}  & \ref{sec:bolsem:ded}  & deduction & proposition & yes/no \\
 \ref{sec:bolquery:conc} & \ref{sec:bolsem:conc} & concretization & proposition with free variables & true ground instances \\
 \ref{sec:bolquery:comp} & \ref{sec:bolsem:comp} & computation & term & value \\
 \ref{sec:bolquery:narr} & \ref{sec:bolsem:narr} & narration & question & answer \\

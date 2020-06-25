@@ -45,6 +45,11 @@ We fix one language that we have already understood and define an interpretation
 For simple ontology languages like BOL, ALC, OWL, etc., it is common to use first-order logic (FOL) as the deductive semantic language.
 More specifically, we use SFOL, the typed variant of FOL:
 
+\subsection{A Basic Semantic Language: SFOL}\label{sec:wuv:tfol}
+  \input{deductive}
+
+\subsection{Semantics}
+
 \begin{definition}[Deductive Semantics of BOL]\label{def:bolsem:sfol}
 The semantic prefix is the SFOL-theory containing
 \begin{compactitem}
@@ -139,6 +144,11 @@ Excluding the semantic prefix, it results in
 
 We give an alternative semantics using a semantic language for concrete data.
 Specifically we use the database language SQL.
+
+\subsection{An SQL-Inspired Basic Database Language}\label{sec:wuv:bdl}
+  \input{concrete}
+
+\subsection{Semantics}
 
 Even though this is a very different knowledge aspect, the general principles of the semantics are the same:
 Every BOL-declaration is translated to an SQL declaration, and ontologies are translated declaration-wise.
@@ -275,6 +285,11 @@ In particular, the table \verb|person| misses the entry $1$ for the individual $
 
 We give an alternative semantics using computation, i.e., by using a programming language as the semantic language.
 Specifically, we use the programming language Scala.
+
+\subsection{A Scala-Inspired Basic Programming Language}\label{sec:wuv:bpl}
+  \input{comp}
+
+\subsection{Semantics}
 
 Again, the general principles are the same:
 Every BOL-declaration is translated to a Scala-declaration, and ontologies are translated declaration-wise to Scala-programs.

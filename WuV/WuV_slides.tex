@@ -2072,32 +2072,50 @@ Implementation in Scala part of course resources
 \includegraphics[width=\textwidth]{MitM.png}
 \end{frame}
 
-\section{BDL-SQL Integration}
+\begin{frame}\frametitle{Integrating BOL and BDL}
+\begin{blockitems}{OWL-near option}
+\item use BDL to define the primitive types of BOL
+\item use those as types of BOL properties
+\item Curry-typing throughout
+\lec{easy: just merge the grammars}
+\end{blockitems}
 
-\begin{frame}\frametitle{Overview}
+\begin{blockitems}{SQL-near option}
+\item use BDL to define the primitive types of BOL
+\item also add ADTs
+\item Church typing more prominent
+\lec{open question: ADTs in addition to or instead of BOL concepts}
+\end{blockitems}
+
+We assume the latter for now without spelling out the details.
+\end{frame}
+
+\begin{frame}\frametitle{BDL-Mediated Interoperability}
 Idea
  \begin{itemize}
  \item define data types in BDL \glec{or similar typed ontology language}
  \item use ADTs
  \item generate corresponding
   \begin{itemize}
-  \item class definitions for programming languages
+  \item class definitions for programming languages PL
+   \lec{one class per ADT}
   \item table definitions in SQL
+   \lec{one table per ADT}
   \end{itemize}
- \item use codecs to convert automatically when interchanging data
+ \item use codecs to convert automatically when interchanging data between PL and SQL
  \end{itemize}
 
 Open research problem
  \lec{no shiny solution yet that can be presented in lectures}
 \end{frame}
 
-\begin{frame}\frametitle{Codecs in Database Schemas}
+\begin{frame}\frametitle{Codecs in ADT Definitions}
 \begin{blockitems}{SQL table schema = list of fields where field is}
 \item name
 \item type \glec{only types of database supported}
 \end{blockitems}
 
-\begin{blockitems}{Semantic table schema = list of fields where field is}
+\begin{blockitems}{BDL semantic table schema = list of fields where field is}
 \item name
 \item type $T$ of \emph{type system} \glec{independent of database}
 \item codec for $T$ using primitive objects of database as codes
@@ -2111,9 +2129,9 @@ Codec could be chosen automatically, but we want to allow multiple users a choic
 Ontology based on BDL-ADTs with additional codec information:
 \begin{lstlisting}[basicstyle=\footnotesize]
 schema Instructor
-  name:     string   codec StandardString
-  age:      int      codec StandardInt
-  courses:  list int codec CommaSeparatedList CourseAsName
+  name:    string      codec StandardString
+  age:     int         codec StandardInt
+  courses: list Course codec CommaSeparatedList CourseAsName
 schema Course
   name:     string   codec StandardString
   credits:  float    codec StandardFloat
@@ -2165,8 +2183,76 @@ Similar problems
   for all $a:A$
 \end{itemize}
 \end{itemize}
-
 \end{frame}
+
+\part{Querying}
+
+\section{Overview}
+
+\begin{frame}\frametitle{General Ideas}
+\begin{itemize}
+\item Recall
+ \begin{itemize}
+ \item syntax = context-free grammar
+ \item semantics = translation to another language
+ \end{itemize}
+\item Example: BOL translated to SQL, SFOL, Scala, English
+\item Querying = use semantics to answer questions about syntax
+\end{itemize}
+\medskip
+
+Note:
+\begin{itemize}
+\item Not the standard definition of querying
+\item Design of a new Tetrapod-level notion of querying
+ \glec{ongoing research}
+\item Subsumes concepts of different names from the various aspects
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Propositions}
+syntax with propositions = \\
+designated non-terminals for propositions
+\medskip
+
+Examples:
+\begin{center}
+\footnotesize
+\begin{tabular}{l|l}
+aspect & basic propositions\\
+\hline
+ontology language & assertions, concept equality/subsumption\\
+programming language & equality for some types\\
+database language & equality for base types \\
+logic & equality for all types\\
+natural language & sentences \\
+\end{tabular}
+\end{center}
+
+Aspects vary critically in how propositions can be formed
+\begin{itemize}
+\item any program in computation
+\item quantifiers in deductions \glec{undecidable}
+\item $IN$ in databases
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Propositions as Queries}
+Propositions allow defining queries
+
+\begin{center}
+\footnotesize
+\begin{tabular}{l|ll}
+& Query & Result\\
+\hline
+deduction & proposition & yes/no \\
+concretization & proposition with free variables & true ground instances \\
+computation & term & value \\
+narration & question & answer \\
+\end{tabular}
+\end{center}
+\end{frame}
+
 \end{document}
 
 %%% Local Variables:
