@@ -2072,7 +2072,26 @@ Implementation in Scala part of course resources
 \includegraphics[width=\textwidth]{MitM.png}
 \end{frame}
 
-\begin{frame}\frametitle{Example Application: Codecs in Database Schemas}
+\section{BDL-SQL Integration}
+
+\begin{frame}\frametitle{Overview}
+Idea
+ \begin{itemize}
+ \item define data types in BDL \glec{or similar typed ontology language}
+ \item use ADTs
+ \item generate corresponding
+  \begin{itemize}
+  \item class definitions for programming languages
+  \item table definitions in SQL
+  \end{itemize}
+ \item use codecs to convert automatically when interchanging data
+ \end{itemize}
+
+Open research problem
+ \lec{no shiny solution yet that can be presented in lectures}
+\end{frame}
+
+\begin{frame}\frametitle{Codecs in Database Schemas}
 \begin{blockitems}{SQL table schema = list of fields where field is}
 \item name
 \item type \glec{only types of database supported}
@@ -2084,9 +2103,70 @@ Implementation in Scala part of course resources
 \item codec for $T$ using primitive objects of database as codes
 \glec{see research paper \url{https://kwarc.info/people/frabe/Research/WKR_virtual_17.pdf}}
 \end{blockitems}
+
+Codec could be chosen automatically, but we want to allow multiple users a choice of codecs for the same type.
 \end{frame}
 
+\begin{frame}[fragile]\frametitle{Example}
+Ontology based on BDL-ADTs with additional codec information:
+\begin{lstlisting}[basicstyle=\footnotesize]
+schema Instructor
+  name:     string   codec StandardString
+  age:      int      codec StandardInt
+  courses:  list int codec CommaSeparatedList CourseAsName
+schema Course
+  name:     string   codec StandardString
+  credits:  float    codec StandardFloat
+  semester: Semester codec SemesterAsString
+\end{lstlisting}
+\medskip
 
+Generated SQL tables:
+\begin{lstlisting}[basicstyle=\footnotesize]
+CREATE TABLE Instructor
+  (name string, age int, courses string)
+CREATE TABLE Course
+  (name string, credits float, semester string)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}\frametitle{Open Problem: Non-Compositionality}
+\begin{blockitems}{Sometimes optimal translation is non-compositional}
+\item example translate $list$-type in ADT to comma-separated string in DB
+\item better break up $list\,B$ fields in type $A$ into separate table with columns for $A$ and $B$
+\end{blockitems}
+
+Similar problems
+\begin{itemize}
+\item a pair type in an ADT could be translated to two separate columns
+\item an option type in an ADT could translated to a normal column using SQL's NULL value
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Open Problem: Querying}
+\begin{itemize}
+\item General setup
+ \begin{itemize}
+ \item write SQL-style queries using at the BDL level
+ \item automatically encode values when writing to database from PL
+ \item automatically decode query results when reading from DB
+ \end{itemize}
+\item But queries using semantic operations cannot always be translated to DB
+ \begin{itemize}
+  \item operation $IsSummer: Semester \to bool$ in BDL
+  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
+  \item how to map $IsSummer$ to SQL?
+ \end{itemize}
+\item Ontology operations need commuting operations on codes
+\begin{itemize}
+\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
+\item SQL function $f'$ commutes with $f$ iff \\
+  \[B.decode (f'(C.encode\,a)) = f(a)\]
+  for all $a:A$
+\end{itemize}
+\end{itemize}
+
+\end{frame}
 \end{document}
 
 %%% Local Variables:
