@@ -7,6 +7,11 @@ object BDL {
 
   /** vocabularies */
   case class Vocabulary(decls: List[Declaration]) {
+    /** helper function to retrieve the context of a declaration, i.e., everything before it */
+    def getBefore(name: ID) = {
+      val ds = decls.takeWhile(_.id != name)
+      Vocabulary(ds)
+    }
     /** helper function to retrieve the definition of an ADT (must exist) */
     def getADT(name: ID) = decls.collectFirst {
       case d: ADTDefinition if d.name == name => d
@@ -14,9 +19,15 @@ object BDL {
   }
 
   /** declarations */
-  abstract class Declaration
-  case class ADTDefinition(name: ID, fields: List[ADTField]) extends Declaration
-  case class DatumDefinition(name: ID, tp: Type, value: Data) extends Declaration
+  abstract class Declaration {
+    // every declaration must have a name
+    def name: ID
+  }
+  case class ADTDefinition(name: ID, fields: List[ADTField]) extends Declaration {
+    /** helper function to retrieve a field */
+    def get(name: ID) = fields.find(_.name == name).get
+  }
+  case class ADTElementDefinition(name: ID, value: ADTElement) extends Declaration
 
   /** helper class for ADTDefinition */
   case class ADTField(name: ID, tp: Type, codec: CodecExpression)
@@ -79,7 +90,7 @@ object BDL {
       if (keys.distinct != keys)
         throw TypeError(data, "keys not distinct")
       RecType(fieldsI)
-
+    case ADTElement(t,_) => ADTRef(t) // TODO check fields against type definition
     case Semester(_,_) => SemesterType
   }
 }
