@@ -2299,6 +2299,267 @@ narration & question & answer \\
 \end{center}
 \end{frame}
 
+\begin{frame}\frametitle{Semantics of Propositions}
+syntax with propositions = \\
+designated non-terminals for propositions \\
+\lec{needed to ask queries}
+semantics with propositions = \\
+designates some propositions as theorems or contradictions
+\lec{needed to answer queries}
+
+Note:
+\begin{itemize}
+\item A propositions may be neither theorem nor contradiction.
+\item We say that language has negation if:\\ $F$ theorem iff $\neg F$ contradiction and vice versa.
+\end{itemize}
+
+We write $\vdash F$ if $F$ is theorem.
+\end{frame}
+
+\section{Deductive Queries}
+
+\begin{frame}\frametitle{Definition}
+We assume
+\begin{itemize}
+\item a semantics $\sem{-}$ from $l$ to $L$
+\item $l$ has propositions
+\item there is an operation $\truelift$ that maps translations of $l$-propositions to $L$-propositions
+\item $L$ has semantics with propositions
+\end{itemize}
+
+We define
+\begin{itemize}
+\item a deductive query is an $l$-proposition $p$
+\item the result is
+ \begin{itemize}
+ \item yes if $\truelift \sem{p}$ is a theorem of $L$
+ \item no if $\truelift \sem{p}$ is a contradiction in $L$
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Breakout question}
+What can go wrong?
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Inconsistency}
+In general, (in)consistency of semantics
+\begin{itemize}
+\item Some propositions may be both a theorem and a contradiction.
+\item In that case, queries do not have a result.
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item If this holds for some propositions, it typically holds for all of them.
+\item In that, we call $L$ inconsistent.
+\item We usually assume $L$ to be consistent.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Problem: Incompleteness}
+In general, (in)completeness of semantics
+\begin{itemize}
+\item We cannot in general assume that every proposition in $L$ is either a theorem or a contradiction.
+\item In fact, most propositions are neither.
+\item So, queries do not necessarily have a result.
+\item We speak of incompleteness. \glec{Note: not the same as the usual (in)completeness of logic}
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item It may be that $L$ is complete for all propositions in the image of $\truelift\sem{-}$.
+\item This is the case if $l$ is simple enough \glec{typical for ontology languages}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Undecidability}
+In general, (un)decidability of semantics:
+\begin{itemize}
+\item We cannot in general assume that it is decidable whether a proposition in $L$ is a theorem or a contradiction.
+\item In fact, it usually isn't.
+\item So, we cannot necessarily compute the result of a query.
+\item However: If we have completeness, decidability is likely.
+ \glec{run provers for $F$ and $\neg F$ in parallel}
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item It may be that $L$ is decidable for all propositions in the image of $\truelift\sem{-}$.
+\item This is the case if $l$ is simple enough \glec{typical for ontology languages}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Inefficiency}
+In general, (in)efficiency of semantics:
+\begin{itemize}
+\item Answering deductive queries is very slow.
+\item Even if we are complete and decidable.
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item Decision procedures for the image of $\truelift\sem{-}$ may be quite efficient.
+\item Dedicated implementations for specific fragments.
+\item This is the case if $l$ is simple enough \glec{typical for ontology languages}
+\end{itemize}
+\end{frame}
+
+\section{Contexts and Free Variables}
+
+\begin{frame}\frametitle{Concepts}
+Recall the analogy between grammars and typing:
+
+\begin{center}
+\begin{tabular}{l|l}
+grammars & typing \\
+\hline
+non-terminal & type \\
+production & constructor \\
+non-terminal on left of production & return type of constructor \\
+non-terminals on right of production & arguments types of constructor \\
+terminals on right of production & notation of constructor\\
+words derived from non-terminal $N$ & expressions of type $N$
+\end{tabular}
+\end{center}
+
+We will now add contexts and substitutions.
+\end{frame}
+
+\begin{frame}\frametitle{Contexts}
+Given a context-free language $l$, we define:
+
+\begin{itemize}
+ \item A \emph{context} $\Gamma$ is of the form $x_1:N_1,\ldots,x_n:N_n$ where the
+  \begin{itemize}
+   \item $x_i$ are names
+   \item $N_i$ are non-terminals
+  \end{itemize}
+  We write this as $\vdash_l \Gamma$.
+ \item A \emph{substitution} for $\Gamma$ is of the form $x_1:=w_1,\ldots,x_n:=w_n$ where the
+  \begin{itemize}
+   \item $x_i$ are as in $\Gamma$
+   \item $w_i$ derived from the corresponding $N_i$
+  \end{itemize}
+  We write this as $\vdash_l \gamma:\Gamma$.
+ \item An \emph{expression in context} $\Gamma$ of type $N$ is a word $w$ derived from $N$ using additionally the productions $N_i::= x_i$.\\
+ We write this as $\Gamma\vdash_l w:N$.
+ \item Given $\Gamma\vdash w:N$ and $\vdash \gamma:\Gamma$ as above, the \emph{substitution of} $\gamma$ in $w$ is obtained by replacing every $x_i$ in $w$ with $w_i$.
+ We write this as $w[\gamma]$.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Contexts under Compositional Translation}
+Consider a compositional semantics $\sem{-}$ from $l$ to $L$ between context-free languages.
+
+\begin{itemize}
+ \item Every $\vdash_l w:N$ is translated to some $\vdash_L \sem{w}:N'$ for some $N'$.
+ \item Compositionality ensures that $N'$ is the same for all $w$ derived from $N$.
+ \item We write $\sem{N}$ for that $N'$.
+ \item Then we have 
+  \[\vdash_l w:N \tb\mimplies\tb \vdash_L \sem{w}:\sem{N}\]
+\end{itemize}
+
+Now we translate contexts, substitutions, and variables as well:
+\[\sem{x_1:N_1,\ldots,x_n:N_n}:=x_1:\sem{N_1},\ldots,x_n:\sem{N_n}\]
+\[\sem{x_1:=w_1,\ldots,x_n:=w_n}:=x_1:=\sem{w_1},\ldots,x_n:=\sem{w_n}\]
+\[\sem{x}:=x\]
+
+Then we have
+  \[\Gamma\vdash_l w:N \tb\mimplies\tb \sem{\Gamma}\vdash_L \sem{w}:\sem{N}\]
+\end{frame}
+
+\begin{frame}\frametitle{Substitution under Compositional Translation}
+From previous slide:
+\[\sem{x_1:N_1,\ldots,x_n:N_n}:=x_1:\sem{N_1},\ldots,x_n:\sem{N_n}\]
+\[\sem{x_1:=w_1,\ldots,x_n:=w_n}:=x_1:=\sem{w_1},\ldots,x_n:=\sem{w_n}\]
+\[\sem{x}:=x\]
+\[\Gamma\vdash_l w:N \tb\mimplies\tb \sem{\Gamma}\vdash_L \sem{w}:\sem{N}\]
+
+We can now restate the substitution theorem as follows:
+  \[\sem{E[\gamma]}=\sem{E}[\sem{\gamma}]\]
+\end{frame}
+
+\section{Concretized Queries}
+
+\begin{frame}\frametitle{Definition}
+We assume
+\begin{itemize}
+\item as for deductive queries
+\item semantics must be compositional
+\end{itemize}
+
+We define
+\begin{itemize}
+\item a concretized query is an $l$-proposition $p$ in context $\Gamma$
+\item a \emph{single} result is a
+ \begin{itemize}
+ \item a substitution $\vdash_l \gamma:\Gamma$
+ \item such that $\vdash_L \truelift \sem{p[\gamma]}$
+ \end{itemize}
+\item the \emph{result set} is the set of all results
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Breakout question}
+What can go wrong?
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Open World}
+In general, semantics uses open world:
+\begin{itemize}
+\item open world: result contains \emph{all known} results
+ \lec{same query might yield more results later}
+\item closed world: result set contains \emph{all} results
+\end{itemize}
+ \glec{always relative to concrete database for $L$}
+
+In practice, however,
+\begin{itemize}
+\item system explicitly assumes closed world
+ \glec{typical for databases}
+\item users aware of open world and able to process results correctly
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Back-Translation of Results}
+In general, $\sem{-}$ may be non-trivial to invert
+\begin{itemize}
+\item easy to obtain $\sem{p}$ in context $\sem{\Gamma}$
+  \glec{just apply semantics}
+\item possible to find substitutions
+\[\vdash_L \delta:\sem{\Gamma} \tb\mwhere\tb \sem{\Gamma}\vdash_L \truelift \sem{p}[\delta]\]
+  \glec{easiest case: just look them up in database}
+\item but how to translate $\delta$ to $l$-substitutions $\gamma$ with
+ \[\vdash_l \gamma:\Gamma \tb\mwhere\tb \sem{\Gamma}\vdash_L \truelift \sem{p[\gamma]}\]
+ substitution theorem: pick such that $\sem{\gamma}=\delta$
+  \glec{the more $\sem{-}$ does, the harder to invert}
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item often only interested in concrete substitutions
+\item translation of concrete data usually identity
+\end{itemize}
+But: practice restricted to what works even if more is needed
+\end{frame}
+
+%\begin{frame}\frametitle{Problem: Conservativity}
+%In general, semantics could be non-conservative:
+%\begin{itemize}
+%\item even if back-translation exists: how do know we get all results?
+%\item Compare:
+% \begin{itemize}
+% \item have: $\vdash_L \delta:\sem{\Gamma}$ such that $\sem{\Gamma}\vdash_L \truelift \sem{p}[\delta]$ theorem
+% \item need: $\vdash_l \gamma:\Gamma$ such that $\sem{\Gamma}\vdash_l \truelift \sem{p[\gamma]}$ theorem
+% \end{itemize}
+%\item Substitution theorem: for every $\gamma$, there is a $\delta=\sem{\gamma}$.
+%\item Conservativity: for every $\delta$, there is a $\gamma$.
+%\end{itemize}
+%\end{frame}
+
 \end{document}
 
 %%% Local Variables:
