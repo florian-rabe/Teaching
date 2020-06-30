@@ -33,7 +33,7 @@ object BDL2SQL {
           }
         }
         val newElemValue = ADTElement(elemValue.tp,newFields)
-        result ::= = ADTElementDefinition(elemDef.name,newElemValue)
+        result ::= ADTElementDefinition(elemDef.name,newElemValue)
         result.reverse
     }
     Vocabulary(declsFlat)

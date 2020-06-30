@@ -9,7 +9,7 @@ object BDL {
   case class Vocabulary(decls: List[Declaration]) {
     /** helper function to retrieve the context of a declaration, i.e., everything before it */
     def getBefore(name: ID) = {
-      val ds = decls.takeWhile(_.id != name)
+      val ds = decls.takeWhile(_.name != name)
       Vocabulary(ds)
     }
     /** helper function to retrieve the definition of an ADT (must exist) */
