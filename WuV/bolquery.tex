@@ -15,7 +15,10 @@ A non-terminal is propositional if the semantics can make its words true.
 Without a notion of propositions, it is impossible to define what questions and answers even are.
 
 \begin{definition}[Propositions]
-A context-free syntax with propositions is a context-free syntax with some designated non-terminal symbols.
+A context-free \textbf{syntax with propositions} is a context-free syntax with some designated non-terminal symbols.
+
+A \textbf{semantics with theorems} is one that additionally defines some propositions to be theorems.
+We write $\vdash F$ if $F$ is a theorem.
 \end{definition}
 
 That definition does not mean that any kind of logic is needed for querying.
@@ -92,7 +95,7 @@ That way meta-questions become regular questions.
 
 \subsection{Method}
 
-We assume that $l$ is a syntax with propositions and that $L$ is a logic (and thus in particular has propositions).
+We assume that $l$ is a syntax with propositions and that $L$ is a logic (and thus in particular has propositions) whose semantics has theorems.
 
 It is not guaranteed $\sem{-}$ translates $l$-propositions to $L$-propositions.
 If not, we assume there is some operation $\truelift$ in $L$ that we can use to lift the translations of $l$-propositions to $L$-propositions.
@@ -100,12 +103,12 @@ If not, we assume there is some operation $\truelift$ in $L$ that we can use to 
 A \textbf{deductive query} consists of a proposition.
 The answer to the query is yes or no.
 
-Thus, the deductive semantics must determine which propositions are true and which are false.
+Thus, the deductive semantics must determine which propositions are theorems, i.e., whether $\vdash_L\truelift(\sem{F})$.
 This is usually done in one of two ways.
 
-\textbf{Proof theory} uses the calculus of $L$ to derive true propositions.
-Thus, we can say that an $l$-proposition $F$ is true if $\truelift(\sem{F})$ is derivable in $L$.
-Accordingly, if $L$ has a negation operator $\neg$, we can say that $F$ is false if $\truelift(\neg\sem{F})$ is derivable in $L$.
+\textbf{Proof theory} uses a calculus for $L$ to derive true propositions.
+Thus, we can say that an $l$-proposition $F$ is true if the calculus derives $\truelift(\sem{F})$.
+Accordingly, if $L$ has a negation operator $\neg$, we can say that $F$ is false if the calculus derives $\truelift(\neg\sem{F})$.
 
 \textbf{Model theory} uses a second deductive semantics, namely a translation from $L$ to an even stronger deductive language $M$, usually some form of set theory.
 Then, we can say that $l$-propositions are true if the composition of the two translations yields a true $M$-proposition.
@@ -113,6 +116,11 @@ Then, we can say that $l$-propositions are true if the composition of the two tr
 Either way, it is determined whether to answer an $l$-proposition with yes or no.
 
 \subsection{Challenges}
+
+\paragraph{Consistency}
+The $L$-calculus might derive both $F$ and $\neg F$.
+In that case $L$ is inconsistent and usually every formula.
+We usually assume $L$ to be consistent even though we do not always prove that.
 
 \paragraph{Decidability}
 Deductive semantics is usually undecidable, i.e., there is no algorithm that takes in $F$
@@ -150,13 +158,13 @@ Decidability and completeness are essentially the same problem.
 Specifically, if completeness holds, we already obtain a decision procedure for the logic: to decide the truth of $F$, enumerate all proofs until a proof of $F$ or $\neg F$ is found.
 Vice versa, if we have a sound decision procedure, running it on $F$ will prove either $F$ or $\neg F$.
 
-\paragraph{Complexity of Theorem Proving}
+\paragraph{Efficiency}
 Independent of whether the semantics is complete/decidable, theorem proving is typically very expensive.
 
 Therefore, in addition to identifying decidable fragments of a logic, it is desirable to identify \emph{efficiently} decidable fragments.
 Typically, a semantics meant for efficient practical querying aims for polynomially decidable fragments.
-This is the case for most ontology languages.\ednote{MK: that is not true, most ontology
-  languages are decidable, but satisfiability is  (at least) exponential.}
+This is the case for very simple ontology languages.
+But it can quickly become exponential if the language of propositions becomes more expressive.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Concretized Querying}\label{sec:bolquery:conc}
@@ -164,11 +172,28 @@ This is the case for most ontology languages.\ednote{MK: that is not true, most 
 
 \subsection{Method}
 
+We make the same assumptions as for deductive querying.
+We further assume that the semantics is compositional.
+
+We define
+\begin{compactitem}
+\item a concretized query is an $l$-proposition $p$ in context $\Gamma$
+\item a \emph{single} result is a
+ \begin{compactitem}
+ \item a substitution $\vdash_l \gamma:\Gamma$
+ \item such that $\vdash_L \truelift \sem{p[\gamma]}$
+ \end{compactitem}
+\item the \emph{result set} is the set of all results
+\end{compactitem}
+
 \subsection{Challenges}
 
-\paragraph{Infinite Results}
-
 \paragraph{Open World}
+
+\paragraph{Infinity of Results}
+
+\paragraph{Back-Translation of Results}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Computational Querying}\label{sec:bolquery:comp}
@@ -177,7 +202,7 @@ This is the case for most ontology languages.\ednote{MK: that is not true, most 
 
 \subsection{Challenges}
 
-\subsection{Infinite Types}
+\paragraph{Infinite Types}
 
 \paragraph{Termination}
 

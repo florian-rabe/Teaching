@@ -13,7 +13,8 @@ non-terminal & type \\
 production & constructor \\
 non-terminal on left of production & return type of constructor \\
 non-terminals on right of production & arguments types of constructor \\
-terminals on right of production & notation of constructor
+terminals on right of production & notation of constructor\\
+words derived from non-terminal $N$ & expressions of type $N$
 \end{tabular}
 \end{center}
 
@@ -257,6 +258,50 @@ Using ad hoc language to write the constructors, our example from above as a con
 This uses an ad hoc 
 \end{example}
 
+\subsection{Contexts}
+
+We assume a context-free language $l$.
+
+\begin{definition}[Context]
+a \textbf{context} is a list of
+\begin{compactitem}
+\item grammar terminology: productions $N\bbc x$
+\item type terminology: declarations $x:N$
+\end{compactitem}
+where each $x$ is a unique name and each $N$ is non-terminal symbol.
+
+The $x$ are called \textbf{variables}.
+\end{definition}
+
+\begin{remark}
+Sometimes the grammar itself has specific productions for contexts and variables.
+In that case, we speak of \emph{meta-variable contexts} and \textbf{meta-variables} to distinguish them from those of the language.
+\end{remark}
+
+\begin{definition}[Expressions in Context]
+Given a context $\Gamma$, a word $E$ derived from non-terminal $N$ that may additionally use the productions of the context is called an \emph{expression of type} $N$ \emph{in context} $\Gamma$.
+
+We write this as $\Gamma\vdash_l E:N$.
+\end{definition}
+
+\begin{definition}[Substitution]
+Given two contexts $\vdash_l \Gamma$ and $\vdash_l\Delta$, a \textbf{substitution} $\gamma$ from $\Gamma=x_1:N_1,\ldots,x_n:N_n$ to $\Delta$ is a list $x_1:=e_1,\ldots,x_n:=e_n$ where every $e_i$ is an expression of type $N_i$ in context $\Delta$ (i.e., $\Delta\vdash_l e_i:N_i$).
+
+We write this as $\Delta\vdash_l \gamma:\Gamma$ or as $\vdash_l \gamma:\Gamma\to \Delta$.
+\end{definition}
+
+\begin{definition}[Substitution Application]\label{def:subapp}
+Given an expression $\Gamma\vdash_l E:N$ and a substitution $\vdash_l\gamma:\Gamma\to\Delta$ where $\Gamma=x_1:N_1,\ldots,x_n:N_n$ and $\gamma=x_1:=e_1,\ldots,x_n:=e_n$, we write $E[\gamma]$ for the result of replacing every $x_i$ in $E$ with $e_i$.
+\end{definition}
+
+\begin{theorem}
+If $\Gamma\vdash_l E:N$ and $\vdash_l\gamma:\Gamma\to\Delta$, then $\Delta\vdash_l E[\gamma]:N$.
+\end{theorem}
+
+We often want to substitute only a single variable $x:N$ even though $E$ may be defined in a larger context $\Gamma$.
+This is often written $E[x:=N]$.
+That is just an abbreviation for $E[\gamma]$, where $\gamma$ contains $x:=N$ as well as $y:=y$ for every other variable $y$ of $\Gamma$.
+
 
 \section{Implementation}
 
@@ -429,10 +474,8 @@ case class lessOrEqual(left: Nat, right: Nat) extends E {
 }
 \end{lstlisting}
 
-\section{Semantics as a Recursive Function}
 
-The correspondence for the syntax between context-free grammars and inductive data types can be extended to the semantics.
-Now we have a correspondence between case-based function definitions and inductive functions.
+
 %The equivalence is as follows:
 %\begin{center}
 %\begin{tabular}{l|l}
@@ -516,3 +559,157 @@ This is usually done by giving an inference system for the predicates for well-f
 
 We can also do both: if we have a semantics via an inference system and another one via translation, we can show that the latter respects the former.
 That leads to the concepts of soundness (everything well-formed is translated to something well-formed) and its dual completeness.
+
+\section{Semantics as a Recursive Function}
+
+\subsection{General Definition}
+
+The correspondence for the syntax between context-free grammars and inductive data types can be extended to the semantics.
+Now we have a correspondence between case-based function definitions and inductive functions.
+
+\begin{definition}
+A \textbf{semantics by translation} consists of the following parts:
+\begin{compactitem}
+ \item syntax: a formal language $l$
+ \item semantic language: a formal language $L$ (from a different or the same aspect as $l$)
+ \item semantic prefix: a vocabulary $P$ in $L$ that is prefixed to the translation of all theories of $l$
+ \item interpretation: a function that translates every $l$-theory $T$ to an $L$-theory $P,\sem{T}$
+\end{compactitem}
+\end{definition}
+
+Critically, the semantic language (which is itself a formal language and can thus have a semantics itself) must be a language whose semantics we already know.
+Therefore, it is often important to give multiple equivalent semantics --- choosing a different semantics for different audiences, who might be familiar with different languages.
+
+The role of the semantic prefix $P$ is to define once and for all the $L$-material that we need in general to interpret $l$-theories (in our case: ontologies).
+It occurs at the beginning of all interpretations of ontologies.
+In particular, it is equal to the interpretation of empty ontology.
+
+\subsection{Compositional Semantics}
+
+\paragraph{Compositionality}
+There are some general principles shared by all translations:
+\begin{compactitem}
+ \item Every $l$-declaration is translated to an $L$-declaration for the same name, and ontologies are translated declaration-wise.
+ \item For every non-terminal $N$ of $l$, there is one inductive function $\sem{-}_N$ mapping complex $l$-expressions derived from $N$ to $L$-expressions.
+ \item The base cases of references to declared $l$-identifiers are translated to themselves, i.e., to the identifiers of the same name declared in $L$.
+ \item The other cases are compositional: every case for a complex $l$-expression recurses only into the semantics of the direct subexpressions.
+\end{compactitem}
+
+The notion of \emph{compositionality} captures these properties.
+An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
+Compositionality is also called the substitution property or the homomorphism property.
+See also Def.~\ref{ex:compositional}.
+
+More rigorously, we define a compositional translation as follows:
+\begin{definition}[Compositional Semantics]
+Consider a semantics for syntax grammar $l$ and interpretation function $\sem{-}$.
+
+$\sem{-}$ is compositional if it is defined as follows:
+\begin{compactitem}
+ \item a family of functions $\sem{-}_N$, one for every non-terminal $N$ of $l$
+ \item for every expressions $E$ derived from $N$, we put $\sem{E}=\sem{E}_N$
+ \item each $\sem{-}_N$ is defined by induction on the productions for $N$
+ \item for each production $N\bbc *(N_1,\ldots,N_r)$ and all expressions $e_i$ derived from $N_i$
+   \[\sem{*(e_1,\ldots,e_r)}_N=\sem{*}(\sem{e_1}_{N_1},\ldots,\sem{e_r}_{N_r})\]
+   for some $L$-expression $\sem{*}$
+\end{compactitem}
+
+Without loss of generality, we can assume that every production is of the form $N\bbc *(N_1,\ldots,N_r)$ where the $N_i$ are all the non-terminals on the right-hand side and $*$ is a stand-in for all the terminal symbols.
+\end{definition}
+
+\paragraph{Compositional Translations of Contexts}
+We can extend every compositional translation to contexts, substitutions, and expressions in contexts:
+
+\begin{definition}
+Given a translation $\sem{-}$ as above, for a non-terminal $N$, we define $\sem{N}$ as the non-terminal from which the translations of $N$-expressions are derived.
+
+Then we define:
+\[\sem{x_1:N_1,\ldots,x_n:N_n}:=x_1:\sem{N_1},\ldots,x_n:\sem{N_n}\]
+\[\sem{x_1:=w_1,\ldots,x_n:=w_n}:=x_1:=\sem{w_1},\ldots,x_n:=\sem{w_n}\]
+\[\sem{x}:=x\]
+\end{definition}
+
+The requirement of compositionality is critical for two reasons:
+\begin{compactitem}
+\item A non-compositional translation could translate $l$-expressions derived from the same non-terminal $N$ to $L$-expressions derived from different non-terminals. Then we would not be able to define $\sem{N}$.
+\item The definition $\sem{x}:=x$ adds a case to the case distinction in the compositional translation function.
+Without compositionality, this would not make sense.
+\end{compactitem}
+
+\begin{theorem}[Type Preservation]
+For a compositional translation as above, we have
+  \[\Gamma\vdash_l w:N \tb\mimplies\tb \sem{\Gamma}\vdash_L \sem{w}:\sem{N}\]
+\end{theorem}
+
+\paragraph{Substitution Theorem}
+The main value of compositionality is the following:
+\begin{theorem}[Substitution Theorem]
+Consider a compositional semantics.
+
+For every context $\Gamma=x_1:N_1,\ldots,x_r:N_r$, every syntax expression $\Gamma \vdash_l E:N$,
+and every substitution $\vdash_l \gamma:\Gamma$
+\[\sem{E[\gamma]}_N=\sem{E}[\sem{\gamma}]\]
+\end{theorem}
+
+Formulated without substitutions, this means that for every syntax expression $E(e_1,\ldots,e_r)$ derived from $N$, where the $e_i$ are subexpression derived from non-terminal $N_i$, we have
+\[\sem{E(e_1,\ldots,e_n)}_N=\sem{E}(\sem{e_1}_{N_1},\ldots,\sem{e_n}_{N_r})\]
+
+Simply put, a semantics is compositional iff it is defined by mutually inductive translation functions with only compositional cases.
+The latter is very easy to check by inspecting the shape of the finitely many cases of the definition.
+The former is a powerful property because it applies to any of the infinitely many expressions of the syntax.
+
+\subsection{Non-Compositional Semantics}
+
+It is highly desirable but not always possible to give a compositional translation.
+Sometimes a feature of the syntactic language cannot be directly interpreted in the semantic language.
+In that case, it may still be possible to give a non-compositional translation.
+
+\begin{example}[Non-Compositional Translation via Sub-Induction]
+A simple example of non-compositionality is the translation of natural numbers based on zero, one, and addition (i.e., $N\bbc 0\bnfalt 1\bnfalt N+N$) into natural numbers based on zero and successor (i.e., $N\bbc 0\bnfalt\cn{succ}(N)$):
+It is straightforward to translate zero and one compositionally:
+\[\sem{0}=0 \tb\sem{1}=\cn{succ}(0)\]
+Now we would like to translate \[\sem{m+n}=\sem{+}(\sem{m},\sem{n}),\] but there is no way to define $\sem{+}$ in terms of zero and successor.
+Instead, we need subcases:
+\[\sem{m+n}=\cas{\sem{m}\mifc n=0 \\ \cn{succ}(\sem{m})\mifc n=1 \\ \sem{(m+n_1)+n_2}\mifc n=n_1+n_2}\]
+This corresponds to the usual definition of addition, i.e., $\sem{+}$, by induction.
+\end{example}
+
+Other common examples of non-compositional translations are
+\begin{compactitem}
+ \item several important logical theorems such as
+  \begin{compactitem}
+   \item cut elimination, which is he translation from sequent calculus with cut to sequent calculus without cut,
+   \item the deduction theorem, which is the translation from natural deduction to Hilbert calculus,
+  \end{compactitem}
+ \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,
+ \item query optimization done by a database, e.g., turning a WHERE of a join into a join of WHEREs,
+ \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context (The introduction of richer intermediate structures like ASTs and functions as values into the translation can recover some compositionality here).
+\end{compactitem}
+
+Typical sources of non-compositionality in formal language translations are:
+\begin{compactitem}
+ \item A case in the translation function requires subcases which inspect the $e_i$ and treat them differently.
+ \item A case in the translation function requires subcases which translate an expression differently based on the context in which it occurs.
+ \item The translation function requires nested inductions, i.e., a case in the translation function (which is already inductive) requires a sub-induction on one of the sub-expressions.
+ \item The semantic prefix is not fixed but depends on the translated object, i.e, the top-level case of the translation scans through the entire argument $X$ to collect all occurrences of a particular feature and then custom-builds the semantic prefix of $\sem{X}$.
+\end{compactitem}
+See also Ex.~\ref{ex:noncompositional}.
+
+Such non-compositional translations are undesirable for multiple reasons:
+\begin{compactitem}
+ \item The implementation is more complicated and error-prone.
+ \item Reasoning about the translation is more difficult.
+ \item The custom semantic prefix can be large.
+\end{compactitem}
+
+But most importantly, non-compositional translations are less robust.
+Firstly, if we add a production to the syntax, a compositional translation is easy to extend: just add a case to the translation.
+But a non-compositional translation may additionally require a new subcase wherever subcases/subinductions are used.
+Moreover, if a custom semantic prefix is used, its definition may have to be amended, at least it must be rechecked.
+
+Secondly, in practice there are two sources of complex expressions: the ones already mentioned in the language, and the ones used later for other reasons.
+For example, some complex expressions occur already \emph{statically} in the definition of a vocabulary $V$.
+But others might be appear \emph{dynamically} later, e.g., when talking about $V$, proving properties of $V$, or running queries on $V$.
+Thus, the definition of $V$ and the use of complex expressions are decoupled: $V$ is defined statically once and for all, and complex expressions relative to $V$ can be created and used dynamically.
+But if a custom semantic prefix is used, only the static occurrences inside $V$ can be considered for building the prefix.
+Thus, it is not possible to translate expressions dynamically unless the semantic prefix is extended all the time while $V$ is used.

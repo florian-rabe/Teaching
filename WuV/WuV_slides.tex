@@ -2303,7 +2303,7 @@ narration & question & answer \\
 syntax with propositions = \\
 designated non-terminals for propositions \\
 \lec{needed to ask queries}
-semantics with propositions = \\
+semantics with theorems = \\
 designates some propositions as theorems or contradictions
 \lec{needed to answer queries}
 
@@ -2521,6 +2521,19 @@ In practice, however,
 \item system explicitly assumes closed world
  \glec{typical for databases}
 \item users aware of open world and able to process results correctly
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Infinity of Results}
+In general, there may be infinitely many results:
+\begin{itemize}
+\item e.g., query for all $x$ such that $\vdash x$,
+\end{itemize}
+
+In practice, however,
+\begin{itemize}
+\item systems pull results from finite database \lec{e.g., SQL, SPARQL}
+\item systems enumerate results, require user to explicitly ask for more \lec{e.g., Prolog}
 \end{itemize}
 \end{frame}
 
