@@ -1,27 +1,49 @@
-package wuv.exercise4
+package wuv.bdl
 
 /** implementation of a basic typed data language */
 object BDL {
+  /** identifiers */
+  type ID = String
+
+  /** vocabularies */
+  abstract class Vocabulary(decls: List[Declaration])
+
+  /** declarations */
+  abstract class Declaration
+  case class ADTDefinition(name: ID, fields: List[ADTField]) extends Declaration
+  case class DatumDefinition(name: ID, tp: Type, value: Data) extends Declaration
+
+  /** helper class for ADTDefinition */
+  case class ADTField(name: ID, tp: Type, codec: CodecExpression)
+  /** annotation of ADTField that gives the codec that should be used for the value of the field */
+  abstract class CodecExpression
+  case class BaseCodec(name: ID) extends CodecExpression
+  case class ListCodec(name: ID, elemCodec: CodecExpression) extends CodecExpression
+  case class RecordCodec(name: ID, fieldCodecs: List[(ID,CodecExpression)]) extends CodecExpression
+
   /** types */
   abstract class Type
+  case class ADTRef(name: ID) extends Type
   abstract class BaseType extends Type
   case object ItgType extends BaseType
   case object FltType extends BaseType
   case object BolType extends BaseType
   case object StrType extends BaseType
   case class LstType(elemType: Type) extends Type
-  case class RecType(fields: List[(String,Type)]) extends Type
+  case class RecType(fields: List[(ID,Type)]) extends Type
 
   case object SemesterType extends BaseType
 
   /** data */
   abstract class Data
+  case class DataRef(name: ID) extends Data
   case class Itg(value: Int) extends Data
   case class Flt(value: Double) extends Data
   case class Bol(value: Boolean) extends Data
   case class Str(value: String) extends Data
   case class Lst(tp: Type, elems: List[Data]) extends Data // we take the of the elements in order to be able to infer the type of the empty list
-  case class Rec(fields: List[(String,Data)]) extends Data
+  case class Rec(fields: List[(ID,Data)]) extends Data
+  case class ADTElement(tp: ID, fields: List[(ID,Data)]) extends Data
 
   case class Semester(year: Int, summer: Boolean) extends Data
 
@@ -55,14 +77,14 @@ object BDL {
 }
 
 import BDL._
-import wuv.exercise4.ConcreteCodecs.StandardSemester
+import ConcreteCodecs._
 
 case class IllFormedCode(code: String, expectedType: Type) extends Throwable
 
 object AbstractCodecs {
   type Code = String
 
-  abstract class Codec(val tp: Type) {
+  abstract class Codec(val tp: Type, val expr: CodecExpression) {
     /** precondition: data has type tp */
     def encode(data: Data): Code
 
@@ -70,11 +92,11 @@ object AbstractCodecs {
     def decode(code: Code): Data
   }
 
-  abstract class LstCodecOperator {
+  abstract class LstCodecOperator(val id: ID) {
     def makeCodec(elemCodec: Codec): Codec
   }
 
-  abstract class RecCodecOperator {
+  abstract class RecCodecOperator(val id: ID) {
     def makeCodec(fieldCodecs: List[(String,Codec)]): Codec
   }
 }
@@ -83,7 +105,7 @@ import AbstractCodecs._
 
 object ConcreteCodecs {
   /** example codec for integers */
-  object StandardInt extends Codec(ItgType) {
+  object StandardInt extends Codec(ItgType, BaseCodec("StandardInt")) {
     def encode(data: Data) = {
       val Itg(i) = data
       i.toString
@@ -96,7 +118,7 @@ object ConcreteCodecs {
   }
 
   /** example codec for semesters as standardized in the lecture */
-  object StandardSemester extends Codec(SemesterType) {
+  object StandardSemester extends Codec(SemesterType, BaseCodec("StandardSemester")) {
     def encode(data: Data) = {
       val Semester(y,s) = data
       "\"" + (if (s) "SS" else "WS")  + y.toString + "\""
@@ -150,8 +172,8 @@ object ConcreteCodecs {
     }
   }
 
-  object CommaSeparatedListCodec extends LstCodecOperator {
-    def makeCodec(elemCodec: Codec): Codec = new Codec(LstType(elemCodec.tp)) {
+  object CommaSeparatedListCodec extends LstCodecOperator("CommaSeparatedList") {
+    def makeCodec(elemCodec: Codec): Codec = new Codec(LstType(elemCodec.tp), ListCodec(id, elemCodec.expr)) {
       def encode(data: Data): Code = {
         val Lst(_, elems) = data
         val elemCodes = elems map {ec => elemCodec.encode(ec)}
@@ -200,34 +222,63 @@ import ConcreteCodecs._
 /** boilerplate code for storing available codecs, choosing a codec, and calling encode/decode  */
 object Coding {
   /** error thrown during encoding */
-  case class NoCodecFound(tp: Type) extends Throwable
+  case class NoCodecFoundForType(tp: Type) extends Throwable
+  case class NoCodecFoundForID(id: ID) extends Throwable
 
   /* register the known codecs here */
   val baseCodecs : List[Codec] = List(StandardInt, StandardSemester)
-  val lstCodecOp : Option[LstCodecOperator] = Some(CommaSeparatedListCodec)
-  val recCodecOp : Option[RecCodecOperator] = None
+  val lstCodecOp : List[LstCodecOperator] = List(CommaSeparatedListCodec)
+  val recCodecOp : List[RecCodecOperator] = Nil
 
+  /** builds a codec for a given codec expressions; there may be multiple codecs for the same type, which are distinguished by their codec expression */
+  def buildCodec(ce: CodecExpression): Codec = ce match {
+    case BaseCodec(id) => baseCodecs.find(c => c.expr == BaseCodec(id)).getOrElse(throw NoCodecFoundForID(id))
+    case ListCodec(id,elemCE) =>
+      val listCodec = lstCodecOp.find(_.id == id).getOrElse(throw NoCodecFoundForID(id))
+      val elemCodec = buildCodec(elemCE)
+      listCodec.makeCodec(elemCodec)
+    case RecordCodec(id,fieldCodecExprs) =>
+      val recCodec = recCodecOp.find(_.id == id).getOrElse(throw NoCodecFoundForID(id))
+      val fieldCodecs = fieldCodecExprs.map {case (k,ce) => (k,buildCodec(ce))}
+      recCodec.makeCodec(fieldCodecs)
+  }
+
+  /** builds a default codec for a given type by choosing the first known codec for the needed type */
   def chooseCodec(tp: Type): Codec = tp match {
     case bt: BaseType => baseCodecs.find(c => c.tp == tp) match {
       case Some(c) => c
-      case None => throw NoCodecFound(tp)
+      case None => throw NoCodecFoundForType(tp)
     }
     case LstType(t) =>
       val elemCodec = chooseCodec(t)
-      val op = lstCodecOp.getOrElse(throw NoCodecFound(tp))
+      val op = lstCodecOp.headOption.getOrElse(throw NoCodecFoundForType(tp))
       op.makeCodec(elemCodec)
     case RecType(fs) =>
       val fieldCodecs = fs.map {case (k,t) => (k,chooseCodec(t))}
-      val op = recCodecOp.getOrElse(throw NoCodecFound(tp))
+      val op = recCodecOp.headOption.getOrElse(throw NoCodecFoundForType(tp))
       op.makeCodec(fieldCodecs)
   }
 
-  def encode(data: Data): Code = {
+  /** encodes using a particular codec */
+  def encode(data: Data, ce: CodecExpression): Code = {
+    val codec = buildCodec(ce)
+    codec.encode(data)
+  }
+
+  /** encodes using a default codec obtained from the type */
+  def encodeDefault(data: Data): Code = {
     val tp = inferType(data)
     val codec = chooseCodec(tp)
     codec.encode(data)
   }
 
+  /** decodes using a particular codec */
+  def decode(code: Code, ce: CodecExpression): Data = {
+    val codec = buildCodec(ce)
+    codec.decode(code)
+  }
+
+  /** decodes using default codec */
   def decode(code: Code, tp: Type): Data = {
     val codec = chooseCodec(tp)
     codec.decode(code)
