@@ -6,7 +6,12 @@ object BDL {
   type ID = String
 
   /** vocabularies */
-  abstract class Vocabulary(decls: List[Declaration])
+  case class Vocabulary(decls: List[Declaration]) {
+    /** helper function to retrieve the definition of an ADT (must exist) */
+    def getADT(name: ID) = decls.collectFirst {
+      case d: ADTDefinition if d.name == name => d
+    }.get
+  }
 
   /** declarations */
   abstract class Declaration
@@ -43,7 +48,10 @@ object BDL {
   case class Str(value: String) extends Data
   case class Lst(tp: Type, elems: List[Data]) extends Data // we take the of the elements in order to be able to infer the type of the empty list
   case class Rec(fields: List[(ID,Data)]) extends Data
-  case class ADTElement(tp: ID, fields: List[(ID,Data)]) extends Data
+  case class ADTElement(tp: ID, fields: List[(ID,Data)]) extends Data {
+    /** helper function to retrieve the value of a field */
+    def get(field: ID) = fields.find(_._1 == field).map(_._2)
+  }
 
   case class Semester(year: Int, summer: Boolean) extends Data
 
@@ -97,7 +105,7 @@ object AbstractCodecs {
   }
 
   abstract class RecCodecOperator(val id: ID) {
-    def makeCodec(fieldCodecs: List[(String,Codec)]): Codec
+    def makeCodec(fieldCodecs: List[(ID,Codec)]): Codec
   }
 }
 
@@ -133,42 +141,6 @@ object ConcreteCodecs {
       val y = try {rest.toInt}
       catch {case _: Exception => throw IllFormedCode(c, tp)}
       Semester(y,s)
-    }
-  }
-
-  /** helper class to seek a character in a string while skipping over bracketed structures
-    * we assume the only bracketing introduced by any codec are [...], {...}, "..."
-    */
-  private class SeparatorSeeker(s: String) {
-    val length = s.length
-
-    def seekChar(from: Int, c: Char) = seek(from, _ == c, Nil)
-
-    def seekSquareClose(from: Int) = seek(from, _ == ']', List('{','"'))
-    def seekCurlyClose(from: Int) = seek(from, _ == '}', List('[','"'))
-    def seekQuote(from: Int) = seek(from, _ == '"', List('{','['))
-    def seekCommaOrSquareClose(from: Int) = seek(from, c => c == ',' || c == ']', List('{','[','"'))
-
-    def seekNonWhitespace(from: Int) = seek(from, c => !c.isWhitespace, Nil)
-
-    private def seek(from: Int, cond: Char => Boolean, skip: List[Char]): Int = {
-      var i = from
-      if (i < 0 || i >= length) return -1
-      while (i < length) {
-        s(i) match {
-          // return index of seeked character
-          case c if cond(c) => return i
-          // skip over opening brackets
-          case c if skip.contains(c) => i = i+1
-          // if an open bracket is found, we seek for the corresponding closing bracket, skipping all other open brackets
-          case '[' => i = seekSquareClose(i)
-          case '{' => i = seekCurlyClose(i)
-          case '"' => i = seekQuote(i)
-          // skip over current character
-          case _ => i = i + 1
-        }
-      }
-      return -1
     }
   }
 
@@ -282,6 +254,42 @@ object Coding {
   def decode(code: Code, tp: Type): Data = {
     val codec = chooseCodec(tp)
     codec.decode(code)
+  }
+}
+
+/** helper class to seek a character in a string while skipping over bracketed structures
+  * we assume the only bracketing introduced by any codec are [...], {...}, "..."
+  */
+private class SeparatorSeeker(s: String) {
+  val length = s.length
+
+  def seekChar(from: Int, c: Char) = seek(from, _ == c, Nil)
+
+  def seekSquareClose(from: Int) = seek(from, _ == ']', List('{','"'))
+  def seekCurlyClose(from: Int) = seek(from, _ == '}', List('[','"'))
+  def seekQuote(from: Int) = seek(from, _ == '"', List('{','['))
+  def seekCommaOrSquareClose(from: Int) = seek(from, c => c == ',' || c == ']', List('{','[','"'))
+
+  def seekNonWhitespace(from: Int) = seek(from, c => !c.isWhitespace, Nil)
+
+  private def seek(from: Int, cond: Char => Boolean, skip: List[Char]): Int = {
+    var i = from
+    if (i < 0 || i >= length) return -1
+    while (i < length) {
+      s(i) match {
+        // return index of seeked character
+        case c if cond(c) => return i
+        // skip over opening brackets
+        case c if skip.contains(c) => i = i+1
+        // if an open bracket is found, we seek for the corresponding closing bracket, skipping all other open brackets
+        case '[' => i = seekSquareClose(i)
+        case '{' => i = seekCurlyClose(i)
+        case '"' => i = seekQuote(i)
+        // skip over current character
+        case _ => i = i + 1
+      }
+    }
+    return -1
   }
 }
 
