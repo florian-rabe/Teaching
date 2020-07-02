@@ -2145,9 +2145,15 @@ Codec could be chosen automatically, but we want to allow multiple users a choic
 Ontology based on BDL-ADTs with additional codec information:
 \begin{lstlisting}[basicstyle=\footnotesize]
 schema Instructor
+<<<<<<< Updated upstream
   name:    string      codec StandardString
   age:     int         codec StandardInt
   courses: list Course codec CommaSeparatedList CourseAsName
+=======
+  name:     string   codec StandardString
+  age:      int      codec StandardInt
+  courses:  list Course codec CommaSeparatedList CourseAsName
+>>>>>>> Stashed changes
 schema Course
   name:     string   codec StandardString
   credits:  float    codec StandardFloat
