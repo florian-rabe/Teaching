@@ -2503,6 +2503,21 @@ We define
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Example}
+\begin{enumerate}
+\item BOL ontology:
+\[\mathll{concept\, male,\; concept\, person,\;axiom\, male \sqsubseteq person, \\
+  individual\, FlorianRabe,\;assertion\, FlorianRabe\, isa\, male}\]
+\item Query $x:individual\vdash_{BOL}x \text{ isa } person$
+\item Translation to SFOL: $x:\iota\vdash_{SFOL} person(x)$
+\item SFOL calculus yields theorem $\vdash_{SFOL}person(FlorianRabe)$
+\item Query result $\sem{\gamma}= x:= FlorianRabe$
+\item Back-translating the result to BOL: $\gamma= x:= FlorianRabe$
+ \glec{back translation is deceptively simple:}
+ \glec{translates SFOL-constant to BOL-individual of same name}
+\end{enumerate}
+\end{frame}
+
 \begin{frame}{Breakout question}
 What can go wrong?
 \end{frame}
@@ -2559,6 +2574,260 @@ In practice, however:
 But: practice restricted to what works even if more is needed
 \end{frame}
 
+
+\section{Computational Queries}
+
+\begin{frame}\frametitle{Definition}
+We assume
+\begin{itemize}
+\item the same as for deductive queries
+\item semantics has equality/equivalence $\doteq$
+\end{itemize}
+
+We define
+\begin{itemize}
+\item a computational query is an $l$-expression $e$
+\item the result is an $l$-expression $e'$ so that $\vdash_L\sem{e}\doteq\sem{e'}$
+\end{itemize}
+\lec{intuition: $e'$ is the result of evaluating $e$}
+
+If semantics is compositional, $e$ may contain free variables
+\lec{evaluate to themselves}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Back-Translation of Results}
+In general, $\sem{-}$ may be non-trivial to invert
+\begin{itemize}
+\item easy to obtain $E:=\sem{e}$
+\item possible to find $E'$ with $\vdash_L E'\doteq E$ by working in the semantics
+\item non-obvious how to obtain $e'$ such that $\sem{e'}=E'$
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item evaluation meant to simplify, i.e., only useful if $E'$ very simple
+\item simple $E'$ usually in the image of $\sem{-}$
+\item typical case: $E'$ is concrete data and $e'=E'$ \lec{called a value}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Non-Termination}
+In general, computation of $E'$ from $E$ might not terminate
+\begin{itemize}
+ \item while-loops
+ \item recursion
+ \item $(\lambda x. x\,x)\,(\lambda x. x\,x)$ with $\beta$-rule
+ \item simplification rule $x\cdot y \rewrites y\cdot x$ \glec{similar: distributivity, associativity}
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item image of $\sem{-}$ part of terminating fragment
+\end{itemize}
+But: if $l$ is Turing-complete or undecidable, general termination not possible
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Lack of Confluence}
+In general, there may be multiple $E'$ that are simpler than $E$
+\begin{itemize}
+ \item there may be multiple rules that apply to $E$
+ \item e.g., $f(g(x))$
+  \begin{itemize}
+  \item call-by-value: first simplify $g(x)\rewrites y$, then $f(y)\rewrites z$
+  \item call-by-name: first plug $g(x)$ into definition of $f$, then simplify
+  \end{itemize}
+\item Normal vs. canonical form
+ \begin{itemize}
+ \item normal: $\vdash_L E\doteq E'$
+ \item canonical: normal and $\vdash_L E_1\doteq E_2$ iff $E_1'=E_2'$
+  \glec{equivalent expressions have identical evaluation}
+  \glec{allows deciding equality}
+ \end{itemize}
+\end{itemize}
+
+In practice, however:
+\begin{itemize}
+\item image of $\sem{-}$ part of confluent fragment
+\item typical: evaluation to a value is canonical form
+ \glec{works for BDL-types but not for, e.g., function types}
+\end{itemize}
+\end{frame}
+
+\section{Narrative Queries}
+
+\begin{frame}\frametitle{Definition}
+We assume
+\begin{itemize}
+\item semantics into natural language
+\end{itemize}
+
+We define
+\begin{itemize}
+\item a narrative query is an $L$-question about some $l$-expressions
+\item the result is the answer to the question
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Problem: Unimplementable}
+very expressive = very difficult to implement
+\begin{itemize}
+\item Natural language understanding
+ \begin{itemize}
+ \item no implementable syntax of natural language
+  \glec{needs restriction to controlled natural language}
+ \item specifying semantics hard even when controlled
+ \end{itemize}
+\item Knowledge base for question answering needed
+ \begin{itemize}
+ \item very large \glec{must include all common sense}
+ \item might be inconsistent \glec{common sense often is}
+ \item finding answers still very hard
+ \end{itemize}
+\end{itemize}
+ 
+In practice, however:
+\begin{itemize}
+ \item accept unreliability \glec{attach probability measures to answers}
+ \item implement special cases \glec{e.g., lookup in databases like Wikidata}
+ \item search knowledge base for related statements \glec{Google, Watson}
+\end{itemize}
+\end{frame}
+
+\section{Absolute Semantics}
+
+\begin{frame}\frametitle{Motivation}
+So far
+\begin{itemize}
+\item relative semantics = semantics by translation
+\lec{relative to semantics of target language}
+\item obvious problem: what is semantics of target language?
+\item our answer so far: it's in our heads, in reality
+\item obvious problem: does not work well with computers
+\end{itemize}
+
+Also need semantics that is
+\begin{itemize}
+\item absolute
+  \lec{no reference to other languages}
+\item machine-actionable
+  \lec{requires an imperfect model of application domain}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Imperfect Modeling}
+\begin{itemize}
+\item Machine-actionable requires reduction to finite set of rules
+ \lec{whatever a rule is}
+\item Does not work for most domains
+ \begin{itemize}
+ \item practical argument: any practically interesting system has too many rules
+  \glec{cf. physics, e.g., three-body problem already chaotic}
+ \item theoretical argument: no language can fully model itself
+  \glec{cf. G\"odel's incompleteness theorems}
+ \end{itemize}
+\item Imperfect models
+ \begin{itemize}
+ \item language focuses on some aspects of domain
+ \item vocabulary approximates domain
+ \end{itemize}
+\end{itemize}
+
+Big question: what aspects to focus on?
+\end{frame}
+
+\begin{frame}\frametitle{Querying as a Guide for Semantics}
+\begin{blockitems}{Idea}
+\item Very difficult to choose aspects for imperfect models
+\item Turn problem around
+ \begin{itemize}
+ \item ask what the practical purpose of the semantics could be
+ \item then choose aspects that allow realizing that purpose
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Querying as the Purpose}
+\item Before: identified different kinds of querying
+ \lec{focussing on different aspects of knowledge}
+\item Now: each induces a kind of absolute semantics
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Problems}
+Next
+\begin{itemize}
+\item four kinds of absolute semantics
+ \lec{one per aspect}
+\item Each motivated by one kind of querying
+\item Each defines the aspect
+ \glec{e.g., a logic is a language with deductive semantics}
+\end{itemize}
+
+Relation to previous slides
+\begin{itemize}
+ \item before: querying via relative semantics
+ \item just the special case where target language has corresponding absolute semantics
+  \glec{e.g., deductive querying possible given deductive semantics}
+  \glec{no matter if relative or absolute}
+ \item conceptually, absolute semantics comes first, but easier to understand after querying
+ \item discussed problems apply to absolute semantics accordingly
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Deductive Absolute Semantics}
+\begin{blockitems}{Definition}
+\item A set of rules that determines which propositions are theorems
+ \lec{called a calculus}
+\item Languages called logics
+\item Systems called theorem provers
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item Natural deduction for first-order logic
+\item Axiomatic set theory
+\end{blockitems}
+
+\begin{blockitems}{Most logics have multiple semantics}
+\item Proof theory: absolute semantics \glec{to be self-contained}
+\item Model theory: relative semantics by translation to set theory \glec{common reference language}
+\item Logic translation: relative by translation into standard logics, e.g., SFOL
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Concrete Absolute Semantics}
+\begin{blockitems}{Definition}
+\item A set of rules that determines true ground instances of a proposition
+\item Languages typically called query languages
+ \glec{inspired our, more general use of the word}
+\item Systems called triple stores, databases
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item SQL for Church-typed ontologies with ADTs
+\item SPARQL for Curry-typed ontologies
+\item Prolog for first-order logic
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Computational Absolute Semantics}
+\begin{blockitems}{Definition}
+\item A set of rules that determines evaluation of expressions
+\item Languages typically called programming languages
+\item Systems called interpreters
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item Any interpreted language \glec{Python, bash, \ldots}
+\item Machine language \lec{interpretation rules built into microchips}
+\end{blockitems}
+
+\begin{blockitems}{Many languages have multiple semantics}
+\item Interpreter: absolute semantics \glec{for flexible experimentation}
+\item Compiler: relative semantics \glec{for fast execution}
+\end{blockitems}
+\end{frame}
+
+%\section{Equivalence of Semantics}
+%
 %\begin{frame}\frametitle{Problem: Conservativity}
 %In general, semantics could be non-conservative:
 %\begin{itemize}
@@ -2572,6 +2841,7 @@ But: practice restricted to what works even if more is needed
 %\item Conservativity: for every $\delta$, there is a $\gamma$.
 %\end{itemize}
 %\end{frame}
+
 
 \end{document}
 
