@@ -1,0 +1,98 @@
+1) Implement BDL
+a) Implement data structures for BDL grammar (no parser)
+b) add codec info to each field of an ADT
+
+2) Write Example BDL Vocabulary in code
+
+additional base type for Semester with constructor semester(Int, Bool)
+
+adt Person {name: String # StandardString, age: Int # IntAsString}
+adt Course {name: String # StandardString, semester: Semester # SemesterAsString}
+adt Instructor {parent: Person # PersonAsID, courses: List(Course) # CommaSeparatedList CourseAsID}
+
+data WuV = Course{name = "Wissens-Rep.+Verarb.", semester = semester(2020, true)}
+data KRMT = Course{name = "Wisses-Rep. in Math. Th.", semester = semester(2020, true)}
+data FlorianRabe = Instructor{parent = Person{name="Florian Rabe", age=40}, courses = list(WuV,KRMT)}
+
+
+3) Write translator to SQL: adt --> table schema
+
+
+4) Translation of example (add id field to every table)
+
+CREATE TABLE Person (id KEY, name string, age string)
+CREATE TABLE Course (id KEY, name string, semester string)
+CREATE TABLE Instructor(id KEY, parent FOREIGNKEY, courses string)
+
+
+5) Export of data
+
+a) Write flattener to turn nested ADTs into named ones
+b) Write translator of ADT elements to SQL statement/CSV lines/JSON objects or similar
+    
+
+6) Export of example data
+
+a) flattening of example data (needed because SQL cannot handle nested ADT values)
+      optional intermediate step; alternative produce 6b directly
+
+data WuV = Course{name = "Wissens-Rep.+Verarb.", semester = semester(2020, true)}
+data KRMT = Course{name = "Wisses-Rep. in Math. Th.", semester = semester(2020, true)}
+data FlorianRabe.person = Person{name="Florian Rabe", age=40}
+data FlorianRabe = Instructure{parent = FlorianRabe.person, courses = list(WuV,KRMT)}
+
+b) Translation of example data as CSV (one file per ADT)
+
+function call export(Person, List(FlorianRabe.person)) yields
+"FlorianRabe.person" "Florian Rabe" "40"
+
+function call export(Instructor, List(FlorianRabe)) yields
+"FlorianRabe.person" "Wuv,KRMT"
+
+function call export(Course, List(WuV,KRMT)) yields
+"WuV" "Wissens-Rep.+Verarb." "SS2020"
+"KRMT" "Wisses-Rep. in Math. Th." "SS2020"
+
+b') Translation of example as SQL
+
+INSERT INTO Person ("FlorianRabe.person", "Florian Rabe", "40")
+INSERT INTO Instructor("FlorianRabe", "FlorianRabe.person", "Wuv,KRMT")
+INSERT INTO Course("WuV", "Wissens-Rep.+Verarb.", "SS2020")
+INSERT INTO Course("KRMT", "Wisses-Rep. in Math. Th.", "SS2020")
+
+
+7) Reimport the data you exported
+    maybe after making some changes in between
+
+
+8) Optionally, non-compositionally translate  ADT fields of List type into separate tables
+
+CREATE TABLE Person (id KEY, name string, age string)
+CREATE TABLE Course (id KEY, name string, semester string)
+CREATE TABLE Instructor(id KEY, parent FOREIGNKEY of Person)
+CREATE TABLE Instructor.courses (owner FOREIGNKEY of Instructor, value FOREIGNKEY of Course)
+
+INSERT INTO Person ("FlorianRabe.person", "Florian Rabe", "40")
+INSERT INTO Instructor("FlorianRabe","FlorianRabe.person")
+INSERT INTO Instructor.courses("FlorianRabe", "WuV")
+INSERT INTO Instructor.courses("FlorianRabe", "KRMT")
+INSERT INTO Course("WuV", "Wissens-Rep.+Verarb.", "SS2020")
+INSERT INTO Course("KRMT", "Wisses-Rep. in Math. Th.", "SS2020")
+
+
+9) Getting even closer into current research territor (maybe next week)
+
+a) Come up with a notion of BDL query
+      e.g., i: Instructor |- WuV in i.courses
+   
+b) Implement translation of BDL queries to SQL queries
+     e.g., using (7): 
+         SELECT * FROM Instructor WHERE in'("WuV", courses)
+    Here in' must be an SQL function that commutes with in under the codecs - very difficult.
+
+b') using (8)
+     roughly:  SELECT * FROM Instructor, Instructor.courses WHERE value="WuV"
+     much nicer SQL, easier to realize in SQL, more expressive querying power
+     but translation much more difficult because non-compositional
+
+
