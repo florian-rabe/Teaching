@@ -80,7 +80,7 @@ INSERT INTO Course("WuV", "Wissens-Rep.+Verarb.", "SS2020")
 INSERT INTO Course("KRMT", "Wisses-Rep. in Math. Th.", "SS2020")
 
 
-9) Getting even closer into current research territor (maybe next week)
+9) Getting even closer into current research territory (maybe next week)
 
 a) Come up with a notion of BDL query
       e.g., i: Instructor |- WuV in i.courses
