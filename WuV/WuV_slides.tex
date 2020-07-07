@@ -2699,28 +2699,101 @@ In practice, however:
 \end{itemize}
 \end{frame}
 
-\section{Absolute Semantics}
+\part{Absolute Semantics}
+
+\section{Overview}
 
 \begin{frame}\frametitle{Motivation}
-So far
+Recall:
+
+\begin{center}
+\begin{tabular}{l|l}
+Syntax & Data \\
+\hline
+Semantics & Knowledge
+\end{tabular}
+\end{center}
+
+Representing
 \begin{itemize}
-\item relative semantics = semantics by translation
-\lec{relative to semantics of target language}
-\item obvious problem: what is semantics of target language?
-\item our answer so far: it's in our heads, in reality
-\item obvious problem: does not work well with computers
+\item syntax = formal language
+\begin{itemize}
+\item grammar  \glec{context-free part}
+\item type system \glec{context-sensitive well-formedness}
+\end{itemize}
+\item data = words in the syntax
+\begin{itemize}
+\item set of vocabularies
+\item set of typed expressions for each vocabulary
+\end{itemize}
+\item semantics = \alert{???}
+\item knowledge = emergent property of having well-formed words with semantics
 \end{itemize}
 
-Also need semantics that is
-\begin{itemize}
-\item absolute
-  \lec{no reference to other languages}
-\item machine-actionable
-  \lec{requires an imperfect model of application domain}
-\end{itemize}
+So far: semantics by translation
 \end{frame}
 
-\begin{frame}\frametitle{Imperfect Modeling}
+\begin{frame}\frametitle{Relative Semantics}
+Semantics by Translation
+\begin{itemize}
+\item Two syntaxes
+\begin{itemize}
+\item object-language $l$ \glec{e.g., BOL}
+\item meta-language $L$ \glec{e.g., SFOL, Scala, SQL, English}
+\end{itemize}
+\item Semantics of $L$ assumed fixed
+ \glec{captures what we already know}
+\item Semantics of $l$ by translation into $L$
+\end{itemize}
+\lec{semantics of $l$ \emph{relative} to to existing semantics of $L$}
+
+Problem: just kicking the can?
+\end{frame}
+
+\begin{frame}\frametitle{Discussion of Relative Semantics}
+\begin{blockitems}{Advantages}
+\item a few meta-languages yield semantics for many languages
+\item easy to develop new languages
+\item good connection between syntax and semantics via compositionality, substitution theorem
+\end{blockitems}
+
+\begin{blockitems}{Disadvantages}
+\item does not solve the problem once and for all
+\item impractical without implementation of semantics of meta-language
+\item meta-languages typically much more expressive than needed for object-languages
+\item translations can be difficult, error-prone
+\end{blockitems}
+
+Also needed: absolute semantics
+\end{frame}
+
+\begin{frame}\frametitle{Absolute vs. Relative Semantics}
+Absolute = self-contained, no use of meta-language $L$
+
+\begin{blockitems}{Get off the ground}
+ \item semantics for a few important meta-languages
+  \glec{e.g., FOL, assembly language, set theory}
+ \item relative semantics for all other languages, e.g.,
+  \begin{itemize}
+  \item model theory: logic $\to$ set theory
+  \item compilation: Scala $\to$ JVM $\to$ assembly
+  \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Redundant semantics}
+ \item common to give
+ \begin{itemize}
+  \item relative and absolute semantics for same syntax
+  \item multiple relative semantics
+   \glec{translations to different aspects}
+  \item sometimes even maybe multiple absolute ones
+ \end{itemize}
+ \item Allows understanding syntax from multiple perspectives
+ \item Allows cross-checking \glec{show equivalence of two semantics}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{No Perfect Model for Absolute Semantics}
 \begin{itemize}
 \item Machine-actionable requires reduction to finite set of rules
  \lec{whatever a rule is}
@@ -2731,25 +2804,24 @@ Also need semantics that is
  \item theoretical argument: no language can fully model itself
   \glec{cf. G\"odel's incompleteness theorems}
  \end{itemize}
-\item Imperfect models
- \begin{itemize}
- \item language focuses on some aspects of domain
- \item vocabulary approximates domain
- \end{itemize}
+\item Imperfect representation of intended semantics required
+\lec{focus on some \emph{aspect}}
 \end{itemize}
 
 Big question: what aspects to focus on?
 \end{frame}
 
-\begin{frame}\frametitle{Querying as a Guide for Semantics}
+\begin{frame}\frametitle{Querying as a Guide}
 \begin{blockitems}{Idea}
-\item Very difficult to choose aspects for imperfect models
+\item Very difficult to choose aspects for absolute semantics
 \item Turn problem around
  \begin{itemize}
  \item ask what the practical purpose of the semantics could be
  \item then choose aspects that allow realizing that purpose
  \end{itemize}
 \end{blockitems}
+
+Meta-remark: That's why we did relative semantics and querying first in this course even though absolute semantics conceptually belongs at the beginning.
 
 \begin{blockitems}{Querying as the Purpose}
 \item Before: identified different kinds of querying
@@ -2758,53 +2830,114 @@ Big question: what aspects to focus on?
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Problems}
-Next
-\begin{itemize}
-\item four kinds of absolute semantics
- \lec{one per aspect}
-\item Each motivated by one kind of querying
-\item Each defines the aspect
- \glec{e.g., a logic is a language with deductive semantics}
-\end{itemize}
+%\begin{frame}\frametitle{Problems}
+%Next
+%\begin{itemize}
+%\item four kinds of absolute semantics
+% \lec{one per aspect}
+%\item Each motivated by one kind of querying
+%\item Each defines the aspect
+% \glec{e.g., a logic is a language with deductive semantics}
+%\end{itemize}
+%
+%Relation to previous slides
+%\begin{itemize}
+% \item before: querying via relative semantics
+% \item just the special case where target language has corresponding absolute semantics
+%  \glec{e.g., deductive querying possible given deductive semantics}
+%  \glec{no matter if relative or absolute}
+% \item conceptually, absolute semantics comes first, but easier to understand after querying
+% \item discussed problems apply to absolute semantics accordingly
+%\end{itemize}
+%\end{frame}
 
-Relation to previous slides
-\begin{itemize}
- \item before: querying via relative semantics
- \item just the special case where target language has corresponding absolute semantics
-  \glec{e.g., deductive querying possible given deductive semantics}
-  \glec{no matter if relative or absolute}
- \item conceptually, absolute semantics comes first, but easier to understand after querying
- \item discussed problems apply to absolute semantics accordingly
-\end{itemize}
-\end{frame}
+\section{Deductive Semantics}
 
-\begin{frame}\frametitle{Deductive Absolute Semantics}
+\begin{frame}\frametitle{Overview}
 \begin{blockitems}{Definition}
-\item A set of rules that determines which propositions are theorems
+\item A system that determines which propositions are theorems
  \lec{called a calculus}
 \item Languages called logics
-\item Systems called theorem provers
+\item Implementations called theorem provers
+\end{blockitems}
+
+\begin{blockitems}{More precisely}
+\item Judgment: $\vdash F$ for ``$F$ is theorem''
+\item Set of rules for deriving judgments
 \end{blockitems}
 
 \begin{blockitems}{Examples}
 \item Natural deduction for first-order logic
-\item Axiomatic set theory
-\end{blockitems}
-
-\begin{blockitems}{Most logics have multiple semantics}
-\item Proof theory: absolute semantics \glec{to be self-contained}
-\item Model theory: relative semantics by translation to set theory \glec{common reference language}
-\item Logic translation: relative by translation into standard logics, e.g., SFOL
+\item Axiomatic set theory for (most of) mathematics
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Concrete Absolute Semantics}
+\begin{frame}\frametitle{Redundancy}
+\begin{blockitems}{Multiple deductive semantics}
+\item Proof theory: absolute
+\item Model theory: relative via translation to set theory $L$
+ \glec{write $\models F$ for $\vdash_L \truelift\sem{F}$}
+\item Logic translation: relative via translation into standard logics, e.g., SFOL
+\end{blockitems}
+
+\begin{blockitems}{Equivalence Theorems}
+\item Soundness: $\vdash F$ implies $\models F$
+\item Completeness: $\models F$ implies $\vdash F$
+\glec{accordingly for other translations}
+\end{blockitems}
+\end{frame}
+
+\section{Computational Semantics}
+
+\begin{frame}\frametitle{Overview}
 \begin{blockitems}{Definition}
-\item A set of rules that determines true ground instances of a proposition
-\item Languages typically called query languages
+\item A system that evaluates expressions to values
+\item Languages typically called programming languages
+\item Implementations called interpreters, evaluators
+\end{blockitems}
+
+\begin{blockitems}{More precisely}
+\item Judgment: $\vdash E\rewrites V$ for ``$E$ evaluates to $V$''
+\item Set of rules for deriving $E\rewrites E_1\rewrites E_2\rewrites \ldots$
+\item Often more complex judgments using context containing heap, stack, IO channels, local variables
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item Any interpreted language \glec{Python, bash, \ldots}
+\item Machine language \glec{interpretation rules built into microchips}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Redundancy}
+\begin{blockitems}{Multiple computational semantics}
+\item Specification: absolute as rules on paper
+\item Interpreter: absolute as implementation
+\item Compiler: relative via translation to assembly $L$
+ \glec{write $\models E\rewrites V$ for $\vdash_L \sem{E}\rewrites \sem{V}$}
+\item Cross-compilation: relative via translation into other languages
+ \glec{Church-Turing thesis: always possible}
+\end{blockitems}
+
+\begin{blockitems}{Equivalence Theorems}
+\item Correctness of compiler: $\vdash E\rewrites V$ iff $\models E\rewrites V$
+\glec{accordingly for other translations}
+\end{blockitems}
+\end{frame}
+
+\section{Concrete Semantics}
+
+\begin{frame}\frametitle{Overview}
+\begin{blockitems}{Definition}
+\item A system that finds known ground instances of propositions
+\item Languages often called query languages
  \glec{inspired our, more general use of the word}
-\item Systems called triple stores, databases
+\item Implementations focusing on caching finite sets of ground instances called triple stores, databases
+\end{blockitems}
+
+
+\begin{blockitems}{More precisely}
+\item Judgment: $\vdash F[\gamma]$ for ``$\gamma$ is known ground instance of $F$''
+\item Set of rules/sets/tables for finding all $\gamma$
 \end{blockitems}
 
 \begin{blockitems}{Examples}
@@ -2814,23 +2947,78 @@ Relation to previous slides
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Computational Absolute Semantics}
+\begin{frame}\frametitle{Yes/No vs. Wh-Questions}
+Deductive/concrete semantics may be a bit of a misnomer
+\begin{itemize}
+\item Queries about $\vdash F$ are yes/no questions
+ \begin{itemize}
+ \item specialty of deductive semantics
+ \item but maybe only because everything else is ever harder to do deductively
+ \end{itemize}
+\item Queries about ground instances of $\Gamma \vdash F$ are Wh questions
+ \begin{itemize}
+ \item specialty of concrete databases
+ \item for the special case of retrieving finite results sets from a fixed concrete store
+ \item only situation where Wh questions are easy
+ \end{itemize}
+\end{itemize}
+But Yes/no and Wh questions exist in all aspects.
+\end{frame}
+
+\begin{frame}\frametitle{Redundancy}
+\begin{blockitems}{Multiple concrete semantics}
+\item Specification: absolute as rules on paper
+\item Database: absolute by custom database
+\item Database: relative via translation to assembly $L$
+\end{blockitems}
+
+\begin{blockitems}{Equivalence Theorems}
+\item typically: choose one, no redundancy, no equivalence theorems
+\item infinite results: easy on paper, hard in database
+\item open world: are all known ground instances in database?
+\end{blockitems}
+\end{frame}
+
+\section{Narrative Semantics}
+
+\begin{frame}\frametitle{Overview}
 \begin{blockitems}{Definition}
-\item A set of rules that determines evaluation of expressions
-\item Languages typically called programming languages
-\item Systems called interpreters
+\item Describes how to answer (some) questions
+\item Implementations tend to be AI-complete, hypothetical
+\item In practice, information retrieval = find related documents
+\end{blockitems}
+
+\begin{blockitems}{More precisely?}
+\item Not much theory, wide open research problem
+\item Some natural language document with interspersed definitions, formulas
+\item Maybe judgment: $\vdash Q ? A$ for ``$A$ is answer to $Q$''
 \end{blockitems}
 
 \begin{blockitems}{Examples}
-\item Any interpreted language \glec{Python, bash, \ldots}
-\item Machine language \lec{interpretation rules built into microchips}
-\end{blockitems}
-
-\begin{blockitems}{Many languages have multiple semantics}
-\item Interpreter: absolute semantics \glec{for flexible experimentation}
-\item Compiler: relative semantics \glec{for fast execution}
+\item ``W3C Recommendation OWL 2'' and Google
+\item ``ISO/IEC 14882: 1998 Programming Language C++'' and Stroustrup's book
+\item Mathematics textbooks and mathematicians
 \end{blockitems}
 \end{frame}
+
+%\begin{frame}\frametitle{Redundancy}
+%\begin{blockitems}{Multiple narrative semantics}
+%\item Absolute: standard document
+%\item Relative: via natural language translations
+% \glec{usually English}
+%\item Interpreter: absolute as implementation
+%\item Compiler: relative via translation to assembly $L$
+% \glec{write $\vvddash E\rewrites V$ for $\vdash_L \sem{E}\rewrites \sem{V}$}
+%\item Natural language Cross-compilation: relative via translation into other languages
+% \glec{Church-Turing thesis: always possible}
+%\end{blockitems}
+%
+%\begin{blockitems}{Equivalence Theorems}
+%\item Correctness of compiler: $\vdash E\rewrites V$ iff $\vvdash E\rewrites V$
+%\glec{accordingly for other translations}
+%\end{blockitems}
+%\end{frame}
+
 
 %\section{Equivalence of Semantics}
 %
