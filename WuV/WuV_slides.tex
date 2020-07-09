@@ -19,8 +19,9 @@
 %\usepackage{../macros/mmt_listings}
 \usepackage{../macros/twelf-math}
 
-\usepackage{macros}
 \usepackage{../macros}
+\usepackage{macros}
+
 
 \newcommand{\lf}{\mathit{LF}}
 \newcommand{\kity}{\mathit{type}}
@@ -2699,7 +2700,7 @@ In practice, however:
 \end{itemize}
 \end{frame}
 
-\part{Absolute Semantics}
+\part{Semantics}
 
 \section{Overview}
 
@@ -2851,9 +2852,9 @@ Meta-remark: That's why we did relative semantics and querying first in this cou
 %\end{itemize}
 %\end{frame}
 
-\section{Deductive Semantics}
+\section{Absolute Semantics}
 
-\begin{frame}\frametitle{Overview}
+\begin{frame}\frametitle{Deductive Semantics}
 \begin{blockitems}{Definition}
 \item A system that determines which propositions are theorems
  \lec{called a calculus}
@@ -2872,7 +2873,7 @@ Meta-remark: That's why we did relative semantics and querying first in this cou
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Redundancy}
+\begin{frame}\frametitle{Redundant Deductive Semantics}
 \begin{blockitems}{Multiple deductive semantics}
 \item Proof theory: absolute
 \item Model theory: relative via translation to set theory $L$
@@ -2887,9 +2888,7 @@ Meta-remark: That's why we did relative semantics and querying first in this cou
 \end{blockitems}
 \end{frame}
 
-\section{Computational Semantics}
-
-\begin{frame}\frametitle{Overview}
+\begin{frame}\frametitle{Computational Semantics}
 \begin{blockitems}{Definition}
 \item A system that evaluates expressions to values
 \item Languages typically called programming languages
@@ -2908,7 +2907,7 @@ Meta-remark: That's why we did relative semantics and querying first in this cou
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Redundancy}
+\begin{frame}\frametitle{Redundant Computation Semantics}
 \begin{blockitems}{Multiple computational semantics}
 \item Specification: absolute as rules on paper
 \item Interpreter: absolute as implementation
@@ -2924,9 +2923,7 @@ Meta-remark: That's why we did relative semantics and querying first in this cou
 \end{blockitems}
 \end{frame}
 
-\section{Concrete Semantics}
-
-\begin{frame}\frametitle{Overview}
+\begin{frame}\frametitle{Concrete Semantics}
 \begin{blockitems}{Definition}
 \item A system that finds known ground instances of propositions
 \item Languages often called query languages
@@ -2965,7 +2962,7 @@ Deductive/concrete semantics may be a bit of a misnomer
 But Yes/no and Wh questions exist in all aspects.
 \end{frame}
 
-\begin{frame}\frametitle{Redundancy}
+\begin{frame}\frametitle{Redundant Concrete Semantics}
 \begin{blockitems}{Multiple concrete semantics}
 \item Specification: absolute as rules on paper
 \item Database: absolute by custom database
@@ -2979,9 +2976,7 @@ But Yes/no and Wh questions exist in all aspects.
 \end{blockitems}
 \end{frame}
 
-\section{Narrative Semantics}
-
-\begin{frame}\frametitle{Overview}
+\begin{frame}\frametitle{Narrative Semantics}
 \begin{blockitems}{Definition}
 \item Describes how to answer (some) questions
 \item Implementations tend to be AI-complete, hypothetical
@@ -3001,27 +2996,291 @@ But Yes/no and Wh questions exist in all aspects.
 \end{blockitems}
 \end{frame}
 
-%\begin{frame}\frametitle{Redundancy}
-%\begin{blockitems}{Multiple narrative semantics}
-%\item Absolute: standard document
-%\item Relative: via natural language translations
-% \glec{usually English}
-%\item Interpreter: absolute as implementation
-%\item Compiler: relative via translation to assembly $L$
-% \glec{write $\vvddash E\rewrites V$ for $\vdash_L \sem{E}\rewrites \sem{V}$}
-%\item Natural language Cross-compilation: relative via translation into other languages
-% \glec{Church-Turing thesis: always possible}
-%\end{blockitems}
-%
-%\begin{blockitems}{Equivalence Theorems}
-%\item Correctness of compiler: $\vdash E\rewrites V$ iff $\vvdash E\rewrites V$
-%\glec{accordingly for other translations}
-%\end{blockitems}
-%\end{frame}
+\section{An Abstract Definition}
+
+\begin{frame}\frametitle{Languages}
+\begin{blockitems}{A formal system $l$ consists of}
+\item a set of vocabularies $\Voc^l$
+\item for every $V\in\Voc^l$, a set $\Exp^l(V)$ of expressions
+\item a typing relation $\vdash^l_V e:E$ between $e,E\in \Exp^l(V)$
+ \glec{define: $\Exp^l_V(E)=\{e\in \Exp^l_V\,|\,\vdash^l_V e:E\}$}
+\end{blockitems}
+\glec{convention: leave out superscript $l$, subscript $V$ if clear}
+
+\begin{blockitems}{A formal system with propositions}
+\item additionally has a distinguished expression $\prop$
+\item define $F$ is proposition if $\vdash_V F:\prop$
+\end{blockitems}
+
+\begin{blockitems}{A formal system with equality}
+\item additionally has a distinguished proposition $e_1\doteq_E e_2$ whenever $\vdash e_i:E$
+\end{blockitems}
+\glec{in the sequel: fix $l$ as above}
+\end{frame}
+
+\begin{frame}\frametitle{Deductive Semantics}
+A deductive semantics for $l$ consists of
+\begin{itemize}
+\item for every $V$, a subset $\Thm^l_V\sq \Exp^l_V(\prop)$ of theorems
+ \glec{write $\vdash^l_V F$ for $F\in\Thm^l_V$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Curry-Howard}
+Define deductive semantics as a special case of typing
+\begin{itemize}
+\item propositions as types
+\item proofs as expressions
+\item add typing rules such that $\vdash P:F$ captures the statement ``$P$ is proof of $F$''
+\item define: $\vdash F$ iff there is $P$ such that $\vdash P:F$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Computational Semantics}
+\begin{blockitems}{A computational semantics for $l$ consists of}
+\item for every $V$, a function $\Eval^l_V:\Exp^l_V\to\Exp^l_V$
+\item the image of $\Eval$ called the values
+\glec{write $\vdash^l_V e\rewrites e'$ for $e'=\Eval^l_V(e)$}
+\end{blockitems}
+
+\begin{blockitems}{If we also have typing, we say}
+ \item subject reduction: if $\vdash e:E$, then $\vdash \Eval(e):E$
+\end{blockitems}
+
+\begin{blockitems}{If we also have equality and deductive semantics, we say}
+ \item normal forms:
+  \begin{itemize}
+  \item $\Eval^l_V$ idempotent, i.e., $\Eval^l_V(x)=x$ if $x$ value
+  \item $\vdash^l_V e\doteq_E\Eval^l_V(e)$
+  \end{itemize} 
+ \item canonical forms: $\vdash^l_V e_1\doteq_E e_2$ iff $\Eval^l_V(e_1)=\Eval^l_V(e_2)$
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Interdefinability}
+\begin{blockitems}{Given a computational semantics, define a deductive one:}
+\item distinguished expression $\vdash \true:\prop$,
+\item $\vdash F$ iff $\Eval(F)=\true$
+\lec{implies decidability, so usually only possible for some $F$}
+\end{blockitems}
+
+\begin{blockitems}{Given a deductive semantics, define computational one:}
+\item $\Eval(e)$ is some $e'$ such that $\vdash e\doteq e'$
+\lec{trivially normal, but usually not canonical}
+\end{blockitems}
+
+Both kinds of semantics add different value. We usually want both.
+\end{frame}
+
+\begin{frame}\frametitle{Why Abstract?}
+\begin{blockitems}{Our definitions are abstract}
+\item $\Exp$, $\Thm$, $\Eval$ just assumed as sets/functions
+\item No requirement how they are constructed
+ \begin{itemize}
+ \item inductive structure of expressions optional
+ \item both absolute and relative semantics are special cases
+\end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{A more concrete definition might demand}
+\item $\Exp_V$ defined by grammar
+\item type system defined by
+ \begin{itemize}
+ \item calculus for $\vdash_V e:E$
+ \item alternatively: trivial type system where \\
+  all non-terminals $N$ are expressions too \\
+  and $\vdash E:N$ iff $E$ derived from $N$
+ \end{itemize}
+\item $\Thm_V$ defined by calculus for $\vdash_V F$
+\item $\Eval_V$ defined by calculus for $\vdash_V e \rewrites e'$
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Syntax with Contexts}
+If we want to talk about contexts, too, we need to expand all of the above.
+
+\begin{blockitems}{Syntax with contexts}
+\item contexts: for every $V$, a set $\Cont^l_V$
+ \glec{write $\vdash_V \Gamma$}
+\item substitutions: for $\Gamma,\Delta\in\Cont_V$, a set $\Subs_V(\Gamma,\Delta)$
+ \glec{write $\vdash_V \gamma:\Gamma\to\Delta$}
+\end{blockitems}
+
+\begin{blockitems}{Expressions in context}
+\item expressions: sets $\Exp_V(\Gamma)$
+\item substitution application: functions $\Exp(\gamma):\Exp(\Gamma)\to\Exp(\Delta)$ for $\gamma\in\Subs(\Gamma,\Delta)$
+\glec{write $\Exp(\gamma)(e)$ as $e[\gamma]$}
+\end{blockitems}
+
+\begin{blockitems}{Typing in context}
+\item expressions: sets $\Exp_V(\Gamma,E)$, written as $\Gamma\vdash_V e: E$
+\item substitution preserves types: if $\Gamma\vdash e:E$ and $\vdash \gamma:\Gamma\to\Delta$, then $\Delta\vdash e[\gamma]:E[\gamma]$
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Contexts: General Definition}
+We can leave contexts abstract or spell out a concrete definition:
+\begin{itemize}
+\item contexts $\Gamma$ are of the form \[x_1:E_1,\ldots,x_n:E_n\]
+ where $E_i\in\Exp(x_1:E_1,\ldots,x_{i-1}:E_{i-1})$
+\item for $\Gamma$ as above, substitutions $\Gamma\to \Delta$ are of the form: \[x_1=e_1,\ldots,x_n=e_n\]
+ where $\Delta\vdash e_i: E_i[x_1=e_1,\ldots,x_{i-1}=e_{i-1}]$
+\end{itemize}
+\medskip
+
+This works uniformly for any formal system.
+But most formal systems are a bit more restrictive, e.g., by requiring that all $E_i$ are types.
+\end{frame}
+
+\begin{frame}\frametitle{Semantics with Contexts}
+\begin{blockitems}{Deductive semantics}
+\item define: theorem sets $\Thm_V(\Gamma)$
+ \glec{write $F\in\Thm_V(\Gamma)$ as $\Gamma\vdash_V F$}
+\item such that theorems are preserved by substitution: \\
+ if $\Gamma\vdash_V F$ and $\vdash \gamma:\Gamma\to\Delta$, then $\Delta\vdash_V F[\gamma]$
+\end{blockitems}
+
+\begin{blockitems}{Computational semantics}
+\item define: evaluation functions $\Eval_V(\Gamma):\Exp_V(\Gamma)\to\Exp_V(\Gamma)$
+  \glec{write $e'=\Eval_V(\Gamma)(e)$ as $\Gamma\vdash_V e\rewrites e'$}
+\item extend to substitutions: $\Eval_V(\Delta)(\ldots,x=e,\ldots)\;=\;\ldots,x=\Eval_V(\Delta)(e), \ldots$
+\item require that evaluation is preserved by substitution $\vdash \gamma:\Gamma\to\Delta$ \\
+  $\Eval_V(\Delta)(e[\gamma])=\Eval_V(\Delta)(e)[\Eval_V(\Delta)(\gamma)]$
+\glec{substitution theorem for $\Eval$ as a translation from $l$ to itself}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Concrete Semantics}
+\begin{blockitems}{General definitions for substitutions}
+\item write $\cdot$ for empty context/substitution
+\item ground expression is expression in empty context
+ \glec{also called closed; then opposite is open}
+\item ground substitution: $\vdash \gamma:\Gamma\to \es$
+ \glec{no free variables after substitution}
+\item if we have computational semantics: \\ value substitution is ground substitution where all expressions are values
+\item if we have deductive semantics: \\
+ true instance of $\Gamma\vdash F:\prop$ is $\gamma$ such that $\vdash F[\gamma]$
+\end{blockitems}
+
+\begin{blockitems}{A concrete semantics for $l$ consists of}
+\item for every $\Gamma\vdash^l_V F:\prop$, a set $\Inst^l_V(\Gamma,F)$ of ground substitutions
+ \glec{write $\Gamma\vdash_V\gamma:F$ for $\gamma\in\Inst_V(\Gamma,F)$}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Interdefinability}
+\begin{blockitems}{Given concrete semantics, define a deductive one}
+\item for ground $F$, $\Inst(\cdot,F)$ is either $\{\cdot\}$ or $\{\}$
+\item $\vdash F$ iff $\Inst(\cdot, F)=\{\cdot\}$
+\lec{but concrete semantics usually cannot find all substitutions for all $F$}
+\end{blockitems}
+
+\begin{blockitems}{Given concrete semantics, define a computational one}
+\item $\vdash e\rewrites e'$ iff $(x=e')\in\Inst(x:E, e\doteq_E x)$
+\lec{but concrete semantics usually cannot find that substitution for all $e$}
+\end{blockitems}
+
+\begin{blockitems}{Given deductive semantics, define a concrete one}
+\item $\Inst(\Gamma,F)=\{\vdash \gamma:\Gamma\to\cdot \;|\;\vdash F[\gamma]\}$
+\lec{but deductive semantics usually does not allow computing that set}
+\end{blockitems}
+
+\begin{blockitems}{Given computational semantics, define a concrete one}
+\item $\Inst(\Gamma,F)=\{\Eval(\cdot,\gamma) \;|\;\vdash \gamma:\Gamma\to\cdot, \;\vdash F[\gamma]\rewrites \true\}$
+\item allows restricting results to value substitutions
+\lec{composition of previous inter-definitions, inherits both problems}
+\end{blockitems}
+\end{frame}
 
 
-%\section{Equivalence of Semantics}
-%
+\begin{frame}\frametitle{Translations}
+\begin{blockitems}{A translation $T$ from formal system $l$ to formal system $L$ consists of}
+\item function $\Voc^T:\Voc^l\to\Voc^L$
+\item family of functions $\Exp^T_V:\Exp^l_V\to\Exp^L_{\Voc^T(V)}$
+\end{blockitems}
+
+\begin{blockitems}{Desirable properties}
+\item Should satisfy type preservation:
+\[\vdash^l_V e:E \tb\mimplies\tb \vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E)\]
+\lec{intuition: what we have, is preserved}
+\item Might satisfy conservativity: 
+\[\vdash^L_{\Voc^T(V)} e':\Exp^T_V(E) \tb\mimplies\tb \vdash^l_V e:E \mforsome e\]
+\lec{intuition: nothing new is added}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Translation of Contexts}
+\begin{blockitems}{Translations extend to contexts and substitutions}
+ \item $\Cont^T(\ldots,x:E,\ldots) \;=\;\ldots, x:\Exp^T(E), \ldots$
+ \item $\Subs^T(\ldots,x=e,\ldots) \;=\;\ldots, x=\Exp^T(e), \ldots$
+ \item $\Exp^T(x)=x$ for all variables
+\end{blockitems}
+
+\begin{blockitems}{Desirable properties for arbitrary contexts}
+\item Type preservation:
+\[\Gamma\vdash^l_V e:E \tb\mimplies\tb \Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E)\]
+\item Conservativity:
+\[\Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)} e':\Exp^T_V(E) \tb\mimplies\tb \Gamma\vdash^l_V e:E \mforsome e\]
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Compositionality}
+Define: a translation is compositional iff we can show the substitution theorem for it
+
+Given
+\[\Gamma\vdash^l_V e:E \tb\vdash^l_V \gamma:\Gamma\to\Delta\]
+we have that
+\[\Cont^T_V(\Delta)\vdash^L_{\Voc^T(V)}\Exp^T_V(e[\gamma])\doteq_{\Exp^T_V(E[\gamma])}\Exp^T_V(e)[\Subs^T_V(\gamma)] \]
+
+Simplify: write
+$T(-)$ for $\Voc^T(-), \Exp_V^T(-)$, $\Cont_V^T(-)$, $\Subs_V^T(-)$
+\[T(\Delta)\vdash^L_{T(V)}T(e[\gamma])\doteq_{T(E[\gamma])}T(e)[T(\gamma)] \]
+\end{frame}
+
+\begin{frame}\frametitle{Relative Semantics}
+Given
+ \begin{itemize}
+ \item formal systems $l$ and $L$
+ \item semantics for $L$
+ \item translation $T$ from $l$ to $L$
+ \end{itemize}
+define semantics for $l$
+\medskip
+
+\begin{itemize}
+\item deductive: define
+ \[\vdash^l_V F \tb\miff\tb \vdash^L_{\Voc^T(V)} \Exp^T_V(F) \]
+\item computational: define
+ \[\vdash^l_V e\rewrites e' \tb\miff\tb \vdash^L_{\Voc^T(V)}\Exp^T_V(e)\rewrites \Exp^T_V(e')\]
+\glec{both work accordingly with a context $\Gamma$}
+\item concrete: define
+ \[\Gamma\vdash^l_V \gamma:F \tb\miff\tb \Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)}\Subs^T_V(\gamma):\Exp^T_V(F)\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Equivalence of Semantics}
+Two semantics $\vdash^1$ and $\vdash^2$ for $l$ are equivalent if they are equal in the abstract sense.
+\begin{itemize}
+\item deductive: $\vdash^1 F$ iff $\vdash^2 F$
+\item computational: $\vdash^1 e\rewrites e'$ iff $\vdash^2 e\rewrites e'$
+\item concrete: $\Gamma\vdash^1 \gamma:F$ iff $\Gamma\vdash^2 \gamma:F$
+\end{itemize}
+
+Example for deductive semantics:
+\begin{itemize}
+\item $\vdash^1$ absolute semantics by calculus \\
+ e.g., natural deduction for SFOL
+\item $\vdash^2$ relatives semantics by translation
+ e.g., $L$ is set theory, $T$ is model theory of SFOL
+\item Assume proofs-as-expressions
+\item Then:
+ \begin{itemize}
+ \item type preservation = soundness
+ \item conservativity = completeness
+ \end{itemize}
+\end{itemize}  
+\end{frame}
+
 %\begin{frame}\frametitle{Problem: Conservativity}
 %In general, semantics could be non-conservative:
 %\begin{itemize}
