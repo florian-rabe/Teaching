@@ -51,7 +51,7 @@ Deduction: \[\Gamma\vdash^{BOL}_V F\]
 
 Propositions $\prop$:
 \begin{itemize}
-\item $C\sqcup D$, $C\Equiv D$
+\item $C\sqsubseteq D$, $C\Equiv D$
 \item all three kinds of assertions
 \end{itemize}
 
@@ -106,7 +106,7 @@ Subsumption is an order with respect to equality:
 
 \[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq e}{\vdash c\sqsubseteq e}\]
 
-\[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq c}{\vdash c\Equiv e}\]
+\[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq c}{\vdash c\Equiv d}\]
 
 Equal concepts can be substituted for each other:
 \[\rul{\vdash c\Equiv d\tb x:C\vdash f(x):\prop \tb \vdash f(c)}{f(d)}\]
@@ -146,7 +146,7 @@ Question: Do we allow proving the hypothesis by checking for each individual $x$
 \begin{itemize}
 \item<2-> Open world: no
 \item<3-> Closed world: yes
- \[\rul{\Gamma[x=i]\vdash f[x=i]\isa c \;\text{ for every individual } i}{\Gamma, x:I\vdash f(x)}\]
+ \[\rul{\Gamma[x=i]\vdash f[x=i] \;\text{ for every individual } i}{\Gamma, x:I\vdash f(x)}\]
  \glec{effectively applicable if only finitely many individuals}
 \end{itemize}
 \end{frame}
@@ -186,7 +186,7 @@ Inverse:
 \[\rul{\vdash i \,r\,j}{\vdash j\,r^{-1}\,i}\]
 
 Composition:
-\[\rul{\vdash i \,r\,j \tb \vdash j\,s\,k}{\vdash i\,(r;s)\,j}\]
+\[\rul{\vdash i \,r\,j \tb \vdash j\,s\,k}{\vdash i\,(r;s)\,k}\]
 
 Transitive closure:
 \[\rul{}{\vdash i \,r^*\,i} \tb \rul{\vdash i\,r\,j \tb \vdash j\,r^* k}{\vdash i\,r^* k}\]
