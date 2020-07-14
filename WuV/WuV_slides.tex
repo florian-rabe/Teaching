@@ -3281,27 +3281,22 @@ Example for deductive semantics:
 \end{itemize}  
 \end{frame}
 
-%\begin{frame}\frametitle{Problem: Conservativity}
-%In general, semantics could be non-conservative:
-%\begin{itemize}
-%\item even if back-translation exists: how do know we get all results?
-%\item Compare:
-% \begin{itemize}
-% \item have: $\vdash_L \delta:\sem{\Gamma}$ such that $\sem{\Gamma}\vdash_L \truelift \sem{p}[\delta]$ theorem
-% \item need: $\vdash_l \gamma:\Gamma$ such that $\sem{\Gamma}\vdash_l \truelift \sem{p[\gamma]}$ theorem
-% \end{itemize}
-%\item Substitution theorem: for every $\gamma$, there is a $\delta=\sem{\gamma}$.
-%\item Conservativity: for every $\delta$, there is a $\gamma$.
-%\end{itemize}
-%\end{frame}
+\begin{frame}\frametitle{Exercise 6}
+\begin{itemize}
+\item Implement a translation from BOL to untyped FOL
+ \glec{you can drop properties, types, and values}
+ \glec{so that only one type of individuals is needed}
+\item Use TPTP syntax for FOL
+ \glec{see \url{http://www.tptp.org/}}
+\item Translate an example ontology
+  \glec{pick any ontology with a non-trivial consequence closure}
+\item Use a theorem prover for first-order logic to implement a relative deductive semantics for BOL
+  \glec{Vampire and E are standard choices}
+  \glec{see also \url{http://www.tptp.org/cgi-bin/SystemOnTPTP}}
+\item Test by example whether your semantics yields the correct consequence closure
+\end{itemize}
+\end{frame}
 
 
 \end{document}
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% mode: visual-line
-%%% fill-column: 5000
-%%% End:
 
