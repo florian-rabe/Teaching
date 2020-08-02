@@ -2,18 +2,18 @@
 
 \paragraph{Motivation}
 An ontology is an abstract representation of the main concepts in some domain.
-Here \emph{domain} refers to any area of the real world such as mathematics, biology, diseases and medications, human relationships, etc.
-Many examples can be found at \url{https://bioportal.bioontology.org/}, including the Gene ontology one of the biggest.
+Here \textbf{domain} refers to any area of the real world such as mathematics, biology, diseases and medications, human relationships, etc.
+Many examples can be found at \url{https://bioportal.bioontology.org/}, including the Gene ontology, one of the biggest.
 
 Contrary to the other four aspects, ontological knowledge representations do not aim at capturing the entire semantics of the domain objects.
-Instead, they focus on defining unique identifiers for the those objects and describing some of their properties and relations to each other.
+Instead, they focus on defining unique identifiers for those objects and describing some of their properties and relations to each other.
 
 We use the word \textbf{ontologization} to refer to the process of organizing the knowledge of a domain in ontologies.
 
-Ontologies are most valuable when they are \emph{standardized} (either sanctioned through a formal body or a quasi-standard because everyone uses it).
+Ontologies are most valuable when they are \textbf{standardized} (either sanctioned through a formal body or a quasi-standard because everyone uses it).
 A standard ontology allows everybody in the domain to use the identifiers defined by the ontology in a way that avoids misunderstandings.
 Thus, in the simplest form, an ontology can be seen as a dictionary defining the technical terms of a domain.
-For example, the Gene ontology defines identifier \texttt{GO:0000001} to have the formal name "mitochondrion inheritance" and the informal definition "The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton.".
+For example, the Gene ontology defines identifier \texttt{GO:0000001} to have the formal name \enquote{mitochondrion inheritance} and the informal definition \enquote{The distribution of mitochondria, including the mitochondrial genome, into daughter cells after mitosis or meiosis, mediated by interactions between mitochondria and the cytoskeleton}.
 
 \paragraph{Ontology Languages}
 An ontology is written in \textbf{ontology language}.
@@ -32,25 +32,28 @@ Instead, an ontology language is a formal language that standardizes the syntax 
 The details of the syntax vary between ontology languages.
 But as a general rule, every \textbf{ontology} declares
 \begin{compactitem}
- \item \textbf{individual} --- concrete objects that exist in the real world, e.g., "Florian Rabe" or "WuV"
- \item \textbf{concept} --- abstract groups of individuals, e.g., "instructor" or "course"
- \item \textbf{relation} --- binary relations between two individuals, e.g., "teach"
- \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "creditValue"
+\item \textbf{individual} --- concrete objects that exist in the real world, e.\,g., \enquote{Florian Rabe} or \enquote{WuV}
+\item \textbf{concept} --- abstract groups of individuals, e.\,g., \enquote{instructor} or \enquote{course}
+\item \textbf{relation} --- binary relations between two individuals, e.\,g., \enquote{teach}
+\item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.\,g., \enquote{creditValue}
  \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
  \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
  \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
- \item \textbf{axioms} --- statements about relations between concepts, typically in the form subconcept of statements like "instructor" $\sqsubseteq$ "person"
+ \item \textbf{axioms} --- statements about relations between concepts, typically in the form subconcept of statements like \enquote{instructor} $\sqsubseteq$ \enquote{person}
 \end{compactitem}
 
 All assertions can be understood and spoken as subject-predicate-object \textbf{triples} as follows:
 \begin{center}
-\begin{tabular}{l|lll}
-Assertion & \multicolumn{3}{c}{Triple} \\
-          & Subject & Predicate & Object \\
-\hline
-concept assertion  & "Florian Rabe" & \texttt{is-a} & "instructor" \\
-relation assertion & "Florian Rabe" & "teach" & "WuV" \\
-property assertion & "WuV" & "creditValue" & 7.5 \\
+\begin{tabular}{llll}
+\toprule
+	& \multicolumn{3}{c}{Triple} \\
+\cmidrule(lr){2-4}
+Assertion & Subject & Predicate & Object \\
+\midrule
+concept assertion  & \enquote{Florian Rabe} & \texttt{is-a} & \enquote{instructor} \\
+relation assertion & \enquote{Florian Rabe} & \enquote{teach} & \enquote{WuV} \\
+property assertion & \enquote{WuV} & \enquote{creditValue} & 7.5 \\
+\bottomrule
 \end{tabular}
 \end{center}
 This uses a special relation \texttt{is-a} between individuals and concepts.
@@ -82,26 +85,33 @@ A separate division into two parts is the following:
 Because these principles pervade all formal languages, many competing synonyms are used in different domains.
 Common synonyms are:
 \begin{center}
-\begin{tabular}{l|llll|l}
+\begin{tabular}{l@{\qquad}llll@{\qquad}l}
+\toprule
+	& \multicolumn{4}{c}{Formal languages} & \\
+\cmidrule(r){2-5}
  Here       & OWL      & Description logics & ER model & UML & semantics via logics\\
-\hline
+\midrule
  individual & instance & individual & entity & object, instance & constant\\
  concept    & class    & concept &  entity-type & class & unary predicate\\
  relation   & object property & role & role & association & binary predicate \\
  property   & data property   & (not common) & attribute & field of base type & binary predicate\\
+\bottomrule
 \end{tabular}
 \end{center}
 
 In particular, the individual-concept relation occurs everywhere and is known under many names:
 \begin{center}
-\begin{tabular}{l|ll}
+	\begin{tabular}{l@{\qquad}ll}
+\toprule
  domain & individual & concept \\
-\hline
+\midrule
 type theory, logic & constant, term & type \\
 set theory  & element & set \\
 database    & row & table \\
+% This footnote is not shown
 philosophy\footnote{as in \url{https://plato.stanford.edu/entries/object/}} & object & property \\
 grammar & proper noun & common noun \\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -110,7 +120,7 @@ grammar & proper noun & common noun \\
 
 \newcommand{\galtprodg}[2]{\galtprod{\color{gray}#1}{\color{gray}#2}}
 
-\begin{figure}[hbt]
+\begin{figure}
 \begin{commgrammar}
 \gcomment{Vocabularies: Ontologies}\\
 \gprod{O}{\rep{D}}{}\\
@@ -159,9 +169,6 @@ grammar & proper noun & common noun \\
 \caption{Syntax of BOL}\label{fig:bol}
 \end{figure}
 
-\clearpage
-
-
 We could study practical ontology languages like ALC or OWL now.
 But those feature a lot of other details that can block the view onto the essential parts.
 Therefore, we first define a basic ontology language ourselves in order to have full control over the details.
@@ -189,7 +196,7 @@ The complex expressions are used to build axioms; in our case, these are the thr
 In Fig.~\ref{fig:bol}, the three productions in {\color{gray}gray} are duplicated: they occur both as assertions and as formulas.
 
 We could remove the three productions for assertions and treat them as special cases of axioms.
-But We keep the duplication here because assertions are often treated differently from the other axioms.
+But we keep the duplication here because assertions are often treated differently from the other axioms.
 They are grouped with the individuals in the ABox whereas the other axioms are seen as part of the TBox.
 Moreover, when used as assertions, they may have to be interpreted differently than when used as formulas as we will see in Ch.~\ref{sec:bolsem}.
 
@@ -203,7 +210,7 @@ The role of the axioms is two-fold:
 \begin{compactitem}
  \item They can be used to perform \textbf{consequence closure}: a formula may expresses a closure operation that defines assertions that are automatically added to the ontology.
  That can be difficult as some kind of exhaustive reasoning is needed.
- For example, if there is a subconcept axiom "instructor" $\sqsubseteq$ "person" and a concept assertion "FlorianRabe" is-a "instructor", we have to add the implied concept assertion "Florian Rabe" is-a "person".
+	For example, if there is a subconcept axiom \enquote{instructor} $\sqsubseteq$ \enquote{person} and a concept assertion \enquote{FlorianRabe} is-a \enquote{instructor}, we have to add the implied concept assertion \enquote{Florian Rabe} is-a \enquote{person}.
  \item They can be used to perform \textbf{consistency conditions} that must not violated by the ontology.
  For example, ontologies may contain contradictory assertions or violations of uniqueness constraints such as a person should only have one father or fathers should be male.
  The axioms exclude such cases.
@@ -238,7 +245,7 @@ course $\sqsubseteq$ $\exists$ teach$^{-1}$ instructor
 The axioms are meant to state that males and instructors are persons, teaching is done by instructors to courses, exactly the courses have credits, and (the last axiom) every course is taught by at least one instructor.
 Whether they actually do mean that, depends on the semantics.
 
-The consequence closure (as defined by the semantics) should add the assertion \verb|FlorianRabe is-a person|.
+The consequence closure (as defined by the semantics) should add the assertion \texttt{FlorianRabe is-a person}.
 Alternatively, if we use the axioms for consistency checking, we should add that assertion from the beginning.
 Otherwise, the axioms would not be true.
 
@@ -257,7 +264,7 @@ It is common to represent an entire ontology as a set of subject-predicate-objec
 That makes handling ontologies very simple and efficient.
 This is the preferred representation of the semantic web.
 
-However, while, e.g., relation assertions are naturally triples, not all declarations are, and some tricks may be necessary.
+However, while, e.\,g., relation assertions are naturally triples, not all declarations are, and some tricks may be necessary.
 
 \paragraph{Inferring the Entity Declarations}
 The entity declarations are not naturally triples.
@@ -273,50 +280,54 @@ The only place where they could occur in the TBox is in the axioms, and it is qu
 In fact, it is not unusual not to have any axioms.
 
 \paragraph{Special Predicates}
-To turn declarations into triples, we can use reflection, i.e., the process of talking about our language constructs as if they were data.
+To turn declarations into triples, we can use reflection, i.\,e., the process of talking about our language constructs as if they were data.
 
 Reflection requires introducing some built-in entities that represent the features of the language.
 In the semantic web area, this is performed using the following entities:
 \begin{compactitem}
- \item "rdfs:Resource": a built-in concept of which all individuals are an instance and thus of which every concept is a subconcept
- \item "rdf:type": a special predicate that relates an entity to its type:
+ \item \enquote{rdfs:Resource}: a built-in concept of which all individuals are an instance and thus of which every concept is a subconcept
+ \item \enquote{rdf:type}: a special predicate that relates an entity to its type:
   \begin{compactitem}
    \item an individual to its concept (corresponding to \texttt{is-a} above)
    \item other entities to their special type (see below)
   \end{compactitem}
- \item "rdfs:Class": a special class to be used as the type of classes
- \item "rdf:Property": a special class to be used as the type of properties
- \item "rdfs:subClassOf": a special relation that relates a subconcept to a superconcept
-% \item "rdfs:subPropertyOf": a special relation that relates a relation to one that it implies
- \item "rdfs:domain": a special relation that relates a relation to the concepts of its subjects
- \item "rdfs:range": a special relation that relates a relation/property to the concept/type of its objects
+ \item \enquote{rdfs:Class}: a special class to be used as the type of classes
+ \item \enquote{rdf:Property}: a special class to be used as the type of properties
+ \item \enquote{rdfs:subClassOf}: a special relation that relates a subconcept to a superconcept
+% \item \enquote{rdfs:subPropertyOf}: a special relation that relates a relation to one that it implies
+ \item \enquote{rdfs:domain}: a special relation that relates a relation to the concepts of its subjects
+ \item \enquote{rdfs:range}: a special relation that relates a relation/property to the concept/type of its objects
 \end{compactitem}
 Here "rdf" and "rdfs" refer to the RDF (Resource Description Framework) and RDFS (RDF Schema) namespaces, which correspond to W3C standards defining those special entities.
 
 Thus, we can represent many and in particular the most important entity declarations as triples:
 \begin{center}
-\begin{tabular}{l|lll}
-Assertion & \multicolumn{3}{c}{Triple} \\
-          & Subject & Predicate & Object \\
-\hline
-individual & individual & "rdf:type" & "rdfs:Resource" \\
-concept  & concept & "rdf:type" & "rdf:Class" \\
-relation & relation & "rdf:type" & "rdf:Property" \\
-property & property & "rdf:type" & "rdf:Property" \\
-concept assertion  & individual & "rdf:type" & concept \\
+\begin{tabular}{llll}
+\toprule
+	& \multicolumn{3}{c}{Triple} \\
+\cmidrule(r){2-4}
+Assertion & Subject & Predicate & Object \\
+\midrule
+individual & individual & \enquote{rdf:type} & \enquote{rdfs:Resource} \\
+concept  & concept & \enquote{rdf:type} & \enquote{rdf:Class} \\
+relation & relation & \enquote{rdf:type} & \enquote{rdf:Property} \\
+property & property & \enquote{rdf:type} & \enquote{rdf:Property} \\
+concept assertion  & individual & \enquote{rdf:type} & concept \\
 relation assertion & individual & relation & individual \\
 property assertion & individual & property & value \\
-\hline
-\multicolumn{4}{l}{for special forms of axioms}\\
-$c\sqsubseteq d$ & $c$ & "rdfs:subClassOf" & $d$ \\
-%$r\sqsubseteq s$ & $r$ & "rdfs:subPropertyOf" & s \\
-$\dom\,r\Equiv c$ & $r$ & "rdfs:domain" & $c$ \\
-$\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
+\midrule
+\multicolumn{4}{c}{for special forms of axioms}\\
+\addlinespace
+$c\sqsubseteq d$ & $c$ & \enquote{rdfs:subClassOf} & $d$ \\
+%$r\sqsubseteq s$ & $r$ & \enquote{rdfs:subPropertyOf} & s \\
+$\dom\,r\Equiv c$ & $r$ & \enquote{rdfs:domain} & $c$ \\
+$\rng\, r\Equiv c$ & $r$ & \enquote{rdfs:range} & $c$ \\
+\bottomrule
 \end{tabular}
 \end{center}
 
 This is subject to the restriction that only atomic concepts and relations can be handled.
-For example, only concept assertions can be handled that make an individual an instance of an \emph{atomic} concept.
+For example, only concept assertions can be handled that make an individual an instance of an \textbf{atomic} concept.
 This is particularly severe for axioms, where complex expressions occur most commonly in practice.
 Here, the special relations allow capturing the most common axioms as triples.
 
@@ -324,18 +335,18 @@ Here, the special relations allow capturing the most common axioms as triples.
 Reflection is subtle and can easily lead to inconsistencies.
 We can see this in how the approach of RDF(S) special entities breaks the semantics via FOL.
 
-For example, it treats classes both as concepts (when they occur as the object of a concept assertion) and as individuals (when they occur as subject or object of a "rdfs:subClassOf" relation assertion).
-Similarly, "rdfs:Class" is used both as an individual and as a class.
-In fact, the standard prescribes that "rdfs:Class" is an instance of itself.
+For example, it treats classes both as concepts (when they occur as the object of a concept assertion) and as individuals (when they occur as subject or object of a \enquote{rdfs:subClassOf} relation assertion).
+Similarly, \enquote{rdfs:Class} is used both as an individual and as a class.
+In fact, the standard prescribes that \enquote{rdfs:Class} is an instance of itself.
 
 In practice, this is handled pragmatically by using ontologies that make sense.
-A formal way to disentangle this is to assume that there are two variants of "rdfs:Class", one as an individual and one as a class.
-The translation must then translate "rdfs:Class" differently depending on how it is used.
+A formal way to disentangle this is to assume that there are two variants of \enquote{rdfs:Class}, one as an individual and one as a class.
+The translation must then translate \enquote{rdfs:Class} differently depending on how it is used.
 
 It would be better if RDFS were described in a way that is consistent under the implicitly intended FOL semantics.
 But the more pragmatic approach has the advantage of being more flexible.
 For example, being able to treat every class, relation, or property also as an individual makes it easy to annotate metadata to them.
-Metadata is a set of properties such as "rdfs:seeAlso" or "owl:versionInfo", whose subjects can be any entity.
+Metadata is a set of properties such as \enquote{rdfs:seeAlso} or \enquote{owl:versionInfo}, whose subjects can be any entity.
 
 
 \paragraph{Subject-Centered Representations}

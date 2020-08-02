@@ -6,36 +6,38 @@ We write $x:A$ to say that $x$ has type $A$.
 There are two fundamentally different methods for introducing the types $A$, which are summarized in the following table:
 
 \begin{center}
-\begin{tabular}{l|ll}
+\begin{tabular}{lll}
+\toprule
 & intrinsic & extrinsic \\
-\hline
+\midrule
 goes back to $\lambda$-calculus by & Church & Curry \\
 general idea & objects carry their type with them & types are designated by the environment \\
 typing is a & function from objects to types & relation between objects and types \\
 objects have & unique type & any number of types \\
 types often interpreted as & disjoint sets & unary predicates on a universal set \\
-\hline
+\midrule
 type inference for $x$ & uniquely infer $A$ from $x$ & try to find minimal $A$ such that $x:A$ \\
 type checking & compare inferred and expected type & prove $x:A$ \\
 subtyping $A<:B$ & mimicked by casting from $A$ to $B$ & defined by $x:A$ implies $x:B$ for all $x$ \\
 typing decidable & yes unless too expressive & no unless expressivity restricted \\
 typing errors are detected & usually statically (compile-time) & dynamically (run-time)\\
-\hline
+\midrule
 type of name introduced as & part of declaration & additional axiom \\
- \tb example               &  \kw{individual} "WuV":"course"  & \kw{individual} "Wuv", \; "WuV" \texttt{is-a} "course"\\
-\hline
+\tb example               &  \kw{individual} \enquote{WuV}:\enquote{course}  & \kw{individual} \enquote{Wuv}, \; \enquote{WuV} \texttt{is-a} \enquote{course}\\
+\midrule
 advantages & easy & flexible \\
            & unique type inference & allows subtyping \\
-\hline
+\midrule
 examples   & SFOL, SQL & OWL, Scala, English \\
            & most logics, functional PLs & ontology, OO, natural languages \\
-           & many type theories & set theories
+           & many type theories & set theories \\
+\bottomrule
 \end{tabular}
 \end{center}
 
 \begin{example}[Extrinsically Typed Ontology Language]
 In BOL, the objects are the individuals, the types are the concepts, and \texttt{is-a} is the typing relation between them.
-The typing is intrinsic:
+The typing is extrinsic:
 \begin{compactitem}
  \item Individuals and their concept assertions are introduced in separate declarations.
  \item An individual may be an instance of any number of concepts.
@@ -47,13 +49,15 @@ The typing is intrinsic:
 Therefore, all semantics must interpret individuals as elements of a universal collection, and types as unary predicates on that.
 Specifically, we have
 \begin{center}
-\begin{tabular}{l|lll}
+\begin{tabular}{llll}
+\toprule
 semantics in  & universal collection & unary predicate & typing relation $i$ \texttt{is-a} $c$\\
-\hline
+\midrule
 FOL & type $\iota$  & predicate $c\sq\iota$ & $c(i)$ true\\
 SQL & table Individuals & table containing ids & id of i in table $c$ \\
 Scala & String & hash set of strings & $c$.contains($i$) \\
-English & proper nouns & common nouns & "$i$ is a $c$" is true
+English & proper nouns & common nouns & \enquote{$i$ is a $c$} is true \\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -64,7 +68,7 @@ Like for individuals that allows flexibility as the same relations may have mult
 \end{example}
 
 \begin{example}[Intrinsically Typed Ontology Language]
-We could define TOL, a typed ontology language that arises as a variant of BOL.
+We could define TOL, a typed ontology language that arises as a variant of BOL\@.
 The main differences would be
 \begin{compactitem}
  \item Individuals are declared with a concept that serves as their type: \kw{individual} $i:C$.
@@ -83,7 +87,7 @@ teach <: instrctor $\times$ course
 \end{lstlisting}
 
 However, we would lose flexibility.
-If we want to add the concept "male", it would be difficult to make {\FR} have both types.
+If we want to add the concept \enquote{male}, it would be difficult to make {\FR} have both types.
 We might be able to remedy that by allowing intersections and declaring \lstinline|individual FlorianRabe: instructor $\sqcap$ male|.
 But even then, we would have to commit to the type of each individual right away --- we cannot add different concept assertions for the same individual in different places, a common occurrence in building large ontologies.
 
@@ -92,7 +96,7 @@ If we are careful in the design of TOL, that may still result in an elegant scal
 In particular, typing may remain decidable (depending on what other operations we allow).
 But if we go too far, it may end up so complex that it would have been easier to go with extrinsic typing.
 
-That is why we use intrinsic typing only in two related places in BOL:
+That is why we use intrinsic typing only in two related places in BOL\@:
 \begin{compactitem}
  \item The base types and values use an intrinsic type system (whose details we omitted).
  \item The range of properties is given intrinsically by a base type.
@@ -176,11 +180,11 @@ individual "FlorianRabe"
 It is often desirable to use types to force the presence of such assertions.
 We might wish require that every instructor teaches a list of things, and has an office.
 Moreover, we can use types to specify the objects of the respective assertions: we can specify that only courses are taught and that the office is a string.
-Rather than the relations with subjects "FlorianRabe" just happening to be around as well, the type system would now force their existence and the type of the object.
-Forgetting to give such an assertion or giving it with the wrong object could be detected statically (i.e., without applying the semantics) and flagged as a typing error.
+Rather than the relations with subjects \enquote{FlorianRabe} just happening to be around as well, the type system would now force their existence and the type of the object.
+Forgetting to give such an assertion or giving it with the wrong object could be detected statically (i.\,e., without applying the semantics) and flagged as a typing error.
 
 This leads to the idea of \textbf{subject-centered types}.
-This could looks as follows:
+This could look as follows:
 \begin{lstlisting}
 concept instructor
   teach course$^*$
@@ -193,7 +197,7 @@ individual "FlorianRabe": "instructor"
   "age" 40
   "office" "11.137"
 \end{lstlisting}
-Now the type "instructor" forces the presence of a list of taught courses (The $^*$ is meant to indicate a list.), an integer for the age, and a string for the office.
+Now the type \enquote{instructor} forces the presence of a list of taught courses (the $^*$ is meant to indicate a list), an integer for the age, and a string for the office.
 
 We can now see that, in fact, every person should have an age, and not just every instructor.
 Because every instructor is meant to be a person, we could try to capture this as well to avoid redundancy.
@@ -233,23 +237,25 @@ This is part of a trade-off: the more the type system can do,
  \item the more complex the type system and its documentation and implementation become.
 \end{compactitem}
 
-Abstract data types have proved to be a particularly interesting trade-off on this expressivity-simplicity spectrum and are --- in one way or another --- part of many type systems
+Abstract data types have proved to be a particularly interesting trade-off on this expressivity-simplicity spectrum and are --- in one way or another --- part of many type systems.
 The following table gives an overview:
 \begin{center}
-\begin{tabular}{l|ll}
+\begin{tabular}{lll}
+\toprule
 aspect & language & abstract data type \\
-\hline
+\midrule
 ontologization & UML & class \\
 concretization & SQL & table schema \\
 computation & Scala & class, interface \\
 deduction & various & theory, specification, module, locale \\
-narration & various & emergent feature
+narration & various & emergent feature \\
+\bottomrule
 \end{tabular}
 \end{center}
 
 \subsection{Abstract vs. Concrete}
 
-The words \emph{abstract} and \emph{concrete} do not have standard definitions for types.
+The words \textbf{abstract} and \textbf{concrete} do not have standard definitions for types.
 I like the intuitions described below.
 
 A type is called \textbf{concrete} if its values are
@@ -291,8 +297,8 @@ A UML class only defines what methods should be available.
 How they are implemented by specific values of the type is left to the programming languages.
 
 Thus, different programming languages could have different values for the same abstract data type.
-They certainly look different, e.g., in Java and Scala implementations of the same UML class.
-But the languages might also be fundamentally different in expressivity, e.g., a Turing-complete programming language might have strictly more values for the same abstract data type than a non-Turing-complete one.
+They certainly look different, e.\,g., in Java and Scala implementations of the same UML class.
+But the languages might also be fundamentally different in expressivity, e.\,g., a Turing-complete programming language might have strictly more values for the same abstract data type than a non-Turing-complete one.
 
 Moreover, which instances actually exist changes during the run time of the program.
 If we take this into account, the values of the abstract data type are not even fixed within a programming language.
@@ -310,16 +316,16 @@ This would be different if we allowed table columns to have function types.
 \end{example}
 
 \begin{example}[Theories]
-A logical theory (e.g., Monoid) is an abstract data type.
-Its values are the models of the theory (e.g., for Monoid: $(\N,+,0)$ or $(\N,*,1)$).
+A logical theory (e.\,g., Monoid) is an abstract data type.
+Its values are the models of the theory (e.\,g., for Monoid: $(\N,+,0)$ or $(\N,*,1)$).
 
 The theory only defines what operations a model must provide (for Monoid: binary operation and neutral element) and which axioms it must satisfy (for Monoid: associativity, neutrality).
 How we build the models is left open.
 
 We usually build models in mathematical language and naively assume that fixes the models once and for all.
-But that is too naive: depending on which mathematical foundation we use (e.g., set theory with or without axioms of choice), we can build different models.
+But that is too naive: depending on which mathematical foundation we use (e.\,g., set theory with or without axioms of choice), we can build different models.
 Moreover, we can also build models in type theories (which underly many deduction systems such as Coq or Isabelle).
-We can even build them in programming languages, e.g., by implementing theories as classes (typically moving the axioms into comments).
+We can even build them in programming languages, e.\,g., by implementing theories as classes (typically moving the axioms into comments).
 
 The choice of language substantially changes what the values of the abstract data type are.
 \end{example}
@@ -393,7 +399,7 @@ In the simplest case, we forbid such forward references.
 Then ADTs are very well-behaved.
 But we have a problem with the case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields may refer to $c$.
 A straightforward solution would be to declare the ADT to be ill-formed.
-But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class $c:T=t$ in a concrete class implementing it.
+But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class and $c:T=t$ in a concrete class implementing it.
 
 A more common solution is to allow the fields to be mutually recursive.
 Consider a flat ADT with fields $\Gamma, c:T[=t], \Delta$ where $\Gamma$ and $\Delta$ are lists of fields.

@@ -13,8 +13,8 @@ knowledge representation tool & KRT & a tool implementing a KPL and processing a
 \subsection{Knowledge}
 
 Human knowledge pervades all sciences including computer science, mathematics, natural sciences and engineering.
-That is not surprising: ``science'' is derived from the Latin word ``scire'' meaning ``to know''.
-Similarly, philosophy, from which all sciences derive, is named after the Greek words ``philo'' meaning loving and ``sophia'' meaning wisdom, and the for common ending ``-logy'' is derived from Greek ``logos'' meaning word (i.e., a representation of knowledge).
+That is not surprising: \enquote{science} is derived from the Latin word \enquote{scire} meaning \enquote{to know}.
+Similarly, philosophy, from which all sciences derive, is named after the Greek words \enquote{philo} meaning loving and \enquote{sophia} meaning wisdom, and the common ending \enquote{-logy} is derived from Greek \enquote{logos} meaning word (i.\,e., a representation of knowledge).
 
 In regards to knowledge, computer science is special in two ways:
 Firstly, many branches of computer science need to understand KRP as a prerequisite for teaching computers to do knowledge-based tasks.
@@ -26,32 +26,34 @@ That often leads to bad solutions when domain experts cannot see which KRP solut
 
 \subsection{Representation and Processing}
 
-It is no coincidence that this course uses the phrase ``Representation and Processing''.
+It is no coincidence that this course uses the phrase \enquote{Representation and Processing}.
 In fact, this is an instance of a universal duality.
 Consider the following table of analogous concept pairs, which could be extended with many more examples:
 
 \begin{center}
-\begin{tabular}{l|l}
+\begin{tabular}{ll}
+\toprule
 Representation & Processing \\
-\hline
+\midrule
 Static & Dynamic \\
 Situation & Change \\
 Be & Become \\
 Data Structures & Algorithms \\
 Set & Function \\
 State & Transition \\
-Space & Time
+Space & Time \\
+\bottomrule
 \end{tabular}
 \end{center}
 
-Again and again, we distinguish a static concept that describes/represents what is a situation/state is and a dynamic concept that describes how it changes.
-If that change is a computer doing something with or acting on that representation, we speak of ``processing''.
+Again and again, we distinguish a static concept that describes/represents what a situation/state is and a dynamic concept that describes how it changes.
+If that change is a computer doing something with or acting on that representation, we speak of \enquote{processing}.
 
 It is particular illuminating to contrast KRP to the standard CS course on Data Structures and Algorithms (DA).%
-\footnote{The course is typically called ``Algorithms and Data Structures'', but that is arguably awkward because algorithms can exist if there are data structure to work with. Compare my notes on that course in this repository, where I emphasize data structures much more than is commonly done in that course.}
+\footnote{The course is typically called \enquote{Algorithms and Data Structures}, but that is arguably awkward because algorithms can only exist if there are data structure to work with. Compare my notes on that course in this repository, where I emphasize data structures much more than is commonly done in that course.}
 Generally speaking, DA teaches the methods, and KRP teaches how to apply them.
 Data structures are a critical prerequisite for representing knowledge.
-But data structures alone do not capture what the data means (i.e., the knowledge) or if a particular representation makes any sense.
+But data structures alone do not capture what the data means (i.\,e., the knowledge) or if a particular representation makes any sense.
 Similarly, algorithms are the critical prerequisite for processing knowledge.
 But while algorithms can be systematically analyzed for efficiency, it is much harder to analyze if an algorithm processes knowledge correctly.
 The latter requires understanding what the input and output data means.
@@ -75,31 +77,31 @@ Semantics & Knowledge
 \end{tabular}
 \end{center}
 
-All four concepts are primitive, i.e., they cannot be defined in simpler terms.
-All sciences have few carefully-chosen primitive on which everything builds.
+All four concepts are primitive, i.\,e., they cannot be defined in simpler terms.
+All sciences have few carefully-chosen primitives on which everything builds.
 This is done most systematically in mathematics (where primitives include set or function).
 While mathematical primitives as well as some primitives in physics or CS are specified formally, the above four concepts can only be described informally, ultimately appealing to pre-existing human understanding.
-Moreover, this description is not standardized --- different courses may use very different descriptions even they ultimately try to capture the same elusive ideas.
+Moreover, this description is not standardized --- different courses may use very different descriptions even if they ultimately try to capture the same elusive ideas.
 
 \textbf{Data} (in the narrow sense of computer science) is any object that can be stored in a computer, typically combined with the ability to input/output, transfer, and change the object.
 This includes bits, strings, numbers, files, etc.
 
 Data by itself is useless because we would have no idea what to do with it.
-For example, the object $O=((49.5739143, 11.0264941), "2020-04-21T16:15:00CEST")$ is useless data without additional information about its syntax and semantics.
+For example, the object $O=((49.5739143, 11.0264941), "2020-04-21\text{T}16:15:00\text{CEST}")$ is useless data without additional information about its syntax and semantics.
 Similarly, a file is useless data unless we know which file format it uses.
 
 \textbf{Syntax} is a system of rules that describes which data is \textbf{well-formed}.
-For $O$ above the syntax could be ``a pair of (a pair of two IEEE double precision floating point numbers) and a string encoding of an time stamp''. 
-For a file, the syntax is often indicated by the file name extension, e.g., the syntax of an \texttt{html} file is given in Section 12 of the current HTML standard\footnote{\url{https://html.spec.whatwg.org/multipage/}}.
+For $O$ above the syntax could be \enquote{a pair of (a pair of two IEEE double precision floating point numbers) and a string encoding of an time stamp}. 
+For a file, the syntax is often indicated by the file name extension, e.\,g., the syntax of an \texttt{html} file is given in Section 12 of the current HTML standard\footnote{\url{https://html.spec.whatwg.org/multipage/}}.
 
-Syntax alone is useless unless we know what the semantics, i.e., what the data means and thus how to correctly interpret and process the data.
-For example, the syntax of $O$ allows to check that $O$ is well-formed, i.e., indeed contains two numbers and a timestamp string.
-That allows rejecting ill-formed data such as $((49.5739143, 11.0264941), "foo")$.
+Syntax alone is useless unless we know what the semantics, i.\,e., what the data means and thus how to correctly interpret and process the data.
+For example, the syntax of $O$ allows to check that $O$ is well-formed, i.\,e., indeed contains two numbers and a timestamp string.
+That allows rejecting ill-formed data such as $((49.5739143, 11.0264941), "\text{foo}")$.
 The HTML syntax allows us to check that a file conforms to the standard.
 
 \textbf{Semantics} is a system of rules that determines the meaning of well-formed data.
 For example, ISO 8601 specifies that timestamp string refer to a particular date and time in a particular time zone.
-Further semantics for $O$ might be implicit in the algorithms that produce and consume it: such as ``the first component of the pair contains two numbers between $0$ and $180$ resp. $0$ and $360$ indicating latitude resp. longitude of a location on earth''.
+Further semantics for $O$ might be implicit in the algorithms that produce and consume it: such as \enquote{the first component of the pair contains two numbers between $0$ and $180$ resp. $0$ and $360$ indicating latitude resp. longitude of a location on earth}.
 Semantics might be multi-staged, and further semantics about $O$ might be that $O$ indicates the location and time of the first lecture of this course.
 Similarly, Section 14 of the HTML standard specifies the semantics of well-formed HTML files by describing how they are to be rendered in a web browser.
 
@@ -110,7 +112,7 @@ In computer systems,
  \item data is represented using primitive data (ultimately the bits provided by the hardware) and encodings of more complex data (bytes, arrays, strings, etc.) in terms of simpler ones,
  \item syntax is theoretically specified using grammars and practically implemented in programming languages using data structures,
  \item semantics is represented using algorithms that process syntactically well-formed data,
- \item knowledge is elusive and often emerges from executing the semantics, e.g., rendering of an HTML file.
+ \item knowledge is elusive and often emerges from executing the semantics, e.\,g., rendering of an HTML file.
 \end{compactitem}
 
 \subsection{Semantics as Syntax Transformation}
@@ -121,19 +123,21 @@ In that case, semantics is a function that translates from the data syntax to th
 The following table gives some examples.
 
 \begin{center}
-\begin{tabular}{l|l|l}
+\begin{tabular}{lll}
+\toprule
 Data syntax & Semantics function & Knowledge syntax \\
-\hline
+\midrule
 SPARQL query & evaluation & result set \\
 SQL query & evaluation & result table \\
 program & compiler & binary code \\
 program expression & interpreter & result value \\ 
 logical formula & interpretation in a model & mathematical object \\
-HTML document & rendering & graphical representation 
+HTML document & rendering & graphical representation \\
+\bottomrule
 \end{tabular}
 \end{center}
 
-Thus, the role of syntax vs. semantics may depend on the context: just like one function's output can be another function's input, one interpretation's knowledge can be another one's syntax.
+Thus, the role of syntax vs.\ semantics may depend on the context: just like one function's output can be another function's input, one interpretation's knowledge can be another one's syntax.
 For example, we can first compile a program into binary and then execute it to returns its value.
 
 Such hierarchies of evaluation levels are very common in computer systems.
@@ -146,19 +150,19 @@ While it is easy to design languages to represent data in general, it is very di
 Over the last few decades, the KRP area in computer science has diversified into different subareas that approach this research problem in fundamentally different ways.
 In fact, KRP in the very general sense of this course is usually not even studied by itself --- instead the subareas are so different, specialized, and large that they all sustain their respective university courses and research conferences.
 
-This is related to the fact the data naturally comes in fundamentally different forms such as graphs, arrays, tables in the sense of relational databases, programs in a programming language, logical formulas, or natural language texts.
+This is related to the fact that the data naturally comes in fundamentally different forms such as graphs, arrays, tables in the sense of relational databases, programs in a programming language, logical formulas, or natural language texts.
 We speak of \textbf{heterogeneous} data.
-These different forms of data are supported by highly specialized KPTs: graph databases, array databases, relational databases, package databases for programming languages, theorem databases for logics (e.g., the Isabelle Archive of Formal Proofs), databases of research papers (such as the arXiv), and so on.
+These different forms of data are supported by highly specialized KPTs: graph databases, array databases, relational databases, package databases for programming languages, theorem databases for logics (e.\,g., the Isabelle Archive of Formal Proofs), databases of research papers (such as the arXiv), and so on.
 
 All of these are very successful for their respective kind of data.
 And all of them include specifications of semantics and KP algorithms that implement this semantics.
-But it can very massively how the semantics is specified and implemented.
-This has cause major practical problems for tool interoperability: many projects require data in multiple formats and algorithms from multiple tools.
+But it can vary massively how the semantics is specified and implemented.
+This has caused major practical problems for tool interoperability: many projects require data in multiple formats and algorithms from multiple tools.
 But the respective tools are often islands that assume that all data is represented in the tool's language and users do not use outside tools.
 Therefore, the import/export capabilities of the tools are often limited.
 
 Moreover, transporting data across systems is usually ignorant of the semantics: while each tool takes relatively good care to implement the semantics correctly, there is much less certainty that the semantics is preserved when exchanging data across tools.
-For a trivial example, consider a tool that measure length in inches vs. a tool that uses centimeters, both using floating point numbers for the data: if they exchange the data, i.e., just the numbers, they may mis-communicate the semantics.%
+For a trivial example, consider a tool that measures length in inches vs.\ a tool that uses centimeters, both using floating point numbers for the data: if they exchange the data, i.\,e., just the numbers, they may miscommunicate the semantics.%
 \footnote{Problems like this have been involved in major disasters such as the Mars Climate Orbiter.} 
 
 This problem is not easy to fix though.
@@ -179,13 +183,15 @@ For each aspect, there is a variety dedicated KRLs supported by highly optimized
 
 \begin{center}
 \begin{tabular}{lll}
+\toprule
 Aspect & KRLs (examples) & KPTs (examples) \\
-\hline
+\midrule
 ontologization & ontology languages (OWL), description logics (ALC) & reasoners, SPARQL engines (Virtuoso) \\
 concretization & relational databases (SQL, JSON) & databases (MySQL, MongoDb) \\
 computation & programming languages (C) & interpreters, compilers (gcc) \\
 deduction & logics (HOL) & theorem provers (Isabelle) \\
-narration & document languages (HTML, LaTeX) & editors, viewers
+narration & document languages (HTML, LaTeX) & editors, viewers \\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -194,7 +200,7 @@ This focuses on identifying the central concepts in a domain and their relations
 For example, a medical ontology would define concepts for every symptom, disease, and medication and then define relations for which symptoms and medications are related to which disease.
 
 Ontologies typically abstract from the knowledge: they standardize identifiers for the concepts and spell out some properties and relations but do not try to capture all details of the knowledge.
-Well-designed ontologies can capture exactly that different KPTs must share and can thus serve as interoperability layers between them.
+Well-designed ontologies can capture exactly what different KPTs must share and can thus serve as interoperability layers between them.
 
 While organization can use ontology languages such as OWL or RDF, the inherent complexity of formal objects in computer science and mathematics usually requires going beyond general purpose ontology languages (similar to how the programming languages underlying computer algebra systems usually go beyond general purpose programming languages).
 
@@ -205,9 +211,9 @@ Because concrete objects are so simple and widely used, it is possible and commo
 
 \textbf{Deduction} uses logics and theorem provers  to obtain verifiable correctness.
 
-\textbf{Narration} uses natural language to obtain texts are easy to understand for humans.
+\textbf{Narration} uses natural language to obtain texts that are easy to understand for humans.
 Because narrative languages are not well-standardized (apart from general purpose languages such as free text or \LaTeX), it is common to develop narrative libraries on top of ad-hoc languages that impose some formal structure on top of informal text, such as a fixed tree structure whose leafs are free text or a particular set of {\LaTeX} macros that must be used.
-Narrative libraries can be classified based on whether entries are derived from publications (e.g., one abstract per paper in zbMATH) or mathematical concepts (e.g., one page per concept in $n$Lab).
+Narrative libraries can be classified based on whether entries are derived from publications (e.\,g., one abstract per paper in zbMATH) or mathematical concepts (e.\,g., one page per concept in $n$Lab).
 %While these languages have multiple implementations, individual libraries usually involve specific encodings that are implemented only by a single tool.
 
 %For example, an organization language might state only a function's type and properties.
@@ -240,34 +246,52 @@ The aspects can be visualized as the corners of tetrahedron with ontologization 
 \caption{Tetrapod model of knowledge}\label{fig:tetrapod}
 \end{figure}
 
-\begin{figure}[htb]\centering\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{|l|llp{2.1cm}l|}\hline
-       & \multicolumn{4}{c|}{characteristic} \\
-Aspect &  objects & advantage & joint advantage of the other aspects & application \\\hline
-deduction & formal proofs & correctness & ease of use & verification \\
-computation & programs & efficiency & well-definedness & execution\\
-concretization & concrete objects & tangibility & abstraction & storage/retrieval\\
-narration & texts & flexibility & formal semantics & human understanding\\\hline
-\end{tabular}
-\quad
-\begin{tabular}{|l|l|}\hline
-Aspect pair & characteristic advantage \\\hline
-ded./comp.  & rich meta-theory \\
-narr./conc. & simple languages \\\hline
-ded./narr.  & theorems and proofs \\
-comp./conc. & normalization \\\hline
-ded./conc.  & decidable well-definedness \\
-comp./narr. & Turing completeness \\\hline
-\end{tabular}
-\caption{Shared properties and advantages of aspects}\label{fig:tetrapod2}
-\end{figure}
-
 Most approaches try to incorporate all or multiple aspects.
 But all languages and tools tend to be heavily biased towards and optimized for a single one of the four corner aspects.
 This is not due to ignorance but because each aspect provides characteristic advantages that are extremely hard to capture at once.
-In fact, every combination of aspects shares characteristic advantages and disadvantages as sketched in Figure~\ref{fig:tetrapod2}.
+In fact, every combination of aspects shares characteristic advantages and disadvantages as sketched in~\autoref{fig:tetrapod2}.
 For example, deductive and narrative definitions of a function involved well-definedness arguments, and a function defined by a concrete table is trivially well-defined, but a computational definition of a function may throw exceptions when running; but only the latter can store and compute functions efficiently.
 Consequently, dedicated and mostly disjoint communities have evolved that have produced large aspect-specific datasets.
+
+\begin{table}[h]
+\caption{Shared properties and advantages of aspects}\label{fig:tetrapod2}
+\begin{subtable}{\textwidth}
+\centering
+\caption{Characteristics of aspects}
+\begin{tabular}{lllp{2.8cm}l}
+\toprule
+	& \multicolumn{4}{c}{characteristic} \\
+\cmidrule(lr){2-5}
+Aspect &  objects & advantage & joint advantage of the other aspects & application \\
+\midrule
+deduction & formal proofs & correctness & ease of use & verification \\
+computation & programs & efficiency & well-definedness & execution\\
+concretization & concrete objects & tangibility & abstraction & storage/retrieval\\
+narration & texts & flexibility & formal semantics & human understanding\\
+\bottomrule
+\end{tabular}
+\end{subtable}
+
+\medskip
+\begin{subtable}{\textwidth}
+\centering
+\caption{Advantages of aspect pairs}
+\begin{tabular}{ll}
+\toprule
+Aspect pair & characteristic advantage \\
+\midrule
+deduction/computation  & rich meta-theory \\
+narration/concretization & simple languages \\
+\addlinespace
+deduction/narration  & theorems and proofs \\
+computation/concretization & normalization \\
+\addlinespace
+deduction/concretization  & decidable well-definedness \\
+computation/narration & Turing completeness \\
+\bottomrule
+\end{tabular}
+\end{subtable}
+\end{table}
 
 %\subsection{Aspect-Specific Datasets in Mathematics}
 %
@@ -276,7 +300,7 @@ Consequently, dedicated and mostly disjoint communities have evolved that have p
 %We have also pre-published a draft of an extensive survey in \cite{CarFarSharBerKohMueRab:somss20}.
 %
 %Crucially, these disjoint projects overlap massively.
-%For example, the concept of \emph{group} is defined in most proof assistants and computer algebra systems, concrete groups are part of multiple large libraries (e.g., as the main object of interest in the small groups libraries, or as symmetry groups arising from other objects), and has entries in most narrative libraries (e.g., with entries in Stacks and nLab).
+%For example, the concept of \emph{group} is defined in most proof assistants and computer algebra systems, concrete groups are part of multiple large libraries (e.\,g., as the main object of interest in the small groups libraries, or as symmetry groups arising from other objects), and has entries in most narrative libraries (e.\,g., with entries in Stacks and nLab).
 %Despite the overwhelming practical need, at the moment there is little to no technology to integrate libraries across this overlap.
 %The same effect is found in other domains.
 %

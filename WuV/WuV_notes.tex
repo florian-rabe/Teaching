@@ -5,7 +5,10 @@
 \usepackage{multirow}
 %\usepackage{bm} %% bold face math symbols
 \usepackage{listings}
-\lstset{mathescape}
+\lstset{
+	basicstyle=\ttfamily,
+	mathescape,
+}
 \usepackage{../macros/mytikz}
 %\usepackage{multicol}
 \usepackage{stmaryrd}%\newcommand{\contra}{\lightning}
@@ -13,6 +16,33 @@
 \usepackage[show]{ed}
 %\usepackage{../macros/algorithm}
 %\usepackage{ded}
+
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage{csquotes}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{subcaption}
+
+% Must be refined and isn't working - but at least, scala is defined
+% tex.stackexchange.com/questions/47175/scala-support-in-listings-package
+\lstdefinelanguage{scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,\#,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
 
 \usepackage{../mylecturenotes}
 \usepackage{../macros}

@@ -5,10 +5,10 @@ Due to their central in knowledge representation, a number of languages for onto
 Most importantly, the syntax and semantics of OWL, including several sublanguages, are standardized by the W3C.
 
 OWL includes a number of built-in special entities.
-Most importantly, "owl:Thing" corresponds to "rdfs:Resource" as the concept of all individuals.
+Most importantly, \enquote{owl:Thing} corresponds to \enquote{rdfs:Resource} as the concept of all individuals.
 
 \paragraph{Concrete Syntax}
-Several concrete syntaxes have been defined and are commonly used for OWL.
+Several concrete syntaxes have been defined and are commonly used for OWL\@.
 The OWL2 primer\footnote{\url{https://www.w3.org/TR/2012/REC-owl2-primer-20121211/}} systematically describes examples in five different concrete syntaxes.
 
 APIs for OWL implement the abstract syntax along with good support for reading/writing ontologies in any of the concrete syntaxes.
@@ -19,24 +19,26 @@ A widely used tool for writing ontologies in OWL is Protege\footnote{\url{https:
 
 To get started with Protege without getting confused, we need to continue understand how its key terminology maps to other contexts.
 \begin{center}
-\begin{tabular}{l|ll}
+\begin{tabular}{l@{\qquad}ll}
+\toprule
  Here       & Protege & Edited in WebProtege via \\
-\hline
- individual & individual & listed in "Individuals" tab\\
- concept    & class   & listed in "Classes" tab  \\
- relation   & object property & listed in "Properties" tab\\
- property   & data property & listed in "Properties" tab\\
- concept assertion & Type & detail area of the individual in "Individuals" tab \\
- relation assertion & Relationship & detail area of the subject in "Individuals" tab \\
- property assertion & Relationship & detail area of the subject in "Individuals" tab \\
+ \midrule
+individual & individual & listed in \enquote{Individuals} tab\\
+concept    & class   & listed in \enquote{Classes} tab  \\
+relation   & object property & listed in \enquote{Properties} tab\\
+property   & data property & listed in \enquote{Properties} tab\\
+concept assertion & Type & detail area of the individual in \enquote{Individuals} tab \\
+relation assertion & Relationship & detail area of the subject in \enquote{Individuals} tab \\
+property assertion & Relationship & detail area of the subject in \enquote{Individuals} tab \\
+\bottomrule
 \end{tabular}
 \end{center}
 
 Protege's interface treats some parts of the ontology specially:
 \begin{compactitem}
- \item The "Classes" tab organizes concepts using a tree view based on the subconcept relationship.
+\item The \enquote{Classes} tab organizes concepts using a tree view based on the subconcept relationship.
  Superclasses of a class can also be edited directed by listing parents.
- \item The "Properties" tab organizes properties using a tree view based on the subproperty (i.e., implication, subset) relationship.
+ \item The \enquote{Properties} tab organizes properties using a tree view based on the subproperty (i.\,e., implication, subset) relationship.
  \item Axioms describing the domain and range of a property can be given directly in its details view.
 \end{compactitem}
 

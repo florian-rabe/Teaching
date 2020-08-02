@@ -6,15 +6,17 @@ Concretely, it is implemented using inductive types.
 In the sequel, we will start with the standard definitions and then make a series of variation to each of these definitions until they become equivalent.
 The intended equivalence is as follows:
 \begin{center}
-\begin{tabular}{l|l}
+\begin{tabular}{ll}
+\toprule
 CFG & IDT \\
-\hline
+\midrule
 non-terminal & type \\
 production & constructor \\
 non-terminal on left of production & return type of constructor \\
 non-terminals on right of production & arguments types of constructor \\
 terminals on right of production & notation of constructor\\
-words derived from non-terminal $N$ & expressions of type $N$
+words derived from non-terminal $N$ & expressions of type $N$ \\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -55,8 +57,8 @@ First, we give a name to each production of a CFG:
 \begin{definition}[Context-Free Grammar with Named Productions]
 Given a set $\Sigma$ of characters (containing the terminal symbols), a \textbf{context-free grammar} consists of
 \begin{compactitem}
-\item a set $N$ of names called \emph{non-terminal symbols}
-\item a set of \emph{productions} each consisting of
+\item a set $N$ of names called \textbf{non-terminal symbols}
+\item a set of \textbf{productions} each consisting of
  \begin{compactitem}
   \item a name
   \item an element of $N$, called the \textbf{left-hand side}
@@ -66,7 +68,7 @@ Given a set $\Sigma$ of characters (containing the terminal symbols), a \textbf{
 \end{definition}
 
 \begin{example}
-The grammar from above with names written to the right of each production
+The grammar from above with names written to the right-hand side of each production:
 \begin{commgrammar}
 \gprod{E}{0}{zero}\\
 \galtprod{1}{one}\\
@@ -83,8 +85,8 @@ Then we add base types to the productions:
 \begin{definition}[Context-Free Grammar with Named Productions and Base Types]
 Given a set $\Sigma$ of characters (containing the terminal symbols) and a set $T$ of names (containing the base types allowed in productions), a \textbf{context-free grammar} consists of
 \begin{compactitem}
-\item a set $N$ of names called \emph{non-terminal symbols}
-\item a set of \emph{productions} each consisting of
+\item a set $N$ of names called \textbf{non-terminal symbols}
+\item a set of \textbf{productions} each consisting of
  \begin{compactitem}
   \item a name
   \item an element of $N$, called the \textbf{left-hand side}
@@ -115,7 +117,7 @@ Then we can improve the grammar from above as follows:
 We start with the usual definition:
 
 \begin{definition}[Inductive Data Type]\label{def:idt}
-Given a set of names $T$ (containing the types known in the current context), an \emph{inductive data type} consists of
+Given a set of names $T$ (containing the types known in the current context), an \textbf{inductive data type} consists of
 \begin{compactitem}
  \item a name, called the \textbf{type},
  \item a set of \textbf{constructors} each consisting of
@@ -137,7 +139,7 @@ We give an inductive type for arithmetic expressions:
 \[
 \indtype{E}{\cons{literal}{Nat}, \cons{sum}{E,E}, \cons{product}{E,E}} \\
 \]
-Here we use ML-style notation for inductive data types, which separates constructors by $|$ and writes them as \texttt{name of argument-type-product}.
+	Here we use ML-style notation for inductive data types, which separates constructors by $|$ and writes them as \texttt{name} \textbf{of} \emph{argument-type-product}.
 \end{example}
 
 First we generalize to mutually inductive types:
@@ -146,11 +148,11 @@ First we generalize to mutually inductive types:
 Given a set $T$ of names (containing the types known in the current context), a family of \textbf{mutually inductive data type} consists of
 \begin{compactitem}
  \item a set $N$ of names, called the \textbf{types},
- \item a set of \emph{constructors} each consisting of
+ \item a set of \textbf{constructors} each consisting of
  \begin{compactitem}
   \item a name
   \item an element of $N$, called the \textbf{return type}
-  \item a list of elements of $N\cup T$, called the \textbf{argument} types
+  \item a list of elements of $T\cup N$, called the \textbf{argument} types
  \end{compactitem} 
 \end{compactitem}
 \end{definition}
@@ -173,7 +175,7 @@ Then we add notations to the constructors:
 Given a set $\Sigma$ of characters (containing the terminal symbols) and a set $T$ of names (containing the types known in the current context), a family of \textbf{mutually inductive data type with notations} consists of
 \begin{compactitem}
  \item a set $N$ of names, called the \textbf{types},
- \item a set of \emph{constructors} each consisting of
+ \item a set of \textbf{constructors} each consisting of
  \begin{compactitem}
   \item a name
   \item an element of $N$, called the \textbf{return type}
@@ -184,7 +186,7 @@ Given a set $\Sigma$ of characters (containing the terminal symbols) and a set $
 \end{definition}
 
 The intuition behind notations is that it can get cumbersome to write all constructor applications as $Name(arguments)$.
-It is more convenient to attach a notation to  such as 
+It is more convenient to attach a notation to them such as 
 
 \begin{example}
 We extend the type definitions from above by adding notations to each constructor.
@@ -193,7 +195,7 @@ We use the set $\Sigma=\{+,\cdot,\doteq,\leq\}$ as terminals in the notations.
 \indtype{E}{\consnot{literal}{Nat}{Nat}, \consnot{sum}{E,E}{E+E}, \consnot{product}{E,E}{E\cdot E}} \\
 \indtype{F}{\consnot{equality}{E,E}{E\doteq E}, \consnot{lessOrEqual}{E,E}{E\leq E}}
 }\]
-Here we write the constructors as \texttt{name of argument-type-product \# notation}.
+Here we write the constructors as \texttt{name} \textbf{of} \emph{argument-type-product \# notation}.
 It is easy to see that this has introduced redundancy: we can infer the argument types from the notation.
 So we can just drop the argument types:
 \[\mathll{
@@ -207,6 +209,8 @@ So we can just drop the argument types:
 
 With the variation from above we have arrived at the following equivalence:
 
+% All italic...?
+% And \Sigma and T are differently arranged in the first bullet point
 \begin{theorem}
 Given a set $\Sigma$ of characters and a set $T$ of names, the following notions are equivalent:
 \begin{compactitem}
@@ -236,7 +240,7 @@ That yields the following definition:
 Given a set $\Sigma$ of characters and a set $T$ of names, a context-free syntax consists of
 \begin{compactitem}
  \item a set $N$ of names, called the \textbf{non-terminals/types},
- \item a set of \emph{productions/constructors} each consisting of
+ \item a set of \textbf{productions/constructors} each consisting of
  \begin{compactitem}
   \item a name
   \item an element of $N$, called the \textbf{left-hand side/return type}
@@ -250,42 +254,48 @@ Given a set $\Sigma$ of characters and a set $T$ of names, a context-free syntax
 \end{definition}
 
 \begin{example}
-Using ad hoc language to write the constructors, our example from above as a context-free syntax could look as follows:
+Using an ad hoc language to write the constructors, our example from above as a context-free syntax could look as follows:
 \[\mathll{
 \indtype{E}{\consn{literal}{(value:Nat)}, \consn{sum}{(left:E)+(right:E)}, \consn{product}{(left:E)\cdot (right:E)}} \\
 \indtype{F}{\consn{equality}{(left:E)\doteq (right:E)}, \consn{lessOrEqual}{(left:E)\leq (right:E)}}
 }\]
-This uses an ad hoc 
 \end{example}
 
 \subsection{Contexts}
 
+% Was "context-free language" introduced?
 We assume a context-free language $l$.
 
 \begin{definition}[Context]
-a \textbf{context} is a list of
+A \textbf{context} is a list of
 \begin{compactitem}
+% Somethings not right. Is it supposed to tell me that?:
+% A context is a list of
+% - grammar terminologies as productions of the form ...
+% - type terminologies as declarations of the form ...
 \item grammar terminology: productions $N\bbc x$
 \item type terminology: declarations $x:N$
 \end{compactitem}
-where each $x$ is a unique name and each $N$ is non-terminal symbol.
+where each $x$ is a unique name and each $N$ is a non-terminal symbol.
 
 The $x$ are called \textbf{variables}.
 \end{definition}
 
 \begin{remark}
 Sometimes the grammar itself has specific productions for contexts and variables.
-In that case, we speak of \emph{meta-variable contexts} and \textbf{meta-variables} to distinguish them from those of the language.
+In that case, we speak of \textbf{meta-variable contexts} and \textbf{meta-variables} to distinguish them from those of the language.
 \end{remark}
 
 \begin{definition}[Expressions in Context]
-Given a context $\Gamma$, a word $E$ derived from non-terminal $N$ that may additionally use the productions of the context is called an \emph{expression of type} $N$ \emph{in context} $\Gamma$.
+Given a context $\Gamma$, a word $E$ derived from a non-terminal $N$ that may additionally use the productions of the context is called an \textbf{expression of type} $N$ \textbf{in context} $\Gamma$.
 
 We write this as $\Gamma\vdash_l E:N$.
 \end{definition}
 
 \begin{definition}[Substitution]
-Given two contexts $\vdash_l \Gamma$ and $\vdash_l\Delta$, a \textbf{substitution} $\gamma$ from $\Gamma=x_1:N_1,\ldots,x_n:N_n$ to $\Delta$ is a list $x_1:=e_1,\ldots,x_n:=e_n$ where every $e_i$ is an expression of type $N_i$ in context $\Delta$ (i.e., $\Delta\vdash_l e_i:N_i$).
+% This syntax is new and probably missing ind Definition (Context):
+%                  <--------------->     <-------------->
+Given two contexts $\vdash_l \Gamma$ and $\vdash_l\Delta$, a \textbf{substitution} $\gamma$ from $\Gamma=x_1:N_1,\ldots,x_n:N_n$ to $\Delta$ is a list $x_1:=e_1,\ldots,x_n:=e_n$ where every $e_i$ is an expression of type $N_i$ in context $\Delta$ (i.\,e., $\Delta\vdash_l e_i:N_i$).
 
 We write this as $\Delta\vdash_l \gamma:\Gamma$ or as $\vdash_l \gamma:\Gamma\to \Delta$.
 \end{definition}
@@ -319,7 +329,7 @@ The basic recipe is as follows:
 \begin{compactitem}
 \item The types and constructors (without the notations and named arguments) are implemented as family of mutually inductive data types.
 \item For each argument of each constructor, a partial projective function is defined.
-\item A set of mutually recursive string rendering functions are define, one for each constructor, that implement the notations.
+\item A set of mutually recursive string rendering functions are defined, one for each constructor, that implement the notations.
 \end{compactitem}
 
 \begin{example}
@@ -363,7 +373,7 @@ On the positive side, this supports arguments names, and notations are a bit eas
 
 The basic recipe is as follows:
 \begin{compactitem}
-\item Each types is implemented as an abstract class.
+\item Each type is implemented as an abstract class.
 \item Each constructor of type $t$ is implemented as a concrete class that extends the abstract class $t$.
 \item The arguments names and type of each constructor $c$ are exactly the argument names and types of the class $c$.
 The constructor arguments are stored as fields in the class.
@@ -372,11 +382,13 @@ The constructor arguments are stored as fields in the class.
 
 
 \begin{example}
+% This footnote is not visible
 We define our example syntax in a generic OO-language somewhat similar to Scala.\footnote{We could use Java or C++ here. But their concrete syntax makes this less clear than it could be. It is straightforward to refine the syntax into that of any specific OO-language.}
 
+% Sentence is incomplete
 In particular, we assume that the sy
 
-\begin{lstlisting}
+	\begin{lstlisting}[language=scala]
 abstract class E {
   def toString: String
 }
@@ -443,13 +455,13 @@ These are automatically fields of the class, and a default constructor always ex
 That gets rid of a lot of boilerplate.
 
 If we want to make those fields public (and we do because those are the projection functions, we add the keyword \texttt{val} in front of them.
-But even if that is too much boilerplate. So Scala defines a convenience modifier: if we put \texttt{case} in front of the classes corresponding to constructors of our syntax, Scala puts in the \texttt{val} automatically.
+But even that is too much boilerplate. So Scala defines a convenience modifier: if we put \texttt{case} in front of the classes corresponding to constructors of our syntax, Scala puts in the \texttt{val} automatically.
 It also generates a default implementation of \texttt{toString}, which we have to override if we want to implement notations, too.
 Finally, Scala also generates pattern-matching functions so that we can pattern-match in the same way as in ML.
 
 Then our example becomes (as usual, assuming a class \texttt{Nat} already exists):
 
-\begin{lstlisting}
+\begin{lstlisting}[language=scala]
 abstract class E {
   def toString: String
 }
@@ -492,7 +504,8 @@ case class lessOrEqual(left: Nat, right: Nat) extends E {
 
 \section{Context-Sensitive Syntax}
 
-It is common to define a language as the set of words that can be produced from the syntax, i.e., from a distinguished non-terminal (the start symbol) of the context-free grammar.
+% Sentence duplication?
+It is common to define a language as the set of words that can be produced from the syntax, i.\,e., from a distinguished non-terminal (the start symbol) of the context-free grammar.
 It is common to define a context-sensitive language as a special case: the set of words that can be produced from a context-sensitive grammar.
 
 This is, however, not helpful in practice.
@@ -536,14 +549,16 @@ Very different names are used for the vocabularies in different communities.
 The following table gives an overview:
 
 \begin{center}
-\begin{tabular}{l|ll}
+\begin{tabular}{lll}
+\toprule
 Aspect & vocabulary $\Theta$ & expression kinds $\ExpSym$ \\
-\hline
+\midrule
 Ontologization  & ontology & individual, concept, relation, property, formula \\
 Concretization & database schema & cell, row, table, formula \\
 Computation & program & term, type, object, class, \ldots \\
 Logic & theory & term, type, formula, \ldots \\
 Narration & dictionary & phrases, sentences, texts \\
+\bottomrule
 \end{tabular}
 \end{center}
 
@@ -554,7 +569,7 @@ In practice, it is most useful to think of a language system as family of langua
 To define a language system, we need to define the well-formedness predicates.
 One way to do that is by translating the context-free syntax into another language and then use existing definitions of well-formedness there.
 
-But we also need to be able to get off the ground, i.e., to define a semantics from scratch when we do not have another language available.
+But we also need to be able to get off the ground, i.\,e., to define a semantics from scratch when we do not have another language available.
 This is usually done by giving an inference system for the predicates for well-formedness, also called a type system.
 
 We can also do both: if we have a semantics via an inference system and another one via translation, we can show that the latter respects the former.
@@ -591,12 +606,12 @@ There are some general principles shared by all translations:
 \begin{compactitem}
  \item Every $l$-declaration is translated to an $L$-declaration for the same name, and ontologies are translated declaration-wise.
  \item For every non-terminal $N$ of $l$, there is one inductive function $\sem{-}_N$ mapping complex $l$-expressions derived from $N$ to $L$-expressions.
- \item The base cases of references to declared $l$-identifiers are translated to themselves, i.e., to the identifiers of the same name declared in $L$.
+ \item The base cases of references to declared $l$-identifiers are translated to themselves, i.\,e., to the identifiers of the same name declared in $L$.
  \item The other cases are compositional: every case for a complex $l$-expression recurses only into the semantics of the direct subexpressions.
 \end{compactitem}
 
-The notion of \emph{compositionality} captures these properties.
-An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
+The notion of \textbf{compositionality} captures these properties.
+An interpretation function is compositional if the interpretation of any kind of expression $E(e_1,\ldots,e_n)$ with subexpressions $e_i$ only depends on $E$ and the interpretation of the $e_i$, i.\,e., \[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\] for some semantic operation $\sem{E}$.
 Compositionality is also called the substitution property or the homomorphism property.
 See also Def.~\ref{ex:compositional}.
 
@@ -665,33 +680,33 @@ Sometimes a feature of the syntactic language cannot be directly interpreted in 
 In that case, it may still be possible to give a non-compositional translation.
 
 \begin{example}[Non-Compositional Translation via Sub-Induction]
-A simple example of non-compositionality is the translation of natural numbers based on zero, one, and addition (i.e., $N\bbc 0\bnfalt 1\bnfalt N+N$) into natural numbers based on zero and successor (i.e., $N\bbc 0\bnfalt\cn{succ}(N)$):
+A simple example of non-compositionality is the translation of natural numbers based on zero, one, and addition (i.\,e., $N\bbc 0\bnfalt 1\bnfalt N+N$) into natural numbers based on zero and successor (i.\,e., $N\bbc 0\bnfalt\cn{succ}(N)$):
 It is straightforward to translate zero and one compositionally:
 \[\sem{0}=0 \tb\sem{1}=\cn{succ}(0)\]
 Now we would like to translate \[\sem{m+n}=\sem{+}(\sem{m},\sem{n}),\] but there is no way to define $\sem{+}$ in terms of zero and successor.
 Instead, we need subcases:
 \[\sem{m+n}=\cas{\sem{m}\mifc n=0 \\ \cn{succ}(\sem{m})\mifc n=1 \\ \sem{(m+n_1)+n_2}\mifc n=n_1+n_2}\]
-This corresponds to the usual definition of addition, i.e., $\sem{+}$, by induction.
+This corresponds to the usual definition of addition, i.\,e., $\sem{+}$, by induction.
 \end{example}
 
 Other common examples of non-compositional translations are
 \begin{compactitem}
  \item several important logical theorems such as
   \begin{compactitem}
-   \item cut elimination, which is he translation from sequent calculus with cut to sequent calculus without cut,
+   \item cut elimination, which is the translation from sequent calculus with cut to sequent calculus without cut,
    \item the deduction theorem, which is the translation from natural deduction to Hilbert calculus,
   \end{compactitem}
- \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,
- \item query optimization done by a database, e.g., turning a WHERE of a join into a join of WHEREs,
- \item almost all translations between natural languages, e.g., when words are ambiguous and a different translation must be chosen for the same word based on the context (The introduction of richer intermediate structures like ASTs and functions as values into the translation can recover some compositionality here).
+ \item almost anything done by an optimizing compiler, e.\,g., loop unrolling or function inlining,
+ \item query optimization done by a database, e.\,g., turning a WHERE of a join into a join of WHEREs,
+ \item almost all translations between natural languages, e.\,g., when words are ambiguous and a different translation must be chosen for the same word based on the context (The introduction of richer intermediate structures like ASTs and functions as values into the translation can recover some compositionality here).
 \end{compactitem}
 
 Typical sources of non-compositionality in formal language translations are:
 \begin{compactitem}
  \item A case in the translation function requires subcases which inspect the $e_i$ and treat them differently.
  \item A case in the translation function requires subcases which translate an expression differently based on the context in which it occurs.
- \item The translation function requires nested inductions, i.e., a case in the translation function (which is already inductive) requires a sub-induction on one of the sub-expressions.
- \item The semantic prefix is not fixed but depends on the translated object, i.e, the top-level case of the translation scans through the entire argument $X$ to collect all occurrences of a particular feature and then custom-builds the semantic prefix of $\sem{X}$.
+ \item The translation function requires nested inductions, i.\,e., a case in the translation function (which is already inductive) requires a sub-induction on one of the sub-expressions.
+ \item The semantic prefix is not fixed but depends on the translated object, i.\,e, the top-level case of the translation scans through the entire argument $X$ to collect all occurrences of a particular feature and then custom-builds the semantic prefix of $\sem{X}$.
 \end{compactitem}
 See also Ex.~\ref{ex:noncompositional}.
 
@@ -709,7 +724,7 @@ Moreover, if a custom semantic prefix is used, its definition may have to be ame
 
 Secondly, in practice there are two sources of complex expressions: the ones already mentioned in the language, and the ones used later for other reasons.
 For example, some complex expressions occur already \emph{statically} in the definition of a vocabulary $V$.
-But others might be appear \emph{dynamically} later, e.g., when talking about $V$, proving properties of $V$, or running queries on $V$.
+But others might be appear \emph{dynamically} later, e.\,g., when talking about $V$, proving properties of $V$, or running queries on $V$.
 Thus, the definition of $V$ and the use of complex expressions are decoupled: $V$ is defined statically once and for all, and complex expressions relative to $V$ can be created and used dynamically.
 But if a custom semantic prefix is used, only the static occurrences inside $V$ can be considered for building the prefix.
 Thus, it is not possible to translate expressions dynamically unless the semantic prefix is extended all the time while $V$ is used.
