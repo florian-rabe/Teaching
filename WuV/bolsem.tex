@@ -143,8 +143,8 @@ $P_O$ is different for every ontology $O$ and is defined as follows:
  \item $P_O$ contains the following declarations for each $R$:
   \begin{compactitem}
   \item A binary predicate symbol $C_R\sq i\times i$. Note that $R$ may be a complex expression; so we have to generate a fresh name $C_R$ here.
-  \item The axiom $\forall x:\iota,y:\iota:R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
-  \item The axiom $\forall x:\iota,y:\iota,z:\iota.C_R(x,y)\wedge C_R(y,z)\impl C_R(x,x)$, i.e., $C_R$ is transitive.
+  \item The axiom $\forall x:\iota,y:\iota.\,R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
+  \item The axiom $\forall x:\iota,y:\iota,z:\iota.\,C_R(x,y)\wedge C_R(y,z)\impl C_R(x,z)$, i.e., $C_R$ is transitive.
   \end{compactitem}
  \item We add the case $\sem{R^*}=C_R(x,y)$ to the interpretation function.
 \end{compactenum}
@@ -238,7 +238,7 @@ Using the abbreviation: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
 \end{figure}
 
 \begin{remark}[Limitations]
-Our interpretation of BOL in SQL is restricted assertions using only atomic expressions.
+Our interpretation of BOL in SQL is restricted to assertions using only atomic expressions.
 For example, in the case for $I$ \texttt{is-a} $C$, we assume that $I$ and $C$ are names.
 Thus, we have already created an individual for $I$ and a table for $C$, and we can thus insert the former into the latter.
 The general case would be more complicated but is much less important in practice.
@@ -549,7 +549,7 @@ male is a common noun.\\
 instructor is a common noun.\\
 course is a common noun.\\
 teach is a transitive verb.\\
-property is a common noun for a property that can take $\float$-values.\\
+creditValue is a common noun for a property that can take $\float$-values.\\
 FlorianRabe is a instructor and is a male.\\
 WuV is a course.\\
 FlorianRabe teachs WuV.\\

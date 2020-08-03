@@ -184,7 +184,7 @@ Given a set $\Sigma$ of characters (containing the terminal symbols) and a set $
 \end{definition}
 
 The intuition behind notations is that it can get cumbersome to write all constructor applications as $Name(arguments)$.
-It is more convenient to attach a notation to  such as 
+It is more convenient to attach a notation to them such as 
 
 \begin{example}
 We extend the type definitions from above by adding notations to each constructor.
@@ -319,7 +319,7 @@ The basic recipe is as follows:
 \begin{compactitem}
 \item The types and constructors (without the notations and named arguments) are implemented as family of mutually inductive data types.
 \item For each argument of each constructor, a partial projective function is defined.
-\item A set of mutually recursive string rendering functions are define, one for each constructor, that implement the notations.
+\item A set of mutually recursive string rendering functions are defined, one for each constructor, that implement the notations.
 \end{compactitem}
 
 \begin{example}
@@ -363,7 +363,7 @@ On the positive side, this supports arguments names, and notations are a bit eas
 
 The basic recipe is as follows:
 \begin{compactitem}
-\item Each types is implemented as an abstract class.
+\item Each type is implemented as an abstract class.
 \item Each constructor of type $t$ is implemented as a concrete class that extends the abstract class $t$.
 \item The arguments names and type of each constructor $c$ are exactly the argument names and types of the class $c$.
 The constructor arguments are stored as fields in the class.
@@ -443,7 +443,7 @@ These are automatically fields of the class, and a default constructor always ex
 That gets rid of a lot of boilerplate.
 
 If we want to make those fields public (and we do because those are the projection functions, we add the keyword \texttt{val} in front of them.
-But even if that is too much boilerplate. So Scala defines a convenience modifier: if we put \texttt{case} in front of the classes corresponding to constructors of our syntax, Scala puts in the \texttt{val} automatically.
+But even that is too much boilerplate. So Scala defines a convenience modifier: if we put \texttt{case} in front of the classes corresponding to constructors of our syntax, Scala puts in the \texttt{val} automatically.
 It also generates a default implementation of \texttt{toString}, which we have to override if we want to implement notations, too.
 Finally, Scala also generates pattern-matching functions so that we can pattern-match in the same way as in ML.
 
@@ -678,7 +678,7 @@ Other common examples of non-compositional translations are
 \begin{compactitem}
  \item several important logical theorems such as
   \begin{compactitem}
-   \item cut elimination, which is he translation from sequent calculus with cut to sequent calculus without cut,
+   \item cut elimination, which is the translation from sequent calculus with cut to sequent calculus without cut,
    \item the deduction theorem, which is the translation from natural deduction to Hilbert calculus,
   \end{compactitem}
  \item almost anything done by an optimizing compiler, e.g., loop unrolling or function inlining,

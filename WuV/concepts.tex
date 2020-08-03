@@ -48,7 +48,7 @@ Again and again, we distinguish a static concept that describes/represents what 
 If that change is a computer doing something with or acting on that representation, we speak of ``processing''.
 
 It is particular illuminating to contrast KRP to the standard CS course on Data Structures and Algorithms (DA).%
-\footnote{The course is typically called ``Algorithms and Data Structures'', but that is arguably awkward because algorithms can exist if there are data structure to work with. Compare my notes on that course in this repository, where I emphasize data structures much more than is commonly done in that course.}
+\footnote{The course is typically called ``Algorithms and Data Structures'', but that is arguably awkward because algorithms can only exist if there are data structure to work with. Compare my notes on that course in this repository, where I emphasize data structures much more than is commonly done in that course.}
 Generally speaking, DA teaches the methods, and KRP teaches how to apply them.
 Data structures are a critical prerequisite for representing knowledge.
 But data structures alone do not capture what the data means (i.e., the knowledge) or if a particular representation makes any sense.
@@ -76,7 +76,7 @@ Semantics & Knowledge
 \end{center}
 
 All four concepts are primitive, i.e., they cannot be defined in simpler terms.
-All sciences have few carefully-chosen primitive on which everything builds.
+All sciences have few carefully-chosen primitives on which everything builds.
 This is done most systematically in mathematics (where primitives include set or function).
 While mathematical primitives as well as some primitives in physics or CS are specified formally, the above four concepts can only be described informally, ultimately appealing to pre-existing human understanding.
 Moreover, this description is not standardized --- different courses may use very different descriptions even they ultimately try to capture the same elusive ideas.
@@ -146,19 +146,19 @@ While it is easy to design languages to represent data in general, it is very di
 Over the last few decades, the KRP area in computer science has diversified into different subareas that approach this research problem in fundamentally different ways.
 In fact, KRP in the very general sense of this course is usually not even studied by itself --- instead the subareas are so different, specialized, and large that they all sustain their respective university courses and research conferences.
 
-This is related to the fact the data naturally comes in fundamentally different forms such as graphs, arrays, tables in the sense of relational databases, programs in a programming language, logical formulas, or natural language texts.
+This is related to the fact that the data naturally comes in fundamentally different forms such as graphs, arrays, tables in the sense of relational databases, programs in a programming language, logical formulas, or natural language texts.
 We speak of \textbf{heterogeneous} data.
 These different forms of data are supported by highly specialized KPTs: graph databases, array databases, relational databases, package databases for programming languages, theorem databases for logics (e.g., the Isabelle Archive of Formal Proofs), databases of research papers (such as the arXiv), and so on.
 
 All of these are very successful for their respective kind of data.
 And all of them include specifications of semantics and KP algorithms that implement this semantics.
-But it can very massively how the semantics is specified and implemented.
-This has cause major practical problems for tool interoperability: many projects require data in multiple formats and algorithms from multiple tools.
+But it can vary massively how the semantics is specified and implemented.
+This has caused major practical problems for tool interoperability: many projects require data in multiple formats and algorithms from multiple tools.
 But the respective tools are often islands that assume that all data is represented in the tool's language and users do not use outside tools.
 Therefore, the import/export capabilities of the tools are often limited.
 
 Moreover, transporting data across systems is usually ignorant of the semantics: while each tool takes relatively good care to implement the semantics correctly, there is much less certainty that the semantics is preserved when exchanging data across tools.
-For a trivial example, consider a tool that measure length in inches vs. a tool that uses centimeters, both using floating point numbers for the data: if they exchange the data, i.e., just the numbers, they may mis-communicate the semantics.%
+For a trivial example, consider a tool that measures length in inches vs. a tool that uses centimeters, both using floating point numbers for the data: if they exchange the data, i.e., just the numbers, they may miscommunicate the semantics.%
 \footnote{Problems like this have been involved in major disasters such as the Mars Climate Orbiter.} 
 
 This problem is not easy to fix though.
@@ -194,7 +194,7 @@ This focuses on identifying the central concepts in a domain and their relations
 For example, a medical ontology would define concepts for every symptom, disease, and medication and then define relations for which symptoms and medications are related to which disease.
 
 Ontologies typically abstract from the knowledge: they standardize identifiers for the concepts and spell out some properties and relations but do not try to capture all details of the knowledge.
-Well-designed ontologies can capture exactly that different KPTs must share and can thus serve as interoperability layers between them.
+Well-designed ontologies can capture exactly the knowledge that different KPTs must share and can thus serve as interoperability layers between them.
 
 While organization can use ontology languages such as OWL or RDF, the inherent complexity of formal objects in computer science and mathematics usually requires going beyond general purpose ontology languages (similar to how the programming languages underlying computer algebra systems usually go beyond general purpose programming languages).
 
@@ -205,7 +205,7 @@ Because concrete objects are so simple and widely used, it is possible and commo
 
 \textbf{Deduction} uses logics and theorem provers  to obtain verifiable correctness.
 
-\textbf{Narration} uses natural language to obtain texts are easy to understand for humans.
+\textbf{Narration} uses natural language to obtain texts that are easy to understand for humans.
 Because narrative languages are not well-standardized (apart from general purpose languages such as free text or \LaTeX), it is common to develop narrative libraries on top of ad-hoc languages that impose some formal structure on top of informal text, such as a fixed tree structure whose leafs are free text or a particular set of {\LaTeX} macros that must be used.
 Narrative libraries can be classified based on whether entries are derived from publications (e.g., one abstract per paper in zbMATH) or mathematical concepts (e.g., one page per concept in $n$Lab).
 %While these languages have multiple implementations, individual libraries usually involve specific encodings that are implemented only by a single tool.

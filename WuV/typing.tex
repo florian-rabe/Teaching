@@ -393,7 +393,7 @@ In the simplest case, we forbid such forward references.
 Then ADTs are very well-behaved.
 But we have a problem with the case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields may refer to $c$.
 A straightforward solution would be to declare the ADT to be ill-formed.
-But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class $c:T=t$ in a concrete class implementing it.
+But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class and $c:T=t$ in a concrete class implementing it.
 
 A more common solution is to allow the fields to be mutually recursive.
 Consider a flat ADT with fields $\Gamma, c:T[=t], \Delta$ where $\Gamma$ and $\Delta$ are lists of fields.
