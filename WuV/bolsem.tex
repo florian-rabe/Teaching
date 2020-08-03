@@ -124,7 +124,7 @@ The interpretation of BOL is compositional.
 
 For example, consider the case of composition of relations:
  \[\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)\]
-We have $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
+Here we have an expression $E(e_1,\ldots,e_n)$ with $n=2$ and $E$ is the $;$-operator mapping $(e_1,e_2)\mapsto e_1;e_2$, i.e., $R_1$ and $R_2$ are the direct subexpressions of $R_1;R_2$.
 The semantics is a relatively complicated FOL-formula, but it only depends on $\sem{R_1}$ and $\sem{R_2}$ --- everything else is fixed.
 We have $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$, i.e., the interpretation of the $;$-operator is the function that maps two predicates $p_1,p_2$ to the formula $\exists m:\iota.p_1(x,m)\wedge p_2(m,y)$.
 Then we have \[\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2}).\]
