@@ -71,6 +71,15 @@ Ontologies are often divided into two parts:
  This part is commonly called the \textbf{ABox} (A for assertional).
 \end{compactitem}
 
+TBox declarations tend to be more permanent within a knowledge base and are used as a schema.
+In contrast, ABox declarations are much more dynamic in nature and tend to represent instance data.
+For instance, we can understand relational databases as ontologies made up of table definitions as TBox declarations and table rows as ABox declarations.
+There, both kind of declarations are even separately stored for efficiency reasons, and in particular, the concrete way of representing table rows
+as bits is determined by the corresponding table definitions.
+However, such a hard distinction is not necessarily the case for other ontology languages.
+For example, in the ontology language OWL or in general in triplestores, both kind of declarations are stored next to each other and the syntactic representation distinction blurs.
+Nonetheless, we can usually distinguish between both declarations by their usage and lifecycle during the development of a concrete ontology.
+
 A separate division into two parts is the following:
 \begin{compactitem}
  \item The \textbf{signature} part contains everything that introduces a \textbf{named entity}: individuals, concepts, relations, and properties.
