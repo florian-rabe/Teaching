@@ -200,8 +200,8 @@ $I\; P\; V$ & INSERT INTO $P$ (subject, object) VALUES ($\sem{I}$, $V$)\\
 $F$ & consistency check, consequence closure (omitted)\\
 \hline
 Formula & Query that returns empty result iff formula is true \\
-$C_1 \Equiv C_2$ & $(\sem{C_1}\sm\sem{C_2})$ UNION $(\sem{C_2}\sm\sem{C_1})$\\
-$C_1 \sqsubseteq C_2$ & $\sem{C_1}\sm\sem{C_2}$\\
+$C_1 \Equiv C_2$ & $(\sem{C_1}\text{ EXCEPT }\sem{C_2})$ UNION $(\sem{C_2}\text{ EXCEPT }\sem{C_1})$\\
+$C_1 \sqsubseteq C_2$ & $\sem{C_1}$ EXCEPT $\sem{C_2}$\\
 $I\; \texttt{is-a}\; C$ & $\sem{I}$ IN $C$\\
 $I_1\; R\; I_2$ & ($\sem{I_1}$, $\sem{I_2}$) IN $R$ \\
 $I\; P\; V$ & ($\sem{I}$, $V$) IN $P$ \\
@@ -213,8 +213,8 @@ Concept & SQL query for one-column table\\
 $i$ & SELECT * FROM $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
-$\forall R.C$    & individuals $\sm$ (SELECT subject FROM $\sem{R}$ WHERE object NOT IN $\sem{C})$ \\
-$\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$, $\sem{C}$ WHERE object=id\\
+$\forall R.C$    & individuals EXCEPT (SELECT subject FROM $\sem{R}$ WHERE object NOT IN $\sem{C}$) \\
+$\exists R.C$    & SELECT DISTINCT subject FROM $\sem{R}$ WHERE object IN $\sem{C}$\\
 $\dom\, R$ & SELECT DISTINCT subject FROM $\sem{R}$\\
 $\rng\, R$ & SELECT DISTINCT object FROM $\sem{R}$\\
 $\dom\, P$ & SELECT DISTINCT subject FROM $\sem{P}$\\
@@ -223,8 +223,8 @@ Relation & SQL query for two-column table\\
 $i$ & SELECT * FROM $i$\\
 $R_1 \cup R_2$ & $\sem{R_1}$ UNION $\sem{R_2}$\\
 $R_1 \cap R_2$ & $\sem{R_1}$ INTERSECT $\sem{R_2}$\\
-$R_1 ; R_2$ & SELECT DISTINCT l.subject, r.object FROM $\sem{R_1}$ AS l, $\sem{R_2}$ AS r \\
-            & \tb\tb WHERE l.object = r.subject\\
+$R_1 ; R_2$ & SELECT DISTINCT l.subject, r.object FROM $\sem{R_1}$ AS l\\
+            & \tb\tb JOIN $\sem{R_2}$ AS r ON l.object = r.subject\\
 $R^{-1}$          & SELECT object AS subject, subject AS object FROM $\sem{R}$\\
 $R^*$          & (tricky, omitted)\\
 $\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
@@ -232,9 +232,6 @@ $\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
 Property of type $T$ & SQL query for two-column table\\
 $i$ & SELECT * FROM $i$\\
 \end{tabular}
-\medskip
-
-Using the abbreviation: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
 \caption{Interpretation Function for BOL into SQL}\label{fig:bolsem:sql}
 \end{figure}
 
@@ -280,16 +277,16 @@ must then be provided by performing the consequence closure.
 
 Moreover, the axioms result in the following consistency checks, i.e., queries that should be empty:
 \begin{lstlisting}
-SELECT * FROM male $\sm$ SELECT * FROM person
-SELECT * FROM instructor $\sm$ SELECT * FROM person
-SELECT * FROM (SELECT DISTINCT subject FROM teach) $\sm$ SELECT * FROM instructor
-SELECT * FROM (SELECT DISTINCT object FROM teach) $\sm$ SELECT * FROM course
-(SELECT * FROM (SELECT DISTINCT subject FROM creditValue) $\sm$ SELECT * FROM course)
-   UNION (SELECT * FROM course $\sm$ SELECT DISTINCT subject FROM creditValue)
-SELECT * FROM course $\sm$
+(SELECT * FROM male) EXCEPT (SELECT * FROM person)
+(SELECT * FROM instructor) EXCEPT (SELECT * FROM person)
+SELECT * FROM (SELECT DISTINCT subject FROM teach) EXCEPT (SELECT * FROM instructor)
+SELECT * FROM (SELECT DISTINCT object FROM teach) EXCEPT (SELECT * FROM course)
+((SELECT DISTINCT subject FROM creditValue) EXCEPT (SELECT * FROM course))
+   UNION ((SELECT * FROM course) EXCEPT (SELECT DISTINCT subject FROM creditValue))
+(SELECT * FROM course) EXCEPT
   (SELECT DISTINCT subject
-   FROM (SELECT object AS subject, subject AS object FROM teach), instructor
-   WHERE object=id)
+   FROM (SELECT object AS subject, subject AS object FROM teach)
+   WHERE object IN (SELECT * FROM instructor))
 \end{lstlisting}
 Some of these checks will only succeed after performing the consequence closure.
 In particular, the table \verb|person| misses the entry $1$ for the individual $\FR$ because the assertion {\FR\;\texttt{is-a}\;\person} is only present as a consequence
