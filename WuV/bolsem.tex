@@ -334,7 +334,7 @@ BOL declaration ($I$, $C$, $R$, $P$ atomic) & Scala declaration \\
 \kw{individual}\,$i$ & val $i$ = "$i$"; individuals += $i$ \\
 \kw{concept}\,$i$  & val $i$ = new HashSet[String]\\
 \kw{relation}\,$i$ & val $i$ = new HashSet[(String,String)] \\
-\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,T)] \\
+\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,\sem{T})] \\
 $I\; \texttt{is-a}\; C$ & $\sem{C}$ += $\sem{I}$\\
 $I_1\; R\; I_2$ & $\sem{R}$ += $(\sem{I_1},\sem{I_2})$\\
 $I\; P\; V$ & $\sem{P}$ += $(\sem{I},\sem{V})$\\
@@ -359,9 +359,9 @@ $\forall R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = individuals.c
                  & \tb r.foreach(x $\rA$ if (!c.contains(x.\_2)) e -= x.\_1); e\} \\
 $\exists R.C$    & \{val c = $\sem{C}$; val r = $\sem{R}$; val e = new HashSet[String]; \\
                  & \tb r.foreach(x$ \rA$ if (c.contains(x.\_2)) e += x.\_1); e\}\\
-$\dom\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_1); c\}\\
-$\rng\, R$ & \{val c = new HashSet[String]; $\sem{R}$.foreach(x $\rA$ c += x.\_2); c\}\\
-$\dom\, P$ & \{val c = new HashSet[String]; $\sem{P}$.foreach(x $\rA$ c += x.\_1); c\}\\
+$\dom\, R$ & $\sem{R}$.map(\_.\_1).toSet\\
+$\rng\, R$ & $\sem{R}$.map(\_.\_2).toSet\\
+$\dom\, P$ & $\sem{P}$.map(\_.\_1).toSet\\
 \hline
 Relation & HashSet[(String,String)] object\\
 $i$ & $i$\\
@@ -369,9 +369,9 @@ $R_1 \cup R_2$ & $\sem{R_1}$.union($\sem{R_2}$)\\
 $R_1 \cap R_2$ & $\sem{R_1}$.inter($\sem{R_2}$)\\
 $R_1 ; R_2$ &  \{val r1 = $\sem{R_1}$; val r2 = $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
             & \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); e\}\\
-$R^{-1}$    & \{val r = new HashSet[(String,String)]; $\sem{R}$.foreach(x $\rA$ r += (x.\_2,x.\_1)); r\}\\
-$R^*$          & (omitted)\\
-$\Delta_C$     & \{val r = new HashSet[(String,String)]; $\sem{C}$.foreach(x $\rA$ r += (x,x)); r\}\\
+$R^{-1}$    & $\sem{R}$.map(x $\rA$ (x.\_2, x.\_1)).toSet\\
+$R^*$       & (omitted)\\
+$\Delta_C$  & $\sem{C}$.map(x $\rA$ (x, x)).toSet\\
 \hline
 Property of type $T$ & HashSet[(String,T)] object\\
 $i$ & $i$\\
