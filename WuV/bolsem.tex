@@ -334,16 +334,15 @@ BOL declaration ($I$, $C$, $R$, $P$ atomic) & Scala declaration \\
 \kw{individual}\,$i$ & val $i$ = "$i$"; individuals += $i$ \\
 \kw{concept}\,$i$  & val $i$ = new HashSet[String]\\
 \kw{relation}\,$i$ & val $i$ = new HashSet[(String,String)] \\
-\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,\sem{T})] \\
+\kw{property}\,$i:T$ & val $i$ = new HashSet[(String,$\sem{T}$)] \\
 $I\; \texttt{is-a}\; C$ & $\sem{C}$ += $\sem{I}$\\
 $I_1\; R\; I_2$ & $\sem{R}$ += $(\sem{I_1},\sem{I_2})$\\
 $I\; P\; V$ & $\sem{P}$ += $(\sem{I},\sem{V})$\\
 $F$ & assertions, consequence closure (omitted)\\
 \hline
 Formula & Program that evaluates the formula to a Boolean \\
-$C_1 \Equiv C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; \\
-                 & \tb $c_1$.forall(x $\rA$ $c_2$.contains(x)) \&\& $c_2$.forall(x $\rA$ $c_1$.contains(x))\}\\
-$C_1 \sqsubseteq C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; $c_1$.forall(x $\rA$ $c_2$.contains(x))\}\\
+$C_1 \Equiv C_2$ & $\sem{C_1}$ == $\sem{C_2}$\\
+$C_1 \sqsubseteq C_2$ & $\sem{C_1}$.subsetOf($\sem{C_2}$)\\
 $I\; \texttt{is-a}\; C$ & $\sem{C}$.contains($\sem{I}$)\\
 $I_1\; R\; I_2$ & $\sem{R}$.contains($(\sem{I_1},\sem{I_2})$)\\
 $I\; P\; V$ & $\sem{P}$.contains($(\sem{I},\sem{V})$)\\
@@ -351,7 +350,7 @@ $I\; P\; V$ & $\sem{P}$.contains($(\sem{I},\sem{V})$)\\
 Individual & String object\\
 $i$ & $i$ \\
 \hline
-Concept & HashSet[String] object\\
+Concept & Set[String] object\\
 $i$ & $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$.union($\sem{C_2}$)\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$.inter($\sem{C_2}$)\\
@@ -363,7 +362,7 @@ $\dom\, R$ & $\sem{R}$.map(\_.\_1).toSet\\
 $\rng\, R$ & $\sem{R}$.map(\_.\_2).toSet\\
 $\dom\, P$ & $\sem{P}$.map(\_.\_1).toSet\\
 \hline
-Relation & HashSet[(String,String)] object\\
+Relation & Set[(String,String)] object\\
 $i$ & $i$\\
 $R_1 \cup R_2$ & $\sem{R_1}$.union($\sem{R_2}$)\\
 $R_1 \cap R_2$ & $\sem{R_1}$.inter($\sem{R_2}$)\\
