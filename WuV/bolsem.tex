@@ -144,6 +144,7 @@ $P_O$ is different for every ontology $O$ and is defined as follows:
   \begin{compactitem}
   \item A binary predicate symbol $C_R\sq i\times i$. Note that $R$ may be a complex expression; so we have to generate a fresh name $C_R$ here.
   \item The axiom $\forall x:\iota,y:\iota.\,R(x,y)\impl C_R(x,y)$, i.e., $C_R$ extends $R$.
+  \item The axiom $\forall x:\iota.\,C_R(x,x)$, i.e., $C_R$ is reflexive.
   \item The axiom $\forall x:\iota,y:\iota,z:\iota.\,C_R(x,y)\wedge C_R(y,z)\impl C_R(x,z)$, i.e., $C_R$ is transitive.
   \end{compactitem}
  \item We add the case $\sem{R^*}=C_R(x,y)$ to the interpretation function.
