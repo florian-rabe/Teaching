@@ -312,6 +312,7 @@ The \textbf{semantic prefix} consists of the following Scala statements
  \item classes for all BOL-base types and values for them (if not already present in Scala)
  \item classes for individuals and hash sets of objects:
 \begin{lstlisting}
+import scala.collection.immutable.Set
 import scala.collection.mutable.HashSet
 val individuals = new HashSet[String]
 \end{lstlisting}
@@ -384,7 +385,8 @@ $\{d_1; \ldots; d_n\}$ is evaluated by executing all $d_i$ in order and returnin
 
 $(A,B)$ is the product type $A\times B$ with pairing operator $(x,y)$ and projection functions $\_1$ and $\_2$. $x\rA F(x)$ is $\lambda x.F(x)$.
 
-The class HashSet is part of the standard library and offers function += and -= to add/remove elements, contains to test elementhood, and forall, foreach to quantifiy/iterate over elements.
+The class \texttt{Set} is part of the standard library and offers the binary functions inter, union for intersections and unions, subsetOf for subset tests, and functions forall, foreach and map to quantify/iterate over elements.
+The class \texttt{HashSet} (from the \texttt{scala.collection.mutable} namespace) provides the same functionality and additionally functions += and -= for adding/removing elements.
 
 Types of variables are inferred if omitted.
 \end{remark}
