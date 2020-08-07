@@ -344,8 +344,12 @@ An \textbf{abstract data type} (ADT) is
 We say that a type system has \textbf{internal ADT}s if all ADTs are types (and thus may in particular occur as the $T_i$ in a record type).
 \end{definition}
 
-The intuition of a mixin $A*B$ is that we merge the fields of $A$ and $B$.
-However, this union dependent: if $B$ is flat, its fields may refer to fields introduced in $A$.
+The intuition of a mixin $A*B$ is that we \emph{merge} the fields of $A$ and $B$.
+Whereas copying the fields of two ADTs side-by-side is easy and already possible with flat ADTs via $\{c_1: A_1, c_2: A_2\}$ (assuming we have internal ADTs with types $A_i$), merging is a crucial feature that the language (and type system) must support.
+For example in Java, occurrences of overridden fields or methods (often annotated with \texttt{override}) all give rise to some Java-specific way of merging.
+Defining a useful yet intuitive way of merging is non-trivial and we elaborate on an exemplary way of doing so and its limitations later.
+
+TODO: However, this union dependent: if $B$ is flat, its fields may refer to fields introduced in $A$.
 
 The most important special case of an ADT are classes:
 
