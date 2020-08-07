@@ -174,7 +174,7 @@ individual "FlorianRabe"
 \end{lstlisting}
 
 It is often desirable to use types to force the presence of such assertions.
-We might wish require that every instructor teaches a list of things, and has an office.
+We might require that every instructor teaches a list of things and has an office.
 Moreover, we can use types to specify the objects of the respective assertions: we can specify that only courses are taught and that the office is a string.
 Rather than the relations with subjects "FlorianRabe" just happening to be around as well, the type system would now force their existence and the type of the object.
 Forgetting to give such an assertion or giving it with the wrong object could be detected statically (i.e., without applying the semantics) and flagged as a typing error.
@@ -193,10 +193,10 @@ individual "FlorianRabe": "instructor"
   "age" 40
   "office" "11.137"
 \end{lstlisting}
-Now the type "instructor" forces the presence of a list of taught courses (The $^*$ is meant to indicate a list.), an integer for the age, and a string for the office.
+Now the type "instructor" forces the presence of a list of taught courses (the $^*$ is meant to indicate a list.), an integer for the age, and a string for the office.
 
 We can now see that, in fact, every person should have an age, and not just every instructor.
-Because every instructor is meant to be a person, we could try to capture this as well to avoid redundancy.
+In fact every instructor is meant to be a person, hence we could try to capture this as well to avoid redundancy.
 Moreover, every male is meant to be a person, too.
 
 That leads to the idea of \textbf{modular types}.
@@ -391,7 +391,8 @@ We sketch a few possible answers.
 
 In the simplest case, we forbid such forward references.
 Then ADTs are very well-behaved.
-But we have a problem with the case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields may refer to $c$.
+But we have a problem with the complex case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields may refer to $c$ -- even before the latter field  $c:T=t$ appears.
+
 A straightforward solution would be to declare the ADT to be ill-formed.
 But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class and $c:T=t$ in a concrete class implementing it.
 
