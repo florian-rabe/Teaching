@@ -400,8 +400,10 @@ But we have a problem with the complex case $(\ast)$ in Def.~\ref{def:mixinflat}
 A straightforward solution would be to declare the ADT to be ill-formed.
 But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class and $c:T=t$ in a concrete class implementing it.
 
-A more common solution is to allow the fields to be mutually recursive.
-Consider a flat ADT with fields $\Gamma, c:T[=t], \Delta$ where $\Gamma$ and $\Delta$ are lists of fields.
+A more common solution is to allow the fields to be mutually recursive in their definitions.
+For example, in an OO-language you can consider two methods that call each other to be a case of two ``fields'' whose types (the method signatures) are \emph{non-recursive} (only backwards-referencing), but whose definitions are mutually recursive.
+
+Formally, we can capture this as follows. Consider a flat ADT with fields $\Gamma, c:T[=t], \Delta$ where $\Gamma$ and $\Delta$ are lists of fields.
 Let $\Gamma'$ and $\Delta'$ arise by dropping all definitions.
 Then we require that
 \begin{compactitem}
