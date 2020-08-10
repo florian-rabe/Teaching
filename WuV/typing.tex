@@ -338,14 +338,14 @@ An \textbf{abstract data type} (ADT) is
 \item a \textbf{flat} type of the form
   \[\{c_1:T_1[=t_i],\ldots,c_n:T_n[=t_i]\}\]
   where the $c_i$ are distinct names, the $T_i$ are types, and the $t_i$ are optional and wherever given must have type $T_i$, or
-\item a \textbf{mixin} type of the form $A_1*A_2$ for ADTs $A_i$.
+\item a \textbf{mixin} type of the form $A*B$ for ADTs $A$ and $B$.
 \end{compactitem}
 
 We say that a type system has \textbf{internal ADT}s if all ADTs are types (and thus may in particular occur as the $T_i$ in a record type).
 \end{definition}
 
 The intuition of a mixin $A*B$ is that we \emph{merge} the fields of $A$ and $B$.
-Whereas copying the fields of two ADTs side-by-side is easy and already possible with flat ADTs via $\{c_1: A_1, c_2: A_2\}$ (assuming we have internal ADTs with types $A_i$), merging is a crucial feature that the language (and type system) must support.
+Whereas copying the fields of two ADTs side-by-side is easy and already possible with flat ADTs via $\{c_1: A, c_2: B\}$ (assuming we have internal ADTs), merging is a crucial feature that the language (and type system) must support.
 For example in Java, occurrences of overridden fields or methods (often annotated with \texttt{override}) all give rise to some Java-specific way of merging.
 Defining a useful yet intuitive way of merging is non-trivial and we elaborate on an exemplary way of doing so and its limitations later.
 
@@ -371,6 +371,22 @@ abstract class $a$ extends $a_1$ with $\ldots$ with $a_m$ {
 }
 \end{lstlisting}
 The details can vary, and special care must be taken in programming languages where initialization may have side effects.
+Methods of OO-languages arise as special case of fields whose types are the method signatures and whose definitions are the method bodies.
+For example, the Scala class given by
+\begin{lstlisting}
+//             vvvvvvvvvv this is Scala's syntax for declaring a constructor
+//                        receiving such an argument and storing it in an
+//                        equinamed field
+class NatAdder(val n: nat) {
+  def addAndReturn(m: nat): nat = {
+    return n + m
+  }
+}
+\end{lstlisting}
+could be represented via \[
+  \text{NatAdder} = \texttt{Base} \ast \{n: \mathbb{N}, \text{addAndReturn}: \mathbb{N} \rightarrow \mathbb{N} = \lambda m:\mathbb{N}.\ n + m\}
+\]
+assuming sufficient background knowledge --- e.g., for natural numbers with $\mathbb{N}$ and $+$, function types $\_ \rightarrow \_$, and lambdas $\lambda \_:\_.\ \_$ --- has been declared in some ADT $\text{Base}$ or stems from the underlying  language and type system used.
 
 Flat ADTs are the standard case, and all mixin ADTs can be simplified into flat ones.
 This can be seen as a semantics in the sense that the language of flat and mixin ADT is translated to the language of flat ADTs.
@@ -382,7 +398,7 @@ The \textbf{flattening} $\flt{A}$ of an ADT $A$ is defined as follows:
  $\flt{A}$ arises by concatenating the fields of all $\flt{A_i}$ where duplicate field names are handled as follows:
   \begin{compactitem}
    \item if the same field (same name, types equal, definitions equal or both absent) occurs more than once, only the first occurrence is kept,
-   \item if the fields $c:T_1[=t_i]$ and $c:T_2[=t_2]$ occur for inequal types $T_i$, $A$ is ill-formed,
+   \item if the fields $c:T_1[=t_1]$ and $c:T_2[=t_2]$ occur for inequal types $T_i$, $A$ is ill-formed,
    \item if the fields $c:T=t_1$ and $c:T=t_2$ occur for inequal objects $t_i$, $A$ is ill-formed,
    \item if the fields $c:T=t$ and $c:T$ occur, only the defined one is kept $(\ast)$.
   \end{compactitem}
@@ -395,13 +411,15 @@ We sketch a few possible answers.
 
 In the simplest case, we forbid such forward references.
 Then ADTs are very well-behaved.
-But we have a problem with the complex case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields may refer to $c$ -- even before the latter field  $c:T=t$ appears.
+But we have a problem with the case $(\ast)$ in Def.~\ref{def:mixinflat}: if $c:T$ occurs before $c:T=t$, we cannot simply drop the former because intermediate fields before $c:T=t$ may refer to $c$.
 
 A straightforward solution would be to declare the ADT to be ill-formed.
-But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class and $c:T=t$ in a concrete class implementing it.
+But unfortunately, this case is very important in practice --- it occurs whenever $c:T$ is declared in an abstract class and is overridden via $c:T=t$ in a concrete class implementing it.
 
-A more common solution is to allow the fields to be mutually recursive in their definitions.
-For example, in an OO-language you can consider two methods that call each other to be a case of two ``fields'' whose types (the method signatures) are \emph{non-recursive} (only backwards-referencing), but whose definitions are mutually recursive.
+A more common solution is to allow fields to be not only backwards-referencing, but also forward-referencing, or in general to be mutually recursive.
+This solves case $(\ast)$ since intermediate fields would --- after the removal of $c:T$ --- forward-reference $c:T = t$.
+Indeed, many OO-languages allow a restricted form of mutual recursion, namely that methods of a class may be mutually recursive, or more precisely that method bodies may forward- or backward-reference other methods.
+In ADT tonus, this translates to fields being allowed to forward-reference other fields in their definition; and \emph{only} there, i.e., types of fields can only backward-reference other fields as usual.
 
 Formally, we can capture this as follows. Consider a flat ADT with fields $\Gamma, c:T[=t], \Delta$ where $\Gamma$ and $\Delta$ are lists of fields.
 Let $\Gamma'$ and $\Delta'$ arise by dropping all definitions.
