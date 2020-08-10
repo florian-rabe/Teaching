@@ -3772,7 +3772,7 @@ Subsumption is an order with respect to equality:
 \[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq c}{\vdash c\Equiv d}\]
 
 Equal concepts can be substituted for each other:
-\[\rul{\vdash c\Equiv d\tb x:C\vdash f(x):\prop \tb \vdash f(c)}{f(d)}\]
+\[\rul{\vdash c\Equiv d\tb x:C\vdash f:\prop\tb \vdash f[x := c]}{\vdash f[x := d]}\]
 
 \glec{This completely defines equality.}
 \end{frame}
@@ -3809,7 +3809,7 @@ Question: Do we allow proving the hypothesis by checking for each individual $x$
 \begin{itemize}
 \item<2-> Open world: no
 \item<3-> Closed world: yes
- \[\rul{\Gamma[x=i]\vdash f[x=i] \;\text{ for every individual } i}{\Gamma, x:I\vdash f(x)}\]
+ \[\rul{\Gamma,x:I \vdash f:\prop\tb\Gamma[x:=i]\vdash f[x:=i] \;\text{ for every ind. } i}{\Gamma, x:I\vdash f}\]
  \glec{effectively applicable if only finitely many individuals}
 \end{itemize}
 \end{frame}
