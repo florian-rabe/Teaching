@@ -1400,7 +1400,9 @@ Observation:
 \begin{itemize}
 \item essentially the same in every language
  \lec{including whatever language used for semantics}
-\item semantics by translation trivial
+\item semantics by translation straight-forward
+\glec{watch out for different endiannesses for ints,}
+\glec{charsets and encodings for characters/strings}
 \end{itemize}
 \end{frame}
 
@@ -1554,7 +1556,8 @@ What types do we need?
  \item IEEE float, double
  \item Booleans
  \item Unicode characters
- \item strings \glec{could be list of characters but usually bad idea}
+ \item strings\\
+ \glec{could be list of characters but usually bad idea}
 \end{blockitems}
 
 \begin{blockitems}{typical in math}
