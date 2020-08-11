@@ -1832,7 +1832,7 @@ Weird structure but very similar
 \begin{blockitems}{Problem}
 \item Large objects are often redundant
  \glec{specially when machine-produced}
-\item Same string, URL, mathematical objects occurs in multiple places
+\item Same string, URL, mathematical object occurs in multiple places
 \item Handled in memory via pointers
 \item Size of serialization can explode
 \end{blockitems}
@@ -1864,7 +1864,7 @@ Weird structure but very similar
 \item Problem: only works if 
  \begin{itemize}
   \item for immutable data structures
-  \item if no occurrence-specific metadata \glec{e.g., source reference}
+  \item if no occurrence-specific metadata \glec{e.g., source references}
  \end{itemize}
 \end{blockitems}
 
@@ -1925,7 +1925,7 @@ We define codecs for the base types using strings as the data representation lan
 Easy cases:
 \begin{itemize}
 \item StandardFloat: as specified in IEEE floating point standard
-\item StandardString: as themselves, quoted
+\item StandardString: as themselves
 \item StandardBool: as $true$ or $false$
 \item StandardInt (64-bit): decimal digit-sequences as usual
 \end{itemize}
@@ -1965,18 +1965,19 @@ Encode $z\in\Z$
 \begin{frame}\frametitle{Codecs for Lists}
 Encode list $x$ of elements of type $T$
 \begin{itemize}
-\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
+\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$\\
+\glec{(un)escape comma in T-encoded elements}
 \item $L$ is JSON:
  \begin{itemize}
  \item ListAsString: like for strings above
- \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
+ \item ListAsArray: JSON array of $T$-encoded elements of $x$
  \end{itemize}
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}\frametitle{Additional Types}
-Examples: semester
+Example: semester
 
 Extend BDL:
 \begin{commgrammar}
@@ -1993,7 +1994,7 @@ where $Y$ is encoding of $y$
 \end{frame}
 
 \begin{frame}\frametitle{Additional Types (2)}
-Examples: timestamps
+Example: timestamps
 
 Extend BDL:
 \begin{commgrammar}
