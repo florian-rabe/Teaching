@@ -2149,15 +2149,18 @@ Similar problems
 \item But queries using semantic operations cannot always be translated to DB
  \begin{itemize}
   \item operation $IsSummer: Semester \to bool$ in BDL
-  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
+  \item query \lstinline|SELECT * FROM course WHERE $\ IsSummer$(semester)|
   \item how to map $IsSummer$ to SQL?
  \end{itemize}
 \item Ontology operations need commuting operations on codes
 \begin{itemize}
-\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
-\item SQL function $f'$ commutes with $f$ iff \\
-  \[B.decode (f'(C.encode\,a)) = f(a)\]
-  for all $a:A$
+\item given $f: T_1\to T_2$ in BDL between types $T_{1,2}$ and respective codecs $C_{1,2}$ into representation language $L$,
+\item SQL function $f'$ commutes with $f$ iff \[
+  \begin{tikzcd}[ampersand replacement=\&]
+    T_1 \arrow[d, "C_1.encode"'] \arrow[r, "f"] \& T_2\\
+    L \arrow[r, "f'"] \& L \arrow[u, "C_2.decode"']
+  \end{tikzcd}
+\]
 \end{itemize}
 \end{itemize}
 \end{frame}
