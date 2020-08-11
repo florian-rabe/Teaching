@@ -2140,9 +2140,9 @@ Similar problems
 
 \begin{frame}\frametitle{Open Problem: Querying}
 \begin{itemize}
-\item General setup
+\item General setup\glec{$L = \text{SQL}$}
  \begin{itemize}
- \item write SQL-style queries using at the BDL level
+ \item write SQL-style queries using BDL
  \item automatically encode values when writing to database from PL
  \item automatically decode query results when reading from DB
  \end{itemize}
@@ -2154,8 +2154,8 @@ Similar problems
  \end{itemize}
 \item Ontology operations need commuting operations on codes
 \begin{itemize}
-\item given $f: T_1\to T_2$ in BDL between types $T_{1,2}$ and respective codecs $C_{1,2}$ into representation language $L$,
-\item SQL function $f'$ commutes with $f$ iff \[
+\item given $f: T_1\to T_2$ in BDL and respective codecs $C_{1,2}$,
+\item $L$-function $f'$ commutes with $f$ iff \[
   \begin{tikzcd}[ampersand replacement=\&]
     T_1 \arrow[d, "C_1.encode"'] \arrow[r, "f"] \& T_2\\
     L \arrow[r, "f'"] \& L \arrow[u, "C_2.decode"']
