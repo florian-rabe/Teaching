@@ -1726,14 +1726,14 @@ Let BDL be given by
 
 \begin{blockitems}{Candidates}
  \item XML: standard on the web, notoriously verbose
- \item JSON: JavaScript objects, more human-friendly text syntax
-  \lec{older than XML, probably better choice than XML in retrospect}
+ \item JSON: minimal, more human-friendly text syntax
+  \lec{newer than XML, very dominant in JS ecosystem}
  \item YAML: line/indentation-based
 \end{blockitems}
 \end{frame}
 
 \begin{frame}{Breakout Question}
-What is the difference between JSON, YAML, XML?
+What is the difference between XML, JSON, and YAML?
 \end{frame}
 
 \begin{frame}\frametitle{Typical Data Representation Languages}
@@ -1753,49 +1753,48 @@ XML, JSON, YAML essentially the same
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Example: JSON}
+\begin{frame}[fragile]\frametitle{Example: JSON}
 JSON:
-\[\mathll{
- \{\\
- \tb "individual": "Florian Rabe",\\
- \tb "age": 40,\\
- \tb "concepts": ["instructor", "male"],\\
- \tb "teach": [\\
- \tb\tb\{"name":"Wuv",credits:7.5\},\\
- \tb\tb\{"name":"KRMT",credits:5\}\\
- \tb]\\
-\}
-}\]
-
+\begin{lstlisting}[basicstyle=\footnotesize]
+{
+  "individual": "FlorianRabe",
+  "age": 40,
+  "concepts": ["instructor", "male"],
+  "teach": [
+    {"name": "WuV", credits: 7.5},
+    {"name": "KRMT", credits: 5}
+  ]
+}
+\end{lstlisting}
 
 Weirdnesses:
 \begin{itemize}
-\item atomic/list/record = basic/array/object
+\item atomic/list/record called basic/array/object
 \item record field names are arbitrary strings, must be quoted
 \item records use $:$ instead of $=$
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Example: YAML}
+\begin{frame}[fragile]\frametitle{Example: YAML}
 inline syntax: same as JSON but without quoted field names
 
 alternative: indentation-sensitive syntax
-\[\mathll{
- individual: "Florian Rabe"\\
- age: 40\\
- concepts:\\
- \tb  -\; "instructor"\\
- \tb  -\; "male"\\
- teach:\\
- \tb -\; name: "WuV"\\
- \tb\phantom{-}\; credits: 7.5\\
- \tb  -\; name: "KRMT"\
- \tb\phantom{-}\; credits: 5\\
-}\]
+\begin{lstlisting}[basicstyle=\footnotesize]
+individual: "Florian Rabe"
+age: 40
+concepts:
+  - instructor
+  - male
+teach:
+  - name: WuV
+    credits: 7.5
+  - name: KRMT
+    credits: 5
+\end{lstlisting}
 
 Weirdnesses:
 \begin{itemize}
-\item atomic/list/record = scalar/collection/structure
+\item atomic/list/record called scalar/collection/structure
 \item records use $:$ instead of $=$
 \end{itemize}
 \end{frame}
@@ -1808,22 +1807,22 @@ Weird structure but very similar
 \end{itemize}
 
 \begin{lstlisting}[basicstyle=\footnotesize]
-<Person individual="Florian Rabe" age="40">
- <concepts>
-   <Concept>instructor</Concept/>
-   <Concept>male</Concept/>
- </concepts>
- <teach>
-   <Course name="WuV" credits="7.5"/>
-   <Course name="KRMT" credits="5"/>
- </teach>
-</Person>
+<person individual="Florian Rabe" age="40">
+  <concepts>
+    <concept>instructor</concept>
+    <concept>male</concept>
+  </concepts>
+  <teach>
+    <course name="WuV" credits="7.5" />
+    <course name="KRMT" credits="5" />
+  </teach>
+</person>
 \end{lstlisting}
 
 \begin{itemize}
-\item Good: \lstinline|Person|, \lstinline|Course|, \lstinline|Concept| give type of object
+\item Good: \lstinline|<person>|, \lstinline|<course>|, \lstinline|<concept>| give type of object
  \glec{easier to decode}
-\item Bad: value of record field must be string
+\item Bad: values of record fields must be string
  \glec{concepts cannot be given in attribute}
  \glec{integers, Booleans, whitespace-separated lists coded as strings}
 \end{itemize}
