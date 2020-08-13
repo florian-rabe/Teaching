@@ -2472,7 +2472,7 @@ We define
 \item BOL ontology:
 \[\mathll{concept\, male,\; concept\, person,\;axiom\, male \sqsubseteq person, \\
   individual\, FlorianRabe,\;assertion\, FlorianRabe\, isa\, male}\]
-\item Query $x:individual\vdash_{BOL}x \text{ isa } person$
+\item Query $x:individual\vdash_{BOL}x \text{ is-a } person$
 \item Translation to SFOL: $x:\iota\vdash_{SFOL} person(x)$
 \item SFOL calculus yields theorem $\vdash_{SFOL}person(FlorianRabe)$
 \item Query result $\sem{\gamma}= x:= FlorianRabe$
@@ -2790,7 +2790,7 @@ Assign unique \textbf{fragment URI}, e.g., LIB/DOC?FRAG where
 \textbf{Indexer} consists of
 \begin{itemize}
 \item data structure $O$ for indexable objects
- \lec{specific to aspect, index design}
+ \lec{aspect-specific index design}
  \glec{e.g., words, syntax trees}
 \item function that maps library to index \glec{the indexing}
 \end{itemize}
