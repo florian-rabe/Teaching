@@ -1218,22 +1218,21 @@ What is the difference between
 \end{frame}
 
 \begin{frame}\frametitle{Identifiers}
-\begin{blockitems}{Curry-Typed Knowledge graph}
+\begin{blockitems}{Curry-Typed Knowledge Graph}
 \item concept, relation, property names given in TBox
 \item individual names attached to nodes
 \end{blockitems}
 
 \begin{blockitems}{Church-Typed Database}
 \item table, column names given in schema
-\item row identified by distinguished column (= key) \\
-options
+\item row identified by distinguished key\\[0.4em]
+options:
  \begin{itemize}
- \item preexistent characteristic column
+ \item preexistent characteristic column or column set
  \item added upon insertion
   \begin{itemize}
   \item UUID string
   \item incremental integers
-  \item concatenation of characteristic list of columns
   \end{itemize} 
  \end{itemize}
 \item column/row identifiers formed by qualifying with table name
@@ -1271,7 +1270,7 @@ how to fully realize abstract data types
 \item field types must be base types, $a:A$ not allowed
 \item allow $ID$ as additional base type
 \item use field $a:ID$ in table $B$
-\item store value of $b$ in table $A$
+\item store value of $a$ in table $A$
 \end{blockitems}
 
 \begin{blockitems}{Inheritance: $B$ inherits from $A$}
@@ -1401,7 +1400,9 @@ Observation:
 \begin{itemize}
 \item essentially the same in every language
  \lec{including whatever language used for semantics}
-\item semantics by translation trivial
+\item semantics by translation straight-forward
+\glec{watch out for different endiannesses for ints,}
+\glec{charsets and encodings for characters/strings}
 \end{itemize}
 \end{frame}
 
@@ -1555,7 +1556,8 @@ What types do we need?
  \item IEEE float, double
  \item Booleans
  \item Unicode characters
- \item strings \glec{could be list of characters but usually bad idea}
+ \item strings\\
+ \glec{could be list of characters but usually bad idea}
 \end{blockitems}
 
 \begin{blockitems}{typical in math}
@@ -1606,7 +1608,7 @@ Two kinds
  \end{itemize}
 \end{itemize}
 \lec{dependent types much more complicated, less uniformly used}
-\lec{harder to starndardize}
+\lec{harder to standardize}
 \end{frame}
 
 \begin{frame}\frametitle{Collection Data Types}
@@ -1727,14 +1729,14 @@ Let BDL be given by
 
 \begin{blockitems}{Candidates}
  \item XML: standard on the web, notoriously verbose
- \item JSON: JavaScript objects, more human-friendly text syntax
-  \lec{older than XML, probably better choice than XML in retrospect}
+ \item JSON: minimal, more human-friendly text syntax
+  \lec{newer than XML, very dominant in JS ecosystem}
  \item YAML: line/indentation-based
 \end{blockitems}
 \end{frame}
 
 \begin{frame}{Breakout Question}
-What is the difference between JSON, YAML, XML?
+What is the difference between XML, JSON, and YAML?
 \end{frame}
 
 \begin{frame}\frametitle{Typical Data Representation Languages}
@@ -1754,49 +1756,48 @@ XML, JSON, YAML essentially the same
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Example: JSON}
+\begin{frame}[fragile]\frametitle{Example: JSON}
 JSON:
-\[\mathll{
- \{\\
- \tb "individual": "Florian Rabe",\\
- \tb "age": 40,\\
- \tb "concepts": ["instructor", "male"],\\
- \tb "teach": [\\
- \tb\tb\{"name":"Wuv",credits:7.5\},\\
- \tb\tb\{"name":"KRMT",credits:5\}\\
- \tb]\\
-\}
-}\]
-
+\begin{lstlisting}[basicstyle=\footnotesize]
+{
+  "individual": "FlorianRabe",
+  "age": 40,
+  "concepts": ["instructor", "male"],
+  "teach": [
+    {"name": "WuV", credits: 7.5},
+    {"name": "KRMT", credits: 5}
+  ]
+}
+\end{lstlisting}
 
 Weirdnesses:
 \begin{itemize}
-\item atomic/list/record = basic/array/object
+\item atomic/list/record called basic/array/object
 \item record field names are arbitrary strings, must be quoted
 \item records use $:$ instead of $=$
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Example: YAML}
+\begin{frame}[fragile]\frametitle{Example: YAML}
 inline syntax: same as JSON but without quoted field names
 
 alternative: indentation-sensitive syntax
-\[\mathll{
- individual: "Florian Rabe"\\
- age: 40\\
- concepts:\\
- \tb  -\; "instructor"\\
- \tb  -\; "male"\\
- teach:\\
- \tb -\; name: "WuV"\\
- \tb\phantom{-}\; credits: 7.5\\
- \tb  -\; name: "KRMT"\
- \tb\phantom{-}\; credits: 5\\
-}\]
+\begin{lstlisting}[basicstyle=\footnotesize]
+individual: "Florian Rabe"
+age: 40
+concepts:
+  - instructor
+  - male
+teach:
+  - name: WuV
+    credits: 7.5
+  - name: KRMT
+    credits: 5
+\end{lstlisting}
 
 Weirdnesses:
 \begin{itemize}
-\item atomic/list/record = scalar/collection/structure
+\item atomic/list/record called scalar/collection/structure
 \item records use $:$ instead of $=$
 \end{itemize}
 \end{frame}
@@ -1809,22 +1810,22 @@ Weird structure but very similar
 \end{itemize}
 
 \begin{lstlisting}[basicstyle=\footnotesize]
-<Person individual="Florian Rabe" age="40">
- <concepts>
-   <Concept>instructor</Concept/>
-   <Concept>male</Concept/>
- </concepts>
- <teach>
-   <Course name="WuV" credits="7.5"/>
-   <Course name="KRMT" credits="5"/>
- </teach>
-</Person>
+<person individual="Florian Rabe" age="40">
+  <concepts>
+    <concept>instructor</concept>
+    <concept>male</concept>
+  </concepts>
+  <teach>
+    <course name="WuV" credits="7.5" />
+    <course name="KRMT" credits="5" />
+  </teach>
+</person>
 \end{lstlisting}
 
 \begin{itemize}
-\item Good: \lstinline|Person|, \lstinline|Course|, \lstinline|Concept| give type of object
+\item Good: \lstinline|<person>|, \lstinline|<course>|, \lstinline|<concept>| give type of object
  \glec{easier to decode}
-\item Bad: value of record field must be string
+\item Bad: values of record fields must be string
  \glec{concepts cannot be given in attribute}
  \glec{integers, Booleans, whitespace-separated lists coded as strings}
 \end{itemize}
@@ -1834,7 +1835,7 @@ Weird structure but very similar
 \begin{blockitems}{Problem}
 \item Large objects are often redundant
  \glec{specially when machine-produced}
-\item Same string, URL, mathematical objects occurs in multiple places
+\item Same string, URL, mathematical object occurs in multiple places
 \item Handled in memory via pointers
 \item Size of serialization can explode
 \end{blockitems}
@@ -1866,7 +1867,7 @@ Weird structure but very similar
 \item Problem: only works if 
  \begin{itemize}
   \item for immutable data structures
-  \item if no occurrence-specific metadata \glec{e.g., source reference}
+  \item if no occurrence-specific metadata \glec{e.g., source references}
  \end{itemize}
 \end{blockitems}
 
@@ -1927,7 +1928,7 @@ We define codecs for the base types using strings as the data representation lan
 Easy cases:
 \begin{itemize}
 \item StandardFloat: as specified in IEEE floating point standard
-\item StandardString: as themselves, quoted
+\item StandardString: as themselves
 \item StandardBool: as $true$ or $false$
 \item StandardInt (64-bit): decimal digit-sequences as usual
 \end{itemize}
@@ -1967,18 +1968,19 @@ Encode $z\in\Z$
 \begin{frame}\frametitle{Codecs for Lists}
 Encode list $x$ of elements of type $T$
 \begin{itemize}
-\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
+\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$\\
+\glec{(un)escape comma in T-encoded elements}
 \item $L$ is JSON:
  \begin{itemize}
  \item ListAsString: like for strings above
- \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
+ \item ListAsArray: JSON array of $T$-encoded elements of $x$
  \end{itemize}
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}\frametitle{Additional Types}
-Examples: semester
+Example: semester
 
 Extend BDL:
 \begin{commgrammar}
@@ -1995,7 +1997,7 @@ where $Y$ is encoding of $y$
 \end{frame}
 
 \begin{frame}\frametitle{Additional Types (2)}
-Examples: timestamps
+Example: timestamps
 
 Extend BDL:
 \begin{commgrammar}
@@ -2103,19 +2105,14 @@ Codec could be chosen automatically, but we want to allow multiple users a choic
 Ontology based on BDL-ADTs with additional codec information:
 \begin{lstlisting}[basicstyle=\footnotesize]
 schema Instructor
-<<<<<<< Updated upstream
-  name:    string      codec StandardString
-  age:     int         codec StandardInt
-  courses: list Course codec CommaSeparatedList CourseAsName
-=======
-  name:     string   codec StandardString
-  age:      int      codec StandardInt
-  courses:  list Course codec CommaSeparatedList CourseAsName
->>>>>>> Stashed changes
+  name:     string        codec StandardString
+  age:      int           codec StandardInt
+  courses:  list Course   codec CommaSepList CourseAsName
+
 schema Course
-  name:     string   codec StandardString
-  credits:  float    codec StandardFloat
-  semester: Semester codec SemesterAsString
+  name:     string        codec StandardString
+  credits:  float         codec StandardFloat
+  semester: Semester      codec SemesterAsString
 \end{lstlisting}
 \medskip
 
@@ -2130,7 +2127,7 @@ CREATE TABLE Course
 
 \begin{frame}\frametitle{Open Problem: Non-Compositionality}
 \begin{blockitems}{Sometimes optimal translation is non-compositional}
-\item example translate $list$-type in ADT to comma-separated string in DB
+\item example translates $list$-type in ADT to comma-separated string in DB
 \item better break up $list\,B$ fields in type $A$ into separate table with columns for $A$ and $B$
 \end{blockitems}
 
@@ -2143,24 +2140,27 @@ Similar problems
 
 \begin{frame}\frametitle{Open Problem: Querying}
 \begin{itemize}
-\item General setup
+\item General setup\glec{$L = \text{SQL}$}
  \begin{itemize}
- \item write SQL-style queries using at the BDL level
+ \item write SQL-style queries using BDL
  \item automatically encode values when writing to database from PL
  \item automatically decode query results when reading from DB
  \end{itemize}
 \item But queries using semantic operations cannot always be translated to DB
  \begin{itemize}
   \item operation $IsSummer: Semester \to bool$ in BDL
-  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
+  \item query \lstinline|SELECT * FROM course WHERE $\ IsSummer$(semester)|
   \item how to map $IsSummer$ to SQL?
  \end{itemize}
 \item Ontology operations need commuting operations on codes
 \begin{itemize}
-\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
-\item SQL function $f'$ commutes with $f$ iff \\
-  \[B.decode (f'(C.encode\,a)) = f(a)\]
-  for all $a:A$
+\item given $f: T_1\to T_2$ in BDL and respective codecs $C_{1,2}$,
+\item $L$-function $f'$ commutes with $f$ iff \[
+  \begin{tikzcd}[ampersand replacement=\&]
+    T_1 \arrow[d, "C_1.encode"'] \arrow[r, "f"] \& T_2\\
+    L \arrow[r, "f'"] \& L \arrow[u, "C_2.decode"']
+  \end{tikzcd}
+\]
 \end{itemize}
 \end{itemize}
 \end{frame}
@@ -2472,7 +2472,7 @@ We define
 \item BOL ontology:
 \[\mathll{concept\, male,\; concept\, person,\;axiom\, male \sqsubseteq person, \\
   individual\, FlorianRabe,\;assertion\, FlorianRabe\, isa\, male}\]
-\item Query $x:individual\vdash_{BOL}x \text{ isa } person$
+\item Query $x:individual\vdash_{BOL}x \text{ is-a } person$
 \item Translation to SFOL: $x:\iota\vdash_{SFOL} person(x)$
 \item SFOL calculus yields theorem $\vdash_{SFOL}person(FlorianRabe)$
 \item Query result $\sem{\gamma}= x:= FlorianRabe$
@@ -2790,7 +2790,7 @@ Assign unique \textbf{fragment URI}, e.g., LIB/DOC?FRAG where
 \textbf{Indexer} consists of
 \begin{itemize}
 \item data structure $O$ for indexable objects
- \lec{specific to aspect, index design}
+ \lec{aspect-specific index design}
  \glec{e.g., words, syntax trees}
 \item function that maps library to index \glec{the indexing}
 \end{itemize}
@@ -3773,7 +3773,7 @@ Subsumption is an order with respect to equality:
 \[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq c}{\vdash c\Equiv d}\]
 
 Equal concepts can be substituted for each other:
-\[\rul{\vdash c\Equiv d\tb x:C\vdash f(x):\prop \tb \vdash f(c)}{\vdash f(d)}\]
+\[\rul{\vdash c\Equiv d\tb x:C\vdash f:\prop\tb \vdash f[x := c]}{\vdash f[x := d]}\]
 
 \glec{This completely defines equality.}
 \end{frame}
@@ -3810,7 +3810,7 @@ Question: Do we allow proving the hypothesis by checking for each individual $x$
 \begin{itemize}
 \item<2-> Open world: no
 \item<3-> Closed world: yes
- \[\rul{\Gamma[x=i]\vdash f[x=i] \;\text{ for every individual } i}{\Gamma, x:I\vdash f(x)}\]
+ \[\rul{\Gamma,x:I \vdash f:\prop\tb\Gamma[x:=i]\vdash f[x:=i] \;\text{ for every ind. } i}{\Gamma, x:I\vdash f}\]
  \glec{effectively applicable if only finitely many individuals}
 \end{itemize}
 \end{frame}

@@ -71,6 +71,16 @@ Ontologies are often divided into two parts:
  This part is commonly called the \textbf{ABox} (A for assertional).
 \end{compactitem}
 
+Some sentences in following paragraph partially copied from \url{https://en.wikipedia.org/w/index.php?title=Abox&oldid=892872890}. License: \url{https://en.wikipedia.org/w/index.php?title=Special:CiteThisPage&page=Abox&id=892872890&wpFormIdentifier=titleform}.
+TBox declarations tend to be more permanent within a knowledge base and are used as a schema.
+In contrast, ABox declarations are much more dynamic in nature and tend to represent instance data.
+For instance, we can understand relational databases as ontologies made up of table definitions as TBox declarations and table rows as ABox declarations.
+There, both kind of declarations are even separately stored for efficiency reasons, and in particular, the concrete way of representing table rows
+as bits is determined by the corresponding table definitions.
+However, such a hard distinction is not necessarily the case for other ontology languages.
+For example, in the ontology language OWL or in general in triplestores, both kind of declarations are stored next to each other and the syntactic representation distinction blurs.
+Nonetheless, we can usually distinguish between both declarations by their usage and lifecycle during the development of a concrete ontology.
+
 A separate division into two parts is the following:
 \begin{compactitem}
  \item The \textbf{signature} part contains everything that introduces a \textbf{named entity}: individuals, concepts, relations, and properties.
@@ -322,13 +332,14 @@ Here, the special relations allow capturing the most common axioms as triples.
 
 \paragraph{Problems}
 Reflection is subtle and can easily lead to inconsistencies.
-We can see this in how the approach of RDF(S) special entities breaks the semantics via FOL.
+We can see this in how the approach of RDF(S) special entities breaks the implicitly intended FOL semantics.
 
-For example, it treats classes both as concepts (when they occur as the object of a concept assertion) and as individuals (when they occur as subject or object of a "rdfs:subClassOf" relation assertion).
+For example, it treats classes, e.g. ``instructor'', both as concepts and as individuals. The treatment as a concept happens when a class occurs as the object of a concept assertion, e.g. \texttt{FlorianRabe rdf:type instructor}. By contrast, in relation assertions, e.g. \texttt{instructor rdfs:subclassOf person}, classes appearing as subject or object of such an assertion are treated as individuals.
 Similarly, "rdfs:Class" is used both as an individual and as a class.
 In fact, the standard prescribes that "rdfs:Class" is an instance of itself.
 
-In practice, this is handled pragmatically by using ontologies that make sense.
+In theory, such ambivalent treatment of one and the same thing as an individual and a class is problematic in FOL. This is because FOL's individual and predicate symbols can neither be inter- nor intramixed in arbitrary ways, e.g., predicates cannot be applied to other predicates.
+In practice however, this is handled pragmatically by using ontologies that make sense.
 A formal way to disentangle this is to assume that there are two variants of "rdfs:Class", one as an individual and one as a class.
 The translation must then translate "rdfs:Class" differently depending on how it is used.
 
