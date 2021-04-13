@@ -212,7 +212,7 @@ From 2012 to 2014, Apple's iOS SSL/TLS library falsely accepted faulty certifica
 This left most iOS applications susceptible to impersonation or man-in-the-middle attacks.
 Because Apple updated the software after detecting the bug, its cost is unclear.
 
-The immediately cause was a falsely-duplicated line of code, which ended the verification of the certificate instead of moving on to the next check.
+The immediate cause was a falsely-duplicated line of code, which ended the verification of the certificate instead of moving on to the next check.
 But a number of insufficiencies in the code and the software engineering process exacerbated the effect of the small bug.
 
 The code was as follows:
