@@ -1,0 +1,3 @@
+lecture 1-3 & introduction, overview and essential concepts \\
+lecture 3-4 & ontological knowledge, BOL \\
+exercise 1 & ontologies in Protege \\
