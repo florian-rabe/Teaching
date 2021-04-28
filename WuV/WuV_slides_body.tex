@@ -1,3 +1,5 @@
+\part{Introduction}
+
 \section{Administrative Information}
 
 \begin{frame}\frametitle{Format}
@@ -337,6 +339,8 @@ comp./narr. & Turing completeness \\\hline
 \end{blockitems}
 \end{frame}
 
+\part{Ontologies and Type Systems}
+
 \section{Ontological Knowledge}
 
 \begin{frame}\frametitle{Components of an Ontology}
@@ -454,207 +458,246 @@ $\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
 see syntax of BOL in the lecture notes
 \end{frame}
 
-\section{Semantics as Translation}
+\section{Concrete Knowledge and Typed Ontologies}
 
-\begin{frame}\frametitle{Example: Syntax of Arithmetic Language}
-Syntax: represented as formal grammar
-
-\begin{commgrammar}
-\gcomment{Numbers}\\
-\gprod{N}{0\bnfalt 1}{literals}\\
-\galtprod{N+N}{sum}\\
-\galtprod{N*N}{product}\\
-\gcomment{Formulas}\\
-\gprod{F}{N\doteq N}{equality}\\
-\galtprod{N\leq N}{ordering by size}\\
-\end{commgrammar}
-
-Implementation as inductive data type
-\end{frame}
-
-
-\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
-Semantics: represented as translation into known language
-\medskip
-
-Problem: Need to choose a known language first\\
-Here: unary numbers represented as strings
-
-Built-in data (strings and booleans):
-\begin{commgrammar}
-%\gcomment{Strings}\\
-\gprod{S}{\epsilon}{empty}\\
-\galtprod{(\texttt{Unicode)}}{characters}\\
-%\gcomment{Booleans}\\
-\gprod{B}{\cn{true}}{truth}\\
-\galtprod{\cn{false}}{falsity}\\
-\end{commgrammar}
-
-Built-in operations to work on the data:
-\begin{itemize}
-\item concatenation of strings $S\bbc \cn{conc}(S,S)$
-\item replacing all occurrences of $c$ in $S_1$ with $S_2$ $S\bbc \cn{replace}(S_1,c,S_2)$
-\item equality test: $B\bbc S_1==S_2$
-\item prefix test: $B\bbc \cn{startsWith}(S_1,S_2)$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
-\begin{blockitems}{Represented as function from syntax to semantics}
-\item mutually recursive, inductive functions for each non-terminal symbol
-\item compositional: recursive call on immediate subterms of argument
+\begin{frame}\frametitle{Motivation}
+\begin{blockitems}{Main ideas}
+\item Ontology abstractly describes concepts and relations
+\item Tool maintains concrete data set
+\item Focus on efficiently
+  \begin{itemize}
+  \item identifying (i.e., assign names)
+  \item representing
+  \item processing
+  \item querying
+  \end{itemize}
+  large sets of concrete data
 \end{blockitems}
 
-For numbers $n$: semantics $\sem{n}$ is a string
-\begin{itemize}
-\item $\sem{0}=\epsilon$
-\item $\sem{1}="|"$
-\item $\sem{m+n}=\cn{conc}(\sem{m},\sem{n})$
-\item $\sem{m*n}=\cn{replace}(\sem{m},"|",\sem{n})$
-\end{itemize}
-\medskip
-
-For formulas $f$: semantics $\sem{f}$ is a boolean
-\begin{itemize}
-\item $\sem{m\doteq n}=\sem{m}==\sem{n}$
-\item $\sem{m\leq n}=\cn{startsWith}(\sem{n},\sem{m})$
-\end{itemize}
+\begin{blockitems}{Recall: TBox-ABox distinction}
+  \item TBox: general parts, abstract, fixed
+   \lec{main challenge: correct modeling of domain}
+  \item ABox: concrete individuals and assertions about them, growing
+   \lec{main challenge: aggregate them all}
+\end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Semantics of BOL}
-\begin{center}
-\begin{tabular}{lll}
-Aspect & kind of semantic language & semantic language\\
-\hline 
-deduction & logic & SFOL \\
-concretization & database language & SQL \\
-computation & programming language & Scala \\
-narration & natural language & English \\
-\end{tabular}
-\end{center}
-
-see details of each translation in the lecture notes
-\end{frame}
-
-\begin{frame}\frametitle{General Definition}
-A semantics by translation consists of
-\begin{itemize}
- \item syntax: a formal language $l$
- \item semantic language: a formal language $L$
-  \glec{different or same aspect as $l$}
- \item semantic prefix: a theory $P$ in $L$
-  \glec{formalizes fundamentals that are needed to represent $l$-objects}
- \item interpretation: translates every $l$-theory $T$ to an $L$-theory $P,\sem{T}$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Common Principles}
-Properties shared by all semantics of BOL
-\lec{not part of formal definition, but best practices}
-\begin{itemize}
- \item $l$-declaration translated to $L$-declaration for the same name
- \item ontologies translated declaration-wise
- \item one inductive function for every kind of complex $l$-expression
-  \begin{itemize}
-   \item individuals, concepts, relations, properties, formulas
-   \item maps $l$-expressions to $L$-expressions
-  \end{itemize}
- \item atomic cases (base cases): $l$-identifier translated to $L$-identifier of the same name
-  \glec{or something very similar}
- \item complex cases (step cases): compositional
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Compositionality}
-Case for operator $*$ in interpretation function compositional iff \\
-interpretation of $*(e_1,\ldots,e_n)$ only depends on on the interpretation of the $e_i$
-
-\[\sem{*(e_1,\ldots,e_n)}=\sem{*}(\sem{e_1},\ldots,\sem{e_n})\]
-for some function $\sem{*}$
-\bigskip
-
-Example: $;$-operator of BOL in translation to FOL
-\begin{itemize}
- \item translation: $\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)$
- \item special case of the above via
-  \begin{itemize}
-  \item $*=;$
-  \item $n=2$
-  \item $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$
-  \end{itemize}
- \item Indeed, we have $\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2})$
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}\frametitle{Compositionality (2)}
-Translation compositional iff
-\begin{itemize}
-\item one translation function for each non-terminal
- \glec{all written $\sem{-}$}
-\item each defined by one induction on syntax
- \glec{i.e., one case for production}
- \glec{mutually recursive}
-\item all cases compositional
-\end{itemize}
-\bigskip
-
-Substitution theorem: a compositional translation satisfies
-\[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\]
-for
-\begin{itemize}
-\item every expression $E(N_1,\ldots,N_n)$ with non-terminals $N_i$
-\item some function $\sem{E}$ that only depends on $E$
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}\frametitle{Compositionality (3)}
-\[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\]
-for every expression $E(N_1,\ldots,N_n)$ with non-terminals $N_i$
-\bigskip
-
-Now think of
-\begin{itemize}
-\item variable $x_i$ of type $N_i$ instead of non-terminal $N_i$
-\item $E(x_1,\ldots,x_n)$ as expression with free variables $x_i$ of type $N_i$
-\item expressions $e$ derived from $N$ as expressions of type $N$
-\item $E(e_1,\ldots,e_n)$ as result of substituting $e_i$ for $x_i$
-\item $\sem{E}(x_1,\ldots,x_n)$ as (semantic) expression with free variables $x_i$
-\end{itemize}
-
-Then both sides of equations act on $E(x_1,\ldots,x_n)$:
-\begin{itemize}
-\item left side yields $\sem{E(e_1,\ldots,e_n)}$ by
-\begin{itemize}
-\item first substitution $e_i$ for $x_i$
-\item then semantics $\sem{-}$ of the whole
-\end{itemize}
-\item right side yields $\sem{E}(\sem{e_1},\ldots,\sem{e_n})$ by
-\begin{itemize}
-\item first semantics $\sem{-}$ of all parts
-\item then substitution $\sem{e_i}$ for $x_i$
-\end{itemize}
-\end{itemize}
-\lec{semantics commutes with substitution}
-\end{frame}
-
-\begin{frame}\frametitle{Non-Compositionality}
-\begin{blockitems}{Examples}
- \item deduction: cut elimination, translation from natural deduction to Hilbert calculus
- \item computation: optimizing compiler, e.g., loop unrolling
- \item concretization: query optimization, e.g., turning a WHERE of a join into a join of WHEREs,
- \item narration: ambiguous words are translated based on context
+\begin{frame}\frametitle{Concrete Data}
+\begin{blockitems}{Concrete is}
+\item Base values: integers, strings, booleans, etc.
+\item Collections: sets, multisets, lists (always finite)
+\item Aggregations: tuples, records (always finite)
+\item User-defined concrete data: enumerations, inductive types
+\item Advanced objects: finite maps, graphs, etc.
 \end{blockitems}
 
-\begin{blockitems}{Typical sources}
- \item subcases in a case of translation function
+\begin{blockitems}{Concrete is not}
+\item Free symbols to be interpreted by a model
+ \lec{exception: foreign function interfaces}
+\item Variables (free or bound)
+ \lec{$\lambda$-abstraction, quantification}
+\item Symbolic expressions
+ \lec{formulas, algorithms}
+ Exceptions:
   \begin{itemize}
-  \item based on inspecting the arguments, e.g., subinduction
-  \item based on context
+  \item expressions of inductive type
+  \item application of built-in functions
+  \item queries that return concrete data
   \end{itemize}
- \item custom-built semantic prefix
 \end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout question}
+What is the difference between
+\begin{itemize}
+\item an OWL ontology
+\item an SQL database
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Two Approaches}
+\begin{blockitems}{Based on \emph{untyped} (Curry-typed) ontology languages}
+\item Representation based on \emph{knowledge graph}
+\item Ontology written in BOL-like language
+\item Data maintained as \emph{set of triples}
+  \glec{tool = triple store}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{separate}
+  \glec{e.g., OWL, SPARQL}
+ \item triple store and query engine integrated
+  \glec{e.g., Virtuoso tool}
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Based on \emph{typed} (Church-typed) ontology languages}
+\item Representation based on \emph{abstract data types}
+\item Ontology written as database schema
+\item Data maintained as \emph{tables}
+  \glec{tool = (relational) database}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{integrated}
+  \glec{e.g., SQL}
+ \item table store and query engine integrated
+  \glec{e.g., SQLite tool}
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Evolution of Approaches}
+\begin{blockitems}{Our usage is non-standard}
+ \item Common
+  \begin{itemize}
+  \item ontologies = untyped approach, OWL, triples,  SPARQL
+  \item databases = typed approach, tables, SQL
+  \end{itemize}
+ \item Our understanding: two approaches evolved from same idea
+	\begin{itemize}
+	\item triple store = untyped database
+	\item SQL schema = typed ontology
+	\end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Evolution}
+\item Typed-untyped distinction minor technical difference
+\item Optimization of respective advantages causes speciation
+\item Today segregation into different
+ \begin{itemize}
+ \item jargons
+ \item languages, tools
+ \item communities, conferences
+ \item courses
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Curry-typed concrete data}
+\begin{blockitems}{Central data structure = knowledge graph}
+\item nodes = individuals $i$
+ \begin{itemize}
+ \item identifier
+ \item sets of concepts of $i$
+ \item key-value sets of properties of $i$
+ \end{itemize}
+\item edges = relation assertions
+ \begin{itemize}
+ \item from subject to object
+ \item labeled with name of relation
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Processing strengths}
+\item store: as triple set
+\item edit: Protege-style or graph-based
+\item visualize: as graph
+  \glec{different colors for concepts, relations}
+\item query: match, traverse graph structure
+\item untyped data simplifies integration, migration
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Church-typed concrete data}
+\begin{blockitems}{Central data structure = relational database}
+\item tables = abstract data type
+\item rows = objects of that type
+\item columns = fields of ADT
+\item cells = values of fields
+\end{blockitems}
+
+\begin{blockitems}{Processing strengths}
+\item store: as CSV text files, or similar
+\item edit: SQL commands or table editors
+\item visualize: as table view
+\item query: relational algebra
+\item typed data simplifies selecting, sorting, aggregating
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Identifiers}
+\begin{blockitems}{Curry-Typed Knowledge graph}
+\item concept, relation, property names given in TBox
+\item individual names attached to nodes
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item table, column names given in schema
+\item row identified by distinguished column (= key) \\
+options
+ \begin{itemize}
+ \item preexistent characteristic column
+ \item added upon insertion
+  \begin{itemize}
+  \item UUID string
+  \item incremental integers
+  \item concatenation of characteristic list of columns
+  \end{itemize} 
+ \end{itemize}
+\item column/row identifiers formed by qualifying with table name
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Axioms}
+\begin{blockitems}{Curry-Typed Knowledge Graph}
+\item traditionally very expressive axioms
+\item yields inferred assertions
+\item triple store must do consequence closure to return correct query results
+\item not all axioms supported by every triple store
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item typically no axioms
+\item instead consistency constraints, triggers
+\item allows limited support for axioms without calling it that way
+\item stronger need for users to program the consequence closure manually
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Open/Closed World}
+\begin{itemize}
+\item Question: is the data complete?
+ \begin{itemize}
+ \item closed world: yes
+ \item open world: not necessarily
+ \end{itemize}
+\item Dimensions of openness
+ \begin{itemize}
+  \item existence of individual objects
+  \item assertions about them
+ \end{itemize}
+\item Sources of openness
+  \begin{itemize}
+  \item more exists but has not yet been added
+  \item more could be created later
+  \end{itemize}
+\item Orthogonal to typed/untyped distinction, but in practice
+ \begin{itemize}
+ \item knowledge graphs use open world
+ \item databases use closed world
+ \end{itemize}
+\end{itemize}
+\lec{Open world is natural state, closing adds knowledge}
+\end{frame}
+
+\begin{frame}\frametitle{Closing the World}
+\begin{blockitems}{Derivable consequences}
+ \item induction: prove universal property by proving for each object
+ \item negation by failure: atomic property false if not provable
+ \item term-generation constraint: only nameable objects exist
+\end{blockitems}
+
+\begin{blockitems}{Enabled operations}
+ \item universal set: all objects
+ \item complement of concept/type
+ \item defaults: assume default value for property if not otherwise asserted
+\end{blockitems}
+
+\begin{blockitems}{Monotonicity problem}
+ \item monotone operation: bigger world = more results
+ \item examples: union, intersection, $\exists R.C$, join, IN conditions
+ \item counter-examples: complement, $\forall R.C$, NOT IN conditions
+\end{blockitems}
+\lec{technically, non-monotone operations in open world dubious}
 \end{frame}
 
 \section{Type Systems}
@@ -1006,255 +1049,6 @@ We gloss over several major issues:
 \lec{incarnations of ADTs subtly different across languages}
 \end{frame}
 
-\section{Context-Sensitive Syntax}
-
-\begin{frame}\frametitle{Definition}
-A \textbf{language system} consists of
-\begin{itemize}
- \item context-free syntax
- \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
- \item some distinguished non-terminal symbols $\ExpSym$ \glec{words called $\ExpSym$-\textbf{expressions}}
- \item unary predicate $\wft{\Theta}$ on vocabularies $\Theta$ \glec{well-formed vocabulary $\Theta$}
- \item unary predicates $\wff{\Theta}{\ExpSym}{E}$ \glec{well-formed $\ExpSym$-expressions $E$}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Typical Structure}
-Vocabularies
-\begin{itemize}
-\item lists of declarations
-\end{itemize}
-
-Declarations
-\begin{itemize}
-\item named
-\item at least one for each expression kind
-\item may contain other expressions \glec{e.g., type, definition}
-\item may contain nested declarations \glec{e.g., fields in an ADT}
-\end{itemize}
-
-Expressions
-\begin{itemize}
-\item inductive data type
-\item relative to vocabulary \glec{names occur as base cases}
-\item formulas as special case
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Vocabularies and Expressions}
-\begin{center}
-\footnotesize
-\begin{tabular}{l|ll}
-Aspect & vocabulary $\Theta$ & expression kinds $\ExpSym$ \\
-\hline
-Ontologization  & ontology & individual, concept, relation, property, formula \\
-Concretization & database schema & cell, row, table, formula \\
-Computation & program & term, type, object, class, \ldots \\
-Logic & signature, theory & term, type, formula, \ldots \\
-Narration & dictionary & phrases, sentences, texts \\
-\end{tabular}
-\end{center}
-\end{frame}
-
-\begin{frame}\frametitle{Examples}
-See notes made during the lecture for examples
-\end{frame}
-
-\section{Concrete Knowledge and Typed Ontologies}
-
-\begin{frame}\frametitle{Motivation}
-\begin{blockitems}{Main ideas}
-\item Ontology abstractly describes concepts and relations
-\item Tool maintains concrete data set
-\item Focus on efficiently
-  \begin{itemize}
-  \item identifying (i.e., assign names)
-  \item representing
-  \item processing
-  \item querying
-  \end{itemize}
-  large sets of concrete data
-\end{blockitems}
-
-\begin{blockitems}{Recall: TBox-ABox distinction}
-  \item TBox: general parts, abstract, fixed
-   \lec{main challenge: correct modeling of domain}
-  \item ABox: concrete individuals and assertions about them, growing
-   \lec{main challenge: aggregate them all}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Concrete Data}
-\begin{blockitems}{Concrete is}
-\item Base values: integers, strings, booleans, etc.
-\item Collections: sets, multisets, lists (always finite)
-\item Aggregations: tuples, records (always finite)
-\item User-defined concrete data: enumerations, inductive types
-\item Advanced objects: finite maps, graphs, etc.
-\end{blockitems}
-
-\begin{blockitems}{Concrete is not}
-\item Free symbols to be interpreted by a model
- \lec{exception: foreign function interfaces}
-\item Variables (free or bound)
- \lec{$\lambda$-abstraction, quantification}
-\item Symbolic expressions
- \lec{formulas, algorithms}
- Exceptions:
-  \begin{itemize}
-  \item expressions of inductive type
-  \item application of built-in functions
-  \item queries that return concrete data
-  \end{itemize}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Breakout question}
-What is the difference between
-\begin{itemize}
-\item an OWL ontology
-\item an SQL database
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Two Approaches}
-\begin{blockitems}{Based on \emph{untyped} (Curry-typed) ontology languages}
-\item Representation based on \emph{knowledge graph}
-\item Ontology written in BOL-like language
-\item Data maintained as \emph{set of triples}
-  \glec{tool = triple store}
-\item Typical language/tool design
- \begin{itemize}
- \item ontology and query language \emph{separate}
-  \glec{e.g., OWL, SPARQL}
- \item triple store and query engine integrated
-  \glec{e.g., Virtuoso tool}
- \end{itemize}
-\end{blockitems}
-
-\begin{blockitems}{Based on \emph{typed} (Church-typed) ontology languages}
-\item Representation based on \emph{abstract data types}
-\item Ontology written as database schema
-\item Data maintained as \emph{tables}
-  \glec{tool = (relational) database}
-\item Typical language/tool design
- \begin{itemize}
- \item ontology and query language \emph{integrated}
-  \glec{e.g., SQL}
- \item table store and query engine integrated
-  \glec{e.g., SQLite tool}
- \end{itemize}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Evolution of Approaches}
-\begin{blockitems}{Our usage is non-standard}
- \item Common
-  \begin{itemize}
-  \item ontologies = untyped approach, OWL, triples,  SPARQL
-  \item databases = typed approach, tables, SQL
-  \end{itemize}
- \item Our understanding: two approaches evolved from same idea
-	\begin{itemize}
-	\item triple store = untyped database
-	\item SQL schema = typed ontology
-	\end{itemize}
-\end{blockitems}
-
-\begin{blockitems}{Evolution}
-\item Typed-untyped distinction minor technical difference
-\item Optimization of respective advantages causes speciation
-\item Today segregation into different
- \begin{itemize}
- \item jargons
- \item languages, tools
- \item communities, conferences
- \item courses
- \end{itemize}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Curry-typed concrete data}
-\begin{blockitems}{Central data structure = knowledge graph}
-\item nodes = individuals $i$
- \begin{itemize}
- \item identifier
- \item sets of concepts of $i$
- \item key-value sets of properties of $i$
- \end{itemize}
-\item edges = relation assertions
- \begin{itemize}
- \item from subject to object
- \item labeled with name of relation
- \end{itemize}
-\end{blockitems}
-
-\begin{blockitems}{Processing strengths}
-\item store: as triple set
-\item edit: Protege-style or graph-based
-\item visualize: as graph
-  \glec{different colors for concepts, relations}
-\item query: match, traverse graph structure
-\item untyped data simplifies integration, migration
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Church-typed concrete data}
-\begin{blockitems}{Central data structure = relational database}
-\item tables = abstract data type
-\item rows = objects of that type
-\item columns = fields of ADT
-\item cells = values of fields
-\end{blockitems}
-
-\begin{blockitems}{Processing strengths}
-\item store: as CSV text files, or similar
-\item edit: SQL commands or table editors
-\item visualize: as table view
-\item query: relational algebra
-\item typed data simplifies selecting, sorting, aggregating
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Identifiers}
-\begin{blockitems}{Curry-Typed Knowledge graph}
-\item concept, relation, property names given in TBox
-\item individual names attached to nodes
-\end{blockitems}
-
-\begin{blockitems}{Church-Typed Database}
-\item table, column names given in schema
-\item row identified by distinguished column (= key) \\
-options
- \begin{itemize}
- \item preexistent characteristic column
- \item added upon insertion
-  \begin{itemize}
-  \item UUID string
-  \item incremental integers
-  \item concatenation of characteristic list of columns
-  \end{itemize} 
- \end{itemize}
-\item column/row identifiers formed by qualifying with table name
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Axioms}
-\begin{blockitems}{Curry-Typed Knowledge Graph}
-\item traditionally very expressive axioms
-\item yields inferred assertions
-\item triple store must do consequence closure to return correct query results
-\item not all axioms supported by every triple store
-\end{blockitems}
-
-\begin{blockitems}{Church-Typed Database}
-\item typically no axioms
-\item instead consistency constraints, triggers
-\item allows limited support for axioms without calling it that way
-\item stronger need for users to program the consequence closure manually
-\end{blockitems}
-\end{frame}
-
 \begin{frame}\frametitle{Breakout question}
 When using typed concrete data,\\
 how to fully realize abstract data types
@@ -1283,53 +1077,6 @@ how to fully realize abstract data types
 \item essentially join of tables $A$ and $B$ on common fields
 \item some subtleties depending on ADT flattening
 \end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Open/Closed World}
-\begin{itemize}
-\item Question: is the data complete?
- \begin{itemize}
- \item closed world: yes
- \item open world: not necessarily
- \end{itemize}
-\item Dimensions of openness
- \begin{itemize}
-  \item existence of individual objects
-  \item assertions about them
- \end{itemize}
-\item Sources of openness
-  \begin{itemize}
-  \item more exists but has not yet been added
-  \item more could be created later
-  \end{itemize}
-\item Orthogonal to typed/untyped distinction, but in practice
- \begin{itemize}
- \item knowledge graphs use open world
- \item databases use closed world
- \end{itemize}
-\end{itemize}
-\lec{Open world is natural state, closing adds knowledge}
-\end{frame}
-
-\begin{frame}\frametitle{Closing the World}
-\begin{blockitems}{Derivable consequences}
- \item induction: prove universal property by proving for each object
- \item negation by failure: atomic property false if not provable
- \item term-generation constraint: only nameable objects exist
-\end{blockitems}
-
-\begin{blockitems}{Enabled operations}
- \item universal set: all objects
- \item complement of concept/type
- \item defaults: assume default value for property if not otherwise asserted
-\end{blockitems}
-
-\begin{blockitems}{Monotonicity problem}
- \item monotone operation: bigger world = more results
- \item examples: union, intersection, $\exists R.C$, join, IN conditions
- \item counter-examples: complement, $\forall R.C$, NOT IN conditions
-\end{blockitems}
-\lec{technically, non-monotone operations in open world dubious}
 \end{frame}
 
 \part{Primitive Types and Encoding Data}
@@ -3059,6 +2806,263 @@ Value search
 \end{frame}
 
 \part{Semantics}
+
+\section{Semantics as Translation}
+
+\begin{frame}\frametitle{Example: Syntax of Arithmetic Language}
+Syntax: represented as formal grammar
+
+\begin{commgrammar}
+\gcomment{Numbers}\\
+\gprod{N}{0\bnfalt 1}{literals}\\
+\galtprod{N+N}{sum}\\
+\galtprod{N*N}{product}\\
+\gcomment{Formulas}\\
+\gprod{F}{N\doteq N}{equality}\\
+\galtprod{N\leq N}{ordering by size}\\
+\end{commgrammar}
+
+Implementation as inductive data type
+\end{frame}
+
+
+\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
+Semantics: represented as translation into known language
+\medskip
+
+Problem: Need to choose a known language first\\
+Here: unary numbers represented as strings
+
+Built-in data (strings and booleans):
+\begin{commgrammar}
+%\gcomment{Strings}\\
+\gprod{S}{\epsilon}{empty}\\
+\galtprod{(\texttt{Unicode)}}{characters}\\
+%\gcomment{Booleans}\\
+\gprod{B}{\cn{true}}{truth}\\
+\galtprod{\cn{false}}{falsity}\\
+\end{commgrammar}
+
+Built-in operations to work on the data:
+\begin{itemize}
+\item concatenation of strings $S\bbc \cn{conc}(S,S)$
+\item replacing all occurrences of $c$ in $S_1$ with $S_2$ $S\bbc \cn{replace}(S_1,c,S_2)$
+\item equality test: $B\bbc S_1==S_2$
+\item prefix test: $B\bbc \cn{startsWith}(S_1,S_2)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
+\begin{blockitems}{Represented as function from syntax to semantics}
+\item mutually recursive, inductive functions for each non-terminal symbol
+\item compositional: recursive call on immediate subterms of argument
+\end{blockitems}
+
+For numbers $n$: semantics $\sem{n}$ is a string
+\begin{itemize}
+\item $\sem{0}=\epsilon$
+\item $\sem{1}="|"$
+\item $\sem{m+n}=\cn{conc}(\sem{m},\sem{n})$
+\item $\sem{m*n}=\cn{replace}(\sem{m},"|",\sem{n})$
+\end{itemize}
+\medskip
+
+For formulas $f$: semantics $\sem{f}$ is a boolean
+\begin{itemize}
+\item $\sem{m\doteq n}=\sem{m}==\sem{n}$
+\item $\sem{m\leq n}=\cn{startsWith}(\sem{n},\sem{m})$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Semantics of BOL}
+\begin{center}
+\begin{tabular}{lll}
+Aspect & kind of semantic language & semantic language\\
+\hline 
+deduction & logic & SFOL \\
+concretization & database language & SQL \\
+computation & programming language & Scala \\
+narration & natural language & English \\
+\end{tabular}
+\end{center}
+
+see details of each translation in the lecture notes
+\end{frame}
+
+\begin{frame}\frametitle{General Definition}
+A semantics by translation consists of
+\begin{itemize}
+ \item syntax: a formal language $l$
+ \item semantic language: a formal language $L$
+  \glec{different or same aspect as $l$}
+ \item semantic prefix: a theory $P$ in $L$
+  \glec{formalizes fundamentals that are needed to represent $l$-objects}
+ \item interpretation: translates every $l$-theory $T$ to an $L$-theory $P,\sem{T}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Common Principles}
+Properties shared by all semantics of BOL
+\lec{not part of formal definition, but best practices}
+\begin{itemize}
+ \item $l$-declaration translated to $L$-declaration for the same name
+ \item ontologies translated declaration-wise
+ \item one inductive function for every kind of complex $l$-expression
+  \begin{itemize}
+   \item individuals, concepts, relations, properties, formulas
+   \item maps $l$-expressions to $L$-expressions
+  \end{itemize}
+ \item atomic cases (base cases): $l$-identifier translated to $L$-identifier of the same name
+  \glec{or something very similar}
+ \item complex cases (step cases): compositional
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Compositionality}
+Case for operator $*$ in interpretation function compositional iff \\
+interpretation of $*(e_1,\ldots,e_n)$ only depends on on the interpretation of the $e_i$
+
+\[\sem{*(e_1,\ldots,e_n)}=\sem{*}(\sem{e_1},\ldots,\sem{e_n})\]
+for some function $\sem{*}$
+\bigskip
+
+Example: $;$-operator of BOL in translation to FOL
+\begin{itemize}
+ \item translation: $\sem{R_1 ; R_2}= \exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)$
+ \item special case of the above via
+  \begin{itemize}
+  \item $*=;$
+  \item $n=2$
+  \item $\sem{;}=(p_1,p_2)\mapsto \exists m:\iota.p_1(x,m)\wedge p_2(m,y)$
+  \end{itemize}
+ \item Indeed, we have $\sem{R_1;R_2}=\sem{;}(\sem{R_1},\sem{R_2})$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Compositionality (2)}
+Translation compositional iff
+\begin{itemize}
+\item one translation function for each non-terminal
+ \glec{all written $\sem{-}$}
+\item each defined by one induction on syntax
+ \glec{i.e., one case for production}
+ \glec{mutually recursive}
+\item all cases compositional
+\end{itemize}
+\bigskip
+
+Substitution theorem: a compositional translation satisfies
+\[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\]
+for
+\begin{itemize}
+\item every expression $E(N_1,\ldots,N_n)$ with non-terminals $N_i$
+\item some function $\sem{E}$ that only depends on $E$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Compositionality (3)}
+\[\sem{E(e_1,\ldots,e_n)}=\sem{E}(\sem{e_1},\ldots,\sem{e_n})\]
+for every expression $E(N_1,\ldots,N_n)$ with non-terminals $N_i$
+\bigskip
+
+Now think of
+\begin{itemize}
+\item variable $x_i$ of type $N_i$ instead of non-terminal $N_i$
+\item $E(x_1,\ldots,x_n)$ as expression with free variables $x_i$ of type $N_i$
+\item expressions $e$ derived from $N$ as expressions of type $N$
+\item $E(e_1,\ldots,e_n)$ as result of substituting $e_i$ for $x_i$
+\item $\sem{E}(x_1,\ldots,x_n)$ as (semantic) expression with free variables $x_i$
+\end{itemize}
+
+Then both sides of equations act on $E(x_1,\ldots,x_n)$:
+\begin{itemize}
+\item left side yields $\sem{E(e_1,\ldots,e_n)}$ by
+\begin{itemize}
+\item first substitution $e_i$ for $x_i$
+\item then semantics $\sem{-}$ of the whole
+\end{itemize}
+\item right side yields $\sem{E}(\sem{e_1},\ldots,\sem{e_n})$ by
+\begin{itemize}
+\item first semantics $\sem{-}$ of all parts
+\item then substitution $\sem{e_i}$ for $x_i$
+\end{itemize}
+\end{itemize}
+\lec{semantics commutes with substitution}
+\end{frame}
+
+\begin{frame}\frametitle{Non-Compositionality}
+\begin{blockitems}{Examples}
+ \item deduction: cut elimination, translation from natural deduction to Hilbert calculus
+ \item computation: optimizing compiler, e.g., loop unrolling
+ \item concretization: query optimization, e.g., turning a WHERE of a join into a join of WHEREs,
+ \item narration: ambiguous words are translated based on context
+\end{blockitems}
+
+\begin{blockitems}{Typical sources}
+ \item subcases in a case of translation function
+  \begin{itemize}
+  \item based on inspecting the arguments, e.g., subinduction
+  \item based on context
+  \end{itemize}
+ \item custom-built semantic prefix
+\end{blockitems}
+\end{frame}
+
+\section{Context-Sensitive Syntax}
+
+\begin{frame}\frametitle{Definition}
+A \textbf{language system} consists of
+\begin{itemize}
+ \item context-free syntax
+ \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
+ \item some distinguished non-terminal symbols $\ExpSym$ \glec{words called $\ExpSym$-\textbf{expressions}}
+ \item unary predicate $\wft{\Theta}$ on vocabularies $\Theta$ \glec{well-formed vocabulary $\Theta$}
+ \item unary predicates $\wff{\Theta}{\ExpSym}{E}$ \glec{well-formed $\ExpSym$-expressions $E$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Typical Structure}
+Vocabularies
+\begin{itemize}
+\item lists of declarations
+\end{itemize}
+
+Declarations
+\begin{itemize}
+\item named
+\item at least one for each expression kind
+\item may contain other expressions \glec{e.g., type, definition}
+\item may contain nested declarations \glec{e.g., fields in an ADT}
+\end{itemize}
+
+Expressions
+\begin{itemize}
+\item inductive data type
+\item relative to vocabulary \glec{names occur as base cases}
+\item formulas as special case
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Vocabularies and Expressions}
+\begin{center}
+\footnotesize
+\begin{tabular}{l|ll}
+Aspect & vocabulary $\Theta$ & expression kinds $\ExpSym$ \\
+\hline
+Ontologization  & ontology & individual, concept, relation, property, formula \\
+Concretization & database schema & cell, row, table, formula \\
+Computation & program & term, type, object, class, \ldots \\
+Logic & signature, theory & term, type, formula, \ldots \\
+Narration & dictionary & phrases, sentences, texts \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+See notes made during the lecture for examples
+\end{frame}
 
 \section{Overview}
 
