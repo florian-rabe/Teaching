@@ -5,4 +5,4 @@ exercise 1 & ontologies in Protege, an ontology for a university\\
 lecture 5 & concrete knowledge and typed ontologies, OWL vs. SQL\\
 lecture 6 & type systems\\
 homework 2 & figure out how to add axioms to the ontology, make changes as discussed \\
-exercise 2 & continued, axioms in ontologies \\
+exercise 2 & continued, add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
