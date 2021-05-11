@@ -8,6 +8,8 @@ lecture 6 & type systems\\
 homework 2 & figure out how to add axioms to the ontology, make changes as discussed \\
 exercise 2 & continued: add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
 lecture 7-8 & type systems: Curry/Church, ADTs \\
+exercise 3 & continued \\
+lecture 9 & special lecture on MMT \\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot as a team task.
