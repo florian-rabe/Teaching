@@ -10,6 +10,7 @@ exercise 2 & continued: add ABox and axioms, do SPARQL query via Virtuoso, do lo
 lecture 7-8 & type systems: Curry/Church, ADTs \\
 exercise 3 & continued, compare OWL and BOL \\
 lecture 9 & special lecture on MMT \\
+lecture 10 & primitive types and encodings \\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot as a team task.
