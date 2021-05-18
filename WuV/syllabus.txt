@@ -11,6 +11,9 @@ lecture 7-8 & type systems: Curry/Church, ADTs \\
 exercise 3 & continued, compare OWL and BOL \\
 lecture 9 & special lecture on MMT \\
 lecture 10 & primitive types and encodings \\
+exercise 4 & standardize some data types and encodings (https://pad.stuve.fau.de/p/wuv_codecs)\\
+homework 4 & implement codecs individually in various languages \\
+lecture 11 & continued \\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot as a team task.
