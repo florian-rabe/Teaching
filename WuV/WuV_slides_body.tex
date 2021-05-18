@@ -1546,7 +1546,7 @@ alternative: indentation-sensitive syntax
  teach:\\
  \tb -\; name: "WuV"\\
  \tb\phantom{-}\; credits: 7.5\\
- \tb  -\; name: "KRMT"\
+ \tb  -\; name: "KRMT"\\
  \tb\phantom{-}\; credits: 5\\
 }\]
 
@@ -1658,24 +1658,24 @@ a codec operator $C$ for $T$
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 4}
-We fix strings as the data representation language $L$.
-
-Then, 
-\begin{enumerate}
- \item Jointly specify
-  \begin{itemize}
-  \item additional BDL types and constructors for univis-specific data
-  \item codecs and codec operators for all types resp. type operators
-  \end{itemize}
- \item Individually, in any programming language, implement
-  \begin{itemize}
-   \item data structures for BDL
-   \item string codecs (operators) for all BDL base types (operators)
-  \end{itemize}
- \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
-\end{enumerate}
-\end{frame}
+%\begin{frame}\frametitle{Exercise 4}
+%We fix strings as the data representation language $L$.
+%
+%Then, 
+%\begin{enumerate}
+% \item Jointly specify
+%  \begin{itemize}
+%  \item additional BDL types and constructors for univis-specific data
+%  \item codecs and codec operators for all types resp. type operators
+%  \end{itemize}
+% \item Individually, in any programming language, implement
+%  \begin{itemize}
+%   \item data structures for BDL
+%   \item string codecs (operators) for all BDL base types (operators)
+%  \end{itemize}
+% \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
+%\end{enumerate}
+%\end{frame}
 
 \begin{frame}\frametitle{Codecs for Base Types}
 We define codecs for the base types using strings as the data representation language $L$.
@@ -1915,35 +1915,35 @@ Similar problems
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 5, part 1}
-We build on the implementation of BDL and codecs from Exercise 4 and on the database schemas from Exercise 3.
-
-\begin{enumerate}
- \item Extend the implementation to BDL+ADT (see Slide 101).
- \item Extend 
-  \begin{itemize}
-  \item codecs and codec operators with identifiers $I\bbc (strings)$
-  \item ADT fields with codec expressions $c::=I \bnfalt I(c_1\ldots,c_n)$
-  \end{itemize}
-  and write a function that maps $c$ to the corresponding codec.
-\end{enumerate}
-\end{frame}
-
-\begin{frame}\frametitle{Exercise 5, part 2}
-
-\begin{enumerate}
-\setcounter{enumi}{2}
- \item Write a function that takes a vocabulary (= a list of ADT definitions with codec expressions) and generates an SQL schema for it.
- Use the type returned by the codec as the database type.
- \item Write a function that takes an element $d$ of an ADT and generates the SQL (or CSV) representation of $d$ with all field values encoded by the corresponding codec.
- \item Write a function that takes an ADT name and a SQL or CSV object and applies decoding to build the corresponding ADT element.
- \item Test this by
- \begin{itemize}
- \item writing some of your univis table schemas as ADTs and some example values as ADT elements,
- \item exchanging these with a database and/or via CSV with fellow students' implementations.
- \end{itemize}
-\end{enumerate}
-\end{frame}
+%\begin{frame}\frametitle{Exercise 5, part 1}
+%We build on the implementation of BDL and codecs from Exercise 4 and on the database schemas from Exercise 3.
+%
+%\begin{enumerate}
+% \item Extend the implementation to BDL+ADT (see Slide 101).
+% \item Extend 
+%  \begin{itemize}
+%  \item codecs and codec operators with identifiers $I\bbc (strings)$
+%  \item ADT fields with codec expressions $c::=I \bnfalt I(c_1\ldots,c_n)$
+%  \end{itemize}
+%  and write a function that maps $c$ to the corresponding codec.
+%\end{enumerate}
+%\end{frame}
+%
+%\begin{frame}\frametitle{Exercise 5, part 2}
+%
+%\begin{enumerate}
+%\setcounter{enumi}{2}
+% \item Write a function that takes a vocabulary (= a list of ADT definitions with codec expressions) and generates an SQL schema for it.
+% Use the type returned by the codec as the database type.
+% \item Write a function that takes an element $d$ of an ADT and generates the SQL (or CSV) representation of $d$ with all field values encoded by the corresponding codec.
+% \item Write a function that takes an ADT name and a SQL or CSV object and applies decoding to build the corresponding ADT element.
+% \item Test this by
+% \begin{itemize}
+% \item writing some of your univis table schemas as ADTs and some example values as ADT elements,
+% \item exchanging these with a database and/or via CSV with fellow students' implementations.
+% \end{itemize}
+%\end{enumerate}
+%\end{frame}
 
 \part{Querying}
 
