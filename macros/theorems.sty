@@ -28,6 +28,7 @@
 \spnewtheorem{exercise}{Exercise}{\itshape}{\rmfamily}
 \newcommand{\myqed}{\qed}
 \else
+\newtheorem{theorem}{Theorem}[chapter] %% this should not have to be here, but compilation of WuV failed without it
 \newtheorem{lemma}[theorem]{Lemma}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
