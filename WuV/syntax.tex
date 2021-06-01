@@ -236,7 +236,7 @@ That yields the following definition:
 Given a set $\Sigma$ of characters and a set $T$ of names, a context-free syntax consists of
 \begin{compactitem}
  \item a set $N$ of names, called the \textbf{non-terminals/types},
- \item a set of \emph{productions/constructors} each consisting of
+ \item a set of \textbf{productions/constructors} each consisting of
  \begin{compactitem}
   \item a name
   \item an element of $N$, called the \textbf{left-hand side/return type}
@@ -255,7 +255,6 @@ Using ad hoc language to write the constructors, our example from above as a con
 \indtype{E}{\consn{literal}{(value:Nat)}, \consn{sum}{(left:E)+(right:E)}, \consn{product}{(left:E)\cdot (right:E)}} \\
 \indtype{F}{\consn{equality}{(left:E)\doteq (right:E)}, \consn{lessOrEqual}{(left:E)\leq (right:E)}}
 }\]
-This uses an ad hoc 
 \end{example}
 
 \subsection{Contexts}
@@ -474,6 +473,31 @@ case class lessOrEqual(left: Nat, right: Nat) extends E {
 }
 \end{lstlisting}
 
+\subsection{Issues Regarding Equivalence}
+
+There are a few subtle issues.
+
+\paragraph{Equality}
+Forming the same value twice should yield the same result, e.g., $\mathtt{literal}(1)=\mathtt{literal}(1)$.
+In ML-style inductive types, that is automatic.
+In OO-style class-based implementations, we have $\kw{new}\,\mathtt{literal}(1)=\kw{new}\,\mathtt{literal}(1)$ only if we override the equality check.
+Scala allows adding the keyword \kw{case} to a class representing a constructor/production.
+Among other things, it allows dropping the \kw{new} and overrides the equality method automatically. 
+
+\paragraph{Null Value}
+Object-oriented language automatically provide the \cn{null} value for every class.
+Therefore, if we implement a context-free syntax via classes, we always get one spurious value that should not exist.
+Programmers have to use programming discipline to avoid using it.
+Occasionally, static analysis tools can non-null annotations to check this discipline.
+
+\paragraph{Sealing}
+When we seal a context-free syntax, it is impossible to add new constructors to it.
+That guarantees implementors of inductive functions that they know all possible cases and can therefore pattern-match on them.
+An inductive function on an unsealed datatype can fail when new constructors are added later.
+
+ML-style inductive data types are always sealed.
+OO-style class-based implementations are never sealed.
+In Scala, the keyword \kw{sealed} can be added to an abstract class --- it forbids any constructors other than the ones present in the same source file.
 
 
 %The equivalence is as follows:

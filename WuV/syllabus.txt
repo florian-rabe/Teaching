@@ -2,20 +2,24 @@
 lecture 1-3 & introduction, overview and essential concepts \\
 lecture 3-4 & ontological knowledge, BOL \\
 homework 1 & familiarize with Protege \\
-exercise 1 & ontologies in Protege: an ontology for a university knowledge management system\\
+exercise 1 & ontologies in Protege: as a team design an ontology for a university knowledge management system\\
 lecture 5 & concrete knowledge and typed ontologies, OWL vs. SQL\\
 lecture 6 & type systems\\
 homework 2 & figure out how to add axioms to the ontology, make changes as discussed \\
-exercise 2 & continued: add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
+exercise 2 & continued: as a team (with tasks distributed) add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
 lecture 7-8 & type systems: Curry/Church, ADTs \\
 exercise 3 & continued, also compare OWL and BOL \\
 lecture 9 & special lecture on MMT \\
 lecture 10 & primitive types and encodings \\
-exercise 4 & standardize some data types and codecs (https://pad.stuve.fau.de/p/wuv_codecs)\\
+exercise 4 & as a team standardize some data types and codecs (https://pad.stuve.fau.de/p/wuv_codecs)\\
 homework 4 & implement codecs individually in various languages \\
 lecture 11-12 & primitive types and encodings: continued \\
-lecture 13 & represenation of syntax and semantics of mini-language for arithmetics in SML and Java \\
+lecture 13 & representation of syntax and semantics of mini-language for arithmetics in SML and Java \\
+exercise 5 & compare implementations of codecs, send data back and forth\\
+homework 5 & implement BOL syntax systematically (individually, any language) \\
+lecture 14 & context-free grammars and inductive data types \\
+lecture 15 & semantics by translation, BOL -> SFOL\\
 \end{tabular}
 
-Exercises were done mostly during the scheduled time slot as a team task.
-The instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
+Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
+Where appropriate, the instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
