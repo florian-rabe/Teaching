@@ -108,8 +108,10 @@ We say that a BOL-statement $F$ is a consequence of an ontology $O$ if $\sem{F}$
 We interpret the example ontology from Ex.~\ref{ex:bol}.
 Excluding the semantic prefix, it results in
 \[\mathll{
-\FR:\iota,\; \WuV\sq \iota,\; \person\sq\iota,\;\instr\sq\iota,\;\crs\sq\iota,\;\tch\sq \iota\times\iota,\;\hc\sq\iota\times \float \\
-\instr(\FR)\wedge\male(\FR),\;\crs(\WuV)\;\tch(\FR,\WuV)\;\hc(\WuV,7.5)\\
+\FR:\iota,\; \WuV: \iota,\;\\
+\person\sq\iota,\;\male\sq\iota,\;\instr\sq\iota,\;\crs\sq\iota,\;\\
+\tch\sq \iota\times\iota,\;\hc\sq\iota\times \float \\
+\instr(\FR)\wedge\male(\FR),\;\crs(\WuV),\;\tch(\FR,\WuV),\;\hc(\WuV,7.5)\\
 \forall x:\iota.\male(x)\impl\person(x),\\
 \forall x:\iota.\instr(x)\impl\person(x),\\
 \forall x:\iota.(\exists y:\iota.\tch(x,y))\impl\instr(x),\\
