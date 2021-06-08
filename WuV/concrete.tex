@@ -10,19 +10,24 @@ The vocabulary symbol is $S$. The expression symbols are $T$, $R$, $V$, and $F$.
 \gcomment{Vocabularies: Schemas}\\
 \gprod{S}{\rep{D}}{}\\
 \gcomment{Declarations}\\
-\gprod{D}{\kw{TABLE}\; \ID\,\{\rep{CT}\}}{table}\\
+\gprod{D}{\kw{TABLE}\; \ID\;TT}{table}\\
 \galtprod{\kw{INSERT}\,R\,\kw{INTO} \,\ID}{row in a table}\\
+\gcomment{table types}\\
+\gprod{TT}{\rep{CT}}{list of column types}\\
 \gprod{CT}{\ID:Y}{column type}\\
 \gcomment{table expressions (i.e., table-valued queries)}\\
 \gprod{T}{\ID}{atomic tables} \\
 \galtprod{\kw{JOIN}\,\rep{T}}{join of tables}\\
 \galtprod{\kw{UNION}\,\rep{T}}{union of tables}\\
 \galtprod{\kw{INTER}\,\rep{T}}{intersection of tables}\\
-\galtprod{\kw{SELECT}\, \rep{\ID}\,\kw{FROM}\, T\,\kw{WHERE}\, F}{subtable}\\
+\galtprod{\kw{SELECT} \opt{\kw{DISTINCT}}\, CL\,\kw{FROM}\, T}{selection of columns}\\
+\galtprod{T\,\kw{WHERE}\, F}{selection of rows}\\
+\galtprod{T\,\kw{AS}\,\ID}{prefix for column names}\\
 \galtprod{T\;\kw{AGGREGATE}\,\rep{CA}}{aggregation}\\
 \gprod{CA}{\kw{COUNT}(\ID)}{count values in a column}\\
 \galtprod{\kw{MAX}(\ID)}{maximum value in a column}\\
 \galtprod{\ldots}{minimum, sum, etc.}\\
+\gprod{CL}{* \bnfalt \brep{\ID \bnfalt \ID\,\kw{AS}\,\ID}}{list of column names}\\
 \gcomment{row expressions (i.e., single row--valued queries)}\\
 \gprod{R}{\kw{VALUES}\,(\rep{CD})}{explicit row} \\
 \galtprod{T}{table, but may only contain one row} \\
@@ -34,9 +39,10 @@ The vocabulary symbol is $S$. The expression symbols are $T$, $R$, $V$, and $F$.
 \gprod{F}{V}{boolean value}\\
 \galtprod{V=V}{equality of values}\\
 \galtprod{R\,\kw{IN}\,T}{containment of rows in tables}\\
+\galtprod{R\,\kw{NOT IN}\,T}{opposite of containment}\\
 \galtprod{\ldots}{boolean operators}\\
 \gcomment{Identifiers}\\
 \gprod{\ID}{\text{alphanumeric string}}{}\\
 \end{commgrammar}
-\caption{Syntax of BDL}\label{fig:bdl}
+\caption{Syntax of BCL}\label{fig:bdl}
 \end{figure}

@@ -45,7 +45,7 @@ For every kind of complex BOL-expression, there is one inductive function mappin
 The base cases of references to declared BOL-identifiers are translated to themselves, i.e., to the identifiers of the same name declared in the SFOL-theory.
 The other cases are compositional: every case for a complex BOL-expression recurses only into the semantics of the direct subexpressions.
 
-\begin{figure}\centering
+\begin{figure}[tbh]\centering
 \begin{tabular}{l|l}
 BOL Syntax $X$ & Semantics $\sem{X}$ in SFOL\\
 \hline
@@ -97,6 +97,8 @@ $i$ & $i(x,y)$\\
 \end{tabular}
 \caption{Interpretation Function for BOL into SFOL}\label{fig:bolsem:sfol}
 \end{figure}
+
+\clearpage
 
 The consequence closure of SFOL, using the usual semantics of SFOL, induces the desired consequence closure for BOL:
 \begin{definition}[Consequence Closure]
@@ -176,7 +178,7 @@ The \textbf{semantic prefix} consists of the following SQL-statements
 \begin{compactitem}
  \item a type $ID$ of identifiers (if not already supported anyway by the underlying database)
  \item declarations of all base types and values of BOL (if not already supported anyway by the underlying database)
- \item CREATE TABLE individuals (id ID, name string), where the id field is unique and automatically generated when inserting values
+ \item TABLE individuals (id: ID, name: string), where the id field is unique and automatically generated when inserting values
 \end{compactitem}
 
 Every BOL-ontology $O$ is interpreted as the sequence $P,\sem{O}$ of SQL statements, where $\sem{O}$ is defined in Fig.~\ref{fig:bolsem:sql}.
@@ -187,30 +189,30 @@ Every BOL-ontology $O$ is interpreted as the sequence $P,\sem{O}$ of SQL stateme
 BOL Syntax $X$ & Semantics $\sem{X}$ in SQL\\
 \hline
 \hline
-ontology & SQL statements \\
+ontology & SQL schema (list of statements)\\
 $D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
 \hline
-BOL declaration ($I$, $C$, $R$, $P$ atomic) & SQL statement \\
-\kw{individual}\,$i$ & INSERT INTO individuals (name) VALUES ("$i$") \\
-\kw{concept}\,$i$  & CREATE TABLE $i$ (id ID)\\
-\kw{relation}\,$i$ & CREATE TABLE $i$ (subject ID, object ID) \\
-\kw{property}\,$i:T$ & CREATE TABLE $i$ (subject ID, object $T$) \\
-$I\; \texttt{is-a}\; C$ & INSERT INTO $C$ VALUES ($\sem{I}$)\\
-$I_1\; R\; I_2$ & INSERT INTO $R$ (subject, object) VALUES ($\sem{I_1}$, $\sem{I_2}$)\\
-$I\; P\; V$ & INSERT INTO $P$ (subject, object) VALUES ($\sem{I}$, $V$)\\
+BOL declaration ($C$, $R$, $P$ atomic) & SQL statement \\
+\kw{individual}\,$i$ & INSERT VALUES (name="$i$") INTO individuals \\
+\kw{concept}\,$i$  & TABLE $i$ (id: ID)\\
+\kw{relation}\,$i$ & TABLE $i$ (subject: ID, object: ID) \\
+\kw{property}\,$i:Y$ & TABLE $i$ (subject: ID, value: $Y$) \\
+$I\; \texttt{is-a}\; C$ & INSERT INTO $C$ VALUES (id=$\sem{I}$)\\
+$I_1\; R\; I_2$ & INSERT VALUES (subject=$\sem{I_1}$, object=$\sem{I_2}$) INTO R\\
+$I\; P\; V$ & INSERT VALUES (subject=$\sem{I}$, value=$V$) INTO P\\
 $F$ & consistency check, consequence closure (omitted)\\
 \hline
 Formula & Query that returns empty result iff formula is true \\
 $C_1 \Equiv C_2$ & $(\sem{C_1}\sm\sem{C_2})$ UNION $(\sem{C_2}\sm\sem{C_1})$\\
 $C_1 \sqsubseteq C_2$ & $\sem{C_1}\sm\sem{C_2}$\\
-$I\; \texttt{is-a}\; C$ & $\sem{I}$ IN $C$\\
+$I\; \texttt{is-a}\; C$ & $\sem{I}$ IN $\sem{C}$\\
 $I_1\; R\; I_2$ & ($\sem{I_1}$, $\sem{I_2}$) IN $R$ \\
 $I\; P\; V$ & ($\sem{I}$, $V$) IN $P$ \\
 \hline
 Individual & an identifier from the table individuals \\
 $i$ & SELECT id FROM individuals WHERE name="$i$" \\
 \hline
-Concept & SQL query for one-column table\\
+Concept & SQL table expression for $(id: ID)$\\
 $i$ & SELECT * FROM $i$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$ UNION $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ INTERSECT $\sem{C_2}$\\
@@ -220,7 +222,7 @@ $\dom\, R$ & SELECT DISTINCT subject FROM $\sem{R}$\\
 $\rng\, R$ & SELECT DISTINCT object FROM $\sem{R}$\\
 $\dom\, P$ & SELECT DISTINCT subject FROM $\sem{P}$\\
 \hline
-Relation & SQL query for two-column table\\
+Relation & SQL table expression for (subject: ID, object: ID)\\
 $i$ & SELECT * FROM $i$\\
 $R_1 \cup R_2$ & $\sem{R_1}$ UNION $\sem{R_2}$\\
 $R_1 \cap R_2$ & $\sem{R_1}$ INTERSECT $\sem{R_2}$\\
@@ -230,14 +232,16 @@ $R^{-1}$          & SELECT object AS subject, subject AS object FROM $\sem{R}$\\
 $R^*$          & (tricky, omitted)\\
 $\Delta_C$     & SELECT id AS subject, id AS object FROM $\sem{C}$\\
 \hline
-Property of type $T$ & SQL query for two-column table\\
+Property of type $Y$ & SQL table expression for (subject: ID, value: Y)\\
 $i$ & SELECT * FROM $i$\\
 \end{tabular}
 \medskip
 
-Using the abbreviation: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
+Using the abbreviations: $S\sm T$ = SELECT id FROM $S$ WHERE id NOT IN $T$\\
+$S,T$ = JOIN $S,T$\\
 \caption{Interpretation Function for BOL into SQL}\label{fig:bolsem:sql}
 \end{figure}
+\clearpage
 
 \begin{remark}[Limitations]
 Our interpretation of BOL in SQL is restricted to assertions using only atomic expressions.
@@ -255,17 +259,17 @@ But that requires first carrying out an explicit consequence closure that adds a
 We interpret the example ontology from Ex.~\ref{ex:bol}.
 Excluding the semantic prefix, the entity declarations and assertions result in the following
 \begin{lstlisting}
-INSERT INTO individuals(name) VALUES ("FlorianRabe")
-INSERT INTO individuals(name) VALUES ("WuV")
-CREATE TABLE person (id ID)
-CREATE TABLE male (id ID)
-CREATE TABLE instructor (id ID)
-CREATE TABLE course (id ID)
-CREATE TABLE teach (subject ID, object ID)
-CREATE TABLE creditValue (subject ID, object float)
-INSERT INTO course VALUES (2)
-INSERT INTO teach VALUES (1, 2)
-INSERT INTO creditValue VALUES (1, 7.5)
+INSERT VALUES (name="FlorianRabe") INTO individuals
+INSERT VALUES (name="WuV") INTO individuals
+TABLE person (id: ID)
+TABLE male (id: ID)
+TABLE instructor (id: ID)
+TABLE course (id: ID)
+TABLE teach (subject: ID, object: ID)
+TABLE creditValue (subject: ID, value: float)
+INSERT VALUES (id=2) INTO course
+INSERT VALUES (subject=1, object=2) INTO teach
+INSERT VALUES (subject=1, value=7.5) INTO creditValue
 \end{lstlisting}
 
 Here we assume that inserting into the table individuals has automatically assigned the ids $1$ and $2$ to our two individuals.
@@ -274,8 +278,8 @@ The concept assertion about $\FR$ using $\sqcap$ cannot be handled by this seman
 Therefore, we skip that assertion.
 The two missing assertions
 \begin{lstlisting}
-INSERT INTO instructor VALUES (1)
-INSERT INTO male VALUES (1)
+INSERT VALUES (id=1) INTO instructor
+INSERT VALUES (id=1) INTO male
 \end{lstlisting}
 must then be provided by performing the consequence closure.
 
@@ -615,16 +619,16 @@ One of the major issues that need to be addressed there and here is the notion o
 \end{remark}
 
 
-\section{Exercise 2}
-
-Implement the syntax and semantics of BOL.
-
-You can choose the programming language to use. We will use Scala in our examples.
-
-You can choose which semantics to implement.
-The ones that translate directly to Scala or to English are easier because it does not require implementing the syntax of the target language as well.
-The ones that translate to FOL or to SQL require an implementation of the syntax of the respective target language.
-You have to implement that as well or use a library for it.
-
-We recommend not focusing on implementing the syntax and semantics in their entirety.
-It is more instructive to save time by choosing a sublanguage of BOL (by omitting some productions) and to use the time to implement a second semantics.
+%\section{Exercise 2}
+%
+%Implement the syntax and semantics of BOL.
+%
+%You can choose the programming language to use. We will use Scala in our examples.
+%
+%You can choose which semantics to implement.
+%The ones that translate directly to Scala or to English are easier because it does not require implementing the syntax of the target language as well.
+%The ones that translate to FOL or to SQL require an implementation of the syntax of the respective target language.
+%You have to implement that as well or use a library for it.
+%
+%We recommend not focusing on implementing the syntax and semantics in their entirety.
+%It is more instructive to save time by choosing a sublanguage of BOL (by omitting some productions) and to use the time to implement a second semantics.
