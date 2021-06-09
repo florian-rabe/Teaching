@@ -298,9 +298,14 @@ If $\Gamma\vdash_l E:N$ and $\vdash_l\gamma:\Gamma\to\Delta$, then $\Delta\vdash
 \end{theorem}
 
 We often want to substitute only a single variable $x:N$ even though $E$ may be defined in a larger context $\Gamma$.
-This is often written $E[x:=N]$.
-That is just an abbreviation for $E[\gamma]$, where $\gamma$ contains $x:=N$ as well as $y:=y$ for every other variable $y$ of $\Gamma$.
+This is often written $E[x:=e]$.
+That is just an abbreviation for $E[\gamma]$, where $\gamma$ contains $x:=e$ as well as $y:=y$ for every other variable $y$ of $\Gamma$.
 
+\begin{notation}
+There are many different notations for substitutions that are in common use.
+Examples include $E(x)$, $E[x:=e]$, $E[x/e]$, or $[e/x]E$.
+Usually authors of a paper or textbook briefly mention their preferred notation briefly at the beginning.
+\end{notation}
 
 \section{Implementation}
 
@@ -672,7 +677,7 @@ Consider a compositional semantics.
 
 For every context $\Gamma=x_1:N_1,\ldots,x_r:N_r$, every syntax expression $\Gamma \vdash_l E:N$,
 and every substitution $\vdash_l \gamma:\Gamma$
-\[\sem{E[\gamma]}_N=\sem{E}[\sem{\gamma}]\]
+\[\sem{E[\gamma]}=\sem{E}[\sem{\gamma}]\]
 \end{theorem}
 
 Formulated without substitutions, this means that for every syntax expression $E(e_1,\ldots,e_r)$ derived from $N$, where the $e_i$ are subexpression derived from non-terminal $N_i$, we have

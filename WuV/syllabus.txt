@@ -20,8 +20,9 @@ homework 5 & implement BOL, SFOL syntax systematically (individually, any langua
 lecture 14 & context-free grammars and inductive data types \\
 lecture 15 & semantics by translation, BOL -> SFOL\\
 exercise 6 & compare homeworks\\
-homework 6 & implement BOL->SFOL systematically (individually, any language) \\
+homework 6 & implement BOL->SFOL systematically, BOL -> SQL (individually, any language) \\
 lecture 16 & BOL->SQL \\
+lecture 17 & compositionality\\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
