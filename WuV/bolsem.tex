@@ -338,7 +338,7 @@ BOL Syntax $X$ & Semantics $\sem{X}$ in Scala\\
 ontology & Scala program \\
 $D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
 \hline
-BOL declaration ($I$, $C$, $R$, $P$ atomic) & Scala declaration \\
+BOL declaration ($C$, $R$, $P$ atomic) & Scala declaration \\
 \kw{individual}\,$i$ & val $i$ = "$i$"; individuals += $i$ \\
 \kw{concept}\,$i$  & val $i$ = new HashSet[String]\\
 \kw{relation}\,$i$ & val $i$ = new HashSet[(String,String)] \\
@@ -497,7 +497,7 @@ BOL declaration & dictionary entry or true sentence\\
 \kw{relation}\,$i$ & $i$ is a transitive verb. \\
 \kw{property}\,$i:T$ & $i$ is a common noun for a property that can take $T$-values. \\
 $I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$.\\
-$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$.\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$ $\sem{I_2}$.\\
 $I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
 $F$ & $\sem{F}$.\\
 \hline

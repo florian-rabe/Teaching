@@ -11,7 +11,7 @@ The vocabulary symbol is $P$. The expression symbols are $Y$, $V$, and $F$.
 \gprod{P}{\rep{D}}{}\\
 \gcomment{Declarations}\\
 \gprod{D}{\kw{class}\; \ID[\rep{\ID}]\,\kw{extends}\,\rep{\ID}\{\rep{d}\}}{class definition}\\
-\galtprod{\kw{object}\; \ID\,\kw{extends}\,\rep{\ID}\{\rep{CF}\}}{object definition}\\
+\galtprod{\kw{object}\; \ID\,\kw{extends}\,\rep{\ID}\{\rep{d}\}}{object definition}\\
 \gprod{d}{\kw{val}\;\ID:Y\opt{=T}}{immutable field in a class/object, possibly abstract}\\
 \galtprod{\kw{var}\;\ID:Y=T}{mutable field in a class, with initial value}\\
 \gcomment{type expressions}\\
