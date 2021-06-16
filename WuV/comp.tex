@@ -14,25 +14,27 @@ The vocabulary symbol is $P$. The expression symbols are $Y$, $V$, and $F$.
 \galtprod{\kw{object}\; \ID\,\kw{extends}\,\rep{\ID}\{\rep{d}\}}{object definition}\\
 \gprod{d}{\kw{val}\;\ID:Y\opt{=T}}{immutable field in a class/object, possibly abstract}\\
 \galtprod{\kw{var}\;\ID:Y=T}{mutable field in a class, with initial value}\\
-\gcomment{type expressions}\\
+\gcomment{Type expressions}\\
 \gprod{Y}{\ID}{atomic type (class)} \\
 \galtprod{\ID}{built-in type (booleans, int, etc.)} \\
-\galtprod{Y(\rep{Y})}{type operator applied to type arguments} \\
-\gcomment{term expressions}\\
+\galtprod{Y=>Y}{function types} \\
+\galtprod{Y[\rep{Y}]}{type operator applied to type arguments} \\
+\gcomment{Term expressions}\\
 \gprod{T}{\ID}{atomic value (class, value, variable)} \\
 \galtprod{\ID}{built-in value (boolean operators, etc.)} \\
-\galtprod{T\doteq_Y T}{equality of terms at a type} \\
-\galtprod{T:Y}{instance check} \\
-\galtprod{T(\rep{T})}{function applied to values} \\
-\galtprod{\kw{new}\,\ID\,\{\rep{d}\}}{new instance of class} \\
 \galtprod{T.\ID}{field access in an object} \\
 \galtprod{T.\ID=T}{assignment to a mutable field in an object}\\
+\galtprod{\ID=T}{assignment to a local variable}\\
+\galtprod{T:Y}{instance check} \\
+\galtprod{\kw{new}\,\ID\,\{\rep{d}\}}{new instance of class} \\
+\galtprod{T\doteq_Y T}{equality of terms at a type} \\
+\galtprod{(\ID:Y)=>T}{function} \\
+\galtprod{T(\rep{T})}{function applied to values} \\
 \galtprod{\{\rep{T}\}}{sequencing (;-operator)}\\
 \galtprod{d}{local declaration}\\
-\galtprod{\ID=T}{assignment to a local variable}\\
 \galtprod{\kw{if}\,(T)\, T\,\kw{else}\, T}{if-then-else}\\
 \galtprod{\kw{while}\,(T)\, T}{while-loop}\\
-\gcomment{Formulas}\\
+\gcomment{Formula expressions}\\
 \gprod{F}{T}{terms of boolean type} \\
 \gcomment{Identifiers}\\
 \gprod{\ID}{\text{alphanumeric string}}{}\\

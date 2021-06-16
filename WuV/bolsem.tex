@@ -197,7 +197,7 @@ BOL declaration ($C$, $R$, $P$ atomic) & SQL statement \\
 \kw{concept}\,$i$  & TABLE $i$ (id: ID)\\
 \kw{relation}\,$i$ & TABLE $i$ (subject: ID, object: ID) \\
 \kw{property}\,$i:Y$ & TABLE $i$ (subject: ID, value: $Y$) \\
-$I\; \texttt{is-a}\; C$ & INSERT INTO $C$ VALUES (id=$\sem{I}$)\\
+$I\; \texttt{is-a}\; C$ & INSERT VALUES (id=$\sem{I}$) INTO $C$\\
 $I_1\; R\; I_2$ & INSERT VALUES (subject=$\sem{I_1}$, object=$\sem{I_2}$) INTO R\\
 $I\; P\; V$ & INSERT VALUES (subject=$\sem{I}$, value=$V$) INTO P\\
 $F$ & consistency check, consequence closure (omitted)\\

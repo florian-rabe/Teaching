@@ -1,0 +1,24 @@
+SFOL -> TPTP
+
+TPTP is just a different syntax for SFOL, so this is essentially a printer, not really a translation
+http://www.tptp.org/TPTP/SyntaxBNF.html
+
+formulas
+[[F /\ G]] = [[F]] + "&" + [[G]]
+[[forall X:a.F]] = "![" + X + ":" + [[a]] + "]:" + [[F]]
+
+declarations:
+[[type y]] = "tff(y_decl, type,"+ y +":$tType)."
+[[fun f: Y_1,...,Y_n->Y]] = "tff(f_decl, type, f:" + [[Y_1]] +"*" + ... + [[Y_n]] + ">" + [[Y]] + ")."
+[[pred p: Y_1,...,Y_n]] = "tff(p_decl, type, f:" + [[Y_1]] +"*" + ... + [[Y_n]] + ">" + "$o" + ")."
+[[axiom F]] = "tff(axiom_1, axiom, [[F]] + ")."
+ 
+
+SFOL provers use TPTP as input language, e.g., Vampire, E, Spass.
+See the annual competition at http://www.tptp.org/CASC/
+
+When called with an additional "declaration", which acts as the query,
+tff(conj, conjecture, F)
+the theorem prover tries to prove F from the axioms.
+
+Exercise on Tuesday: translate Uni ontology BOL->SFOL->TPTP, then use SFOL provers to prove BOL theorems
