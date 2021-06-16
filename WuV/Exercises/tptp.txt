@@ -22,3 +22,7 @@ tff(conj, conjecture, F)
 the theorem prover tries to prove F from the axioms.
 
 Exercise on Tuesday: translate Uni ontology BOL->SFOL->TPTP, then use SFOL provers to prove BOL theorems
+
+A set of datatypes for the TPTP syntax may be overkill, but using a datatype for TPTP declarations like below can be helpful.
+enum Role = axiom | type | conjecture
+class TFF(name:String, role: Role, formula: String)
