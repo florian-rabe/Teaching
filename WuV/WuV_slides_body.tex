@@ -2456,7 +2456,7 @@ But Yes/no and Wh questions exist in all aspects.
 \end{blockitems}
 \end{frame}
 
-\section{An Abstract Definition}
+\section{A Rigorous Definition}
 
 \begin{frame}\frametitle{Typical Structure of a Formal Language}
 Vocabularies
@@ -2614,8 +2614,8 @@ Define deductive semantics as a special case of typing
 Both kinds of semantics add different value. We usually want both.
 \end{frame}
 
-\begin{frame}\frametitle{Why Abstract?}
-\begin{blockitems}{Our definitions are abstract}
+\begin{frame}\frametitle{Abstract vs. Concrete Semantics}
+\begin{blockitems}{Abstract}
 \item $\Exp$, $\Thm$, $\Eval$ just assumed as sets/functions
 \item No requirement how they are constructed
  \begin{itemize}
@@ -2624,9 +2624,9 @@ Both kinds of semantics add different value. We usually want both.
 \end{itemize}
 \end{blockitems}
 
-\begin{blockitems}{A more concrete definition might demand}
+\begin{blockitems}{Concrete, e.g.,}
 \item $\Exp_V$ defined by grammar
-\item type system defined by
+\item rule system defined by
  \begin{itemize}
  \item calculus for $\vdash_V e:E$
  \item alternatively: trivial type system where \\
@@ -2823,21 +2823,21 @@ Example for deductive semantics:
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 6: Relative Deductive Semantics for BOL}
-\begin{itemize}
-\item Implement a translation from BOL to untyped FOL
- \glec{you can drop properties, types, and values}
- \glec{so that only one type of individuals is needed}
-\item Use TPTP syntax for FOL
- \glec{see \url{http://www.tptp.org/}}
-\item Translate an example ontology
-  \glec{pick any ontology with a non-trivial consequence closure}
-\item Use a theorem prover for first-order logic to implement a relative deductive semantics for BOL
-  \glec{Vampire and E are standard choices}
-  \glec{see also \url{http://www.tptp.org/cgi-bin/SystemOnTPTP}}
-\item Test by example whether your semantics yields the correct consequence closure
-\end{itemize}
-\end{frame}
+% \begin{frame}\frametitle{Exercise 6: Relative Deductive Semantics for BOL}
+% \begin{itemize}
+% \item Implement a translation from BOL to untyped FOL
+ % \glec{you can drop properties, types, and values}
+ % \glec{so that only one type of individuals is needed}
+% \item Use TPTP syntax for FOL
+ % \glec{see \url{http://www.tptp.org/}}
+% \item Translate an example ontology
+  % \glec{pick any ontology with a non-trivial consequence closure}
+% \item Use a theorem prover for first-order logic to implement a relative deductive semantics for BOL
+  % \glec{Vampire and E are standard choices}
+  % \glec{see also \url{http://www.tptp.org/cgi-bin/SystemOnTPTP}}
+% \item Test by example whether your semantics yields the correct consequence closure
+% \end{itemize}
+% \end{frame}
 
 \begin{frame}\frametitle{Example: Relative Computational Semantics for BOL}
 Scala, SQL semantics evaluates
