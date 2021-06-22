@@ -2162,60 +2162,6 @@ Then both sides of equations act on $E(x_1,\ldots,x_n)$:
 \end{blockitems}
 \end{frame}
 
-\section{Context-Sensitive Syntax}
-
-\begin{frame}\frametitle{Definition}
-A \textbf{language system} consists of
-\begin{itemize}
- \item context-free syntax
- \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
- \item some distinguished non-terminal symbols $\ExpSym$ \glec{words called $\ExpSym$-\textbf{expressions}}
- \item unary predicate $\wft{\Theta}$ on vocabularies $\Theta$ \glec{well-formed vocabulary $\Theta$}
- \item unary predicates $\wff{\Theta}{\ExpSym}{E}$ \glec{well-formed $\ExpSym$-expressions $E$}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Typical Structure}
-Vocabularies
-\begin{itemize}
-\item lists of declarations
-\end{itemize}
-
-Declarations
-\begin{itemize}
-\item named
-\item at least one for each expression kind
-\item may contain other expressions \glec{e.g., type, definition}
-\item may contain nested declarations \glec{e.g., fields in an ADT}
-\end{itemize}
-
-Expressions
-\begin{itemize}
-\item inductive data type
-\item relative to vocabulary \glec{names occur as base cases}
-\item formulas as special case
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Vocabularies and Expressions}
-\begin{center}
-\footnotesize
-\begin{tabular}{l|ll}
-Aspect & vocabulary $\Theta$ & expression kinds $\ExpSym$ \\
-\hline
-Ontologization  & ontology & individual, concept, relation, property, formula \\
-Concretization & database schema & cell, row, table, formula \\
-Computation & program & term, type, object, class, \ldots \\
-Logic & signature, theory & term, type, formula, \ldots \\
-Narration & dictionary & phrases, sentences, texts \\
-\end{tabular}
-\end{center}
-\end{frame}
-
-\begin{frame}\frametitle{Examples}
-See notes made during the lecture for examples
-\end{frame}
-
 \section{Overview}
 
 \begin{frame}\frametitle{Motivation}
@@ -2512,15 +2458,97 @@ But Yes/no and Wh questions exist in all aspects.
 
 \section{An Abstract Definition}
 
-\begin{frame}\frametitle{Languages}
-\begin{blockitems}{A formal system $l$ consists of}
-\item a set of vocabularies $\Voc^l$
-\item for every $V\in\Voc^l$, a set $\Exp^l(V)$ of expressions
-\item a typing relation $\vdash^l_V e:E$ between $e,E\in \Exp^l(V)$
- \glec{define: $\Exp^l_V(E)=\{e\in \Exp^l_V\,|\,\vdash^l_V e:E\}$}
-\end{blockitems}
-\glec{convention: leave out superscript $l$, subscript $V$ if clear}
+\begin{frame}\frametitle{Typical Structure of a Formal Language}
+Vocabularies
+\begin{itemize}
+\item lists of declarations
+\end{itemize}
 
+Declarations
+\begin{itemize}
+\item named
+\item at least one for each expression kind
+\item may contain other expressions \glec{e.g., type, definition}
+\item may contain nested declarations \glec{e.g., fields in an ADT}
+\end{itemize}
+
+Expressions
+\begin{itemize}
+\item inductive data type
+\item relative to vocabulary \glec{names occur as base cases}
+\item formulas as special case
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Vocabularies and Expressions}
+\begin{center}
+\footnotesize
+\begin{tabular}{l|ll}
+Aspect & vocabulary $\Theta$ & expression kinds \\
+\hline
+Ontologization  & ontology & individual, concept, relation, property, formula \\
+Concretization & database schema & cell, row, table, formula \\
+Computation & program & term, type, object, class, \ldots \\
+Logic & signature, theory & term, type, formula, \ldots \\
+Narration & dictionary & phrases, sentences, texts \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+%\begin{frame}\frametitle{Examples}
+%See notes made during the lecture for examples
+%\end{frame}
+
+\begin{frame}\frametitle{Language System}
+\begin{blockitems}{A language system $l$ consists of}
+ \item context-free syntax
+ \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
+ \item some distinguished non-terminal symbols \glec{words called \textbf{expressions}}
+ \item unary predicate $\wft{V}$ on vocabularies $V$ \glec{well-formed vocabulary $V$}
+ \item unary predicates $\wff{V}{e}$ \glec{well-formed expressions $e$}
+\end{blockitems}
+
+\begin{blockitems}{Intuition}
+\item context-\emph{free} syntax generates more than needed
+\item context-\emph{sensitive} well-formedness defines the exact subset
+\end{blockitems}
+
+Question: How do we define the well-formedness predicates?
+\lec{use a formal system with context-sensitive rules}
+\end{frame}
+
+\begin{frame}\frametitle{Formal System}
+\begin{blockitems}{A formal system $l$ refines language systems with}
+\item contexts $\Gamma$ of the form $x_1:E_1,\ldots,x_n:E_n$ for expressions $E_i$
+\item a set of judgments including
+ \begin{itemize}
+  \item a judgment $\vdash^l V$ on vocabularies $V$
+  \glec{$\wft{V} \;\miff\; \vdash^l_V$}
+  \item a judgment $\Gamma\vdash^l_V e:E$ between expressions $e,E$
+  \glec{$\wff{V}{e}\;\miff\; \vdash^l_V e:E \mforsome E$} 
+ \end{itemize}
+\item a set of rules for the judgments, each one of the form
+\[\rul{J_1 \tb \ldots \tb J_n}{J}\]
+where the $J$'s are judgments
+\end{blockitems}
+\glec{conventions: leave out superscript $l$, subscript $V$ if clear}
+\glec{leave out $\Gamma$ if empty}
+\end{frame}
+
+\begin{frame}\frametitle{Formal System: Derivations and Well-Formedness}
+For a formal system, we define
+\begin{itemize}
+\item derivation: tree of judgments such that for every node $J$ with children $J_1,\ldots,J_n$, there is a rule
+\[\rul{J_1 \tb \ldots \tb J_n}{J}\]
+\item derivation of $J$: a derivation with root $J$
+\item $J$ holds: there is a derivation of $J$
+\end{itemize}
+\[\Voc^l = \{V\,|\,\vdash^l V\}\]
+\[\Exp^l_V(E) = \{e\,|\,\vdash^l_V e:E\}\]
+\[\Exp^l_V = \bigcup_E \Exp^l_V(E)\]
+\end{frame}
+
+\begin{frame}\frametitle{Formal Systems: Special Cases}
 \begin{blockitems}{A formal system with propositions}
 \item additionally has a distinguished expression $\prop$
 \item define $F$ is proposition if $\vdash_V F:\prop$

@@ -28,6 +28,8 @@ homework 7 & SFOL->TPTP \\
 lecture 18 & BOL->English, non-compositionality \\
 lecture 19 & BOL->Scala, consequence closure, axioms as tests \\
 exercise 8 & uni ontology BOL -> SFOL -> TPTP, run SFOL provers\\
+homework 8 & finish exercise \\
+lecture 20 & absolute semantics \\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
