@@ -1,3 +1,8 @@
+BOL -> SFOL
+  as done previously
+
+----------------
+  
 SFOL -> TPTP
 
 TPTP is just a different syntax for SFOL, so this is essentially a printer, not really a translation
@@ -12,8 +17,50 @@ declarations:
 [[fun f: Y_1,...,Y_n->Y]] = "tff(f_decl, type, f:" + [[Y_1]] +"*" + ... + [[Y_n]] + ">" + [[Y]] + ")."
 [[pred p: Y_1,...,Y_n]] = "tff(p_decl, type, f:" + [[Y_1]] +"*" + ... + [[Y_n]] + ">" + "$o" + ")."
 [[axiom F]] = "tff(axiom_1, axiom, [[F]] + ")."
- 
 
+A set of datatypes for the TPTP syntax may be overkill, but using a datatype for TPTP declarations like below can be helpful.
+enum Role = axiom | type | conjecture
+
+Here are some examples what it might look like in Scala:
+
+class TFF(name:String, role: Role, formula: String) {
+  def toString = "tff(" + name + "," + role.toString + "," + formula + ")."
+}
+
+case class FOLTheory(decls: List[Decl]) {
+  def toTPTP: List[TFF] = decls.map(_.toTPTP)
+}
+
+abstract class Decl {
+  def toTPTP: TFF
+}
+case class FunSymDecl(name: String, inTypes: List[Type], outType: Type) extends Decl {
+  def toTPTP = TFF(name + "_type", "type", "f"+name + ":" + (if (inTypes.nonEmpty) inTypes.map(_.tpTPTP).mkString("*") + ">" else "") + outType.toTPTP)
+}
+
+case class Conj(left: Form, right: Form) extends Form {
+  def toTPTP: String = "(" + left.toTPTP + " & " + right.toTPTP + ")"
+}
+case class Forall(vr: String, tp: Type, body: Form) extends Form {
+  def toTPTP: String = "(![" + "X" + vr + ":" + tp.toTPTP + " ]: " + body.toTPTP + ")"
+}
+
+case class TypeID(name: String) extends Type {
+  def toTPTP: String = name
+}
+
+case class FunApply(name: String, args: List[Term]) extends Term {
+  def toTPTP: String = "f" + name + (if (args.nonEmpty) "(" + args.map(_.toTPTP).mkString(",") + ")" else "")
+}
+class class VarRef(name: String) extends Term {
+  def toTPTP: String = "X" + name
+}
+
+
+----------------
+
+Set up TPTP provers
+ 
 SFOL provers use TPTP as input language, e.g., Vampire, E, Spass.
 See the annual competition at http://www.tptp.org/CASC/
 
@@ -21,8 +68,13 @@ When called with an additional "declaration", which acts as the query,
 tff(conj, conjecture, F)
 the theorem prover tries to prove F from the axioms.
 
+----------------
+
 Exercise on Tuesday: translate Uni ontology BOL->SFOL->TPTP, then use SFOL provers to prove BOL theorems
 
-A set of datatypes for the TPTP syntax may be overkill, but using a datatype for TPTP declarations like below can be helpful.
-enum Role = axiom | type | conjecture
-class TFF(name:String, role: Role, formula: String)
+1) Have BOL ontology:
+   - trivial one for testing (should use important cases of the grammar once)
+   - less trivial one for later (some interesting axioms that allow proving something)
+2) Implement BOL->SFOL->TPTP pipeline
+3) Install a TPTP prover and call it with the output of the pipeline
+4) Bind everything together
