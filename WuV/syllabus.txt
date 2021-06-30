@@ -29,14 +29,15 @@ lecture 18 & BOL->English, non-compositionality \\
 lecture 19 & BOL->Scala, consequence closure, axioms as tests \\
 exercise 8 & uni ontology BOL -> SFOL -> TPTP, run SFOL provers\\
 homework 8 & finish exercise: answer deductive query in BOL via translation to SFOL and applying absolute semantics in SFOL \\
-lecture 20 & absolute semantics: overview \\
+lecture 20 & formal semantics: overview \\
 lecture 21 & querying: overview, deductive queries via relative semantics \\
 exercise 9 & compare homeworks, concrete queries via deductive semantics\\
 lecture 22 & querying: other aspects \\
+lecture 23 & formal systems, absolute semantics for BOL \\
 % ------------- TODAY
-lecture 23 & semantics: rigorous definition \\
-exercise 10 &???\\
-lecture 24 & semantics: absolute semantics for BOL, equivalence \\
+homework 10 & implement absolute semantics for BOL (typing and maybe deductive), typing for SFOL \\
+exercise 10 & compare, continue homeworks \\
+lecture 24 & semantics: rigorous definition, equivalence\\
 lecture 25 & syntactic querying \\
 exercise 11 & exam prepration \\
 lecture 26 & ??? \\

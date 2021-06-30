@@ -1,0 +1,37 @@
+1) Implement well-formedness for BOL, i.e.,
+
+  // |-  V
+  fun wfv(V: Vocabulary): Boolean =
+   // for each declaration, check relative to the vocabulary containing only the previous declarations
+       - that the name (if any) is new
+       - any expressions occurring in the declaration are well-formed (for BOL: only the case for axioms)
+
+  // |-_V f: Formula
+  fun wff(V: Vocabulary, f: Formula): Boolean
+  // 7 times, one each for Concept, Individual, Relation, Formula, Property, BaseType, BaseValue
+      (omit Property, BaseType, BaseValue in first version)
+
+2) Implement well-formedness for SFOL, i.e.,
+
+  // |-  V
+  fun wfv(V: Vocabulary): Boolean =
+   // for each declaration, check relative to the vocabulary containing only the previous declarations
+       - that the name (if any) is new
+       - any expressions occurring in the declaration are well-formed
+
+  // |-_V f: Formula
+  fun wff(V: Vocabulary, g: Context, f: Formula): Boolean
+  fun wfy(V: Vocabulary, g: Context, y: Type): Boolean
+  fun wft(V: Vocabulary, g: Context, t: Term): Option[Type] // return None if ill-formed, the inferred type otherwise
+
+
+3) (Try to) implement an absolute deductive semantics for BOL, i.e., a theorem prover
+   
+    // |-_V f
+   istheorem(V: Vocabulary, f: Formula): Boolean =
+     // try to derive |- f using the rules from the slides
+     // general problem: very difficult search problem, not a straightforward inductive function
+     // but maybe doable for BOL 
+     // hint: strip down the BOL syntax to the bare essentials and start with that
+           e.g., no properties, only atomic relations, only atomic concepts
+    // maybe implement two versions: with and without induction
