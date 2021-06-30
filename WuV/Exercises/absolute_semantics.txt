@@ -12,6 +12,8 @@
       (omit Property, BaseType, BaseValue in first version)
 
 2) Implement well-formedness for SFOL, i.e.,
+  Context = List VarDecl
+  VarDecl = Id * Type
 
   // |-  V
   fun wfv(V: Vocabulary): Boolean =
@@ -20,10 +22,18 @@
        - any expressions occurring in the declaration are well-formed
 
   // |-_V f: Formula
-  fun wff(V: Vocabulary, g: Context, f: Formula): Boolean
+  fun wff(V: Vocabulary, g: Context, f: Formula): Boolean = {
+    match f
+    | Forall(x,tp,bd) => wft(V,g,tp) && wff(V, g.append((x,tp)), bd)
+    | ...
+  }
   fun wfy(V: Vocabulary, g: Context, y: Type): Boolean
-  fun wft(V: Vocabulary, g: Context, t: Term): Option[Type] // return None if ill-formed, the inferred type otherwise
-
+  // return None if ill-formed, the inferred type otherwise
+  fun wft(V: Vocabulary, g: Context, t: Term): Option[Type] =
+    match t
+    | Variable(x) => // find x in g and return its type
+    | ...
+  }
 
 3) (Try to) implement an absolute deductive semantics for BOL, i.e., a theorem prover
    
