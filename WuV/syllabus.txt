@@ -31,14 +31,14 @@ exercise 8 & uni ontology BOL -> SFOL -> TPTP, run SFOL provers\\
 homework 8 & finish exercise: answer deductive query in BOL via translation to SFOL and applying absolute semantics in SFOL \\
 lecture 20 & absolute semantics: overview \\
 lecture 21 & querying: overview, deductive queries via relative semantics \\
-% ------------- TODAY
-exercise 9 & compare homeworks, ???\\
+exercise 9 & compare homeworks, concrete queries via deductive semantics\\
 lecture 22 & querying: other aspects \\
+% ------------- TODAY
 lecture 23 & semantics: rigorous definition \\
 exercise 10 &???\\
 lecture 24 & semantics: absolute semantics for BOL, equivalence \\
 lecture 25 & syntactic querying \\
-exercise 11 &??? \\
+exercise 11 & exam prepration \\
 lecture 26 & ??? \\
 lecture 27 & ??? \\
 \end{tabular}
