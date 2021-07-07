@@ -34,13 +34,12 @@ lecture 21 & querying: overview, deductive queries via relative semantics \\
 exercise 9 & compare homeworks, concrete queries via deductive semantics\\
 lecture 22 & querying: other aspects \\
 lecture 23 & formal systems, absolute semantics for BOL \\
-% ------------- TODAY
-homework 10 & implement absolute semantics for BOL (typing and maybe deductive), typing for SFOL \\
-exercise 10 & compare, continue homeworks \\
-lecture 24 & semantics: rigorous definition, equivalence\\
-lecture 25 & syntactic querying \\
-exercise 11 & exam prepration \\
-lecture 26 & ??? \\
+homework 10 & implement type checker for BOL and SFOL \\
+exercise 10 & compare, finish homeworks \\
+lecture 24 & semantics: rigorous definition\\
+lecture 25 & semantics: repetition, equivalence \\
+exercise 11 & exam preparation \\
+lecture 26 & syntactic querying \\
 lecture 27 & ??? \\
 \end{tabular}
 

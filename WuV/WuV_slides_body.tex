@@ -2458,6 +2458,7 @@ Define deductive semantics as a special case of typing
 \begin{itemize}
 \item propositions as types
 \item proofs as expressions
+\item extend grammar so that there are expressions for proofs
 \item add typing rules such that $\vdash P:F$ captures the statement ``$P$ is proof of $F$''
 \item define: $\vdash F$ iff there is $P$ such that $\vdash P:F$
 \end{itemize}
@@ -2756,7 +2757,7 @@ But Yes/no and Wh questions exist in all aspects.
 \item Should satisfy type preservation:
 \[\vdash^l_V e:E \tb\mimplies\tb \vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E)\]
 \lec{intuition: what we have, is preserved}
-\item Might satisfy conservativity: 
+\item Might satisfy type reflection/conservativity: 
 \[\vdash^L_{\Voc^T(V)} e':\Exp^T_V(E) \tb\mimplies\tb \vdash^l_V e:E \mforsome e\]
 \lec{intuition: nothing new is added}
 \end{blockitems}
