@@ -3263,16 +3263,24 @@ We define
 \end{frame}
 
 \begin{frame}\frametitle{The $\truelift$ operator}
-% |- F: prop   --------------->  |- Exp(F) : Exp(prop)
-% no issue if Exp(prop) = prop, i.e., l-propositions are translated to L-propositions
+\begin{blockitems}{Problem with type-preserving translation $\sem{-}$}
+\item must translate $F:\prop^l$ to $\sem{F}:\sem{\prop^l}$
+\item but need not satisfy $\sem{\prop^l}=\prop^L$ \\
+  \glec{$l$-propositions maybe not translated to $L$-propositions}
+\item If not, $\vdash^L \sem{F}$ cannot be used to answer query $\vdash^l F$
+\end{blockitems}
 
-% But not guaranteed, totally possible (and in fact common) that Exp(prop) != prop
-% Then what do we do with query |- F ?
-% |- Exp(F)  does not make any sense because Exp(F) is not an L-proposition
+\begin{blockitems}{Solution: $L$-operator $\truelift: \sem{\prop^l}\to \prop^L$}
+\item maps translations of $l$-propositions to $L$-propositions
+\item then use $\vdash^L \truelift \sem{F}$ to answer $\vdash^l F$
+\end{blockitems}
 
-% To use a translation with Exp(prop) != prop to answer l queries via an L-semantics, we need one more thing:
-  % an operator that connects Exp(F):Exp(prop) with L-propositions
-  % That is the True operator, an L-function that maps Exp(prop) -> prop
+\begin{blockitems}{Example: standard semantics of SFOL in set theory}
+\item SFOL-propositions: formulas; set theory propositions: truth values
+\item semantics of formula is function from models to truth values
+\item $\truelift$ takes $\sem{F}$ and returns $1$ iff $\sem{F}(M)=1$ for all models $M$
+ \glec{standard notation for $\sem{F}(M)=1$: $\sem{F}^M=1$ or $M\models F$}
+\end{blockitems}
 \end{frame}
   
 \begin{frame}{Breakout question}

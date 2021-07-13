@@ -45,6 +45,8 @@ Specifically:
   ⟦m(t1,...,tn)⟧ = M ↦ ⟦m^M⟧( ⟦t1⟧(M) , ..., ⟦tn⟧(M) )
   ⟦x⟧            = M ↦ x
 
+  Note: Technically, we also need assignments to interpret the variables. We skip that here.
+  
 - formula expressions are mapped to functions from models to booleans/truth values
   ⟦F⟧ = Mod(T) → {0,1}
   and
@@ -65,7 +67,7 @@ The True operator is defined as follows:
 
 True : (Mod(T) → {0,1}) → {0,1}
 True: P ↦
-                  forall M ∈ Mod(T). P(M) = 1
+          forall M ∈ Mod(T). P(M) = 1
 
 Then we have for every SFOL proposition f:prop that True ⟦f⟧ ∈ {0,1}.
 We introduce notations:
