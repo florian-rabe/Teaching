@@ -13,12 +13,12 @@ Specifically:
   ⟿ a ∈ Set
 
 - fun m: a1, ..., an → b
-  ⟿ f ∈ ⟦b⟧ ^ (⟦a1⟧ ⨯ ...⨯ ⟦an⟧)
+  ⟿ f ∈ ⟦b⟧ ^ (⟦a1⟧ ⨯ ... ⨯ ⟦an⟧)
 
 - pred p sub a1,..., an
-  ⟿ p subset ⟦a1⟧ ⨯ ...⨯ ⟦an⟧
+  ⟿ p subset ⟦a1⟧ ⨯ ... ⨯ ⟦an⟧
      equivalently:
-           p ∈ 2 ^ (⟦a1⟧ ⨯ ...⨯ ⟦an⟧)
+     p ∈ 2 ^ (⟦a1⟧ ⨯ ... ⨯ ⟦an⟧)
 
 - axiom f
   ⟿ axiom ⟦f⟧
