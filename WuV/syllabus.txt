@@ -40,7 +40,7 @@ lecture 24 & semantics: rigorous definition\\
 lecture 25 & semantics: repetition, equivalence \\
 exercise 11 & exam preparation \\
 lecture 26 & syntactic querying \\
-lecture 27 & ??? \\
+lecture 27 & the Tetrapod model in retrospect \\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
