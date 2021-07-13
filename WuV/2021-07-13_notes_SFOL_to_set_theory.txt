@@ -1,0 +1,73 @@
+The semantics SFOLSem of SFOL is a compositional translation of the SFOL language to set theory.
+
+Notation:
+We write [-] for the application of the translation.
+In the rigorous definition on the slides, this is written more explicitly:
+ Voc^SFOLSem(T) or SFOLSem(T) instead of [T]
+ Exp^SFOLSem(E) or SFOLSem(E) instead of [E]
+
+Consequently every SFOL-theory is translated to a set-theoretical theory.
+Specifically:
+
+- type a 
+  ----> a in Set
+
+- fun m: a1, ..., an -> b
+  ----> f in [b] ^ ([a1] * ...* [an])
+
+- pred p sub a1,..., an
+  ----> p subset [a1] * ...* [an]
+     equivalently:
+           p in 2 ^ ([a1] * ...* [an])
+
+- axiom f
+  ----> axiom [f]
+
+A model of T is a concrete choice of the requirements given by [T].
+We write s^M for the value that M provides for the type/function/predicte symbol s declared in T.
+We write Mod(T) for the class of models of T.
+
+Given a model M, every expression e relative to the SFOL theory T is translated to a set-theoretical expression [e]^M relative to [T] and M.
+
+Equivalent, and more elegantly from the perspective of compositional translations, we can say the following:
+Every expression e relative to the SFOL theory T is translated to a set-theoretical expression [e] relative to [T], which is usually a function from Mod(T) to something.
+
+Specifically:
+
+- type expressions are mapped to functions from models to sets
+  [Y] = Mod(T) -> Set
+  and
+  [a] = M |- > a^M
+
+- term expressions of type A are mapped to functions from models to elements of the respective sets
+  [T] = Mod(T) -> Set
+  and
+  [m(t1,...,tn)] = M |-> [m^M]( [t1](M) , ..., [tn](M) )
+  [x]                 = M |-> x
+
+- formula expressions are mapped to functions from models to booleans/truth values
+  [F] = Mod(T) -> {0,1}
+  and
+  [p(t1,...,tn)] = M |-> 1 if ([t1](M),...,[tn](M)) in [p^M]
+                                   0 otherwise
+  [f/\g]           = M |-> 1 if [f](M)=[g](M)=1
+                                   0 otherwise
+  etc.
+
+
+SFOL is a language with propositions, specifically, prop = F.
+So is set theory with prop = {0,1}.
+
+Thus, we have that [-] does not preserve propositions: [prop] != prop
+SFOL propositions F are not mapped to set theoretical truth values.
+
+The True operator is defined as follows:
+
+True : (Mod(T) -> {0,1}) -> {0,1}
+True: P |->
+                  forall M in Mod(T). P(M) = 1
+
+Then we have for every SFOL proposition f:prop that True [f] in {0,1}.
+We introduce notations:
+M |= f   for   [f](M) = 1
+    |= f   for   True [f] = 1, i.e., M |= f for all M in Mod(T)

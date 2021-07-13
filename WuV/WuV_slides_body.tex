@@ -3262,6 +3262,19 @@ We define
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{The $\truelift$ operator}
+% |- F: prop   --------------->  |- Exp(F) : Exp(prop)
+% no issue if Exp(prop) = prop, i.e., l-propositions are translated to L-propositions
+
+% But not guaranteed, totally possible (and in fact common) that Exp(prop) != prop
+% Then what do we do with query |- F ?
+% |- Exp(F)  does not make any sense because Exp(F) is not an L-proposition
+
+% To use a translation with Exp(prop) != prop to answer l queries via an L-semantics, we need one more thing:
+  % an operator that connects Exp(F):Exp(prop) with L-propositions
+  % That is the True operator, an L-function that maps Exp(prop) -> prop
+\end{frame}
+  
 \begin{frame}{Breakout question}
 What can go wrong?
 \end{frame}
