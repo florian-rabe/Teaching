@@ -45,3 +45,5 @@ lecture 27 & the Tetrapod model in retrospect \\
 
 Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
 Where appropriate, the instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
+
+Ideas for future topics/case studies: WikiData
