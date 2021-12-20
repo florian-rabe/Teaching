@@ -266,6 +266,40 @@ Details: \url{https://blog.cloudflare.com/incident-report-on-memory-leak-caused-
 
 % see also https://www.dwheeler.com/essays/learning-from-disaster.html for heartbleed, shellshock, and goto fail
 
+\paragraph{Facebook BGP Failure}
+In 2021, Facebook performed a routine operation that accidentally disconnected their data centers from each other.
+Because their servers were designed to remove themselves from the network when they were disconnected from the internet, all Facebook services went offline global for hours.
+
+That included the connections needed to undo the faulty operation, internal communication needed to identity and fix the problem, as well as door security access tools that had to be circumvented to gain physical access to the servers in the absence of remote access abilities.
+
+The issue was caused by, firstly, a bug in the audit tool that did not catch the faulty operation and, secondly, the design flaw that allowed that bug to lead all servers to disconnect.
+
+Details: \url{https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/}
+
+\paragraph{Log4J Remote Code Execution}
+Log4J is a popular logging library for Java.
+It provides a string formating feature where a log message can contain snippets of Java code that are replaced by their value.
+A simple logging call might look something like
+\lstinline|log("input is: ${input}")|
+
+This had two major design weaknesses.
+Firstly, any Java snippet was allowed including some that required loading new Java classes from elsewhere on the network.
+Secondly, log messages were not properly escaped allowing plain strings that happened to contain \lstinline|$| to be interpreted as Java snippets and executed.
+Together, those allowed any user input that gets logged to execute arbitrary code.
+
+Details: \url{https://blog.cloudflare.com/inside-the-log4j2-vulnerability-cve-2021-44228/}
+
+\paragraph{NSO Exploits}
+NSO is an Israeli security company that is effectively a criminal organization.
+They sell computer exploits to nation states that do not have their own cyber-crime capabilities.
+Customers include many non-democracies that use NSO exploits to target dissidents.
+
+Among their most ingenious/insidious hacks are remote jailbreaks of Apple devices
+\begin{compactitem}
+\item 2016: only one click on a malicious URL required by user: \url{https://citizenlab.ca/2016/08/million-dollar-dissident-iphone-zero-day-nso-group-uae/}
+\item 2021: no user interaction required at all: \url{https://googleprojectzero.blogspot.com/2021/12/a-deep-dive-into-nso-zero-click.html}
+\end{compactitem}
+
 \section{Other Interesting Failures}
 
 \paragraph{Odyssey Court Software}
