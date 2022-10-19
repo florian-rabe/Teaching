@@ -159,95 +159,19 @@ Moreover, types like $set\to prop$ can be allowed as the types of unary predicat
 Extrinsic typing is used only for the type $set$: we have $E_{set}=set$ and $\in_{set}$ is the usual elementhood relation between sets.
 \end{example}
 
-\section{Abstract Data Types}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Abstract and Concrete Data Types}
 
-\subsection{Motivation}
-
-Recall the subject-centered representation of individuals described in Sect.~\ref{sec:onto:triple}.
-Here we introduce an individual together with all assertions of which it is the subject as in
-\begin{lstlisting}
-individual "FlorianRabe"
-  is-a "instructor" "male"
-  "teach" "WuV" "KRMT"
-  "age" 40
-  "office" "11.137"
-\end{lstlisting}
-
-It is often desirable to use types to force the presence of such assertions.
-We might wish require that every instructor teaches a list of things, and has an office.
-Moreover, we can use types to specify the objects of the respective assertions: we can specify that only courses are taught and that the office is a string.
-Rather than the relations with subjects "FlorianRabe" just happening to be around as well, the type system would now force their existence and the type of the object.
-Forgetting to give such an assertion or giving it with the wrong object could be detected statically (i.e., without applying the semantics) and flagged as a typing error.
-
-This leads to the idea of \textbf{subject-centered types}.
-This could looks as follows:
-\begin{lstlisting}
-concept instructor
-  teach course$^*$
-  age: int
-  office: string
-
-individual "FlorianRabe": "instructor"
-  is-a "male"
-  "teach" "WuV" "KRMT"
-  "age" 40
-  "office" "11.137"
-\end{lstlisting}
-Now the type "instructor" forces the presence of a list of taught courses (The $^*$ is meant to indicate a list.), an integer for the age, and a string for the office.
-
-We can now see that, in fact, every person should have an age, and not just every instructor.
-Because every instructor is meant to be a person, we could try to capture this as well to avoid redundancy.
-Moreover, every male is meant to be a person, too.
-
-That leads to the idea of \textbf{modular types}.
-This could look as follows:
-
-\begin{lstlisting}
-concept person
-  age: int
-  
-concept male <: person
-
-concept instructor <: person
-  teach course$^*$
-  office: string
-
-individual "FlorianRabe": "instructor" $\sqcap$ "male"
-  "teach" "WuV" "KRMT"
-  "age" 40
-  "office" "11.137"
-\end{lstlisting}
-
-Incidentally, that eliminates the need to independently declare relations and properties.
-Instead, we can treat their occurrences inside the concept definitions as their declarations.
-
-That has the added benefit that two relations/properties of the same name declared in different concepts can be distinguished and can have different types.
-%For example, the relation "person.parent" could relate between a subject of type "person" and an object of type "person", and the relation
-
-\subsection{Examples}
-
-The general thrust of these ideas is to shift more and more information into an increasingly complex type system.
+The general thrust of type systems is to shift more and more information into an increasingly complex type system.
 This is part of a trade-off: the more the type system can do,
 \begin{compactitem}
  \item the more requirements can be expressed and violations thereof detected statically,
  \item the more complex the type system and its documentation and implementation become.
 \end{compactitem}
 
-Abstract data types have proved to be a particularly interesting trade-off on this expressivity-simplicity spectrum and are --- in one way or another --- part of many type systems
-The following table gives an overview:
-\begin{center}
-\begin{tabular}{l|ll}
-aspect & language & abstract data type \\
-\hline
-ontologization & UML & class \\
-concretization & SQL & table schema \\
-computation & Scala & class, interface \\
-deduction & various & theory, specification, module, locale \\
-narration & various & emergent feature
-\end{tabular}
-\end{center}
+Concrete and abstract data types have proved to be a particularly interesting trade-off on this expressivity-simplicity spectrum and are --- in one way or another --- part of many type systems.
 
-\subsection{Abstract vs. Concrete}
+\subsection{Abstract vs. Concrete Types}
 
 The words \emph{abstract} and \emph{concrete} do not have standard definitions for types.
 I like the intuitions described below.
@@ -257,6 +181,7 @@ A type is called \textbf{concrete} if its values are
 \item given by their internal form,
 \item defined along with the type, typically built from already-known pieces.
 \end{compactitem}
+In other words, a concrete type is given by an \emph{extensional} description of its objects.
 
 \begin{example}
 Simple products are concrete types.
@@ -266,6 +191,12 @@ They are introduced by (among other rules)
  \item $A\times B$ is a type if $A$ and $B$ are
  \item values of type $A\times B$ are of the form $(a,b)$ for $a:A$ and $b:B$.
 \end{compactitem}
+\end{example}
+
+\begin{example}
+\textbf{Enumerations} are concrete types that explicitly list a finite set of distinct values.
+
+They can also be seen as the special case of inductive data types in which all constructors take $0$ arguments.
 \end{example}
 
 \begin{example}
@@ -280,8 +211,39 @@ A type is called \textbf{abstract} if its values are
 \item given by their externally visible properties,
 \item defined in any environment that understands the type definition.
 \end{compactitem}
+In other words, an abstract type is given by an \emph{intensional} description of its objects.
 
 This is the case for \textbf{abstract data types}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Concrete Data Types}
+
+Concrete data types are the same as inductive data types and were already defined rigorously in Sect.~\ref{sec:idt}.
+
+It is in the nature of concrete types that they do not depend on the situation in which they are used.
+The definition of the type once and for all defines the possible values.
+Thus, they do not differ (or differ at most subtly) between languages.
+Often the only real difference is whether a language has concrete data types or not.
+Languages that do not natively provide them may differ substantially in how they simulate them though.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Abstract Data Types}
+
+Contrary to concrete types, the values of an abstract data types depend on what features the language provides to construct objects that satisfy the abstract requirements.
+Therefore, the treatment differs widely across languages.
+The following table gives an overview:
+
+\begin{center}
+\begin{tabular}{l|ll}
+aspect & language & abstract data type \\
+\hline
+ontologization & UML & class \\
+concretization & SQL & table schema \\
+computation & Scala & class, interface \\
+deduction & various & theory, specification, module, locale \\
+narration & various & emergent feature
+\end{tabular}
+\end{center}
 
 \begin{example}[Classes]
 A UML class is an abstract data type.
@@ -324,11 +286,7 @@ We can even build them in programming languages, e.g., by implementing theories 
 The choice of language substantially changes what the values of the abstract data type are.
 \end{example}
 
-\subsection{Rigorous Definition}
-
-There are many subtle design choices in defining abstract data types.
-Therefore, they tend to look and behave a little differently in every type system that features them.
-Here, we introduce a fairly general definition that subsumes many practical languages.
+In the sequel we introduce a fairly general definition that subsumes many practical languages.
 
 \begin{definition}[Abstract Data Type]
 Consider an arbitrary type system.
@@ -414,7 +372,73 @@ $T$ might be well-formed in context $\Gamma$, but $\Gamma'$ might not even be a 
 Because OO-languages are usually not dependently-typed, this is not an issue in most settings.
 \end{remark}
 
-\section{Database Schemas as Typed Ontologies}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Abstract Data Types in Ontologies}
+
+\subsection{Motivation}
+
+Recall the subject-centered representation of individuals described in Sect.~\ref{sec:onto:triple}.
+Here we introduce an individual together with all assertions of which it is the subject as in
+\begin{lstlisting}
+individual "FlorianRabe"
+  is-a "instructor" "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+It is often desirable to use types to force the presence of such assertions.
+We might wish require that every instructor teaches a list of things, and has an office.
+Moreover, we can use types to specify the objects of the respective assertions: we can specify that only courses are taught and that the office is a string.
+Rather than the relations with subjects "FlorianRabe" just happening to be around as well, the type system would now force their existence and the type of the object.
+Forgetting to give such an assertion or giving it with the wrong object could be detected statically (i.e., without applying the semantics) and flagged as a typing error.
+
+This leads to the idea of \textbf{subject-centered types}.
+This could looks as follows:
+\begin{lstlisting}
+concept instructor
+  teach course$^*$
+  age: int
+  office: string
+
+individual "FlorianRabe": "instructor"
+  is-a "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+Now the type "instructor" forces the presence of a list of taught courses (The $^*$ is meant to indicate a list.), an integer for the age, and a string for the office.
+
+We can now see that, in fact, every person should have an age, and not just every instructor.
+Because every instructor is meant to be a person, we could try to capture this as well to avoid redundancy.
+Moreover, every male is meant to be a person, too.
+
+That leads to the idea of \textbf{modular types}.
+This could look as follows:
+
+\begin{lstlisting}
+concept person
+  age: int
+  
+concept male <: person
+
+concept instructor <: person
+  teach course$^*$
+  office: string
+
+individual "FlorianRabe": "instructor" $\sqcap$ "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+Incidentally, that eliminates the need to independently declare relations and properties.
+Instead, we can treat their occurrences inside the concept definitions as their declarations.
+
+That has the added benefit that two relations/properties of the same name declared in different concepts can be distinguished and can have different types.
+%For example, the relation "person.parent" could relate between a subject of type "person" and an object of type "person", and the relation
+
+\subsection{Database Schemas as Typed Ontologies}
 
 This is presented on the slides.
 

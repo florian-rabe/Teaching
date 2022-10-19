@@ -1,3 +1,43 @@
+\section{The 4 Layers of a Formal Language}
+
+\begin{figure}[hbt]
+\begin{tabular}{l|lll|l}
+Layer & Specified by & Implemented by & Possible error \\\hline
+Context-Free Syntax & grammar & parser & not derivable from grammar & \\
+Context-Sensitive Syntax & inference system & type checker & symbols not used as declared & KRP \\
+Semantics & \multicolumn{2}{l}{inference system, interpretation, or translation} & undefined semantics & \\
+\hline
+Pragmatics & human preferences & human judgment & not useful & not KRP \\
+\end{tabular}
+\caption{The 4 Layers of a Language}\label{fig:layers}
+\end{figure}
+
+\begin{figure}[hbt]
+\begin{tabular}{l|lll}
+Layer & Expression & Issue & Explanation \\\hline
+Context-Free Syntax & $1/$ & syntax error & argument missing\\
+Context-Sensitive Syntax & $1/"2"$ & typing error & argument has wrong type\\
+Semantics & $1/0$ & run-time error & undefined semantics \\
+Pragmatics & $1/1$ & code review comment & unnecessarily complex expression \\
+\end{tabular}
+\caption{Typical Errors by Layer in a Programming Language}\label{fig:errors-comp}
+\end{figure}
+
+\begin{figure}[hbt]
+\begin{tabular}{l|lll}
+Layer & Expression & Issue & Explanation \\\hline
+Context-Free Syntax & $\forall x$ & not well-formed & body missing\\
+Context-Sensitive Syntax & $\forall x.P(y)$ & not well-typed & $y$ not declared\\
+Semantics & the $x\in \N$ such that $x<0$ & not well-defined & no such $x$ exists \\
+Pragmatics & $\exists x.x\neq x$ & inconsistent & no model exists\\
+\end{tabular}
+\caption{Typical Errors by Layer in Logic}\label{fig:errors-ded}
+\end{figure}
+
+%non-termination
+
+
+
 \section{Context-Free Syntax}
 
 Abstractly, context-free syntax is specified using grammars.
@@ -110,7 +150,7 @@ Then we can improve the grammar from above as follows:
 \end{example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Inductive Data Types}
+\subsection{Inductive Data Types}\label{sec:idt}
 
 We start with the usual definition:
 
@@ -589,9 +629,43 @@ This is usually done by giving an inference system for the predicates for well-f
 We can also do both: if we have a semantics via an inference system and another one via translation, we can show that the latter respects the former.
 That leads to the concepts of soundness (everything well-formed is translated to something well-formed) and its dual completeness.
 
-\section{Relative Semantics: By Translation}
+\section{Relative Semantics}
 
-\subsection{General Definition}
+Relative semantics uses an additional component as a reference point for semantics.
+
+Semantics by interpretation uses a situation relative to which expressions are evaluated.
+Usually, the result of evaluation is an extremely simple object, whose semantics is self-evident.
+
+Semantics by translation uses a second language as the target of a translation.
+Usually, the target language already has a semantics, and the semantics of the original language is obtained by composing the two.
+
+\subsection{By Interpretation}
+
+\begin{figure}[hbt]
+\begin{tabular}{l|ll}
+Aspect & Situation & Provides\\\hline
+%Ontological & ABox & individuals and their properties \\
+Deductive & model & interpretations of the function/predicate/... symbols\\
+Computational & environment & e.g., standard input/output \\
+Concrete & database & set of objects for each type \\
+Narrative & semantic dictionary & meanings of the words \\
+\end{tabular}
+\caption{Examples of Situational Semantics by Interpretation}\label{fig:sit}
+\end{figure}
+
+\subsection{By Translation}
+
+\begin{figure}[hbt]
+\begin{tabular}{l|l}
+Aspect & Example\\\hline
+%Ontological & OWL $\to$ FOL \\
+Deductive & FOL $\to$ set theory\\
+Computational & C++ $\to$ assembly \\
+Concrete & SPARQL $\to$ SQL \\
+Narrative & English $\to$ German \\
+\end{tabular}
+\caption{Examples of Semantics by Translations}\label{fig:trans}
+\end{figure}
 
 The correspondence for the syntax between context-free grammars and inductive data types can be extended to the semantics.
 Now we have a correspondence between case-based function definitions and inductive functions.
@@ -742,3 +816,5 @@ But others might be appear \emph{dynamically} later, e.g., when talking about $V
 Thus, the definition of $V$ and the use of complex expressions are decoupled: $V$ is defined statically once and for all, and complex expressions relative to $V$ can be created and used dynamically.
 But if a custom semantic prefix is used, only the static occurrences inside $V$ can be considered for building the prefix.
 Thus, it is not possible to translate expressions dynamically unless the semantic prefix is extended all the time while $V$ is used.
+
+
