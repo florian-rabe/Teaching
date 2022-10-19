@@ -16,12 +16,12 @@
 
 \usepackage{../mylecturenotes}
 \usepackage{../macros}
-\usepackage{macros}
+\usepackage{local}
 \usepackage{cleveref}
 
 \title{Lectures Notes on Knowledge Representation and Processing}
 \author{Florian Rabe and Michael Kohlhase}
-\date{2021}
+\date{2022}
 
 \begin{document}
 \maketitle
@@ -40,14 +40,15 @@ It integrated current directions and recent results in research on knowledge rep
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Meta-Remarks}
+\setcounter{chapter}{-1}
+\chapter{Meta-Information}
+ \section{Remarks}
   \input{../generalremarks}
+\section{Overview}
+  \input{overview}
 
 \chapter{Fundamental Concepts}\label{sec:wuv:concepts}
   \input{concepts}
-
-\chapter{Overview of This Course}
-  \input{overview}
 
 \chapter{Representing Syntax and Semantics}\label{sec:wuv:syntax}
 %\footnote{This chapter is grouped with the general parts to whom it belongs conceptually. But in the lecture it was treated later.}
