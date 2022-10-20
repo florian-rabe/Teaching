@@ -1,0 +1,646 @@
+\section{Extrinsic and Intrinsic Typing}
+
+\begin{frame}\frametitle{Breakout Question}
+Is this an improvement over BOL?
+\begin{commgrammar}
+\gcomment{Declarations}\\
+\gprod{D}{\kw{individual}\; \ID: C}{typed atomic individual}\\
+\galtprod{\kw{concept}\; \ID}{atomic concept}\\
+\galtprod{\kw{relation}\; \ID\sq C\times C}{typed atomic relation}\\
+\galtprod{\kw{property}\; \ID\sq C\times T}{typed atomic property}\\
+\end{commgrammar}
+\glec{rest as before}
+\end{frame}
+
+\begin{frame}\frametitle{Actually, when is a language an improvement?}
+Criteria:
+ \lec{orthogonal, often mutually exclusive}
+\begin{itemize}
+\item syntax design trade-off
+ \begin{itemize}
+  \item expressivity: easy to express knowledge
+    \glec{e.g., big grammar, extra production for every user need}
+  \item simplicity: easy to implement/interpret
+    \glec{e.g., few, carefully chosen productions}
+ \end{itemize}
+\item semantics: specify, implement, document
+\item intended users
+ \begin{itemize}
+  \item skill level
+  \item prior experience with related languages
+  \item amount of training needed
+ \end{itemize}
+\item long-term plans: re-answer the above question but now
+ \begin{itemize}
+  \item maintainability: syntax was changed, everything to be redone
+  \item scalability: expressed knowledge content has reached huge sizes
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Church vs. Curry Typing}
+\begin{center}
+\footnotesize
+\begin{tabular}{l|ll}
+& intrinsic & extrinsic \\
+\hline
+$\lambda$-calculus by & Church & Curry \\
+type is & carried by object & given by environment \\
+typing is a & function objects $\to$ types & relation objects $\times$ types \\
+objects have & unique type & any number of types \\
+types interpreted as & disjoint sets & unary predicates \\
+\hline
+type given by & part of declaration & additional axiom \\
+ \tb example               &  \kw{individual} "WuV":"course"  & \kw{individual} "Wuv",\\
+                           &                                  & "WuV" \texttt{is-a} "course"\\
+\hline
+examples   & SFOL, SQL & OWL, Scala, English \\
+           & most logics, functional PLs & ontology, OO, \\
+           &                             & natural languages \\
+           & many type theories & set theories
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Type Checking}
+\begin{center}
+\footnotesize
+\begin{tabular}{l|ll}
+& intrinsic & extrinsic \\
+\hline
+type is & carried by object & given by environment \\
+typing is a & function objects $\to$ types & relation objects $\times$ types \\
+objects have & unique type & any number of types \\
+\hline
+type given by & part of declaration & additional axiom \\
+ \tb example               &  \kw{individual} "WuV":"course"  & \kw{individual} "Wuv",\\
+                           &                                  & "WuV" \texttt{is-a} "course"\\
+\hline
+type inference for $x$ & uniquely infer $A$ from $x$ & find minimal $A$ with $x:A$ \\
+type checking & inferred=expected & prove $x:A$ \\
+subtyping $A<:B$ & cast from $A$ to $B$ & $x:A$ implies $x:B$ \\
+typing decidable & yes unless too expressive & no unless restricted \\
+typing errors & static (compile-time) & dynamic (run-time)\\
+\hline
+advantages & easy & flexible \\
+           & unique type inference & allows subtyping \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Curry Typing in BOL}
+\begin{center}
+\footnotesize
+\begin{tabular}{l|lll}
+language  & objects & types & typing relation\\
+\hline
+Syntax & individuals & concepts & $i$ \texttt{is-a} $c$ \\
+\hline
+Semantics in &&&\\
+FOL & type $\iota$  & predicates $c\sq\iota$ & $c(i)$ true\\
+SQL & table Individuals & tables containing ids & id of i in table $c$ \\
+Scala & String & hash sets of strings & $c$.contains($i$) \\
+English & proper nouns & common nouns & "$i$ is a $c$" is true
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Subtyping}
+Subtyping works best with Curry Typing
+\begin{itemize}
+ \item explicit subtyping as in $\N<:\Z$
+ \item comprehension/refinement as in $\{x:\N|x\neq 0\}$
+ \item operations like union and intersection on types
+ \item inheritance between classes, in which case subclass = subtype
+ \item anonymous record types as in $\{x:\N,y:\Z\}<:\{x:\N\}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{A General Definition of a Type System}
+A \textbf{type system} consists of
+\begin{itemize}
+ \item a collection, whose elements are called \textbf{objects},
+ \item a collection, whose elements are called \textbf{intrinsic types},
+ \item a function assigning to every object $x$ its \textbf{intrinsic type} $I$, in which case we write $x:I$,
+ \item for some intrinsic types $I$
+  \begin{itemize}
+   \item an intrinsic type $E_I$
+   \item a relation $\in_I$ between objects with intrinsic types $I$ and $E_I$, called the \textbf{extrinsic typing} relation for $I$.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+\begin{center}
+\begin{tabular}{l|lll}
+System & intrinsic types & $E_I$ & $\in_I$ \\
+\hline
+pure Church & one per type & none & none \\
+pure Curry & objects $O$, types $T$ & $E_O=T$ & $\in_O=:$ \\
+%\hline
+FOL & one per type & none & none \\
+Scala & $Any$, $Class$ & $E_{Any}=Class$ & $\in_{Any}=\mathtt{isInstanceOf}$\\ 
+BOL & $Ind$, $Conc$ & $E_{Ind}=Conc$ & $\in_{Ind}=\isa$\\
+set theory & $Set$, $Prop$ & $E_{Set}=Set$ & $\in_{Set}=\in$ \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Abstract vs. Concrete Types}
+\textbf{Concrete} type: values are
+\begin{itemize}
+\item given by their internal form,
+\item defined along with the type, typically built from already-known pieces.
+\end{itemize}
+\lec{product types, enumeration types, collection types}
+\lec{main example: concrete (inductive/algebraic) data types}
+
+\textbf{Abstract} type: values are
+\begin{itemize}
+\item given by their externally visible properties,
+\item defined in any environment that understands the type definition.
+\end{itemize}
+\lec{structures, records, classes, aggregation types}
+\lec{main example: abstract data types}
+\end{frame}
+
+\begin{frame}\frametitle{Plain vs. Recursive Types}
+\textbf{Plain} types 
+\begin{itemize}
+\item given by some expressions
+\item can be anonymous
+\item values given directly
+\end{itemize}
+\lec{integers, lists of strings, \ldots}
+
+\textbf{Recursive} types
+\begin{itemize}
+\item definition of the type must refer to the type itself\\
+so type must have a name
+\item type typically defines other named operations
+\item values obtained by fixed-point constructions
+\end{itemize}
+\lec{optional property of concrete and abstract data types}
+\end{frame}
+
+\begin{frame}\frametitle{Atomic vs. Complex Types}
+\textbf{Atomic} type
+\begin{itemize}
+\item given by its name
+\item values are a set
+\end{itemize}
+\lec{integers, strings, booleans, \ldots}
+
+\textbf{Complex} types
+\begin{itemize}
+\item arise by applying type symbol to arguments\\
+\item separate set of values for each tuple of arguments
+\end{itemize}
+\lec{two kinds of complex types (next slide)}
+\end{frame}
+
+\begin{frame}\frametitle{Type operators vs. Dependent type Families}
+Both are symbols that take arguments and return a type.
+
+\textbf{Type operators} take \emph{only type arguments}, e.g.,
+ \begin{itemize}
+ \item type operator $\times$
+ \item takes two types $A,B$
+ \item returns type $A\times B$
+ \end{itemize}
+
+\textbf{Dependent types} take \emph{also value arguments}, e.g.,
+ \begin{itemize}
+ \item dependent type operator $vector$
+ \item takes natural number $n$, type $A$
+ \item returns type $A^n$ of $n$-tuples over $A$
+ \end{itemize}
+\lec{dependent types much more complicated, less uniformly used}
+\lec{harder to starndardize}
+\end{frame}
+
+\section{Non-Recursive Data Types}
+
+\begin{frame}\frametitle{Basic Atomic Types}
+\begin{blockitems}{typical in IT systems}
+ \item fixed precision integers (32 bit, 64 bit, \ldots)
+ \item IEEE float, double
+ \item Booleans
+ \item Unicode characters
+ \item strings \glec{could be list of characters but usually bad idea}
+\end{blockitems}
+
+\begin{blockitems}{typical in math}
+ \item natural numbers (= $\N$)
+ \item arbitrary precision integers (= $\Z$)
+ \item rational, real, complex numbers
+ \item graphs, trees
+\end{blockitems}
+\lec{clear: language must be modular, extensible}
+\end{frame}
+
+\begin{frame}\frametitle{Advanced Atomic Types}
+
+\begin{blockitems}{general purpose}
+ \item date, time, color, location on earth
+ \item picture, audio, video
+\end{blockitems}
+
+\begin{blockitems}{domain-specific}
+ \item physical quantities ($1m$, $1in$, etc.)
+ \item gene, person
+ \item semester, course id, \ldots
+\end{blockitems}
+
+\lec{clear: language must be modular, extensible}
+\end{frame}
+
+\begin{frame}\frametitle{Collection Data Types}
+\begin{blockitems}{Homogeneous Collection Types}
+ \item sets
+ \item multisets (= bags)
+ \item lists
+ \lec{all unary type operators, e.g. $list\;A$ is type of lists over $A$}
+ \item fixed-length lists (= Cartesian power, vector $n$-tuple)
+  \glec{dependent type operator}
+\end{blockitems}
+
+\begin{blockitems}{Heterogeneous Collection Types}
+ \item lists
+ \item fixed-length lists (= Cartesian power, $n$-tuple)
+ \item sets
+ \item multisets (= bags)
+ \lec{all atomic types, e.g., $list$ is type of lists over any objects}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Aggregation Data Types}
+\begin{blockitems}{Products}
+ \item Cartesian product of some types $A\times B$ \\
+ values are pairs $(x,y)$ 
+ \glec{numbered projections $_1$, $_2$ --- order relevant}
+ \item labeled Cartesian product (= record) $\{a: A, b: B\}$ \\
+ values are records $\{a=x, b=y\}$
+  \glec{named projections $a$, $b$ --- order irrelevant}
+\end{blockitems}
+
+\begin{blockitems}{Disjoint Unions}
+ \item disjoint union of some types $A\uplus B$\\
+  values are $inj_1(x)$, $inj_2(y)$
+  \glec{numbered injections $_1$, $_2$ --- order relevant}
+ \item labeled disjoint union $a(A)|b(B)$ \\
+  values are constructor applications $a(x)$, $b(y)$
+  \glec{named injections $a$, $b$ --- order irrelevant}
+\end{blockitems}
+
+\glec{labeled disjoint unions uncommon}
+\glec{but recursive labeled disjoint union = inductive data type}
+\end{frame}
+
+\begin{frame}\frametitle{Subtyping}
+\begin{itemize}
+ \item relatively easy if all data types disjoint
+ \item better with subtyping
+ \lec{open problem how to do it nicely}
+\end{itemize}
+
+\begin{blockitems}{Subtyping Atomic Types}
+ \item $\N <: \Z$
+ \item ASCII $<:$ Unicode
+\end{blockitems}
+
+\begin{blockitems}{Subtyping Complex Types}
+ \item covariance subtyping (= vertical subtyping)
+ \glec{same for disjoint unions}
+  \[A <: A' \impl list\,A <: list\, A'\]
+  \[A_i <: A_i' \impl \{\ldots, a_i:A_i,\ldots\} <: \{\ldots, a_i:A'_i,\ldots\}\]
+ \item structural subtyping (= horizontal subtyping)
+  \[\{a:A,b:B\} :> \{a:A,b:B,c:C\}\]
+  \[a(A)|b(B) <: a(A)|b(B)|c(C)\]
+\end{blockitems}
+\end{frame}
+
+\section{Concrete Data Types}
+
+\begin{frame}[fragile]\frametitle{Motivation}
+Idea
+\begin{itemize}
+\item describe infinite type in finite way
+\item exploit inductive structure to catch all values
+\end{itemize}
+
+Name: usually called \textbf{inductive} data type, especially when recursive
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+Natural numbers $Nat$ given by
+\begin{itemize}
+\item $zero$
+\item $succ(n)$ for every $n:Nat$
+\end{itemize}
+
+Lists $list\,A$ over type $A$ given by
+\begin{itemize}
+\item empty list $nil$
+\item $cons(a,l)$ for every $a:A$ and $l:list\,A$
+\end{itemize}
+
+Arithmetic expressions $E$ given by
+\begin{itemize}
+\item natural number $literal(n)$ for $n:Nat$
+\item sum $plus(e,f)$ for every $e,f:E$
+\item product $times(e,f)$ for every $e,f:E$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Rigorous Definition}
+Let $T$ be the set of types that are known in the current context.
+
+An \textbf{inductive data type} is given by
+\begin{itemize}
+ \item a name $n$, called the \textbf{type},
+ \item a set of \textbf{constructors} each consisting of
+ \begin{itemize}
+  \item a name
+  \item a list of elements of $T\cup\{n\}$, called the \textbf{argument} types
+ \end{itemize} 
+\end{itemize}
+
+Notation:
+\begin{lstlisting}
+inductive n = c(A,...) | ...
+
+inductive Nat = zero | succ(Nat)
+inductive E = Number(Nat) | sum(E,E) | times(E,E)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Induction Principle}
+The values of the inductive type are exactly the ones that can be built by the constructors.
+\begin{itemize}
+\item No junk: the constructors are jointly-surjective
+ \begin{itemize}
+ \item no other values but union of their images
+ \item closed world
+ \end{itemize}
+\item No confusion: the constructors are jointly-injective in the following sense
+ \begin{itemize}
+  \item each constructor is an injective function
+  \item images of the constructor are pairwise disjoint
+ \end{itemize}
+\end{itemize}
+
+Inductive definition: define function out of inductive type by giving one case per constructor
+\lec{pattern matching}
+\begin{itemize}
+\item total because jointly-surjective
+\item well-defined because jointly-injective (no overlap between cases)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Special case: No recursion}
+A concrete data types without recursive constructor arguments are called a \textbf{labeled union}.
+They are isomorphic to the union of the products of the constructor arguments.
+
+Example:
+\begin{lstlisting}
+inductive Value = Number(Nat) | true | false
+inductive Product(A,B) = Pair(A,B)
+\end{lstlisting}
+
+A concrete data types without any constructor arguments is called an \textbf{enumeration}.
+They have exactly one element per constructor.
+
+Example:
+\begin{lstlisting}
+inductive Boolean = true | false
+inductive Color = red | blue | green
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Generalization: Mutual Induction}
+Multiple inductive types whose definitions refer to each other.
+
+Example:
+\begin{lstlisting}
+inductive E = literal(Nat) | sum(E,E) | times(E,E) | ifte(F,E,E)
+inductive F = equal(E,E) | less(E,E)
+\end{lstlisting}
+\end{frame}
+
+\section{Abstract Data Types}
+
+\begin{frame}\frametitle{Breakout Question}
+What do the following have in common?
+\begin{itemize}
+\item Java class
+\item SQL schema for a table
+\item logical theory (e.g., Monoid)
+\end{itemize}
+\onslide<2>{all are (essentially) abstract data types}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Motivation}
+Recall subject-centered representation of assertion triples:
+
+\begin{lstlisting}
+individual "FlorianRabe"
+  is-a "instructor" "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+Can we use types to force certain assertions to occur together?
+\begin{itemize}
+\item Every instructor should teach a list of courses.
+\item Every instructor should have an office.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Motivation}
+Inspires \textbf{subject-centered types}, e.g.,
+
+\begin{lstlisting}
+concept instructor
+  teach course$^*$
+  age: int
+  office: string
+
+individual "FlorianRabe": "instructor"
+  is-a "male"
+  teach "WuV" "KRMT"
+  age 40
+  office "11.137"
+\end{lstlisting}
+
+Incidental benefits:
+\begin{itemize}
+\item no need to declare relations/properties separately
+\item reuse relation/property names \\ distinguish via qualified names: \lstinline|instructor.age|
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Motivation}
+Natural next step: inheritance
+
+\begin{lstlisting}
+concept person
+  age: int
+  
+concept male <: person
+
+concept instructor <: person
+  teach course$^*$
+  office: string
+
+individual "FlorianRabe": "instructor" $\sqcap$ "male"
+  "teach" "WuV" "KRMT"
+  "age" 40
+  "office" "11.137"
+\end{lstlisting}
+
+\lec{our language quickly gets a very different flavor}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+Prevalence of abstract data types:
+
+\begin{center}
+\begin{tabular}{l|ll}
+aspect & language & abstract data type \\
+\hline
+ontologization & UML & class \\
+concretization & SQL & table schema \\
+computation & Scala & class, interface \\
+deduction & various & theory, specification, module, locale \\
+narration & various & emergent feature
+\end{tabular}
+\end{center}
+
+\lec{same idea, but may look very different across languages}
+\end{frame}
+
+\begin{frame}\frametitle{Examples}
+\begin{center}
+\begin{tabular}{l|ll}
+aspect & type & values \\
+\hline
+computation & abstract class & instances of implementing classes \\
+concretization & table schema & table rows \\
+deduction & theory & models
+\end{tabular}
+\end{center}
+
+Values depend on the environment in which the type is used:
+\begin{itemize}
+\item class defined in one specification language (e.g., UML), \\
+ implementations in programing languages Java, Scala, etc.
+ \lec{available values may depend on run-time state}
+\item theory defined in logic,\\
+ models defined in set theories, type theories, programming languages
+ \lec{available values may depend on philosophical position}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Definition}
+Given some type system, an \textbf{abstract data type} (ADT) is
+\begin{itemize}
+\item a \textbf{flat} type
+  \[\{c_1:T_1[=t_1],\ldots,c_n:T_n[=t_n]\}\]
+  where
+  \begin{itemize}
+  \item $c_i$ are distinct names
+  \item $T_i$ are types
+  \item $t_i$ are optional definitions; if given, $t_i:T_i$ required
+  \end{itemize}
+\item or a \textbf{mixin} type
+  \[A_1*\ldots*A_n\]
+  for ADTs $A_i$.
+\end{itemize}
+
+Languages may or may not make ADTs additional types of the type system
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Class Definitions}
+A class definition in OO:
+
+\begin{lstlisting}
+abstract class $a$ extends $a_1$ with $\ldots$ with $a_m$ {
+  $c_1$: $T_1$
+  $\vdots$
+  $c_n$: $T_n$
+}
+\end{lstlisting}
+
+Corresponding ADT definition:
+\[a = a_1*\ldots*a_m*\{c_1:T_1,\ldots,c_n:T_n\}\]
+\medskip
+
+The usual terminology:
+\begin{itemize}
+\item $a$ \textbf{inherits} from $a_i$
+\item $a_i$ are \textbf{super}-X or \textbf{parent}-X of $a$ where $X$ is whatever the language calls its ADTs (e.g., X=class)
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Flattening}
+The \textbf{flattening} $\flt{A}$ of an ADT $A$ is
+\begin{itemize}
+ \item if $A$ is flat: $\flt{A}=A$
+ \item $\flt{(A_1*\ldots*A_n)}$ is union of all $\flt{A_i}$\\
+  where duplicate field names are handled as follows
+  \begin{itemize}
+   \item same name, same type, same or omitted definition: merge
+    \glec{details may be much more difficult}
+   \item otherwise: ill-formed
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Subtleties}
+We gloss over several major issues:
+\begin{itemize}
+\item How exactly do we merge duplicate field names? Does it always work?
+ \lec{implement abstract methods, override, overload} 
+\item Is recursion allowed, i.e., can I define an ADT $a=A$ where $a$ occurs in $A$?
+ \lec{common in OO-languages: use $a$ in the types of its fields}
+\item What about ADTs with type arguments?
+ \lec{e.g., generics in Java, square-brackets in Scala}
+\item Is mutual recursion between fields in a flat type allowed?
+ \lec{common in OO-languages}
+\item Is * commutative? What about dependencies between fields?
+\end{itemize}
+\lec{no unique answers}
+\lec{incarnations of ADTs subtly different across languages}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout question}
+When using typed concrete data,\\
+how to fully realize abstract data types
+\begin{itemize}
+\item nesting: ADTs occurring as field types
+\item inheritance between ADTs
+\item mixins
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{ADTs in Typed Concrete Data}
+\begin{blockitems}{Nesting: field $a:A$ in ADT $B$}
+\item field types must be base types, $a:A$ not allowed
+\item allow $ID$ as additional base type
+\item use field $a:ID$ in table $B$
+\item store value of $b$ in table $A$
+\end{blockitems}
+
+\begin{blockitems}{Inheritance: $B$ inherits from $A$}
+\item add field $parent_A$ to table $B$
+\item store values of inherited fields of $B$ in table $A$
+\end{blockitems}
+\lec{general principle: all objects of type $A$ stored in same table}
+
+\begin{blockitems}{Mixin: $A*B$}
+\item essentially join of tables $A$ and $B$ on common fields
+\item some subtleties depending on ADT flattening
+\end{blockitems}
+\end{frame}

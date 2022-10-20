@@ -1,0 +1,370 @@
+\section{Ontological Knowledge}
+
+\begin{frame}\frametitle{Components of an Ontology}
+8 main declarations
+\begin{itemize}
+ \item \textbf{individual} --- concrete objects that exist in the real world, e.g., "Florian Rabe" or "WuV"
+ \item \textbf{concept} --- abstract groups of individuals, e.g., "instructor" or "course"
+ \item \textbf{relation} --- binary relations between two individuals, e.g., "teaches"
+ \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "has-credits"
+ \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
+ \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
+ \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
+ \item \textbf{axioms} --- statements about relations between concepts, e.g., "instructor" $\sqsubseteq$ "person"
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Divisions of an Ontology}
+\begin{blockitems}{Abstract vs. concrete}
+ \item TBox: concepts, relations, properties, axioms
+  \lec{everything that does not use individuals}
+ \item ABox: individuals and assertions
+\end{blockitems}
+
+\begin{blockitems}{Named vs. unnamed}
+ \item Signature: individuals, concepts, relations, properties \lec{together called entities or resources}
+ \item Theory: assertions, axioms
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Comparison of Terminology}
+\begin{center}
+\tiny
+\begin{tabular}{l|llll|l}
+ Here       & OWL      & Description logics & ER model & UML & semantics via logics\\
+\hline
+ individual & instance & individual & entity & object, instance & constant\\
+ concept    & class    & concept &  entity-type & class & unary predicate\\
+ relation   & object property & role & role & association & binary predicate \\
+ property   & data property   & (not common) & attribute & field of base type & binary predicate\\
+\end{tabular}
+\medskip
+
+\begin{tabular}{l|ll}
+ domain & individual & concept \\
+\hline
+type theory, logic & constant, term & type \\
+set theory  & element & set \\
+database    & row & table \\
+philosophy\footnote{as in \url{https://plato.stanford.edu/entries/object/}} & object & property \\
+grammar & proper noun & common noun \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Ontologies as Sets of Triples}
+\begin{center}
+\begin{tabular}{l|lll}
+Assertion & \multicolumn{3}{c}{Triple} \\
+          & Subject & Predicate & Object \\
+\hline
+concept assertion  & "Florian Rabe" & \texttt{is-a} & "instructor" \\
+relation assertion & "Florian Rabe" & "teaches" & "WuV" \\
+property assertion & "WuV" & "has credits" & 7.5 \\
+\end{tabular}
+\medskip
+
+Efficient representation of ontologies using RDF and RDFS standardized special entities.
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Special Entities}
+RDF and RDFS define special entities for use in ontologies:
+\begin{itemize}
+ \item "rdfs:Resource": concept of which all individuals are an instance and thus of which every concept is a subconcept
+ \item "rdf:type": relates an entity to its type:
+  \begin{itemize}
+   \item an individual to its concept (corresponding to \texttt{is-a} above)
+   \item other entities to their special type (see below)
+  \end{itemize}
+ \item "rdfs:Class": special class for the type of classes
+ \item "rdf:Property": special class for the type of properties
+ \item "rdfs:subClassOf": a special relation that relates a subconcept to a superconcept
+% \item "rdfs:subPropertyOf": a special relation that relates a relation to one that it implies
+ \item "rdfs:domain": a special relation that relates a relation to the concepts of its subjects
+ \item "rdfs:range": a special relation that relates a relation/property to the concept/type of its objects
+\end{itemize}
+
+Goal/effect: capture as many parts as possible as RDF triples.
+\end{frame}
+
+\begin{frame}\frametitle{Declarations as Triples using Special Entities}
+\begin{center}
+\begin{tabular}{l|lll}
+Assertion & \multicolumn{3}{c}{Triple} \\
+          & Subject & Predicate & Object \\
+\hline
+individual & individual & "rdf:type" & "rdfs:Resource" \\
+concept  & concept & "rdf:type" & "rdf:Class" \\
+relation & relation & "rdf:type" & "rdf:Property" \\
+property & property & "rdf:type" & "rdf:Property" \\
+concept assertion  & individual & "rdf:type" & concept \\
+relation assertion & individual & relation & individual \\
+property assertion & individual & property & value \\
+\hline
+\multicolumn{4}{l}{for special forms of axioms}\\
+$c\sqsubseteq d$ & $c$ & "rdfs:subClassOf" & $d$ \\
+%$r\sqsubseteq s$ & $r$ & "rdfs:subPropertyOf" & s \\
+$\dom\,r\Equiv c$ & $r$ & "rdfs:domain" & $c$ \\
+$\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language}
+see syntax of BOL in the lecture notes
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 1}
+As a team, build an ontology for a university.
+
+Using git, OWL, and WebProtege are good ways to start.
+\end{frame}
+
+\section{Concrete Knowledge and Typed Ontologies}
+
+\begin{frame}\frametitle{Motivation}
+\begin{blockitems}{Main ideas}
+\item Ontology abstractly describes concepts and relations
+\item Tool maintains concrete data set
+\item Focus on efficiently
+  \begin{itemize}
+  \item identifying (i.e., assign names)
+  \item representing
+  \item processing
+  \item querying
+  \end{itemize}
+  large sets of concrete data
+\end{blockitems}
+
+\begin{blockitems}{Recall: TBox-ABox distinction}
+  \item TBox: general parts, abstract, fixed
+   \lec{main challenge: correct modeling of domain}
+  \item ABox: concrete individuals and assertions about them, growing
+   \lec{main challenge: aggregate them all}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Concrete Data}
+\begin{blockitems}{Concrete is}
+\item Base values: integers, strings, booleans, etc.
+\item Collections: sets, multisets, lists (always finite)
+\item Aggregations: tuples, records (always finite)
+\item User-defined concrete data: enumerations, inductive types
+\item Advanced objects: finite maps, graphs, etc.
+\end{blockitems}
+
+\begin{blockitems}{Concrete is not}
+\item Free symbols to be interpreted by a model
+ \lec{exception: foreign function interfaces}
+\item Variables (free or bound)
+ \lec{$\lambda$-abstraction, quantification}
+\item Symbolic expressions
+ \lec{formulas, algorithms}
+ Exceptions:
+  \begin{itemize}
+  \item expressions of inductive type
+  \item application of built-in functions
+  \item queries that return concrete data
+  \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout question}
+What is the difference between
+\begin{itemize}
+\item an OWL ontology
+\item an SQL database
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Two Approaches}
+\begin{blockitems}{Based on \emph{untyped} (Curry-typed) ontology languages}
+\item Representation based on \emph{knowledge graph}
+\item Ontology written in BOL-like language
+\item Data maintained as \emph{set of triples}
+  \glec{tool = triple store}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{separate}
+  \glec{e.g., OWL, SPARQL}
+ \item triple store and query engine integrated
+  \glec{e.g., Virtuoso tool}
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Based on \emph{typed} (Church-typed) ontology languages}
+\item Representation based on \emph{abstract data types}
+\item Ontology written as database schema
+\item Data maintained as \emph{tables}
+  \glec{tool = (relational) database}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{integrated}
+  \glec{e.g., SQL}
+ \item table store and query engine integrated
+  \glec{e.g., SQLite tool}
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Evolution of Approaches}
+\begin{blockitems}{Our usage is non-standard}
+ \item Common
+  \begin{itemize}
+  \item ontologies = untyped approach, OWL, triples,  SPARQL
+  \item databases = typed approach, tables, SQL
+  \end{itemize}
+ \item Our understanding: two approaches evolved from same idea
+	\begin{itemize}
+	\item triple store = untyped database
+	\item SQL schema = typed ontology
+	\end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Evolution}
+\item Typed-untyped distinction minor technical difference
+\item Optimization of respective advantages causes speciation
+\item Today segregation into different
+ \begin{itemize}
+ \item jargons
+ \item languages, tools
+ \item communities, conferences
+ \item courses
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Curry-typed concrete data}
+\begin{blockitems}{Central data structure = knowledge graph}
+\item nodes = individuals $i$
+ \begin{itemize}
+ \item identifier
+ \item sets of concepts of $i$
+ \item key-value sets of properties of $i$
+ \end{itemize}
+\item edges = relation assertions
+ \begin{itemize}
+ \item from subject to object
+ \item labeled with name of relation
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Processing strengths}
+\item store: as triple set
+\item edit: Protege-style or graph-based
+\item visualize: as graph
+  \glec{different colors for concepts, relations}
+\item query: match, traverse graph structure
+\item untyped data simplifies integration, migration
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Church-typed concrete data}
+\begin{blockitems}{Central data structure = relational database}
+\item tables = abstract data type
+\item rows = objects of that type
+\item columns = fields of ADT
+\item cells = values of fields
+\end{blockitems}
+
+\begin{blockitems}{Processing strengths}
+\item store: as CSV text files, or similar
+\item edit: SQL commands or table editors
+\item visualize: as table view
+\item query: relational algebra
+\item typed data simplifies selecting, sorting, aggregating
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Identifiers}
+\begin{blockitems}{Curry-Typed Knowledge graph}
+\item concept, relation, property names given in TBox
+\item individual names attached to nodes
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item table, column names given in schema
+\item row identified by distinguished column (= key) \\
+options
+ \begin{itemize}
+ \item preexistent characteristic column
+ \item added upon insertion
+  \begin{itemize}
+  \item UUID string
+  \item incremental integers
+  \item concatenation of characteristic list of columns
+  \end{itemize} 
+ \end{itemize}
+\item column/row identifiers formed by qualifying with table name
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Axioms}
+\begin{blockitems}{Curry-Typed Knowledge Graph}
+\item traditionally very expressive axioms
+\item yields inferred assertions
+\item triple store must do consequence closure to return correct query results
+\item not all axioms supported by every triple store
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item typically no axioms
+\item instead consistency constraints, triggers
+\item allows limited support for axioms without calling it that way
+\item stronger need for users to program the consequence closure manually
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Open/Closed World}
+\begin{itemize}
+\item Question: is the data complete?
+ \begin{itemize}
+ \item closed world: yes
+ \item open world: not necessarily
+ \end{itemize}
+\item Dimensions of openness
+ \begin{itemize}
+  \item existence of individual objects
+  \item assertions about them
+ \end{itemize}
+\item Sources of openness
+  \begin{itemize}
+  \item more exists but has not yet been added
+  \item more could be created later
+  \end{itemize}
+\item Orthogonal to typed/untyped distinction, but in practice
+ \begin{itemize}
+ \item knowledge graphs use open world
+ \item databases use closed world
+ \end{itemize}
+\end{itemize}
+\lec{Open world is natural state, closing adds knowledge}
+\end{frame}
+
+\begin{frame}\frametitle{Closing the World}
+\begin{blockitems}{Derivable consequences}
+ \item induction: prove universal property by proving for each object
+ \item negation by failure: atomic property false if not provable
+ \item term-generation constraint: only nameable objects exist
+\end{blockitems}
+
+\begin{blockitems}{Enabled operations}
+ \item universal set: all objects
+ \item complement of concept/type
+ \item defaults: assume default value for property if not otherwise asserted
+\end{blockitems}
+
+\begin{blockitems}{Monotonicity problem}
+ \item monotone operation: bigger world = more results
+ \item examples: union, intersection, $\exists R.C$, join, IN conditions
+ \item counter-examples: complement, $\forall R.C$, NOT IN conditions
+\end{blockitems}
+\lec{technically, non-monotone operations in open world dubious}
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 2}
+Extend your ontology with an ABox and axioms.
+Export it in RDF format to a triple store like Virtuoso and run a concrete query in SPARQL.
+Export it in OWL format to a reasoner like FaCT++ and run a deductive query.
+\end{frame}
