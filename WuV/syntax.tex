@@ -1,5 +1,28 @@
 \section{The 4 Layers of a Formal Language}
 
+Languages are designed, implemented, and evaluated in layers.
+Fig.~\ref{fig:layers} shows the most common design.
+
+\begin{compactitem}
+\item First, we define a grammar and implement it using a set of inductive types.
+This is called the AST (abstract syntax tree) of the language.
+A parser translates string into the corresponding syntax trees, i.e., objects of those inductive types.
+Objects conforming to the grammar are called \textbf{well-formed}.
+\item Most processing of the language is implemented by inductive functions that traverse the AST.
+In particular, a context-sensitive inference system is used for type-checking.
+The type-checking functions take well-formed objects and return booleans, to indicate which are \textbf{well-typed}.
+This defines a context-sensitive sublanguage.
+That is the language we are really interested in.
+\item Now the semantics can be implemented: it traverses the AST with the precondition that the input in well-typed.
+If that succeeds, the objects are called \textbf{well-defined}.
+Ideally, our language satisfies the invariant that for all well-typed objects, the semantics exists.
+But in some languages well-definedness proofs may be necessary.
+\item Finally humans evaluate the language by using it. They may report design flaws that feed back into the AST design.
+\end{compactitem}
+
+At every layer we detect different issues.
+Fig.~\ref{fig:errors-ded} and~\ref{fig:errors-comp} give some examples.
+
 \begin{figure}[hbt]
 \begin{tabular}{l|lll|l}
 Layer & Specified by & Implemented by & Possible error \\\hline
@@ -36,8 +59,6 @@ Pragmatics & $\exists x.x\neq x$ & inconsistent & no model exists\\
 
 %non-termination
 
-
-
 \section{Context-Free Syntax}
 
 Abstractly, context-free syntax is specified using grammars.
@@ -57,6 +78,18 @@ terminals on right of production & notation of constructor\\
 words derived from non-terminal $N$ & expressions of type $N$
 \end{tabular}
 \end{center}
+
+\begin{remark}[Chomsky Hierarchy]
+The Chomsky hierarchy of grammars has been quite influential and is still taught a lot in introductory courses.
+But it has little relevance for modern language design.
+\begin{compactitem}
+\item CH-0, regular grammars: These are equivalent to regular expressions and finite automata. The latter two are usually better ways to work with these languages than a grammar.
+\item CH-1, context-free grammars: There are what we consider here.
+\item CH-2, context-sensitive grammars: Context-sensitive languages are very important.
+  But it is more practical to use context-free grammars and then define a context-sensitive subset later in a different way.
+\item CH-3, unrestricted grammars: These are Turing-complete and are only relevant theoretically.
+\end{compactitem}
+\end{remark}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Context-Free Grammars}
