@@ -363,6 +363,23 @@ options
 \lec{technically, non-monotone operations in open world dubious}
 \end{frame}
 
+\begin{frame}\frametitle{Summary}
+\begin{tabular}{l|ll}
+  & semantic web & relational databases \\
+\hline
+ontology aspect & TBox of ontology & SQL schema \\
+conceptual model & knowledge graph & set of tables \\
+concrete data aspect & ABox of ontology & SQL database \\
+concrete data storage & set of triples & set of rows of the tables \\
+concrete data formats & RDF & CSV \\
+concrete data tool & triple store & database implementation \\
+typing & soft/Curry & hard/Church\\
+query language & SPARQL & SQL SELECT query \\
+openness of world & tends to be open & tends to be closed \\
+\end{tabular}
+\end{frame}
+
+
 \begin{frame}\frametitle{Exercise 2}
 Extend your ontology with an ABox and axioms.
 Export it in RDF format to a triple store like Virtuoso and run a concrete query in SPARQL.

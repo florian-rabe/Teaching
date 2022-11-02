@@ -440,7 +440,72 @@ That has the added benefit that two relations/properties of the same name declar
 
 \subsection{Database Schemas as Typed Ontologies}
 
-This is presented on the slides.
+It is very typical that optimized systems are developed for one of the corner aspects.
+These systems then subsume an ontology language.
+From the Tetrapod perspective, it is instructive to tease apart the ontology.
+
+In particular, what is typically called an ontology follows the semantic web community.
+Tetrapodally, they are working on the combination of ontology and concrete data.
+The former defines the rules of the world (TBox), the latter populates the world (ABox).
+
+We can see the same pattern in the relational database community.
+Tetrapodally, the SQL schema defines the ontology, and the database holds the concrete data.
+Fig.~\ref{fig:semweb-reldb} shows the analogy in detail.
+
+\begin{figure}[hbt]
+\begin{center}
+\begin{tabular}{l|ll}
+  & semantic web & relational databases \\
+\hline
+ontology aspect & TBox of ontology & SQL schema \\
+conceptual model & knowledge graph & set of tables \\
+concrete data aspect & ABox of ontology & SQL database \\
+concrete data storage & set of triples & set of rows of the tables \\
+concrete data formats & RDF & CSV \\
+concrete data tool & triple store & database implementation \\
+typing & soft/Curry & hard/Church\\
+query language & SPARQL & SQL SELECT query \\
+openness of world & tends to be open & tends to be closed \\
+\end{tabular}
+\caption{The Two Kinds of Concrete Data Systems}\label{fig:semweb-reldb}
+\end{center}
+\end{figure}
+
+We can then understand relational databases as an ontology+concrete data approach that focuses on abstract data types.
+Each table is one such type, and each column is a field of the type.
+The database holds the concrete data, i.e., the rows of the tables.
+
+For example, the SQL schema might declare an ADT by
+\begin{lstlisting}
+TABLE person(id: ID, name: string, age: int)
+TABLE male(id: Ref person)
+TABLE instructor(id: ID, parent: Ref person, teach: course$^*$, office: string)
+\end{lstlisting}
+Here we write \lstinline|Ref $T$| for the type \lstinline|ID| of identifiers if we want to emphasize that it should hold an identifier that is present in the table $T$.
+
+Concepts like \lstinline|male| can be represented as single-column tables holding the identifiers of individuals that are in the concept.
+Inheritance can be represented by using two separate tables for parent and child type with the latter holding a special column \lstinline|parent| holding an identifier in the parent table.
+For example, concrete data could be inserted as
+
+\begin{lstlisting}
+INSERT VALUES (id = X, name = "FlorianRabe", age = 40) INTO person
+INSERT VALUES X INTO male
+INSERT VALUES (id = Y, parent = X, teach = ["WuV", "KRMT"], office = "11.137")
+  INTO instructor
+\end{lstlisting}
+
+Usually, relations where the same subject can have multiple objects are not stored as a list-valued column but as a separate two-column table.
+For example, we would have
+\begin{lstlisting}
+TABLE instructor(id: ID, parent: Ref person, office: string)
+TABLE course(id: ID, name: string)
+TABLE teach(subject: Ref person, object: Ref Course)
+INSERT VALUES (id = W, name = "WuV") INTO course
+INSERT VALUES (id = K, name = "KRMT") INTO course
+INSERT VALUES (subect = X, object = W) INTO teach
+INSERT VALUES (subect = X, object = K) INTO teach
+\end{lstlisting}
+
 
 \subsection{Exercise 3}
 
