@@ -1,14 +1,19 @@
 \section{Language Layers}
 
+
 \begin{frame}\frametitle{Layers of Language Design}
-\begin{tabular}{l|lll|l}
-Layer & Specified by & Implemented by & Possible error \\\hline
-Context-Free Syntax & grammar & parser & not derivable from grammar & \\
-Context-Sensitive Syntax & inference system & type checker & symbols not used as declared & KRP \\
-Semantics & \multicolumn{2}{l}{inference system, interpretation, or translation} & undefined semantics & \\
+\begin{tabular}{l|ll}
+Layer & Specified by & Implemented by \\\hline
+Syntax & &\\
+\tb Context-Free & grammar & parser \\
+\tb Context-Sensitive & inference system & type checker \\
+Semantics & \multicolumn{2}{l}{inference system, interpretation, or translation}\\
 \hline
-Pragmatics & human preferences & human judgment & not useful & not KRP \\
+Pragmatics & human preferences & human judgment \\
 \end{tabular}
+\bigskip
+
+KRP = syntax + semantics
 \end{frame}
 
 \begin{frame}\frametitle{Layered Processing}
@@ -21,16 +26,28 @@ Data is processed in phases
 \end{enumerate}
 \end{frame}
 
+\begin{frame}\frametitle{Possible Errors}
+\begin{tabular}{l|l}
+Layer & Error \\\hline
+CGFS & not derivable from grammar \\
+CSS  & symbols not used as declared, other conditions\\
+Sem. & ambiguous/undefined semantics \\
+\hline
+Pragmatics & not useful \\
+\end{tabular}
+\end{frame}
+
+
 \begin{frame}\frametitle{Typical Errors by Layer}
 In a programming language:
 
 \begin{center}
 \begin{tabular}{l|lll}
 Layer & Expression & Issue & Explanation \\\hline
-Context-Free Syntax & $1/$ & syntax error & argument missing\\
-Context-Sensitive Syntax & $1/"2"$ & typing error & argument has wrong type\\
-Semantics & $1/0$ & run-time error & undefined semantics \\
-Pragmatics & $1/1$ & code review comment & unnecessarily complex expression \\
+CFS & $1/$ & syntax error & argument missing\\
+CSS & $1/"2"$ & typing error & wrong type\\
+Sem. & $1/0$ & run-time error & undefined semantics \\
+Pragm. & $1/1$ & code review & unnecessarily complex\\
 \end{tabular}
 \end{center}
 \end{frame}
@@ -41,13 +58,15 @@ In a logic:
 \begin{center}
 \begin{tabular}{l|lll}
 Layer & Expression & Issue & Explanation \\\hline
-Context-Free Syntax & $\forall x$ & not well-formed & body missing\\
-Context-Sensitive Syntax & $\forall x.P(y)$ & not well-typed & $y$ not declared\\
-Semantics & the $x\in \N$ such that $x<0$ & not well-defined & no such $x$ exists \\
-Pragmatics & $\exists x.x\neq x$ & inconsistent & no model exists\\
+CFS & $\forall x$ & not well-formed & body missing\\
+CSS & $\forall x.P(y)$ & not well-typed & $y$ not declared\\
+Sem. & the $x\in \N$ with $x<0$ & not well-defined & no such $x$ exists \\
+Pragm. & $\exists x.x\neq x$ & not useful & no model exists\\
 \end{tabular}
 \end{center}
 \end{frame}
+
+\section{Context-Free Grammars}
 
 \begin{frame}\frametitle{The Chomsky Hierarchy}
 \begin{itemize}
@@ -70,7 +89,39 @@ Pragmatics & $\exists x.x\neq x$ & inconsistent & no model exists\\
 \end{itemize}
 \end{frame}
 
-\section{Context-Free Grammars and Inductive Data Types}
+\begin{frame}\frametitle{Definitions}
+\begin{itemize}
+\item An alphabet is a set of symbols.
+\item A word is a list of symbols from the alphabet.
+\item A production is pair of words.
+ \begin{itemize}
+ \item A production is written $lhs::=rhs$.
+ \item Multiple productions for the same left-hand side are abbreviated $lhs::=rhs_1 \,|\,\ldots\,|\, rhs_n$.
+ \item Right-hand side may also use regular expressions like $^*$ for repetition and $[]$ for optional parts.
+ \end{itemize}
+\item A CFG is a set of productions where $lhs$ is a single symbol.
+ \begin{itemize}
+ \item If there is a production $N::=rhs$, $N$ is called non-terminal, otherwise terminal.
+ \item If a word contains non-terminal symbols, it is called non-terminal, otherwise terminal.
+ \end{itemize}
+\item A syntax tree is a tree with nodes are labeled with productions $N::=rhs$ where the non-terminals in rhs are exactly the lhs's of the children.
+\item The word produced by a syntax tree is read off by exhaustively replacing every lhs with the respective rhs.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Syntax of Arithmetic Language}
+\begin{commgrammar}
+\gcomment{Numbers}\\
+\gprod{N}{0\bnfalt 1}{literals}\\
+\galtprod{N+N}{sum}\\
+\galtprod{N*N}{product}\\
+\gcomment{Formulas}\\
+\gprod{F}{N\doteq N}{equality}\\
+\galtprod{N\leq N}{ordering by size}\\
+\end{commgrammar}
+\end{frame}
+
+\section{Implementing CFGs via Inductive Data Types}
 
 \begin{frame}\frametitle{Correspondence}
 \begin{center}
@@ -86,8 +137,6 @@ words derived from non-terminal $N$ & expressions of type $N$
 \end{tabular}
 \end{center}
 \end{frame}
-
-\section{Inductive Data Types in Programming Languages}
 
 \begin{frame}\frametitle{Classes of Languages}
 Functional languages:
@@ -110,8 +159,13 @@ Untyped languages:
 \lec{inductive types simulated ad hoc}
 \end{frame}
 
+\begin{frame}\frametitle{Implementing the Example}
+Done interactively. See also notes.
+\end{frame}
+
+
 \begin{frame}\frametitle{Exercise 3}
-Individually, using any programming languaeg, implement the AST for the BOL language.
+Individually, using any programming language, implement the AST for the BOL language.
 Allow for integers and strings as basic types.
 
 Implement a type-checker for BOL.
