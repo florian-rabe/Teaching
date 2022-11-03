@@ -1,0 +1,32 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <option name="OTHER_INDENT_OPTIONS">
+      <value>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </value>
+    </option>
+    <ScalaCodeStyleSettings>
+      <option name="addFullQualifiedImports" value="false" />
+      <option name="collectImports" value="false" />
+      <option name="sortImports" value="false" />
+      <option name="SPACE_INSIDE_CLOSURE_BRACES" value="false" />
+      <option name="SPACE_INSIDE_SELF_TYPE_BRACES" value="false" />
+      <option name="FORMATTER" value="1" />
+      <option name="USE_SCALADOC2_FORMATTING" value="true" />
+      <option name="TYPE_ANNOTATION_PUBLIC_MEMBER" value="false" />
+      <option name="TYPE_ANNOTATION_PROTECTED_MEMBER" value="false" />
+      <option name="TYPE_ANNOTATION_IMPLICIT_MODIFIER" value="false" />
+      <option name="TYPE_ANNOTATION_UNIT_TYPE" value="false" />
+      <option name="TYPE_ANNOTATION_STRUCTURAL_TYPE" value="false" />
+      <option name="ENFORCE_FUNCTIONAL_SYNTAX_FOR_UNIT" value="false" />
+    </ScalaCodeStyleSettings>
+    <codeStyleSettings language="Scala">
+      <option name="SPACE_AFTER_COMMA" value="false" />
+      <option name="WRAP_LONG_LINES" value="true" />
+      <arrangement>
+        <groups />
+      </arrangement>
+    </codeStyleSettings>
+  </code_scheme>
+</component>

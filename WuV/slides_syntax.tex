@@ -5,7 +5,7 @@
 \begin{tabular}{l|ll}
 Layer & Specified by & Implemented by \\\hline
 Syntax & &\\
-\tb Context-Free & grammar & parser \\
+\tb Context-Free & grammar & AST+parser+printer \\
 \tb Context-Sensitive & inference system & type checker \\
 Semantics & \multicolumn{2}{l}{inference system, interpretation, or translation}\\
 \hline
@@ -29,7 +29,7 @@ Data is processed in phases
 \begin{frame}\frametitle{Possible Errors}
 \begin{tabular}{l|l}
 Layer & Error \\\hline
-CGFS & not derivable from grammar \\
+CFS & not derivable from grammar \\
 CSS  & symbols not used as declared, other conditions\\
 Sem. & ambiguous/undefined semantics \\
 \hline
