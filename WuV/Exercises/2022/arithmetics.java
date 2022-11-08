@@ -38,6 +38,12 @@ class Sum extends N {
        } else
          return false;
     }
+    
+    // When overriding equals, we also have to override the hashCode methods with reasonable implementations, e.g.,
+    // This is omitted below.
+    @Override public boolean hashCode() {
+       return this.left.hashCode() + this.right.hashCode();
+    }
 }
 
 class Product extends N {
