@@ -160,9 +160,112 @@ Untyped languages:
 \end{frame}
 
 \begin{frame}\frametitle{Implementing the Example}
-Done interactively. See also notes.
+Done interactively. See the examples in the repository. See also the notes.
 \end{frame}
 
+\section{Context-Sensitive Syntax}
+
+\begin{frame}\frametitle{Vocabularies and Declarations}
+Generic structure of a context-sensitive language
+\begin{itemize}
+ \item a vocabulary is a list of declarations
+  \begin{itemize}
+  \item named: type/function/predicate symbol etc.
+  \item unnamed: axioms etc.
+  \item structural: inclusion/import, datatype definitions
+  \end{itemize}
+ \item named declarations introduce atomic objects of different kinds
+ \item for each kind, a non-terminal for complex expressions of that kind
+ \item references to names introduced by declarations are base cases of expressions
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Typed Expressions}
+\small
+\begin{commgrammar}
+\gcomment{Vocabularies}\\
+\gprod{Voc}{\rep{Decl}}{list of declarations}\\
+\gcomment{Declarations}\\
+\gprod{Decl}{id:\rep{Type}\to Type}{typed function symbols}\\
+\galtprod{id:\rep{Type}\to Form}{typed predicate symbols}\\
+\gcomment{Types}\\
+\gprod{Type}{Nat \bnfalt String}{base types}\\
+\gcomment{Expressions}\\
+\gprod{Expr}{0\bnfalt 1\bnfalt Expr+Expr \bnfalt Expr*Expr}{as before}\\
+\galtprod{id(\rep{Expr})}{application of a function symbol}\\
+\gcomment{Formulas}\\
+\gprod{Form}{Expr\doteq Expr \bnfalt Expr\leq Expr}{as before}\\
+\galtprod{id(\rep{Expr})}{application of a predicate symbol}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Vocabularies and Expressions}
+Example vocabulary $V$ containing the following declarations:
+\begin{itemize}
+\item $fib:Nat \to Nat$
+\item $length: String \to Nat$
+\item $mod: Nat,Nat \to Nat$
+\item $prime: Nat \to Form$
+\end{itemize}
+
+Example expressions relative to $V$
+\begin{itemize}
+\item expressions: $fib(0)$, $mod(fib(fib(1)),1+1)$
+\item formulas: $fib(0)=0$, $prime(fib(1))$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Context-Sensitivity}
+A reference to a declared name must respect the way in which it was declared in the vocabulary
+\glec{examples errors relative to $V$ above}
+\begin{itemize}
+ \item occur in a position where an expression of the right kind is expected
+  \glec{example error: $prime(1)=1$}
+ \item be applied to the right number of arguments
+  \glec{example error: $prime(1,1)$}
+ \item if a type system is used
+  \begin{itemize}
+  \item arguments must have the right types
+    \glec{$length(1)$}
+  \item return type must match what is expected
+    \glec{$fib(1)$ if a string is expected}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Syntax Traversal}
+Context-free traversal
+\begin{itemize}
+\item one function for each non-terminal/inductive type \glec{mutually recursive}
+\item for each such function, one case for each production/constructor
+\item for each such case, one recursive call for each non-terminal on the rhs/constructor argument
+\end{itemize}
+
+Context-sensitive traversal: as above but
+\begin{itemize}
+\item functions take extra argument for vocabulary
+\item cases for identifier references look up the respective declaration in the vocabulary
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Type Checker}
+Syntax checker
+\begin{itemize}
+ \item context-sensitive traversal where all functions return booleans
+ \item case for vocabulary checks each declaration relative to the preceding vocabulary
+ \item cases for identifier references check correct use of identifier
+\end{itemize}
+
+Type checker: as above but additionally
+\begin{itemize}
+ \item functions for typed expression additionally take expected type as argument
+ \item cases for identifiers references
+   \begin{itemize}
+   \item check each argument against declared input type
+   \item compare output to expected type
+   \end{itemize}
+\end{itemize}
+\end{frame}
 
 \begin{frame}\frametitle{Exercise 3}
 Individually, using any programming language, implement the AST for the BOL language.
