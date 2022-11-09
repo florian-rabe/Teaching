@@ -19,42 +19,27 @@ Section & Aspect & kind of semantic language & semantic language\\
 
 \section{Kinds of Semantics}
 
-\subsection{Absolute Semantics: By an Inference System}
-
 To define a language system, we need to define the well-formedness predicates.
-One way to do that is by translating the context-free syntax into another language and then use existing definitions of well-formedness there.
+Moreover, we need to define the semantics of the well-formed vocabularies and expressions.
+One way to do that is by translating the syntax into another language and then use existing definitions of well-formedness there.
 
 But we also need to be able to get off the ground, i.e., to define a semantics from scratch when we do not have another language available.
-This is usually done by giving an inference system for the predicates for well-formedness, also called a type system.
+This is usually done by giving an inference system for the well-formedness predicates and other judgments such as truth.
 
 We can also do both: if we have a semantics via an inference system and another one via translation, we can show that the latter respects the former.
 That leads to the concepts of soundness (everything well-formed is translated to something well-formed) and its dual completeness.
+
+\subsection{Absolute Semantics: By an Inference System}
 
 \subsection{Relative Semantics}
 
 Relative semantics uses an additional component as a reference point for semantics.
 
-Semantics by interpretation uses a situation relative to which expressions are evaluated.
-Usually, the result of evaluation is an extremely simple object, whose semantics is self-evident.
+\paragraph{By Translation}
 
 Semantics by translation uses a second language as the target of a translation.
+Both the vocabularies and the expressions are translated, namely to vocabularies and expressions of the target language.
 Usually, the target language already has a semantics, and the semantics of the original language is obtained by composing the two.
-
-\paragraph{By Interpretation}
-
-\begin{figure}[hbt]
-\begin{tabular}{l|ll}
-Aspect & Situation & Provides\\\hline
-%Ontological & ABox & individuals and their properties \\
-Deductive & model & interpretations of the function/predicate/... symbols\\
-Computational & environment & e.g., standard input/output \\
-Concrete & database & set of objects for each type \\
-Narrative & semantic dictionary & meanings of the words \\
-\end{tabular}
-\caption{Examples of Situational Semantics by Interpretation}\label{fig:sit}
-\end{figure}
-
-\paragraph{By Translation}
 
 \begin{figure}[hbt]
 \begin{tabular}{l|l}
@@ -65,7 +50,7 @@ Computational & C++ $\to$ assembly \\
 Concrete & SPARQL $\to$ SQL \\
 Narrative & English $\to$ German \\
 \end{tabular}
-\caption{Examples of Semantics by Translations}\label{fig:trans}
+\caption{Examples of Semantics by Translation}\label{fig:trans}
 \end{figure}
 
 The correspondence for the syntax between context-free grammars and inductive data types can be extended to the semantics.
@@ -87,6 +72,34 @@ Therefore, it is often important to give multiple equivalent semantics --- choos
 The role of the semantic prefix $P$ is to define once and for all the $L$-material that we need in general to interpret $l$-theories (in our case: ontologies).
 It occurs at the beginning of all interpretations of ontologies.
 In particular, it is equal to the interpretation of empty ontology.
+
+\paragraph{By Interpretation}
+
+Semantics by interpretation uses a situation relative to which expressions are evaluated.
+The role of the situation is to supply the meaning of all identifiers declared in the vocabulary.
+Given a situations, inductive functions map all expressions to their semantics.
+Usually, the result of interpretation is an extremely simple object, whose semantics is self-evident.
+
+\begin{figure}[hbt]
+\begin{tabular}{l|ll}
+Aspect & Situation & Provides\\\hline
+%Ontological & ABox & individuals and their properties \\
+Deductive & model & interpretations of the function/predicate/... symbols\\
+Computational & environment & e.g., standard input/output \\
+Concrete & database & set of objects for each type \\
+Narrative & semantic dictionary & meanings of the words \\
+\end{tabular}
+\caption{Examples of Situational Semantics by Interpretation}\label{fig:sit}
+\end{figure}
+
+Situational semantics can be seen as a special case of semantics by translation as follows:
+\begin{itemize}
+\item The target language is an implicit assumed background language such as mathematics or the computer hardware.
+Once this is made explicit, situations can be described as vocabularies of the background language.
+\item The semantic prefix describes what a situation is in general, i.e., the possible situations for the empty vocabulary.
+\item The semantics of a vocabulary extends the semantic prefix with the possible ways to interpret the identifiers.
+\item The semantics of an expression $E$ is the function mapping the situation $S$ to the situational semantics of $E$ under $S$. This can be expressed as an expression of the target language.
+\end{itemize}
 
 \section{Compositionality}
 
