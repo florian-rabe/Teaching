@@ -36,34 +36,8 @@ Focus on concrete types
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Primitive vs. Declared}
-\begin{blockitems}{Primitive Types}
- \item built into the language
- \item assumed to exist a priori \lec{fundamentals of nature}
- \item fixed semantics (usually interpreted by identity function)
- \end{blockitems}
- 
-\begin{blockitems}{Triple Structure: 3 kinds of named objects}
- \item the type \glec{eg: 'int'}
- \item values of the type \glec{eg: 0, 1, -1, \ldots}
- \item operations on type \glec{eg: addition, multiplication, \ldots}
-\end{blockitems}
-
-\begin{center}
-\begin{tabular}{l|ll}
-& primitive & declared \\
-\hline
-introduced by & language designer & user \\
-introduced in & grammar & vocabulary $V$ \\
-visible in & all vocabularies & $V$ only \\
-semantics given & explicitly & implicitly \\
-\tb\ldots by & translation function & axioms \\
-\end{tabular}
-\end{center}
-\end{frame}
-
 \begin{frame}\frametitle{Examples}
-\begin{blockitems}{Typical primitive types}
+\begin{blockitems}{Typical (quasi-)primitive types}
  \item natural numbers (= $\N$)
  \item arbitrary precision integers (= $\Z$)
  \item fixed precision integers (32 bit, 64 bit, \ldots)
@@ -81,31 +55,11 @@ Observation:
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Quasi-Primitive = Declared in standard library}
-\begin{blockitems}{Standard library}
- \item present in every language
-  \glec{assumed empty vocabulary by default}
- \item one fixed vocabulary
-  \begin{itemize}
-  \item implicitly included into every other vocabulary
-  \item implicitly fixed by any translation between vocabularies
-  \end{itemize}
- \item objects technically declared
- \item but practically part of primitive objects
-\end{blockitems}
-
-\begin{blockitems}{Examples}
-\item sufficiently expressive languages
- \begin{itemize}
- \item push many primitive objects to standard library \glec{never all}
- \item simplifies language, especially when defining operations
- \end{itemize}
- \lec{strings in C, BigInteger in Java, inductive type for $\N$}
-\item inexpressive languages
-\begin{itemize}
-\item many primitives \lec{SQL, spreadsheet software}
-\item few (quasi)-primitives \lec{few operations available in OWL}
-\end{itemize}
+\begin{frame}\frametitle{Types and their Operations}
+\begin{blockitems}{Triple Structure: 3 kinds of named objects}
+ \item the type \glec{eg: 'int'}
+ \item values of the type \glec{eg: 0, 1, -1, \ldots}
+ \item operations on type \glec{eg: addition, multiplication, \ldots}
 \end{blockitems}
 \end{frame}
 

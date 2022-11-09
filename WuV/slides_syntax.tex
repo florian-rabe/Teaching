@@ -215,6 +215,96 @@ Example expressions relative to $V$
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Primitive vs. Declared}
+\begin{blockitems}{Primitive}
+ \item built into the language
+ \item assumed to exist a priori \lec{fundamentals of nature}
+ \item fixed semantics (usually interpreted by identity function)
+ \end{blockitems}
+ 
+\begin{center}
+\begin{tabular}{l|ll}
+& primitive & declared \\
+\hline
+introduced by & language designer & user \\
+introduced in & grammar & vocabulary $V$ \\
+visible in & all vocabularies & $V$ only \\
+semantics given & explicitly & implicitly \\
+\tb\ldots by & translation function & axioms \\
+\end{tabular}
+\end{center}
+\lec{more expressive declarations $\to$ fewer primitives needed}
+\lec{paradoxical: more complex language may have simpler grammar}
+\end{frame}
+
+\begin{frame}\frametitle{Quasi-Primitive = Declared in standard library}
+\begin{blockitems}{Standard library: a vocabulary $StdLib$}
+ \item present in every language
+  \glec{empty vocabulary by default}
+ \item one fixed vocabulary
+  \begin{itemize}
+  \item implicitly included into every other vocabulary
+  \item implicitly fixed by any translation between vocabularies
+  \end{itemize}
+Combination of advantages
+\begin{itemize}
+\item from the user's perspective: like a primitive
+\item from the theory's/system's perspective: no special treatment
+\end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item sufficiently expressive languages
+ \begin{itemize}
+ \item push many primitive objects to standard library \glec{never all}
+ \item simplifies language, especially when defining operations
+ \end{itemize}
+ \lec{strings in C, BigInteger in Java, inductive type for $\N$}
+\item inexpressive languages
+\begin{itemize}
+\item many primitives \lec{SQL, spreadsheet software}
+\item few (quasi)-primitives \lec{few operations available in OWL}
+\end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Removing Built-in Operations}
+Grammar without built-in operations
+\small
+\begin{commgrammar}
+\gprod{Voc}{\rep{Decl}}{list of declarations}\\
+\gprod{Decl}{id:\rep{Type}\to Type}{typed function symbols}\\
+\galtprod{id:\rep{Type}\to Form}{typed predicate symbols}\\
+\gprod{Type}{Nat \bnfalt String}{base types}\\
+\gprod{Expr}{id(\rep{Expr})}{application of a function symbol}\\
+\gprod{Form}{id(\rep{Expr})}{application of a predicate symbol}\\
+\end{commgrammar}
+
+Standard library:
+\begin{itemize}
+\item $0:Nat$, $1:Nat$, $sum: Nat\,Nat\to Nat$, $product: Nat\,Nat\to Nat$,
+\item $equals: Nat\,Nat\to FORM$, $lesseq: Nat\,Nat\to FORM$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Removing more Primitive Operations}
+If we add type declarations, we can remove $Nat$ as well
+\small
+\begin{commgrammar}
+\gprod{Voc}{\rep{Decl}}{list of declarations}\\
+\gprod{Decl}{id:\rep{Type}\to Type}{typed function symbols}\\
+\galtprod{id:\rep{Type}\to FORM}{typed predicate symbols}\\
+\galtprod{id:TYPE}{type symbols}\\
+\gprod{Type}{id}{reference to a type symbol}\\
+\gprod{Expr}{id(\rep{Expr})}{application of a function symbol}\\
+\gprod{Form}{id(\rep{Expr})}{application of a predicate symbol}\\
+\end{commgrammar}
+
+\glec{Note: $Type$ and $Form$ are non-terminals, $TYPE$ and $FORM$ are not}
+
+Add to default vocabulary: $Nat: TYPE$, $String: TYPE$
+\end{frame}
+
 \begin{frame}\frametitle{Context-Sensitivity}
 A reference to a declared name must respect the way in which it was declared in the vocabulary
 \glec{examples errors relative to $V$ above}
@@ -267,7 +357,7 @@ Type checker: as above but additionally
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 3}
+\begin{frame}\frametitle{Exercise 4}
 Individually, using any programming language, implement the AST for the BOL language.
 Allow for integers and strings as basic types.
 
