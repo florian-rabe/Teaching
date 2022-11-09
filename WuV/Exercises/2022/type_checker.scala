@@ -31,7 +31,10 @@ abstract class Type extends NonTerminal
 case class Nat() extends Type {
   def print() = "Nat"
 }
-// more types as we like, e.g., Bool, String, etc.
+case class String() extends Type {
+  def print() = "String"
+}
+// more types as we like, e.g., Bool, float etc.
 
 // I've renamed Expr to Expr and F to Form
 abstract class Expr extends NonTerminal {
@@ -114,6 +117,7 @@ object TypeChecker {
   def check_Type(voc: Vocabulary, tp: Type) = {
     tp match {
       case Nat() => true
+      case String() => true
     }
   }
 
