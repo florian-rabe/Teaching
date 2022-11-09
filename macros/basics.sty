@@ -77,7 +77,7 @@
 \newcommand{\mifc}{&\mathrm{if}\;}
 \newcommand{\mothw}{&\mathrm{otherwise}}
 \newcommand{\mathll}[2][l]{\providecommand{\nl}[1][.2cm]{\\[##1]}\begin{array}{#1}#2\end{array}}
-\newcommand{\eqns}[2][=]{\providecommand{\nl}[1][.2cm]{\\[##1]}\begin{array}{l@{\;#1\;}l@{\tb}l}#2\end{array}}
+\newcommand{\eqns}[2][=]{\providecommand{\nl}[1][.2cm]{\\[##1]}\providecommand{\txt}[1]{\multicolumn{2}{l}{\text{\rm##1}}}\begin{array}{l@{\;#1\;}l@{\tb}l}#2\end{array}}
 \newcommand{\Ceq}[1]{\;\stackrel{#1}{=}\;}
 \newcommand{\op}[1]{\mathit{#1}}
 \newenvironment{myeqnarray}[1][=] %\nl for new line right of the = symbol
@@ -116,8 +116,13 @@
 \newcommand{\mtext}[1]{\;\mathrm{#1}\;}
 
 % symbol names
-\providecommand{\cn}[1]{\ensuremath{\mathtt{#1}}}
-\newcommand{\makecn}[1]{\expandafter\def\csname#1\endcsname{\cn{#1}}}
+\providecommand{\cn}[1]{\ensuremath{\mathtt{#1}}\ifmmode\else\xspace\fi}
+\newcommand{\makecn}[1]{\@ifundefined{#1}{\makecnF{#1}}{\PackageError{basics}{#1 already defined}{use makecnF to force override}}}
+% like makecn but forcese overriding existing names
+\newcommand{\makecnF}[1]{\expandafter\gdef\csname#1\endcsname{\cn{#1}}}
+% similar to makecn, but defines #1N for the unapplied case, and #1 for applied (with \,)
+\newcommand{\makecnN}[1]{\expandafter\def\csname#1N\endcsname{\cn{#1}}\expandafter\def\csname#1\endcsname{\cn{#1}\,}}
+\newcommand{\newcn}[1]{\makecn{#1}\csname#1\endcsname}
 
 %categories, general
 \newcommand{\id}[1]{\op{id}_{#1}}
