@@ -1,4 +1,5 @@
 // a context-sensitive language with a type-checker
+// for simplicity, we use the variant of the example language in which primitive features are shifted to the standard library
 
 // ******************************* Context-Free Syntax 
 
@@ -6,91 +7,62 @@ abstract class NonTerminal {
     def print(): String
 }
 
-// At the toplevel, every formal language has a vocabulary, which is a list of declarations
-// (we can skip the abstract class if the non-terminal has exactly one production)
 case class Vocabulary(decls: List[Declaration]) extends NonTerminal {
-  // print all declarations and concatenate with separator ", "
   def print() = decls.map(_.print()).mkString(", ")
+
+  def lookup(name: String): Option[Declaration] = decls.find(_.nameO == Some(name))
 }
 
 // there can be many different kinds of declarations
 abstract class Declaration extends NonTerminal {
-  // most declarations have a name, but not all e.g., axioms
-  def nameO: Option[String]
-}
-// the most common kind introduces a typed identifier
-case class FunctionSymbolDeclaration(name: String, inputs: List[Type], output: Type) extends Declaration {
-  def nameO = Some(name)
+  def nameO: Option[String]}
+
+case class FunctionSymbolDeclaration(name: String, inputs: List[Type], output: Type) extends Declaration {  def nameO = Some(name)
   // print as "name: inputs -> output"
   def print() = name + ": " + inputs.map(_.print()).mkString(" ") + " -> " + output.print()
 }
 
-// Compared to the lecture, I have removed the Type-BaseType distinction to simplify the language.
-
-abstract class Type extends NonTerminal
-case class Nat() extends Type {
-  def print() = "Nat"
-}
-case class String() extends Type {
-  def print() = "String"
-}
-// more types as we like, e.g., Bool, float etc.
-
-// I've renamed Expr to Expr and F to Form
-abstract class Expr extends NonTerminal {
-}
-abstract class Form extends NonTerminal {
+case class PredicateSymbolDeclaration(name: String, inputs: List[Type]) extends Declaration {
+  def nameO = Some(name)
+  // print as "name: inputs -> FORM"
+  def print() = name + ": " + inputs.map(_.print()).mkString(" ") + " -> " + "FORM"
 }
 
-// for every declaration, there is a production to refer to the declared identifer, i.e., to use it in an expression
+case class TypeSymbolDeclaration(name: String) extends Declaration {
+  def nameO = Some(name)
+  // print as "name: TYPE"
+  def print() = name + ": TYPE"
+}
+
+
+abstract class Type extends NonTerminal {}
+case class TypeSymbolReference(name: String) extends Type {
+  def print() = name
+}
+
+abstract class Expr extends NonTerminal {}
 case class FunctionSymbolReference(name: String, arguments: List[Expr]) extends Expr {
   // print as "name(arguments)"
   def print() = name + "(" + arguments.map(_.print()).mkString(",") + ")"
 }
 
-case class Sum(left: Expr, right: Expr) extends Expr {
-  def print() = left.print() + "+" + right.print()
-}  
-
-case class Product(left: Expr, right: Expr) extends Expr {
-  def print() = left.print() + "*" + right.print()
-}  
-
-case class Zero() extends Expr {
-  def print() = "zero"
-}
-
-case class One() extends Expr {
-  def print() = "one"
-}
-
-case class Equals(left: Expr, right: Expr) extends Form {
-  def print() = left.print() + "=" + right.print()
-}  
-
-case class LessEq(left: Expr, right: Expr) extends Form {
-  def print() = left.print() + "<=" + right.print()
+abstract class Form extends NonTerminal
+case class PredicateSymbolReference(name: String, arguments: List[Expr]) extends Form {
+  // print as "name(arguments)"
+  def print() = name + "(" + arguments.map(_.print()).mkString(",") + ")"
 }
 
 // ************************ Context-Sensitive Type-Checker
 
-/* A type-checker traverses the AST. Any such traversal consists of
-   - one function for every non-terminal (mutually recursive)
-   - one case for every constructor
-   - one recursive call for every constructor argument
+/* Now we extend the syntax checker to a type-checker
 
-   We first do the simple case where we only have a single base type.
-   In this case, the base types in the inputs and outputs of the symbols are always the same and only the number of arguments must be checked.
-
-   In that case, the type-checker is a traversal that
-   - takes a Vocabulary as an extra argument - that's the context that makes everything context-sensitive
-   - returns Boolean
+   It takes additional arguments for the expected type for every non-terminal for which typing is used.
 */
 
 // In Scala, an object is like a class with only static members.
 object TypeChecker {
   
-  // check every declaration relative to the vocabulary before it - this is the same for virtually every formal language
+  // unchanged
   def check_Voc(voc: Vocabulary): Boolean = {
     var seenSofar: List[Declaration] = List()
     voc.decls.forall {d =>
@@ -101,69 +73,90 @@ object TypeChecker {
        r
     }
   }
-  
+
+  // unchanged
   def check_Decl(voc: Vocabulary, d: Declaration): Boolean = {
     d match {
       case FunctionSymbolDeclaration(n,ins,out) =>
-        if (voc.decls.exists(e => e.nameO == Some(n)))
+        if (voc.lookup(n).isDefined)
           false // in practice, throw "name already defined" error
         else {
            ins.forall(i => check_Type(voc, i)) && check_Type(voc, out)
+        }
+      case PredicateSymbolDeclaration(n,ins) =>
+        if (voc.lookup(n).isDefined)
+          false
+        else {
+           ins.forall(i => check_Type(voc, i))
          }
+      case TypeSymbolDeclaration(n) =>
+        if (voc.lookup(n).isDefined)
+          false
+        else {
+          true
+        }
     }
   }
 
-  // compared the the lecture, I've removed function types for simplification
-  def check_Type(voc: Vocabulary, tp: Type) = {
+  // types are not typed, so no expected type
+  def check_Type(voc: Vocabulary, tp: Type): Boolean = {
     tp match {
-      case Nat() => true
-      case String() => true
+      case TypeSymbolReference(s) =>
+        voc.lookup(s) match {
+          case Some(d) => d match {
+            case TypeSymbolDeclaration(_) => true
+            case _ => false
+          }
+          case _ => false
+        }   
     }
   }
 
-  // In our simplified variant, where we only check arity, expressions are well-typed if
-  // all subexpressions are and applications use the right number of arguments.
-  // We will expand on that later.
-  def check_Expr(voc: Vocabulary, n: Expr): Boolean = {
-     n match {
-       
-       case Zero() =>
-         true
-       
-       case One() =>
-         true
-       
-       case Sum(l,r) =>
-         check_Expr(voc, l) && check_Expr(voc, r)
-       
-       case Product(l,r) =>
-         check_Expr(voc, l) && check_Expr(voc, r)
-       
+  // Expr-expressions are typed by Type-expressions
+  def check_Expr(voc: Vocabulary, n: Expr, expected: Type): Boolean = {
+    n match {
        case FunctionSymbolReference(s, args) =>
-         // for the reference to the identifiers in the vocabulary, we have to lookup the identifier in the vocabulary
-         voc.decls.find(d => d.nameO == Some(s)) match {
-           case None => false // in practice, throw "symbol not declared" error
+         voc.lookup(s) match {
+           case None => false
            case Some(d) => d match {
              case FunctionSymbolDeclaration(_, ins,out) =>
                if (ins.length != args.length) {
-                 false // in practice, throw "wrong number of argumetns" error
+                 false
                } else {
-                 // check every argument recursively
-                 args.forall(a => check_Expr(voc, a))
+                 args.zip(ins).forall{case (a,i) => check_Expr(voc, a, i)}
                }
+               // more generally, there might be a function for checking that two types are equal, which is less trivial
+               // in fact, in geneal, it is function that checkes that out <: expected
+               // e.g., for type abbreviations, subtyping, or non-trivial type equalities
+               if (out != expected) {
+                 false // in practice, return "expected X, found Y" error
+               } else {
+                 true
+               }
+             case _ => false
            }
          }
      }
-    
   }
-  
+
+  // formulas are not typed, so no expected type
   def check_Form(voc: Vocabulary, f: Form): Boolean = {
     f match {
-      case Equals(l,r) =>
-         check_Expr(voc, l) && check_Expr(voc, r)
-      case LessEq(l,r) =>
-         check_Expr(voc, l) && check_Expr(voc, r)
-    }
+       case PredicateSymbolReference(s, args) =>
+         voc.lookup(s) match {
+           case None => false
+           case Some(d) => d match {
+             case PredicateSymbolDeclaration(_, ins) =>
+               if (ins.length != args.length) {
+                 false
+               } else {
+                 args.zip(ins).forall{case (a,i) => check_Expr(voc, a, i)}
+               }
+               true
+             case _ => false
+           }
+         }
+     }
   }
 }
 
@@ -173,17 +166,27 @@ object Test {
         // because we do not have a parser, we need to build some objects manually for testing
         
         // an example vocabulary
+        // Nat: TYPE
+        val natDecl = TypeSymbolDeclaration("Nat")
+        val nat = TypeSymbolReference("Nat")
+        // 1: Nat, sum: Nat Nat -> Nat, lesseq: Nat Nat -> FORM
+        val oneDecl = FunctionSymbolDeclaration("1", List(), nat)
+        val one = FunctionSymbolReference("1", List())
+        val sumDecl = FunctionSymbolDeclaration("sum", List(nat,nat), nat)
+        val lesseqDecl = PredicateSymbolDeclaration("lessEq", List(nat,nat))
         // fib: Nat -> Nat
-        val fibDecl = FunctionSymbolDeclaration("fib", List(Nat()), Nat())
-        val voc = Vocabulary(List(fibDecl))
+        val fibDecl = FunctionSymbolDeclaration("fib", List(nat), nat)
+        val voc = Vocabulary(List(natDecl, oneDecl, sumDecl, lesseqDecl, fibDecl))
         System.out.println(voc.print()) 
         // check the vocabulary
-        System.out.println(TypeChecker.check_Voc(voc))  
+        System.out.println(TypeChecker.check_Voc(voc))
 
         // example expressions relative to that vocabulary
-        val x = Sum(Zero(), One())
+        val x = FunctionSymbolReference("sum", List(one,one))
         val y = FunctionSymbolReference("fib", List(x))
-        val z = LessEq(x,y)
+        val z = PredicateSymbolReference("lessEq", List(x,y))
+        System.out.println(TypeChecker.check_Expr(voc, x, nat))
+        System.out.println(TypeChecker.check_Expr(voc, y, nat))
         System.out.println(z.print())
         // check the expressions      
         System.out.println(TypeChecker.check_Form(voc, z))
