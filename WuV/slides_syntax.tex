@@ -187,7 +187,7 @@ Generic structure of a context-sensitive language
 \gprod{Voc}{\rep{Decl}}{list of declarations}\\
 \gcomment{Declarations}\\
 \gprod{Decl}{id:\rep{Type}\to Type}{typed function symbols}\\
-\galtprod{id:\rep{Type}\to Form}{typed predicate symbols}\\
+\galtprod{id:\rep{Type}\to FORM}{typed predicate symbols}\\
 \gcomment{Types}\\
 \gprod{Type}{Nat \bnfalt String}{base types}\\
 \gcomment{Expressions}\\
@@ -204,8 +204,8 @@ Example vocabulary $V$ containing the following declarations:
 \begin{itemize}
 \item $fib:Nat \to Nat$
 \item $length: String \to Nat$
-\item $mod: Nat,Nat \to Nat$
-\item $prime: Nat \to Form$
+\item $mod: Nat\,Nat \to Nat$
+\item $prime: Nat \to FORM$
 \end{itemize}
 
 Example expressions relative to $V$
@@ -274,7 +274,7 @@ Grammar without built-in operations
 \begin{commgrammar}
 \gprod{Voc}{\rep{Decl}}{list of declarations}\\
 \gprod{Decl}{id:\rep{Type}\to Type}{typed function symbols}\\
-\galtprod{id:\rep{Type}\to Form}{typed predicate symbols}\\
+\galtprod{id:\rep{Type}\to FORM}{typed predicate symbols}\\
 \gprod{Type}{Nat \bnfalt String}{base types}\\
 \gprod{Expr}{id(\rep{Expr})}{application of a function symbol}\\
 \gprod{Form}{id(\rep{Expr})}{application of a predicate symbol}\\
@@ -324,17 +324,30 @@ A reference to a declared name must respect the way in which it was declared in 
 \end{frame}
 
 \begin{frame}\frametitle{Syntax Traversal}
-Context-free traversal
+Context-free traversal  \glec{mutually recursive functions}
 \begin{itemize}
-\item one function for each non-terminal/inductive type \glec{mutually recursive}
+\item one function for each non-terminal/inductive type
 \item for each such function, one case for each production/constructor
 \item for each such case, one recursive call for each non-terminal on the rhs/constructor argument
+\item Examples
+ \begin{itemize}
+ \item printer/serializer (return, e.g., string)
+ \item test if a feature is used (return boolean)
+ \item find set of used identifiers (return set of names)
+ \end{itemize}
 \end{itemize}
 
 Context-sensitive traversal: as above but
 \begin{itemize}
 \item functions take extra argument for vocabulary
-\item cases for identifier references look up the respective declaration in the vocabulary
+\item cases for identifier references look up declaration in vocabulary
+\item Examples: anything that looks up identifier declarations
+ \begin{itemize}
+ \item substitution of identifiers with new expressions
+ \item typical syntax transformations, e.g., in compilers
+  (return same expression kind)
+ \item semantics by translation
+ \end{itemize}
 \end{itemize}
 \end{frame}
 

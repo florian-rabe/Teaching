@@ -19,24 +19,39 @@ Criteria:
 \item syntax design trade-off
  \begin{itemize}
   \item expressivity: easy to express knowledge
-    \glec{e.g., big grammar, extra production for every user need}
+    \glec{e.g., big grammar, complex type system}
   \item simplicity: easy to implement/interpret
-    \glec{e.g., few, carefully chosen productions}
+    \glec{e.g., few, carefully chosen productions, types}
  \end{itemize}
-\item semantics: specify, implement, document
+\item semantics: specify, implement, documents
 \item intended users
  \begin{itemize}
   \item skill level
   \item prior experience with related languages
   \item amount of training needed
- \end{itemize}
-\item long-term plans: re-answer the above question but now
- \begin{itemize}
-  \item maintainability: syntax was changed, everything to be redone
-  \item scalability: expressed knowledge content has reached huge sizes
+  \item innovation height, differential evaluation against existing languages
  \end{itemize}
 \end{itemize}
 \end{frame}
+
+\begin{frame}\frametitle{Actually, when is a language an improvement? (2)}
+More criteria:
+\begin{itemize}
+\item long-term plans: re-answer the above question but now
+ \begin{itemize}
+  \item maintainability: syntax was changed, everything to be redone
+  \item backwards compatibility: support for legacy input
+  \item scalability: expressed knowledge content has reached huge sizes
+ \end{itemize}
+\item support software ecosystem
+ \begin{itemize}
+  \item optional tool support: IDEs, debuggers, heuristic checkers, alternative implementations, interpreter/REPL
+  \item many/large well-crafted vocabularies and package managers to find them
+  \item integrations with other languages: translations, common run-time platforms, foreign function interface
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}\frametitle{Church vs. Curry Typing}
 \begin{center}
@@ -73,8 +88,8 @@ typing is a & function objects $\to$ types & relation objects $\times$ types \\
 objects have & unique type & any number of types \\
 \hline
 type given by & part of declaration & additional axiom \\
- \tb example               &  \kw{individual} "WuV":"course"  & \kw{individual} "Wuv",\\
-                           &                                  & "WuV" \texttt{is-a} "course"\\
+ \tb example               &  \kw{individual} WuV: course  & \kw{individual} Wuv,\\
+                           &                                  & WuV \texttt{is-a} course\\
 \hline
 type inference for $x$ & uniquely infer $A$ from $x$ & find minimal $A$ with $x:A$ \\
 type checking & inferred=expected & prove $x:A$ \\
@@ -88,7 +103,7 @@ advantages & easy & flexible \\
 \end{center}
 \end{frame}
 
-\begin{frame}\frametitle{Curry Typing in BOL}
+\begin{frame}\frametitle{Examples: Curry Typing in BOL Semantics}
 \begin{center}
 \footnotesize
 \begin{tabular}{l|lll}
@@ -117,34 +132,45 @@ Subtyping works best with Curry Typing
 \end{frame}
 
 \begin{frame}\frametitle{A General Definition of a Type System}
-A \textbf{type system} consists of
+
+A \textbf{type system} for a syntax consists of
 \begin{itemize}
- \item a collection, whose elements are called \textbf{objects},
- \item a collection, whose elements are called \textbf{intrinsic types},
- \item a function assigning to every object $x$ its \textbf{intrinsic type} $I$, in which case we write $x:I$,
- \item for some intrinsic types $I$
+ \item some non-terminals $\ExpSym$, whose words are called $\ExpSym$-\textbf{expressions},
+% \item the non-terminal producing an expression is its \textbf{intrinsic type}
+%  \begin{itemize}
+%  \item untyped: all expressions have same intrinsic type
+%  \item typed by grammar: non-terminals are the intrinsic types
+%  \end{itemize}
+   \lec{coarse, easy to check classification into disjoint sets}
+ \item for some (possibly no) intrinsic types $\ExpSym$
   \begin{itemize}
-   \item an intrinsic type $E_I$
-   \item a relation $\in_I$ between objects with intrinsic types $I$ and $E_I$, called the \textbf{extrinsic typing} relation for $I$.
+   \item a non-terminal $\TpSym$ 
+   \item a typing relation between $\ExpSym$-expressions and $\TpSym$-expressions, called the \textbf{extrinsic typing} relation for $\ExpSym$
   \end{itemize}
+  \lec{fine-granular subclassification of the expressions}
 \end{itemize}
 \end{frame}
 
 \begin{frame}\frametitle{Examples}
 \begin{center}
 \begin{tabular}{l|lll}
-System & intrinsic types & $E_I$ & $\in_I$ \\
+System & intrinsic types & extrinsic types & extr. typing \\
 \hline
 pure Church & one per type & none & none \\
-pure Curry & objects $O$, types $T$ & $E_O=T$ & $\in_O=:$ \\
+pure Curry & one for all expressions & types $T$ & $:$ \\
 %\hline
 FOL & one per type & none & none \\
-Scala & $Any$, $Class$ & $E_{Any}=Class$ & $\in_{Any}=\mathtt{isInstanceOf}$\\ 
-BOL & $Ind$, $Conc$ & $E_{Ind}=Conc$ & $\in_{Ind}=\isa$\\
-set theory & $Set$, $Prop$ & $E_{Set}=Set$ & $\in_{Set}=\in$ \\
+OO & primitive types, Object & classes & $\mathtt{isInstanceOf}$\\ 
+BOL & $Ind$, $Conc$, \ldots & concepts & $\isa$\\
+set theory & $Set$, $Prop$ & sets & $\in$ \\
 \end{tabular}
 \end{center}
 \end{frame}
+
+\begin{frame}\frametitle{Breakout Questions}
+What kind of extrinsic types could we choose?
+\end{frame}
+
 
 \begin{frame}\frametitle{Abstract vs. Concrete Types}
 \textbf{Concrete} type: values are

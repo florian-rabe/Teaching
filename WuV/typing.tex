@@ -122,31 +122,30 @@ In that case, an intrinsic system is used for the most important high-level type
 \begin{definition}[Type System]
 A \textbf{type system} consists of
 \begin{compactitem}
- \item a collection, whose elements are called objects,
- \item a collection, whose elements are called intrinsic types,
- \item a function assigning to every object $x$ its intrinsic type $I$, in which case we write $x:I$,
- \item for some intrinsic types $I$
-  \begin{compactitem}
-   \item an intrinsic type $E_I$
-   \item a relation $\in_I$ between objects with intrinsic types $I$ and $E_I$, called the extrinsic typing relation for $I$.
-  \end{compactitem}
+ \item a language system,
+ \item for some expression symbols $\ExpSym$
+   \begin{compactitem}
+     \item a non-terminal $\TpSym$ --- $\TpSym$-expressions are called the \textbf{types} of $\ExpSym$-expressions
+     \item a binary predicate $\der_\Theta E:T$ on $\ExpSym$-expression $E$ and $\TpSym$-expressions $T$ --- if satisfied, we say that $E$ \textbf{has type} $T$.
+   \end{compactitem}
 \end{compactitem}
 \end{definition}
 
 We can now recover the intuitions from above as special cases:
 \begin{compactitem}
- \item A purely intrinsic type system is one in which $E_I$ and $\in_I$ are not given for any $I$.
- Thus, only objects and their intrinsic types remain.
- \item A purely extrinsic type system has two intrinsic types, namely $O$ (for objects) and $E_O$ (for types).
- $\in_O$ is the extrinsic typing relation between objects and types.
+ \item A purely intrinsic type system is one in which the types correspond to the expression symbols themselves.
+ Here each $\ExpSym$-expression has type $\ExpSym$, and the grammar already separates expressions by their (intrinsic) types.
+ \item A purely extrinsic type system has two non-terminals $\ExpSym$ and $\TpSym$.
+  Here all expressions are merged into the same non-terminal, i.e., the grammar does not distinguish expressions by their types.
+  All typing is done extrinsically by the typing predicate.
 \end{compactitem}
 
 \begin{example}
 We can think of BOL as a combined type system.
-The objects are all complex expressions.
-The intrinsic types are the non-terminals $I$, $C$, $R$, $P$, and $F$, which separate the objects into the five kinds of individuals, concepts, relations, properties, and formulas.
+The intrinsic types are the non-terminals $I$, $C$, $R$, $P$, and $F$, which separate the expressions into the five kinds of individuals, concepts, relations, properties, and formulas.
 
-An extrinsic typing relation exists only for $I$: we have $E_I=C$ and $\in_I$ is the \texttt{is-a} relation.
+An extrinsic typing relation exists for $I$: the types for $\ExpSym=I$ are those derived from $\TpSym=C$, i.e., the individuals are extrinsically typed by the concepts.
+The typing relation $\der_\Theta E:T$ is given by the formula $E\,\texttt{is-a}\,T$ is true relative to $\Theta$.
 \end{example}
 
 \begin{example}
@@ -156,7 +155,7 @@ Objects of these intrinsic types are called sets and propositions.
 Some set theories also use an intrinsic type $class$.
 Moreover, types like $set\to prop$ can be allowed as the types of unary predicates on sets.
 
-Extrinsic typing is used only for the type $set$: we have $E_{set}=set$ and $\in_{set}$ is the usual elementhood relation between sets.
+Extrinsic typing is used only for $\ExpSym=set$: we have $\TpSym=set$ and the typing relation is the elementhood relation $\in$ between sets.
 \end{example}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
