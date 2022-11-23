@@ -2,7 +2,7 @@
 
 \begin{frame}\frametitle{Data Interoperability}
 \begin{blockitems}{Situation}
- \item languages systems focus on different aspects
+ \item language systems focus on different aspects
   \lec{frequent need to exchange data}
  \item generally, lots of aspect/language-specific objects
   \lec{proofs, programs, tables, sentences}
@@ -11,7 +11,7 @@
  \end{blockitems}
  
 \begin{blockitems}{Problem}
- \item crossing system barriers usually require interchange language
+ \item crossing system barriers usually requires interchange language
   \lec{serialize as string and reparse}
  \item interchange languages typically untyped
   \lec{XML, JSON, YAML, \ldots}
@@ -23,20 +23,19 @@
 \end{blockitems}
 \end{frame}
 
-\begin{frame}{Breakout Question}
-What types do we need?
+\begin{frame}\frametitle{Treatment in this Course}
+\begin{blockitems}{BOL syntax and semantics so far}
+\item primitive types omitted in syntax
+\item assumed reasonable collection available
+\item assumed same (quasi-)primitive objects in semantic languages
+ \glec{irrelevant if interpreting primitive objects as primitive or quasi-primitive}
+\end{blockitems}
+\lec{largely justified by practice in common languages}
+
+No universal set of types standardized, but some types much more common than others.
 \end{frame}
 
-\begin{frame}\frametitle{What types do we need?}
-Focus on concrete types
-\begin{itemize}
-\item basic atomic types
-\item collection and aggregation types
-\item maybe some inductive data types?
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Examples}
+\begin{frame}\frametitle{Common Primitive Types}
 \begin{blockitems}{Typical (quasi-)primitive types}
  \item natural numbers (= $\N$)
  \item arbitrary precision integers (= $\Z$)
@@ -55,37 +54,7 @@ Observation:
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Types and their Operations}
-\begin{blockitems}{Triple Structure: 3 kinds of named objects}
- \item the type \glec{eg: 'int'}
- \item values of the type \glec{eg: 0, 1, -1, \ldots}
- \item operations on type \glec{eg: addition, multiplication, \ldots}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Treatment in this Course}
-\begin{blockitems}{BOL syntax and semantics so far}
-\item primitive objects omitted in syntax
-\item assumed reasonable collection available
-\item assumed same (quasi-)primitive objects in semantic languages
- \lec{irrelevant if interpreting primitive objects as primitive or quasi-primitive}
-\end{blockitems}
-\lec{largely justified by practical languages}
-
-\begin{blockitems}{But what exactly is the standard?}
-\item will present possible solution
-\item uses special ontology language just for specifying primitive objects
-  \begin{itemize}
-   \item name
-   \item type
-   \item semantics
-    \glec{typically narrative; alternatively deductive, computational}
-  \end{itemize}
-\item current research, not standard practice
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Encoding Primitive Types}
+\begin{frame}\frametitle{Less Common Primitive Types}
 \begin{blockitems}{Problem}
  \item quickly encounter primitive types not supported by common languages
  \item need to encode them using existing types
@@ -99,10 +68,42 @@ Observation:
 \item physical quantities ($1m$, $1in$, etc.)
 \item gene, person
 \end{blockitems}
+\end{frame}
 
-\begin{center}
-Breakout questions: What primitive types do we need for univis?
-\end{center}
+\begin{frame}\frametitle{Types and their Operations}
+Types usually come with additional operations:
+
+\begin{blockitems}{Triple Structure: 3 kinds of named objects}
+ \item the type \glec{eg: 'int'}
+ \item values of the type \glec{eg: 0, 1, -1, \ldots}
+ \item operations on type \glec{eg: addition, multiplication, \ldots}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Specifying a Primitive Type}
+\begin{blockitems}{Components}
+\item name
+\item set of values
+\item string encoding \lec{injective function from values to strings}
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item IEEE floating point numbers
+\item ISO 8601 for date/time
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 6}
+As a group, specify additional primitive datatypes for BOL that are helpful the university knowledge ontology.
+
+For each new type, you have to give
+\begin{itemize}
+\item name
+\item values
+\item string encoding of each value
+\end{itemize}
+The name is added by an additional BOL-production for non-terminal, the values by additional productions for V.
+The string encodings are used by the import/export functions.
 \end{frame}
 
 \begin{frame}\frametitle{Failures of Encodings}
@@ -139,7 +140,6 @@ Breakout questions: What primitive types do we need for univis?
 \item allowed appending "; ..." to function definitions
 \end{blockitems}
 \lec{SQL injection similar: complex data encoded as string, no decoding}
-
 \end{frame}
 
 \begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
@@ -172,43 +172,6 @@ Next steps
 \item Codecs
 \end{enumerate}
 \end{frame}
-
-\section{Data Types}
-
-\begin{frame}\frametitle{A Basic Language for Typed Data}
-Let BDL be given by
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
-\galtprod{\cn{list}\,T}{homogeneous lists}\\
-\galtprod{\rep{(\ID:T)}}{record types}\\
-\galtprod{\ldots}{additional types}\\
-\gcomment{Data}\\
-\gprod{D}{(64\, bit\, integers)}{}\\
-\galtprod{(IEEE\, double)}{}\\
-\galtprod{"(Unicode\, strings)"}{}\\
-\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
-\galtprod{\rep{D}}{lists}\\
-\galtprod{\rep{(\ID=D)}}{records}\\
-\galtprod{\ldots}{constructors for additional types}\\
-\end{commgrammar}
-\end{frame}
-
-\begin{frame}\frametitle{BDL Extended with Named ADTs}\label{def:bdl+adt}
-\begin{commgrammar}
-\gprod{V}{\rep{Decl}}{Vocabularies}\\
-\gprod{Decl}{\kw{adt}\,t\,\{\rep{\ID:T}\}}{ADT definitions}\\
-\galtprod{\kw{datum}\,d:T=D}{data definitions}\\
-\gcomment{Types}\\
-\gprod{T}{\ldots}{as before}\\
-\galtprod{t}{reference to a named ADT}\\
-\gcomment{Data}\\
-\gprod{D}{\ldots}{as before}\\
-\galtprod{d}{reference to a named datum}\\
-\galtprod{t\{\rep{(\ID=D)}\}}{ADT elements}\\
-\end{commgrammar}
-\end{frame}
-
 
 \section{Data Representation Languages}
 
@@ -514,7 +477,7 @@ Standard codec: encode as string as defined in ISO 8601
 
 \begin{frame}\frametitle{Design}
 \begin{enumerate}
-\item Specify type system, e.g., BDL
+\item Specify types
  \begin{itemize}
  \item types
  \item constructors
@@ -540,9 +503,43 @@ Standard codec: encode as string as defined in ISO 8601
 \end{enumerate}
 \end{frame}
 
-\begin{frame}\frametitle{Example}
-Implementation in Scala part of course resources
+\begin{frame}\frametitle{A Basic Language for Typed Data}
+Let BDL be given by
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
+\galtprod{\cn{list}\,T}{homogeneous lists}\\
+\galtprod{\rep{(\ID:T)}}{record types}\\
+\galtprod{\ldots}{additional types}\\
+\gcomment{Data}\\
+\gprod{D}{(64\, bit\, integers)}{}\\
+\galtprod{(IEEE\, double)}{}\\
+\galtprod{"(Unicode\, strings)"}{}\\
+\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
+\galtprod{\rep{D}}{lists}\\
+\galtprod{\rep{(\ID=D)}}{records}\\
+\galtprod{\ldots}{constructors for additional types}\\
+\end{commgrammar}
 \end{frame}
+
+\begin{frame}\frametitle{BDL Extended with Named ADTs}\label{def:bdl+adt}
+\begin{commgrammar}
+\gprod{V}{\rep{Decl}}{Vocabularies}\\
+\gprod{Decl}{\kw{adt}\,t\,\{\rep{\ID:T}\}}{ADT definitions}\\
+\galtprod{\kw{datum}\,d:T=D}{data definitions}\\
+\gcomment{Types}\\
+\gprod{T}{\ldots}{as before}\\
+\galtprod{t}{reference to a named ADT}\\
+\gcomment{Data}\\
+\gprod{D}{\ldots}{as before}\\
+\galtprod{d}{reference to a named datum}\\
+\galtprod{t\{\rep{(\ID=D)}\}}{ADT elements}\\
+\end{commgrammar}
+\end{frame}
+
+%\begin{frame}\frametitle{Example}
+%Implementation in Scala part of course resources
+%\end{frame}
 
 \begin{frame}\frametitle{Example Application: OpenDreamKit research project}
 \includegraphics[width=\textwidth]{MitM.png}
