@@ -1,4 +1,132 @@
-\section{Motivation: Semantics by Translation}
+\section{Kinds of Semantics}
+
+\begin{frame}\frametitle{Recall}
+Recall:
+
+\begin{center}
+\begin{tabular}{l|l}
+Syntax & Data \\
+\hline
+Semantics & Knowledge
+\end{tabular}
+\end{center}
+
+Representing
+\begin{itemize}
+\item syntax = formal language
+\begin{itemize}
+\item grammar  \glec{context-free part}
+\item type system \glec{context-sensitive well-formedness}
+\end{itemize}
+\item data = words in the syntax
+\begin{itemize}
+\item set of vocabularies
+\item set of typed expressions for each vocabulary
+\end{itemize}
+\item semantics = \alert{???}
+\item knowledge = emergent property of having well-formed words with semantics
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Relative Semantics by Translation}
+Components:
+\begin{itemize}
+\item Two syntaxes
+\begin{itemize}
+\item object-language $l$ \glec{e.g., BOL}
+\item meta-language $L$ \glec{e.g., SFOL, Scala, SQL, English}
+\end{itemize}
+\item Semantics of $L$ assumed fixed
+ \glec{captures what we already know}
+\item Semantics of $l$ by translation into $L$
+\end{itemize}
+\lec{semantics of $l$ \emph{relative} to to existing semantics of $L$}
+
+Problem: just kicking the can?
+\end{frame}
+
+\begin{frame}\frametitle{Discussion of Semantics by Translation}
+\begin{blockitems}{Advantages}
+\item a few meta-languages yield semantics for many languages
+\item easy to develop new languages
+\item good connection between syntax and semantics via compositionality, substitution theorem
+\end{blockitems}
+
+\begin{blockitems}{Disadvantages}
+\item does not solve the problem once and for all
+\item impractical without implementation of semantics of meta-language
+\item meta-languages typically much more expressive than needed for object-languages
+\item translations can be difficult, error-prone
+\end{blockitems}
+
+Also needed: absolute semantics
+\end{frame}
+
+\begin{frame}\frametitle{Absolute vs. Relative Semantics}
+Absolute = self-contained, no use of meta-language $L$
+
+\begin{blockitems}{Get off the ground}
+ \item semantics for a few important meta-languages
+  \glec{e.g., FOL, assembly language, set theory}
+ \item relative semantics for all other languages, e.g.,
+  \begin{itemize}
+  \item model theory: logic $\to$ set theory
+  \item compilation: Scala $\to$ JVM $\to$ assembly
+  \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Redundant semantics}
+ \item common to give
+ \begin{itemize}
+  \item relative and absolute semantics for same syntax
+  \item multiple relative semantics
+   \glec{translations to different aspects}
+  \item sometimes even maybe multiple absolute ones
+ \end{itemize}
+ \item Allows understanding syntax from multiple perspectives
+ \item Allows cross-checking \glec{show equivalence of two semantics}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{No Perfect Model for Absolute Semantics}
+\begin{itemize}
+\item Machine-actionable requires reduction to finite set of rules
+ \lec{whatever a rule is}
+\item Does not work for most domains
+ \begin{itemize}
+ \item practical argument: any practically interesting system has too many rules
+  \glec{cf. physics, e.g., three-body problem already chaotic}
+ \item theoretical argument: no language can fully model itself
+  \glec{cf. G\"odel's incompleteness theorems}
+ \end{itemize}
+\item Imperfect representation of intended semantics required
+\lec{focus on some \emph{aspect}}
+\end{itemize}
+
+Big question: what aspects to focus on?
+\end{frame}
+
+\begin{frame}\frametitle{Querying as a Guide}
+\begin{blockitems}{Idea}
+\item Very difficult to choose aspects for absolute semantics
+\item Turn problem around
+ \begin{itemize}
+ \item ask what the practical purpose of the semantics could be
+ \item then choose aspects that allow realizing that purpose
+ \end{itemize}
+\end{blockitems}
+
+Meta-remark: We do relative semantics first even though absolute semantics conceptually comes first.
+
+\begin{blockitems}{Querying as the Purpose}
+\item Before: identified different kinds of querying
+ \lec{focussing on different aspects of knowledge}
+\item Now: each induces a kind of absolute semantics
+\end{blockitems}
+\end{frame}
+
+
+\section{Semantics by Translation}
 
 \begin{frame}\frametitle{Example: Recall Syntax of Arithmetic Language}
 Syntax: represented as formal grammar
@@ -71,8 +199,6 @@ General idea
 \item Syntax = context-free grammar = family of inductive data types
 \item Semantics by translation = inductive function
 \end{itemize}
-
-See lecture notes for details
 \end{frame}
 
 \begin{frame}\frametitle{Semantics of BOL}
@@ -93,12 +219,12 @@ see details of each translation in the lecture notes
 \begin{frame}\frametitle{General Definition}
 A semantics by translation consists of
 \begin{itemize}
- \item syntax: a formal language $l$
- \item semantic language: a formal language $L$
+ \item syntax: a formal system $l$
+ \item semantic language: a formal system $L$
   \glec{different or same aspect as $l$}
- \item semantic prefix: a theory $P$ in $L$
+ \item semantic prefix: a vocabulary $P$ in $L$
   \glec{formalizes fundamentals that are needed to represent $l$-objects}
- \item interpretation: translates every $l$-theory $T$ to an $L$-theory $P,\sem{T}$
+ \item interpretation: translates every $l$-vocabulary $T$ to an $L$-vocabulary $P,\sem{T}$
 \end{itemize}
 \end{frame}
 
@@ -119,8 +245,23 @@ Properties shared by all semantics by translation
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Translation vs. Embedding}
+\begin{blockitems}{Translation}
+\item as above, $l$ and $L$ are at the same level
+\item $l$-declarations represented as $L$-declarations
+\glec{also called shallow embedding}
+\end{blockitems}
+
+\begin{blockitems}{Embedding}
+\item $L$ is used as meta-language to represent $l$
+ \glec{e.g., $L$ is programming language to implement $l$}
+\item $l$-declarations represented as $L$-objects using an inductive type
+\glec{also called deep embedding}
+\end{blockitems}
+\end{frame}
+
 \begin{frame}\frametitle{Compositionality}
-Case for operator $*$ in interpretation function compositional iff \\
+Case for operator $*$ in translation function compositional iff \\
 interpretation of $*(e_1,\ldots,e_n)$ only depends on on the interpretation of the $e_i$
 
 \[\sem{*(e_1,\ldots,e_n)}=\sem{*}(\sem{e_1},\ldots,\sem{e_n})\]
@@ -211,134 +352,6 @@ Then both sides of equations act on $E(x_1,\ldots,x_n)$:
 \end{blockitems}
 \end{frame}
 
-\section{Motivation: Absolute and Relative Semantics}
-
-\begin{frame}\frametitle{Recall}
-Recall:
-
-\begin{center}
-\begin{tabular}{l|l}
-Syntax & Data \\
-\hline
-Semantics & Knowledge
-\end{tabular}
-\end{center}
-
-Representing
-\begin{itemize}
-\item syntax = formal language
-\begin{itemize}
-\item grammar  \glec{context-free part}
-\item type system \glec{context-sensitive well-formedness}
-\end{itemize}
-\item data = words in the syntax
-\begin{itemize}
-\item set of vocabularies
-\item set of typed expressions for each vocabulary
-\end{itemize}
-\item semantics = \alert{???}
-\item knowledge = emergent property of having well-formed words with semantics
-\end{itemize}
-
-So far: semantics by translation
-\end{frame}
-
-\begin{frame}\frametitle{Relative Semantics}
-Semantics by Translation
-\begin{itemize}
-\item Two syntaxes
-\begin{itemize}
-\item object-language $l$ \glec{e.g., BOL}
-\item meta-language $L$ \glec{e.g., SFOL, Scala, SQL, English}
-\end{itemize}
-\item Semantics of $L$ assumed fixed
- \glec{captures what we already know}
-\item Semantics of $l$ by translation into $L$
-\end{itemize}
-\lec{semantics of $l$ \emph{relative} to to existing semantics of $L$}
-
-Problem: just kicking the can?
-\end{frame}
-
-\begin{frame}\frametitle{Discussion of Relative Semantics}
-\begin{blockitems}{Advantages}
-\item a few meta-languages yield semantics for many languages
-\item easy to develop new languages
-\item good connection between syntax and semantics via compositionality, substitution theorem
-\end{blockitems}
-
-\begin{blockitems}{Disadvantages}
-\item does not solve the problem once and for all
-\item impractical without implementation of semantics of meta-language
-\item meta-languages typically much more expressive than needed for object-languages
-\item translations can be difficult, error-prone
-\end{blockitems}
-
-Also needed: absolute semantics
-\end{frame}
-
-\begin{frame}\frametitle{Absolute vs. Relative Semantics}
-Absolute = self-contained, no use of meta-language $L$
-
-\begin{blockitems}{Get off the ground}
- \item semantics for a few important meta-languages
-  \glec{e.g., FOL, assembly language, set theory}
- \item relative semantics for all other languages, e.g.,
-  \begin{itemize}
-  \item model theory: logic $\to$ set theory
-  \item compilation: Scala $\to$ JVM $\to$ assembly
-  \end{itemize}
-\end{blockitems}
-
-\begin{blockitems}{Redundant semantics}
- \item common to give
- \begin{itemize}
-  \item relative and absolute semantics for same syntax
-  \item multiple relative semantics
-   \glec{translations to different aspects}
-  \item sometimes even maybe multiple absolute ones
- \end{itemize}
- \item Allows understanding syntax from multiple perspectives
- \item Allows cross-checking \glec{show equivalence of two semantics}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{No Perfect Model for Absolute Semantics}
-\begin{itemize}
-\item Machine-actionable requires reduction to finite set of rules
- \lec{whatever a rule is}
-\item Does not work for most domains
- \begin{itemize}
- \item practical argument: any practically interesting system has too many rules
-  \glec{cf. physics, e.g., three-body problem already chaotic}
- \item theoretical argument: no language can fully model itself
-  \glec{cf. G\"odel's incompleteness theorems}
- \end{itemize}
-\item Imperfect representation of intended semantics required
-\lec{focus on some \emph{aspect}}
-\end{itemize}
-
-Big question: what aspects to focus on?
-\end{frame}
-
-\begin{frame}\frametitle{Querying as a Guide}
-\begin{blockitems}{Idea}
-\item Very difficult to choose aspects for absolute semantics
-\item Turn problem around
- \begin{itemize}
- \item ask what the practical purpose of the semantics could be
- \item then choose aspects that allow realizing that purpose
- \end{itemize}
-\end{blockitems}
-
-Meta-remark: That's why we did relative semantics and querying first in this course even though absolute semantics conceptually belongs at the beginning.
-
-\begin{blockitems}{Querying as the Purpose}
-\item Before: identified different kinds of querying
- \lec{focussing on different aspects of knowledge}
-\item Now: each induces a kind of absolute semantics
-\end{blockitems}
-\end{frame}
 
 %\begin{frame}\frametitle{Problems}
 %Next
@@ -361,9 +374,11 @@ Meta-remark: That's why we did relative semantics and querying first in this cou
 %\end{itemize}
 %\end{frame}
 
+\part{Formal Semantics}
+
 \section{Formal Systems}
 
-\begin{frame}\frametitle{Typical Structure of a Formal Language}
+\begin{frame}\frametitle{Typical Structure of a Formal System}
 Vocabularies
 \begin{itemize}
 \item lists of declarations
@@ -405,7 +420,7 @@ Narration & dictionary & phrases, sentences, texts \\
 %\end{frame}
 
 \begin{frame}\frametitle{Components and Well-Formedness}
-\begin{blockitems}{Components of formal systems $l$}
+\begin{blockitems}{Components of formal system $l$}
  \item context-free syntax
  \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
  \item some distinguished non-terminal symbols \glec{words called \textbf{expressions}}
@@ -419,11 +434,11 @@ Narration & dictionary & phrases, sentences, texts \\
 \end{blockitems}
 
 Question: How do we define the well-formedness predicates?
-\lec{use a formal system with context-sensitive rules}
+\lec{use an inference system with context-sensitive rules}
 \end{frame}
 
-\begin{frame}\frametitle{Formal System}
-\begin{blockitems}{A formal system defined well-formedness via}
+\begin{frame}\frametitle{Inference System}
+\begin{blockitems}{Define well-formedness via}
 \item contexts $\Gamma$ of the form $x_1:E_1,\ldots,x_n:E_n$ for expressions $E_i$
 \item a set of judgments including
  \begin{itemize}
@@ -441,7 +456,7 @@ where the $J$'s are judgments
 \end{frame}
 
 \begin{frame}\frametitle{Terminology}
-For a formal system, we define
+For an inference system, we define
 \begin{itemize}
 \item derivation: tree of judgments such that for every node $J$ with children $J_1,\ldots,J_n$, there is a rule
 \[\rul{J_1 \tb \ldots \tb J_n}{J}\]

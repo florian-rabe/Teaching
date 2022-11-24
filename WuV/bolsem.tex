@@ -29,19 +29,25 @@ This is usually done by giving an inference system for the well-formedness predi
 We can also do both: if we have a semantics via an inference system and another one via translation, we can show that the latter respects the former.
 That leads to the concepts of soundness (everything well-formed is translated to something well-formed) and its dual completeness.
 
-\subsection{Absolute Semantics: By an Inference System}
+\subsection{Absolute Semantics}
+
+Absolute semantics is very hard to define in general.
+A typical approach is to single out one property of the syntax and then use an inference system to define when that property holds.
+
+For example, for BOL we could use the property whether a formula can be proved from the axiom.
+The inference system then is the proof calculus that define the provable formulas.
 
 \subsection{Relative Semantics}
 
 Relative semantics uses an additional component as a reference point for semantics.
 
 \paragraph{By Translation}
-
 Semantics by translation uses a second language as the target of a translation.
 Both the vocabularies and the expressions are translated, namely to vocabularies and expressions of the target language.
 Usually, the target language already has a semantics, and the semantics of the original language is obtained by composing the two.
 
 \begin{figure}[hbt]
+\begin{center}
 \begin{tabular}{l|l}
 Aspect & Example\\\hline
 %Ontological & OWL $\to$ FOL \\
@@ -51,6 +57,7 @@ Concrete & SPARQL $\to$ SQL \\
 Narrative & English $\to$ German \\
 \end{tabular}
 \caption{Examples of Semantics by Translation}\label{fig:trans}
+\end{center}
 \end{figure}
 
 The correspondence for the syntax between context-free grammars and inductive data types can be extended to the semantics.
@@ -59,25 +66,24 @@ Now we have a correspondence between case-based function definitions and inducti
 \begin{definition}
 A \textbf{semantics by translation} consists of the following parts:
 \begin{compactitem}
- \item syntax: a formal language $l$
- \item semantic language: a formal language $L$ (from a different or the same aspect as $l$)
+ \item syntax: a language system $l$
+ \item semantic language: a language system $L$ (from a different or the same aspect as $l$)
  \item semantic prefix: a vocabulary $P$ in $L$ that is prefixed to the translation of all vocabularies of $l$
- \item interpretation: a function that translates every $l$-vocabulary $T$ to an $L$-vocabulary $P,\sem{T}$
+ \item vocabulary translation: a function that translates every $l$-vocabulary $T$ to an $L$-vocabulary $P,\sem{T}$
 \end{compactitem}
 \end{definition}
 
-Critically, the semantic language (which is itself a formal language and can thus have a semantics itself) must be a language whose semantics we already know.
+Critically, the semantic language (which is itself a language system and can thus have a semantics itself) must be a language whose semantics we already know.
 Therefore, it is often important to give multiple equivalent semantics --- choosing a different semantics for different audiences, who might be familiar with different languages.
 
-The role of the semantic prefix $P$ is to define once and for all the $L$-material that we need in general to interpret $l$-theories (in our case: ontologies).
+The role of the semantic prefix $P$ is to define once and for all the $L$-material that we need in general to interpret $l$-vocabularies (in the case of BOL: ontologies).
 It occurs at the beginning of all interpretations of ontologies.
-In particular, it is equal to the interpretation of empty ontology.
+In particular, it is equal to the interpretation of empty vocabulary.
 
 \paragraph{By Interpretation}
-
 Semantics by interpretation uses a situation relative to which expressions are evaluated.
 The role of the situation is to supply the meaning of all identifiers declared in the vocabulary.
-Given a situations, inductive functions map all expressions to their semantics.
+Given a situation, inductive functions map all expressions to their semantics.
 Usually, the result of interpretation is an extremely simple object, whose semantics is self-evident.
 
 \begin{figure}[hbt]
@@ -175,7 +181,7 @@ Simply put, a semantics is compositional iff it is defined by mutually inductive
 The latter is very easy to check by inspecting the shape of the finitely many cases of the definition.
 The former is a powerful property because it applies to any of the infinitely many expressions of the syntax.
 
-\subsection{Non-Compositional Semantics}
+\paragraph{Non-Compositional Semantics}
 
 It is highly desirable but not always possible to give a compositional translation.
 Sometimes a feature of the syntactic language cannot be directly interpreted in the semantic language.

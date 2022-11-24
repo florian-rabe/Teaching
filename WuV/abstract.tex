@@ -1,25 +1,75 @@
-\section{Ontology Morphisms}
+\section{Formal Systems}
 
-\section{Categories}
+%\section{Categories}
 
-\section{The Category of Vocabularies}
+\subsection{Syntax}
 
-\subsection{Fully Abstract}
+\begin{definition}\label{def:css}
+A \textbf{formal system} consists of
+\begin{compactitem}
+ \item a set $\Voc$ of vocabularies,
+ \item for any two vocabularies $V,W$, a set $\VocM(V,W)$ of vocabulary morphisms from $V$ to $W$
+ \item for any vocabulary $V$, a set $\Exp_V$ of expressions
+ \item for any vocabulary morphism $m\in\VocM(V,W)$, a mapping $\Exp_m:\Exp_V\to \Exp_W$
+\end{compactitem}
+%In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
+%In case of $\wff{\Theta}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
 
-\subsection{With Grammar}
+A formal system with typing
+\begin{compactitem}
+\item additionally provides a relation $\der_V E:E'$ between expression $E,E'\in\Exp_V$.
+\item such that for $m\in\VocM(V,W)$, we have that if $\der_V E:E'$, then $\Exp_m(E):\Exp_m(E')$.
+\end{compactitem}
+\end{definition}
 
-% named declarations
+The vocabularies are usually lists of named declarations.
+In that case, the vocabulary morphism from $V$ to $W$ are usually lists of assignments $c:=E$ where $c$ is the name of a declaration in $V$ and $E$ is a $W$-expression.
+In that case, the mapping $\Exp_m$ usually arises by replacing every $V$-identifier with the $W$-expression provided by $m$.
 
-\subsection{By Inference System}
+\subsection{Translation}
 
-\section{Situations}
+\begin{definition}\label{def:css}
+A \textbf{translation} from formal system $l$ to formal system $L$ consists of several mappings, all written $\sem{-}$:
+\begin{compactitem}
+ \item a vocabulary translation $\Voc_l\to \Voc_T$,
+ \item for any two $l$-vocabularies $V,W$, a morphism translation $\VocM(V,W)\to \VocM(\sem{V},\sem{W})$
+ \item for any $l$-vocabulary $V$, an expression translation $\Exp_V\to \Exp_{\sem{V}}$
+ \item such that for any vocabulary morphism $m\in\VocM(V,W)$ and expression $E\in\Exp_V$, we have $\sem{\Exp^l_m(E)}=\Exp^L_{\sem{m}}(\sem{E})$
+\end{compactitem}
+%In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
+%In case of $\wff{\Theta}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
 
-\section{Translations}
+If $l$ and $L$ have typing, the translation \textbf{preserves typing} if $\der^l_V E:E'$ implies $\der^L_{\sem{V}}\sem(E):\sem(E')$.
+\end{definition}
 
+The vocabulary translation usually consists of a semantics prefix and a declaration-wise translation: A $V$-vocabulary $D_1,\ldots D_n$ is translated to $P,D'_1,\ldots,D'_n$ where the $D'_i$ are the translations of the the $D_i$.
+
+\subsection{Interpretation}
+
+\begin{definition}
+An \textbf{interpretation} of a formal system $l$ consists of the following parts:
+\begin{compactitem}
+ \item for every $l$-vocabulary $V$ a set $Sit(V)$, whose elements are called situations,
+ \item for every $l$-vocabulary $V$, every situation $S\in Sit(V)$, a function mapping every $E\in \Exp_V$ to its interpretation $\sem{E}_S$.
+\end{compactitem}
+\end{definition}
+
+\section{Semantics}
+
+Both translations and interpretations can be used to assign semantics to a formal system.
+Both are relative either to another formal system or to a situation.
+
+But we can also distinguish semantics by the kinds of questions they answer.
+
+\subsection{Deductive}
+
+\subsection{Computational}
+
+\subsection{Concrete Data}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % connect to querying
-\section{Problems}
+\section{Kinds of Problems}
 
 \subsection{Problems as Intensional Descriptions}
 

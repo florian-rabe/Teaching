@@ -2,7 +2,7 @@
 
 \begin{frame}\frametitle{Data Interoperability}
 \begin{blockitems}{Situation}
- \item language systems focus on different aspects
+ \item languages focus on different aspects
   \lec{frequent need to exchange data}
  \item generally, lots of aspect/language-specific objects
   \lec{proofs, programs, tables, sentences}
@@ -167,8 +167,8 @@ The string encodings are used by the import/export functions.
 \begin{frame}\frametitle{Overview}
 Next steps
 \begin{enumerate}
-\item Data types
 \item Data interchange languages
+\item Data types
 \item Codecs
 \end{enumerate}
 \end{frame}
@@ -342,6 +342,43 @@ Weird structure but very similar
 \lec{supported by XML, YAML}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data Types}
+
+\begin{frame}\frametitle{A Basic Language for Typed Data}
+Let BDL be given by
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
+\galtprod{\cn{list}\,T}{homogeneous lists}\\
+\galtprod{\rep{(\ID:T)}}{record types}\\
+\galtprod{\ldots}{additional types}\\
+\gcomment{Data}\\
+\gprod{D}{(64\, bit\, integers)}{}\\
+\galtprod{(IEEE\, double)}{}\\
+\galtprod{"(Unicode\, strings)"}{}\\
+\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
+\galtprod{\rep{D}}{lists}\\
+\galtprod{\rep{(\ID=D)}}{records}\\
+\galtprod{\ldots}{constructors for additional types}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{BDL Extended with Named ADTs}\label{def:bdl+adt}
+\begin{commgrammar}
+\gprod{V}{\rep{Decl}}{Vocabularies}\\
+\gprod{Decl}{\kw{adt}\,t\,\{\rep{\ID:T}\}}{ADT definitions}\\
+\galtprod{\kw{datum}\,d:T=D}{data definitions}\\
+\gcomment{Types}\\
+\gprod{T}{\ldots}{as before}\\
+\galtprod{t}{reference to a named ADT}\\
+\gcomment{Data}\\
+\gprod{D}{\ldots}{as before}\\
+\galtprod{d}{reference to a named datum}\\
+\galtprod{t\{\rep{(\ID=D)}\}}{ADT elements}\\
+\end{commgrammar}
+\end{frame}
+
 \section{Codecs}
 
 \begin{frame}\frametitle{General Definition}
@@ -503,65 +540,9 @@ Standard codec: encode as string as defined in ISO 8601
 \end{enumerate}
 \end{frame}
 
-\begin{frame}\frametitle{A Basic Language for Typed Data}
-Let BDL be given by
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
-\galtprod{\cn{list}\,T}{homogeneous lists}\\
-\galtprod{\rep{(\ID:T)}}{record types}\\
-\galtprod{\ldots}{additional types}\\
-\gcomment{Data}\\
-\gprod{D}{(64\, bit\, integers)}{}\\
-\galtprod{(IEEE\, double)}{}\\
-\galtprod{"(Unicode\, strings)"}{}\\
-\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
-\galtprod{\rep{D}}{lists}\\
-\galtprod{\rep{(\ID=D)}}{records}\\
-\galtprod{\ldots}{constructors for additional types}\\
-\end{commgrammar}
-\end{frame}
-
-\begin{frame}\frametitle{BDL Extended with Named ADTs}\label{def:bdl+adt}
-\begin{commgrammar}
-\gprod{V}{\rep{Decl}}{Vocabularies}\\
-\gprod{Decl}{\kw{adt}\,t\,\{\rep{\ID:T}\}}{ADT definitions}\\
-\galtprod{\kw{datum}\,d:T=D}{data definitions}\\
-\gcomment{Types}\\
-\gprod{T}{\ldots}{as before}\\
-\galtprod{t}{reference to a named ADT}\\
-\gcomment{Data}\\
-\gprod{D}{\ldots}{as before}\\
-\galtprod{d}{reference to a named datum}\\
-\galtprod{t\{\rep{(\ID=D)}\}}{ADT elements}\\
-\end{commgrammar}
-\end{frame}
-
 %\begin{frame}\frametitle{Example}
 %Implementation in Scala part of course resources
 %\end{frame}
-
-\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
-\includegraphics[width=\textwidth]{MitM.png}
-\end{frame}
-
-\begin{frame}\frametitle{Integrating BOL and BDL}
-\begin{blockitems}{OWL-near option}
-\item use BDL to define the primitive types of BOL
-\item use those as types of BOL properties
-\item Curry-typing throughout
-\lec{easy: just merge the grammars}
-\end{blockitems}
-
-\begin{blockitems}{SQL-near option}
-\item use BDL to define the primitive types of BOL
-\item also add ADTs
-\item Church typing more prominent
-\lec{open question: ADTs in addition to or instead of BOL concepts}
-\end{blockitems}
-
-We assume the latter for now without spelling out the details.
-\end{frame}
 
 \begin{frame}\frametitle{BDL-Mediated Interoperability}
 Idea
@@ -580,6 +561,10 @@ Idea
 
 Open research problem
  \lec{no shiny solution yet that can be presented in lectures}
+\end{frame}
+
+\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
+\includegraphics[width=\textwidth]{MitM.png}
 \end{frame}
 
 \begin{frame}\frametitle{Codecs in ADT Definitions}

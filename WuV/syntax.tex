@@ -390,13 +390,7 @@ While the above remains the official definition of what the context-sensitive la
 In fact, context-sensitive grammars are virtually never used to define a specific language.
 Instead, more restrictive definitions are used that capture more properties of practical languages.
 
-\subsection{Abstract Definition}
-
-In the sequel, we give one possible definition.
-This definition works well in the context of this lecture but is non-standard. There is no standard definition at all. Instead, various similar definitions exist.
-
-\begin{definition}\label{def:css}
-A \textbf{language system} consists of
+A typical context-sensitive syntax includes the following:
 \begin{compactitem}
  \item a context-free syntax,
  \item a distinguished non-terminal symbol $\ThySym$, whose words are called \textbf{vocabularies},
@@ -404,14 +398,11 @@ A \textbf{language system} consists of
  \item a unary predicate $\wft{\Theta}$ on vocabularies $\Theta$,
  \item for every vocabulary $\Theta$ and every $\ExpSym$, a unary predicate $\wff{\Theta}{E}$ on $\ExpSym$-expressions $E$.
 \end{compactitem}
-
 In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
 In case of $\wff{\Theta}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
-\end{definition}
 
 \begin{remark}[Terminology]
-``language system'' is not a standard term. We usually just say ``language''.
-
+%``language system'' is not a standard term. We usually just say ``language''.
 ``Well-formed $\ExpSym$-expression over $\Theta$'' can be a mouthful.
 Therefore, it is common to simply say that $E$ is an $\ExpSym$-expression, or that $E$ is a $\Theta$-expression, and expect readers to fill in the details.
 
@@ -442,8 +433,7 @@ $Voc$ is the special non-terminal $\ThySym$. The special non-terminals for expre
 The well-formedness predicates check that every identifier is used according to its declaration.
 \end{example}
 
-\subsection{Vocabularies}
-
+\paragraph{Vocabularies}
 The vocabularies are typically lists of typically named declarations.
 They introduce the names that can be used to form expressions.
 The expression kinds almost always include formulas.
