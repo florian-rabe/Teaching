@@ -88,6 +88,120 @@ Absolute = self-contained, no use of meta-language $L$
 \end{blockitems}
 \end{frame}
 
+
+\begin{frame}\frametitle{Example: Recall Syntax of Arithmetic Language}
+Syntax: represented as formal grammar
+
+\begin{commgrammar}
+\gcomment{Numbers}\\
+\gprod{N}{0\bnfalt 1}{literals}\\
+\galtprod{N+N}{sum}\\
+\galtprod{N*N}{product}\\
+\gcomment{Formulas}\\
+\gprod{F}{N\doteq N}{equality}\\
+\galtprod{N\leq N}{ordering by size}\\
+\end{commgrammar}
+
+Implementation as inductive data type
+\end{frame}
+
+\begin{frame}\frametitle{Example: Absolute Semantics}
+\begin{blockitems}{Represented as judgments defined by sets of rules}
+\item unclear what judgments to use
+\item here: computation $\der N \rewrites N$ and truth $\der F$
+\end{blockitems}
+
+For numbers $n$: Rules to normalize numbers into values
+\[\rul{}{\der N+0\rewrites N} \tb \rul{}{\der N*0\rewrites 0}\tb \rul{}{\der N*1\rewrites N}\]
+\[\rul{}{\der N*(R+S)\rewrites N*R+N*S}\]
+and their commutative variants as well as
+\[\rul{}{\der L+(M+N)\rewrites (L+M)+N}\]
+
+
+For formulas $f$: rules to determine true formulas
+\[\rul{}{\der N\doteq N} \tb \rul{}{\der N\leq N} \tb \rul{\der L\leq M}{\der L+N\leq M+N}\]
+\end{frame}
+
+\begin{frame}\frametitle{Example: Absolute Semantics (2)}
+Checking if an absolute semantics works as intended is hard.
+
+Here: number rules allow
+\begin{enumerate}
+\item eliminating all cases where arguments of $*$ are $0$, $1$, or $+$; thus, no more $*$
+\item eliminating all cases where arguments of $+$ are $0$
+\item shift brackets of nested $+$ to the left
+\item left: $0$ or $(\ldots(1+1)\ldots+1)$ --- isomorphic to natural numbers
+\end{enumerate}
+formula rules allow
+\begin{enumerate}
+\item concluding equality if identical normal forms
+\item reducing $M+1\leq N+1$ to $M\leq N$, repeat until $N\leq N$
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}\frametitle{Example: Relative Semantics}
+Semantics: represented as translation into known language
+\medskip
+
+Problem: Need to choose a known language first\\
+Here: unary numbers represented as strings
+
+Built-in data (strings and booleans):
+\begin{commgrammar}
+%\gcomment{Strings}\\
+\gprod{S}{""}{empty}\\
+\galtprod{(\texttt{Unicode)}}{character sequence}\\
+%\gcomment{Booleans}\\
+\gprod{B}{\cn{true}}{truth}\\
+\galtprod{\cn{false}}{falsity}\\
+\end{commgrammar}
+
+Built-in operations to work on the data:
+\begin{itemize}
+\item concatenation of strings $S\bbc \cn{conc}(S,S)$
+\item replacing all occurrences of $c$ in $S_1$ with $S_2$ $S\bbc \cn{replace}(S_1,c,S_2)$
+\item equality test: $B\bbc S_1==S_2$
+\item prefix test: $B\bbc \cn{startsWith}(S_1,S_2)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Relative Semantics}
+\begin{blockitems}{Represented as function from syntax to semantics}
+\item mutually recursive, inductive functions for each non-terminal symbol
+\item compositional: recursive call on immediate subterms of argument
+\end{blockitems}
+
+For numbers $n$: semantics $\sem{n}$ is a string
+\begin{itemize}
+\item $\sem{0}=""$
+\item $\sem{1}="|"$
+\item $\sem{m+n}=\cn{conc}(\sem{m},\sem{n})$
+\item $\sem{m*n}=\cn{replace}(\sem{m},"|",\sem{n})$
+\end{itemize}
+\medskip
+
+For formulas $f$: semantics $\sem{f}$ is a boolean
+\begin{itemize}
+\item $\sem{m\doteq n}=\sem{m}==\sem{n}$
+\item $\sem{m\leq n}=\cn{startsWith}(\sem{n},\sem{m})$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: Equivalence of Semantics}
+\begin{blockitems}{For formulas}
+\item if $\der F$, then $\sem{F}=true$ 
+ \glec{usually called \emph{soundness}}
+\item if $\sem{F}=true$, then $\der F$
+ \glec{usually called \emph{completeness}}
+\end{blockitems}
+
+\begin{blockitems}{For numbers}
+\item $\der N\rewrites 0$ iff $\sem{N}=""$
+\item $\der N\rewrites (\ldots(1+1)\ldots+1)$ iff $\sem{N}="|\ldots|"$
+\end{blockitems}
+\end{frame}
+
 \begin{frame}\frametitle{No Perfect Model for Absolute Semantics}
 \begin{itemize}
 \item Machine-actionable requires reduction to finite set of rules
@@ -126,80 +240,7 @@ Meta-remark: We do relative semantics first even though absolute semantics conce
 \end{frame}
 
 
-\section{Semantics by Translation}
-
-\begin{frame}\frametitle{Example: Recall Syntax of Arithmetic Language}
-Syntax: represented as formal grammar
-
-\begin{commgrammar}
-\gcomment{Numbers}\\
-\gprod{N}{0\bnfalt 1}{literals}\\
-\galtprod{N+N}{sum}\\
-\galtprod{N*N}{product}\\
-\gcomment{Formulas}\\
-\gprod{F}{N\doteq N}{equality}\\
-\galtprod{N\leq N}{ordering by size}\\
-\end{commgrammar}
-
-Implementation as inductive data type
-\end{frame}
-
-
-\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
-Semantics: represented as translation into known language
-\medskip
-
-Problem: Need to choose a known language first\\
-Here: unary numbers represented as strings
-
-Built-in data (strings and booleans):
-\begin{commgrammar}
-%\gcomment{Strings}\\
-\gprod{S}{""}{empty}\\
-\galtprod{(\texttt{Unicode)}}{character sequence}\\
-%\gcomment{Booleans}\\
-\gprod{B}{\cn{true}}{truth}\\
-\galtprod{\cn{false}}{falsity}\\
-\end{commgrammar}
-
-Built-in operations to work on the data:
-\begin{itemize}
-\item concatenation of strings $S\bbc \cn{conc}(S,S)$
-\item replacing all occurrences of $c$ in $S_1$ with $S_2$ $S\bbc \cn{replace}(S_1,c,S_2)$
-\item equality test: $B\bbc S_1==S_2$
-\item prefix test: $B\bbc \cn{startsWith}(S_1,S_2)$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Example: Semantics of Arithmetic Language}
-\begin{blockitems}{Represented as function from syntax to semantics}
-\item mutually recursive, inductive functions for each non-terminal symbol
-\item compositional: recursive call on immediate subterms of argument
-\end{blockitems}
-
-For numbers $n$: semantics $\sem{n}$ is a string
-\begin{itemize}
-\item $\sem{0}=""$
-\item $\sem{1}="|"$
-\item $\sem{m+n}=\cn{conc}(\sem{m},\sem{n})$
-\item $\sem{m*n}=\cn{replace}(\sem{m},"|",\sem{n})$
-\end{itemize}
-\medskip
-
-For formulas $f$: semantics $\sem{f}$ is a boolean
-\begin{itemize}
-\item $\sem{m\doteq n}=\sem{m}==\sem{n}$
-\item $\sem{m\leq n}=\cn{startsWith}(\sem{n},\sem{m})$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Formal Representation of Syntax and Semantics}
-General idea
-\begin{itemize}
-\item Syntax = context-free grammar = family of inductive data types
-\item Semantics by translation = inductive function
-\end{itemize}
-\end{frame}
+\section{Relative Semantics for BOL}
 
 \begin{frame}\frametitle{Semantics of BOL}
 \begin{center}
@@ -233,7 +274,7 @@ Properties shared by all semantics by translation
 \lec{not part of formal definition, but best practices}
 \begin{itemize}
  \item $l$-declaration translated to $L$-declaration for the same name
- \item ontologies translated declaration-wise
+ \item vocabularies translated declaration-wise
  \item one inductive function for every kind of complex $l$-expression
   \begin{itemize}
    \item individuals, concepts, relations, properties, formulas
@@ -352,6 +393,157 @@ Then both sides of equations act on $E(x_1,\ldots,x_n)$:
 \end{blockitems}
 \end{frame}
 
+\section{Absolute Semantics for BOL}
+
+\begin{frame}\frametitle{Judgments}
+Typing:  \[\Gamma\vdash^{BOL}_V e:E\]
+Deduction: \[\Gamma\vdash^{BOL}_V F\]
+
+Propositions $\prop$:
+\begin{itemize}
+\item $C\sqsubseteq D$, $C\Equiv D$
+\item all three kinds of assertions
+\end{itemize}
+
+Notation:
+\begin{itemize}
+\item We drop the superscript $^{BOL}$ everywhere.
+\item We drop the subscript $_V$ unless we need to use $V$.
+\item We drop the context $\Gamma$ unless we need to use/change $\Gamma$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Typing}
+Trivial intrinsic typing (Church) $\vdash e:^{int} E$
+\begin{itemize}
+\item $E$ is a non-terminal
+\item $e$ an expression derived from $E$
+\end{itemize}
+\medskip
+
+Refined by extrinsic typing (Curry) $\vdash e :^{ext} E$
+\begin{itemize}
+\item $e$ is an individual, i.e., $\vdash e :^{int} I$
+\item $E$ is a concept, i.e., $\vdash E :^{int} C$
+ \glec{where $I$ and $C$ are the non-terminals from the grammar}
+\item $e$ has concept $E$, i.e., $\vdash e \isa E$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Propositions as Types}
+Say also $\vdash p:f$ for proofs $p$ of proposition $f$
+\lec{in particular: $x:f$ in contexts to make local assumptions}
+\medskip
+
+Notation:
+\[\Gamma,\; f \tb\text{instead of} \tb \Gamma,\;p:f\]
+\glec{sufficient if we only state the rules, not build proofs}
+\end{frame}
+
+\begin{frame}\frametitle{Lookup Rules}
+The main rules that need to access the vocabulary:
+\[\rul{f\minn V}{\vdash_V f}\]
+\glec{for assertions or axioms f}
+\medskip
+
+Assumptions in the context are looked up accordingly:
+\[\rul{x:f\minn \Gamma}{\Gamma\vdash f}\]
+\end{frame}
+
+\begin{frame}\frametitle{Rules for Subsumption and Equality}
+Subsumption is an order with respect to equality:
+\[\rul{}{\vdash c\sqsubseteq c}\]
+
+\[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq e}{\vdash c\sqsubseteq e}\]
+
+\[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq c}{\vdash c\Equiv d}\]
+
+Equal concepts can be substituted for each other:
+\[\rul{\vdash c\Equiv d\tb x:C\vdash f(x):\prop \tb \vdash f(c)}{\vdash f(d)}\]
+
+\glec{This completely defines equality.}
+\end{frame}
+
+\begin{frame}\frametitle{Rules relating Instancehood and Subsumption}
+\[\rul{\vdash i\isa c \tb \vdash c\sqsubseteq d}{\vdash i\isa d}\]
+Read:
+\begin{itemize}
+\item if
+ \begin{itemize}
+ \item $i\isa c$
+ \item $c\sqsubseteq d$
+ \end{itemize}
+\item then $i\isa d$
+\end{itemize}
+
+\[\rul{x:I,\,x\isa c\vdash x\isa d}{\vdash c\sqsubseteq d}\]
+Read:
+\begin{itemize}
+\item if
+ \begin{itemize}
+ \item assuming an individual $x$ and $x\isa c$, then $x\isa d$
+ \end{itemize}
+\item then $c\sqsubseteq d$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Induction}
+Consider from before
+\[\rul{x:I,\,x\isa c\vdash x\isa d}{\vdash c\sqsubseteq d}\]
+
+Question: Do we allow proving the hypothesis by checking for each individual $x$?
+ \lec{induction}
+\begin{itemize}
+\item<2-> Open world: no
+\item<3-> Closed world: yes
+ \[\rul{\Gamma[x=i]\vdash f[x=i] \;\text{ for every individual } i}{\Gamma, x:I\vdash f(x)}\]
+ \glec{effectively applicable if only finitely many individuals}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Rules for Union and Intersection of Concepts}
+Union as the least upper bound:
+\[\rul{}{\vdash c\sqsubseteq c\sqcup d} \tb\tb \rul{}{\vdash d\sqsubseteq c\sqcup d }\]
+\[\rul{\vdash c\sqsubseteq h \tb \vdash d\sqsubseteq h}{\vdash c\sqcup d \sqsubseteq h}\]
+\medskip
+
+Dually, intersection as the greatest lower bound:
+\[\rul{}{\vdash c\sqcap d\sqsubseteq c} \tb\tb \rul{}{\vdash c\sqcap d\sqsubseteq d}\]
+\[\rul{\vdash h\sqsubseteq c \tb \vdash h\sqsubseteq d}{\vdash h \sqsubseteq c\sqcap d}\]
+\end{frame}
+
+\begin{frame}\frametitle{Rules for Existential and Universal}
+Easy rules:
+\begin{itemize}
+\item Existential
+\[\rul{\vdash i\,r\,j \tb \vdash j\isa c}{\vdash i \isa \exists r.c }\]
+\item Universal
+\[\rul{\vdash i \isa \forall r.c \tb \vdash i\,r\,j}{\vdash j\isa c}\]
+\end{itemize}
+
+Other directions are trickier:
+
+\begin{itemize}
+\item Existential
+\[\rul{\vdash i \isa \exists r.c \tb j:I,\;i\,r\,j,\;j\isa c\vdash f}{\vdash f}\]
+\item Universal
+\[\rul{j:I,\; i\,r\,j\vdash j\isa c}{\vdash i\isa\forall r.c}\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Selected Rules for Relations}
+Inverse:
+\[\rul{\vdash i \,r\,j}{\vdash j\,r^{-1}\,i}\]
+
+Composition:
+\[\rul{\vdash i \,r\,j \tb \vdash j\,s\,k}{\vdash i\,(r;s)\,k}\]
+
+Transitive closure:
+\[\rul{}{\vdash i \,r^*\,i} \tb \rul{\vdash i\,r\,j \tb \vdash j\,r^* k}{\vdash i\,r^* k}\]
+
+Identity at concept $c$:
+\[\rul{\vdash i \isa c}{\vdash i\,\Delta_c i}\]
+\end{frame}
 
 %\begin{frame}\frametitle{Problems}
 %Next
@@ -438,7 +630,7 @@ Question: How do we define the well-formedness predicates?
 \end{frame}
 
 \begin{frame}\frametitle{Inference System}
-\begin{blockitems}{Define well-formedness via}
+\begin{blockitems}{Define well-formedness via type system}
 \item contexts $\Gamma$ of the form $x_1:E_1,\ldots,x_n:E_n$ for expressions $E_i$
 \item a set of judgments including
  \begin{itemize}
@@ -876,157 +1068,6 @@ define semantics for $l$
 \end{itemize}
 \end{frame}
 
-\section{Absolute Semantics for BOL}
-
-\begin{frame}\frametitle{Judgments}
-Typing:  \[\Gamma\vdash^{BOL}_V e:E\]
-Deduction: \[\Gamma\vdash^{BOL}_V F\]
-
-Propositions $\prop$:
-\begin{itemize}
-\item $C\sqsubseteq D$, $C\Equiv D$
-\item all three kinds of assertions
-\end{itemize}
-
-Notation:
-\begin{itemize}
-\item We drop the superscript $^{BOL}$ everywhere.
-\item We drop the subscript $_V$ unless we need to use $V$.
-\item We drop the context $\Gamma$ unless we need to use/change $\Gamma$.
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Typing}
-Trivial intrinsic typing (Church) $\vdash e:^{int} E$
-\begin{itemize}
-\item $E$ is a non-terminal
-\item $e$ an expression derived from $E$
-\end{itemize}
-\medskip
-
-Refined by extrinsic typing (Curry) $\vdash e :^{ext} E$
-\begin{itemize}
-\item $e$ is an individual, i.e., $\vdash e :^{int} I$
-\item $E$ is a concept, i.e., $\vdash E :^{int} C$
- \glec{where $I$ and $C$ are the non-terminals from the grammar}
-\item $e$ has concept $E$, i.e., $\vdash e \isa E$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Propositions as Types}
-Say also $\vdash p:f$ for proofs $p$ of proposition $f$
-\lec{in particular: $x:f$ in contexts to make local assumptions}
-\medskip
-
-Notation:
-\[\Gamma,\; f \tb\text{instead of} \tb \Gamma,\;p:f\]
-\glec{sufficient if we only state the rules, not build proofs}
-\end{frame}
-
-\begin{frame}\frametitle{Lookup Rules}
-The main rules that need to access the vocabulary:
-\[\rul{f\minn V}{\vdash_V f}\]
-\glec{for assertions or axioms f}
-\medskip
-
-Assumptions in the context are looked up accordingly:
-\[\rul{x:f\minn \Gamma}{\Gamma\vdash f}\]
-\end{frame}
-
-\begin{frame}\frametitle{Rules for Subsumption and Equality}
-Subsumption is an order with respect to equality:
-\[\rul{}{\vdash c\sqsubseteq c}\]
-
-\[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq e}{\vdash c\sqsubseteq e}\]
-
-\[\rul{\vdash c\sqsubseteq d \tb \vdash d\sqsubseteq c}{\vdash c\Equiv d}\]
-
-Equal concepts can be substituted for each other:
-\[\rul{\vdash c\Equiv d\tb x:C\vdash f(x):\prop \tb \vdash f(c)}{\vdash f(d)}\]
-
-\glec{This completely defines equality.}
-\end{frame}
-
-\begin{frame}\frametitle{Rules relating Instancehood and Subsumption}
-\[\rul{\vdash i\isa c \tb \vdash c\sqsubseteq d}{\vdash i\isa d}\]
-Read:
-\begin{itemize}
-\item if
- \begin{itemize}
- \item $i\isa c$
- \item $c\sqsubseteq d$
- \end{itemize}
-\item then $i\isa d$
-\end{itemize}
-
-\[\rul{x:I,\,x\isa c\vdash x\isa d}{\vdash c\sqsubseteq d}\]
-Read:
-\begin{itemize}
-\item if
- \begin{itemize}
- \item assuming an individual $x$ and $x\isa c$, then $x\isa d$
- \end{itemize}
-\item then $c\sqsubseteq d$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Induction}
-Consider from before
-\[\rul{x:I,\,x\isa c\vdash x\isa d}{\vdash c\sqsubseteq d}\]
-
-Question: Do we allow proving the hypothesis by checking for each individual $x$?
- \lec{induction}
-\begin{itemize}
-\item<2-> Open world: no
-\item<3-> Closed world: yes
- \[\rul{\Gamma[x=i]\vdash f[x=i] \;\text{ for every individual } i}{\Gamma, x:I\vdash f(x)}\]
- \glec{effectively applicable if only finitely many individuals}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Rules for Union and Intersection of Concepts}
-Union as the least upper bound:
-\[\rul{}{\vdash c\sqsubseteq c\sqcup d} \tb\tb \rul{}{\vdash d\sqsubseteq c\sqcup d }\]
-\[\rul{\vdash c\sqsubseteq h \tb \vdash d\sqsubseteq h}{\vdash c\sqcup d \sqsubseteq h}\]
-\medskip
-
-Dually, intersection as the greatest lower bound:
-\[\rul{}{\vdash c\sqcap d\sqsubseteq c} \tb\tb \rul{}{\vdash c\sqcap d\sqsubseteq d}\]
-\[\rul{\vdash h\sqsubseteq c \tb \vdash h\sqsubseteq d}{\vdash h \sqsubseteq c\sqcap d}\]
-\end{frame}
-
-\begin{frame}\frametitle{Rules for Existential and Universal}
-Easy rules:
-\begin{itemize}
-\item Existential
-\[\rul{\vdash i\,r\,j \tb \vdash j\isa c}{\vdash i \isa \exists r.c }\]
-\item Universal
-\[\rul{\vdash i \isa \forall r.c \tb \vdash i\,r\,j}{\vdash j\isa c}\]
-\end{itemize}
-
-Other directions are trickier:
-
-\begin{itemize}
-\item Existential
-\[\rul{\vdash i \isa \exists r.c \tb j:I,\;i\,r\,j,\;j\isa c\vdash f}{\vdash f}\]
-\item Universal
-\[\rul{j:I,\; i\,r\,j\vdash j\isa c}{\vdash i\isa\forall r.c}\]
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Selected Rules for Relations}
-Inverse:
-\[\rul{\vdash i \,r\,j}{\vdash j\,r^{-1}\,i}\]
-
-Composition:
-\[\rul{\vdash i \,r\,j \tb \vdash j\,s\,k}{\vdash i\,(r;s)\,k}\]
-
-Transitive closure:
-\[\rul{}{\vdash i \,r^*\,i} \tb \rul{\vdash i\,r\,j \tb \vdash j\,r^* k}{\vdash i\,r^* k}\]
-
-Identity at concept $c$:
-\[\rul{\vdash i \isa c}{\vdash i\,\Delta_c i}\]
-\end{frame}
 
 \section{Equivalence of Semantics}
 

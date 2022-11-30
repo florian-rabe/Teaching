@@ -483,7 +483,49 @@ The standard library is the vocabulary containing the following declarations:
 \end{compactitem}
 \end{example}
 
-\paragraph{Contexts}
+\paragraph{Variable Binding}
+Variables are usually introduced by \emph{binders}.
+These are special expression productions that declare a variable and take another expressions, which is the scope of the variable.
+The list of variables that are currently in scope is (also) called \emph{context}.
+
+Typical binders are
+\begin{compactitem}
+\item Quantifiers like $\forall$ and $\exists$.
+\item The let binder.
+\item Description/choice operators, which return an object with certain properties.
+\item The block-sequence operator from programming languages often written as a $;$-separated sequence of statements wrapped in $\{\}$.
+Here each statement may be a variable declaration, in which case the remainder of the current block is its scope.
+\end{compactitem}
+
+If a type system is used, variable declarations $V$ are often typed and written as $x:A$.
+Otherwise, they consist only of the variable name $x$.
+
+\begin{example}\label{ex:css3}
+We can extend Ex.~\ref{ex:css2} with expression productions that bind variables:
+\begin{commgrammar}
+\gprod{Voc}{\rep{Decl}}{list of declarations}\\
+\gprod{Decl}{id:\rep{Type}\to Type}{typed function symbols}\\
+\galtprod{id:\rep{Type}\to FORM}{typed predicate symbols}\\
+\galtprod{id:TYPE}{type symbols}\\
+\gprod{VarDecl}{id: Type}{typed variables}\\
+\gprod{Context}{\rep{VarDecl}}{contexts}\\
+\gprod{Type}{id}{reference to a type symbol}\\
+\gprod{Expr}{id(\rep{Expr})}{application of a function symbol}\\
+\galtprod{id}{reference to a variable}\\
+\galtprod{\kw{the}\, VarDecl\,\kw{such}\,\kw{that}\,Form}{description}\\
+\galtprod{\kw{let}\, VarDecl = Expr\,\kw{in}\,Expr}{let binding}\\
+\gprod{Form}{id(\rep{Expr})}{application of a predicate symbol}\\
+\galtprod{\forall \, VarDecl.Form}{universal quantification}\\
+\galtprod{\exists \, VarDecl.Form}{existential quantification}\\
+\end{commgrammar}
+
+For example, in $\forall x:a.F$, the variable $x$ may occur in the formula $F$.
+In $let\,x:int=E_1\,in\,E_2$, the variable $x$ may occur in $E_2$ but not in $E_1$.
+This must be enforced by the type checker, which must move the variable declaration into the context when traversing into the respective subexpression.
+\end{example}
+
+
+\paragraph{Vocabularies vs. Contexts}
 The Context is often split into two components:
 \begin{compactitem}
 \item The vocabulary contain the symbol declarations.
@@ -506,6 +548,7 @@ During context-sensitive traversal, any declaration that is found is remembered 
 Identifier references are only legal if the referenced identifier is in the Context with the appropriate arity, type, etc.
 
 The vocabulary stores all toplevel declarations of the current development.
+These are often called \emph{symbols} or \emph{constants}.
 It is often split over multiple files and packages using imports.
 Users often package up a vocabulary in order to share it with other users.
 Consequently, it is usually a \emph{set} of declarations and declarations are identified via unique names.
@@ -514,7 +557,7 @@ Because the declarations in a vocabulary can be referenced by anybody using that
 Because the vocabulary can become big, it is often implemented as a hash table mapping qualified names to declarations.
 When checking a vocabulary, each declaration is checked relative to the vocabulary of preceding declarations. (In languages that allow mutual recursion, it may even be that each declaration is checked relative to the entire vocabulary.)
 
-The context stores all local variable declarations encountered while traversing a single declaration or expression.
+The context stores all local \emph{variable} declarations encountered while traversing a single declaration or expression.
 The scope of each declaration is limited to the remainder of the declaration or subexpression.
 Consequently, variables can usually be renamed easily without changing the semantics.
 When checking a declaration, the context is initially empty and grows as variable declarations are traversed.
@@ -541,6 +584,23 @@ Size & often large & typically small \\
 Typical implementation & hash table & list \\
 \end{tabular}
 \caption{Commonalities and Differences between the two kinds of Context}\label{fig:vocctx}
+\end{center}
+\end{figure}
+
+The vocabulary is almost always more expressive than the context: For every a variable declaration, there is a corresponding symbol declaration but not the other way round.
+Fig.~\ref{fig:declsex} gives some examples.
+
+\begin{figure}[hbt]
+\begin{center}
+\begin{tabular}{l|ll}
+& vocabulary & context \\
+\hline
+BOL & concepts, etc. & none \\
+SFOL & type, function, predicate & only nullary functions \\
+SQL & table, column, row & none \\
+Scala & class, type, function, value & type (restricted), value \\
+\end{tabular}
+\caption{Kind of declarations in some Languages}\label{fig:declsex}
 \end{center}
 \end{figure}
 
