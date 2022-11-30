@@ -382,6 +382,7 @@ Usually authors of a paper or textbook briefly mention their preferred notation 
 
 \section{Context-Sensitive Syntax}
 
+\paragraph{Principles}
 It is common to define a language as the set of words that can be produced from the syntax, i.e., from a distinguished non-terminal (the start symbol) of the context-free grammar.
 It is common to define a context-sensitive language as a special case: the set of words that can be produced from a context-sensitive grammar.
 
@@ -481,6 +482,67 @@ The standard library is the vocabulary containing the following declarations:
 \item predicate symbols: $equals: Nat\,Nat\to FORM$, $lesseq: Nat\,Nat\to FORM$
 \end{compactitem}
 \end{example}
+
+\paragraph{Contexts}
+The Context is often split into two components:
+\begin{compactitem}
+\item The vocabulary contain the symbol declarations.
+\item The context contains variable declarations.
+\end{compactitem}
+They are summarized in Fig.~\ref{fig:vocctx}.
+
+\begin{terminology}
+The word \emph{context} is overloaded.
+It is used both as a generic term for
+\begin{compactitem}
+\item any data structure that is carried through a syntax traversal and
+\item for the special case of such a data structure that collects variable declarations.
+\end{compactitem}
+In this section, we write the former with an upper-case letter for clarity.
+\end{terminology}
+
+Both vocabularies and contexts store declarations that are used later on.
+During context-sensitive traversal, any declaration that is found is remembered in the Context.
+Identifier references are only legal if the referenced identifier is in the Context with the appropriate arity, type, etc.
+
+The vocabulary stores all toplevel declarations of the current development.
+It is often split over multiple files and packages using imports.
+Users often package up a vocabulary in order to share it with other users.
+Consequently, it is usually a \emph{set} of declarations and declarations are identified via unique names.
+To make declaration names from different packages unique, namespaces are used to form qualified names --- the namespace is a name for the entire vocabulary, and declarations are referred to by the pair of vocabulary and declaration name.
+Because the declarations in a vocabulary can be referenced by anybody using that vocabulary, the names cannot be changed easily.
+Because the vocabulary can become big, it is often implemented as a hash table mapping qualified names to declarations.
+When checking a vocabulary, each declaration is checked relative to the vocabulary of preceding declarations. (In languages that allow mutual recursion, it may even be that each declaration is checked relative to the entire vocabulary.)
+
+The context stores all local variable declarations encountered while traversing a single declaration or expression.
+The scope of each declaration is limited to the remainder of the declaration or subexpression.
+Consequently, variables can usually be renamed easily without changing the semantics.
+When checking a declaration, the context is initially empty and grows as variable declarations are traversed.
+In particular, each expression is checked relative to a vocabulary and a context.
+
+\begin{figure}[hbt]
+\begin{center}
+\begin{tabular}{l|ll}
+& vocabulary & context \\
+\hline
+Structure & \multicolumn{2}{c}{list of declarations} \\
+Purpose & \multicolumn{2}{c}{declare identifiers to be used later on} \\
+Traversal & \multicolumn{2}{c}{accumulated during traversal} \\
+\hline
+Content & previous declarations & variables traversed in current expression \\
+Needed for & processing declarations and expressions & processing expressions \\
+Distribution & split over files, packages & local to current declaration \\
+Modularity & imports, package manager & only local declarations \\
+Visibility of declarations & entire project & local scope \\
+Order & usually inessential & essential \\
+Renaming & change management problem & no change of semantics ($\alpha$-renaming) \\
+Duplicate names & disambiguated through namespaces & shadowing \\
+Size & often large & typically small \\
+Typical implementation & hash table & list \\
+\end{tabular}
+\caption{Commonalities and Differences between the two kinds of Context}\label{fig:vocctx}
+\end{center}
+\end{figure}
 
 \section{Implementation}
 
