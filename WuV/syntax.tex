@@ -382,7 +382,8 @@ Usually authors of a paper or textbook briefly mention their preferred notation 
 
 \section{Context-Sensitive Syntax}
 
-\paragraph{Principles}
+\subsection{Principles}
+
 It is common to define a language as the set of words that can be produced from the syntax, i.e., from a distinguished non-terminal (the start symbol) of the context-free grammar.
 It is common to define a context-sensitive language as a special case: the set of words that can be produced from a context-sensitive grammar.
 
@@ -401,6 +402,8 @@ A typical context-sensitive syntax includes the following:
 \end{compactitem}
 In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
 In case of $\wff{\Theta}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
+
+In practice, it is most useful to think of a context-sensitive language as a family of context-sensitive languages: for every vocabulary, one language containing the expressions.
 
 \begin{remark}[Terminology]
 %``language system'' is not a standard term. We usually just say ``language''.
@@ -434,7 +437,8 @@ $Voc$ is the special non-terminal $\ThySym$. The special non-terminals for expre
 The well-formedness predicates check that every identifier is used according to its declaration.
 \end{example}
 
-\paragraph{Vocabularies}
+\subsection{Vocabularies}
+
 The vocabularies are typically lists of typically named declarations.
 They introduce the names that can be used to form expressions.
 The expression kinds almost always include formulas.
@@ -457,9 +461,6 @@ Narration & dictionary & phrases, sentences, texts \\
 \end{tabular}
 \end{center}
 
-In practice, it is most useful to think of a language system as family of languages: one language (containing the expressions) for every vocabulary.
-
-\paragraph{Standard Libraries}
 The standard library is a fixed vocabulary that is always present.
 Shifting operators from the grammar into the standard library is a common technique to simplify the language.
 
@@ -483,10 +484,12 @@ The standard library is the vocabulary containing the following declarations:
 \end{compactitem}
 \end{example}
 
-\paragraph{Variable Binding}
+\subsection{Contexts and Variable Binding}
+
+In addition to the vocabulary, there is often a second kind of declarations that is part of the context: variables.
 Variables are usually introduced by \emph{binders}.
 These are special expression productions that declare a variable and take another expressions, which is the scope of the variable.
-The list of variables that are currently in scope is (also) called \emph{context}.
+Somewhat confusingly, the list of variables that are currently in scope is usually (also) called the \emph{context} even though the the overall context consists of the vocabulary and the variable context.
 
 Typical binders are
 \begin{compactitem}
@@ -525,11 +528,12 @@ This must be enforced by the type checker, which must move the variable declarat
 \end{example}
 
 
-\paragraph{Vocabularies vs. Contexts}
-The Context is often split into two components:
+\subsection{Vocabularies vs. Contexts}
+
+The context is often split into two components:
 \begin{compactitem}
-\item The vocabulary contain the symbol declarations.
-\item The context contains variable declarations.
+\item the vocabulary containing the symbol declarations,
+\item the context containing the variable declarations.
 \end{compactitem}
 They are summarized in Fig.~\ref{fig:vocctx}.
 
@@ -540,11 +544,11 @@ It is used both as a generic term for
 \item any data structure that is carried through a syntax traversal and
 \item for the special case of such a data structure that collects variable declarations.
 \end{compactitem}
-In this section, we write the former with an upper-case letter for clarity.
 \end{terminology}
 
 Both vocabularies and contexts store declarations that are used later on.
-During context-sensitive traversal, any declaration that is found is remembered in the Context.
+Thus the overall context is typically a pair of a vocabulary and a variable context.
+During context-sensitive traversal, any declaration that is found is remembered in the overall context.
 Identifier references are only legal if the referenced identifier is in the Context with the appropriate arity, type, etc.
 
 The vocabulary stores all toplevel declarations of the current development.
@@ -557,7 +561,7 @@ Because the declarations in a vocabulary can be referenced by anybody using that
 Because the vocabulary can become big, it is often implemented as a hash table mapping qualified names to declarations.
 When checking a vocabulary, each declaration is checked relative to the vocabulary of preceding declarations. (In languages that allow mutual recursion, it may even be that each declaration is checked relative to the entire vocabulary.)
 
-The context stores all local \emph{variable} declarations encountered while traversing a single declaration or expression.
+The variable context stores all local \emph{variable} declarations encountered while traversing a single declaration or expression.
 The scope of each declaration is limited to the remainder of the declaration or subexpression.
 Consequently, variables can usually be renamed easily without changing the semantics.
 When checking a declaration, the context is initially empty and grows as variable declarations are traversed.
@@ -985,3 +989,7 @@ object Test {
     }
 }
 \end{lstlisting}
+
+\subsection{Implementing Context-Sensitive Checking with Variables}
+
+In languages with variable binding, we have to extend the above implementation: Every checking function for expressions, which used to take a vocabulary, now takes a vocabulary and a variable context.
