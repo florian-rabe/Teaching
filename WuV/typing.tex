@@ -120,15 +120,11 @@ Many practical languages even combine both methods.
 In that case, an intrinsic system is used for the most important high-level types and an extrinsic system is used to refine (some of) the high-level types:
 
 \begin{definition}[Type System]
-A \textbf{type system} consists of
-\begin{compactitem}
- \item a language system,
- \item for some expression symbols $\ExpSym$
-   \begin{compactitem}
-     \item a non-terminal $\TpSym$ --- $\TpSym$-expressions are called the \textbf{types} of $\ExpSym$-expressions
-     \item a binary predicate $\der_\Theta E:T$ on $\ExpSym$-expression $E$ and $\TpSym$-expressions $T$ --- if satisfied, we say that $E$ \textbf{has type} $T$.
-   \end{compactitem}
-\end{compactitem}
+A \textbf{type system} for a context-free syntax consists of provides for some expression symbols $\ExpSym$
+ \begin{compactitem}
+   \item a non-terminal $\TpSym$ --- $\TpSym$-expressions are called the \textbf{types} of $\ExpSym$-expressions
+   \item a binary predicate $\der_\Theta E:T$ on $\ExpSym$-expression $E$ and $\TpSym$-expressions $T$ --- if satisfied, we say that $E$ \textbf{has type} $T$.
+ \end{compactitem}
 \end{definition}
 
 We can now recover the intuitions from above as special cases:
@@ -157,6 +153,77 @@ Moreover, types like $set\to prop$ can be allowed as the types of unary predicat
 
 Extrinsic typing is used only for $\ExpSym=set$: we have $\TpSym=set$ and the typing relation is the elementhood relation $\in$ between sets.
 \end{example}
+
+\begin{example}
+In some sense every language has a type system.
+What is commonly called an untyped language, is technically an intrinsically typed language with only one type.
+
+However, in practice, almost all of this languages have more than one type or some kind weak of additional extrinsic typing.
+For example, untyped first-order logic really has two intrinsic types: terms and propositions.
+Python has one intrinsic type of expressions, but these are extrinsically subdivided into lists, dictionaries, integers, etc.
+\end{example}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Variable Contexts}
+
+In the presence of a type system, we often use typing in context.
+
+\begin{definition}[Context]
+A variable declaration is of the form $x:A$ for an identifier $x$ and a type $A$.
+A variable context is a list of variable declarations.
+
+An expression in context $\Gamma$ may additionally use the variable from $\Gamma$.
+We write $\Gamma \der_\Theta E:A$ to say that expression $E$ has type $A$ in context $\Gamma$ over vocabulary $\Theta$.
+\end{definition}
+
+\begin{example}
+Consider the language from Ex.~\ref{ex:css3} with the standard library from Ex.~\ref{ex:css2}.
+Then $x:Nat,y:Nat \der equals(x,y):FORM$ is a formula in context.
+\end{example}
+
+\begin{example}
+We can also use the non-terminal expression symbols as types.
+For example, BOL has no variable binding and therefore no contexts in the grammar.
+But we still have at least contexts for the intrinsic type system given by the grammar.
+For example, we can use a context $c:C,d:C$ for two concept variables and give the formula $c:C,d:C\der c\sqsubseteq d : F$.
+\end{example}
+
+In general, for any context-free grammar, we can use the non-terminals as intrinsic types and form contexts.
+Then $x:N$ means that $x$ is an arbitrary word derived from the non-terminal $N$.
+Such contexts are very common when talking about a language. We speak of meta-contexts.
+For example, in BOL, we might say ``Given a concept $c$ and a relation $r$, \ldots'' --- that corresponds to using the context $c:C,r:R$.
+
+\begin{definition}[Substitution]
+Given two contexts $\Gamma$ and $\Delta$, a substitution provides for every variable $x:A$ exactly one variable assignment $x/e$ where $e$ is an expression from $\Delta$.
+
+For a $\Gamma$-expression $E$, we write $E[\gamma]$ for the $\Delta$-expression resulting from substituting every $x$ in $E$ with the corresponding assignment from $\gamma$.
+
+A substitution is well-typed, written $\gamma:\Gamma\to \Delta$, if every pair of and $x:A$ in $\Gamma$ and $x/e$ in $\gamma$ satisfies $\Delta\der e:A[\gamma]$.
+\end{definition}
+
+\begin{example}[Identity]
+The identity substitution $\id{\Gamma}$ from $\Gamma$ to itself assigns $x/x$ for every $x$ in $\Gamma$.
+
+The mapping $E\mapsto E[\id{\Gamma}]$ is the identity mapping on $\Gamma$-expressions.
+\end{example}
+
+\begin{example}[Composition]
+Given substitutions $\gamma_1:\Gamma_1 \to\Gamma_2$ and $\gamma_2:\Gamma_2\to \Gamma_3$, the composition $\gamma_1;\gamma_2:\Gamma_1\to \Gamma_3$ assigns $x/x[\gamma_1][\gamma_2]$ for every $x$.
+
+The mapping $E\mapsto E[\gamma_1][\gamma_2]$ is the composition of the mappings $E\mapsto E[\gamma_1]$ and $E\mapsto E[\gamma_2]$.
+\end{example}
+
+Virtually every type system satisfies the following property.
+Technically, this must be proved separately for every type system because it is not guaranteed to hold.
+But in practice, a type system that does not satisfy it is simply broken:
+
+\begin{theorem}[Type Preservation]
+Consider a reasonably defined type system.
+
+Given a substitution $\gamma:\Gamma\to \Delta$ and an expression $\Gamma \der E:A$, we have $\Delta\der E[\gamma]:A[\gamma]$.
+\end{theorem}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abstract and Concrete Data Types}
