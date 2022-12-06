@@ -16,7 +16,7 @@ lecture 10, 11 (Nov 22, 24) & data \\
 exercise 5 (Nov 23) & as a group, define an XML schema for BOL; individually extend your BOL implementations with importers/exporters \\
 lecture 12 (Nov 29) & semantics \\
 exercise 6 (Nov 30) & as a group, define primitive types and their string encodings; individually extend your BOL implementations and importer/exporters\\
-lecture 13-14 (Dec 1, 6) & SFOL and relative semantics BOL -> SFOL \\
+lecture 13-15 (Dec 1, 6, 8) & SFOL and relative semantics BOL -> SFOL \\
 exercise 7 (Dec 7) & implement SFOL and BOL -> SFOL\\
 \end{tabular}
 
