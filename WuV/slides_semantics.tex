@@ -276,6 +276,17 @@ see details in the lecture notes
 Extend your implementation of BOL with implementations of SFOL and the translation from BOL to SFOL.
 \end{frame}
 
+\begin{frame}\frametitle{Exercise 8}
+Use an existing absolute SFOL semantics for BOL.
+Concretely this semantics is given in the form of theorem provers like Vampire, E, or Spass.
+These use TPTP as the input format.
+
+So extend your implementation of SFOL with a printer to TPTP format.
+Compose your translation with that printer to translate your example ontology and an example query (a formula to be proved) to a theorem prover.
+
+See \url{https://www.tptp.org/} for the TPTP resources, including the grammar and a web interface to theorem provers.
+\end{frame}
+
 \begin{frame}\frametitle{General Definition}
 A semantics by translation consists of
 \begin{itemize}
