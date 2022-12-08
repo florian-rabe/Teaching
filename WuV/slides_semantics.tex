@@ -119,7 +119,7 @@ and their commutative variants as well as
 
 
 For formulas $f$: rules to determine true formulas
-\[\rul{}{\der N\doteq N} \tb \rul{}{\der N\leq N} \tb \rul{\der L\leq M}{\der L+N\leq M+N}\]
+\[\rul{}{\der N\doteq N} \tb \rul{}{\der 0\leq N} \tb \rul{\der L\leq M}{\der L+N\leq M+N}\]
 \end{frame}
 
 \begin{frame}\frametitle{Example: Absolute Semantics (2)}
@@ -135,7 +135,7 @@ Here: number rules allow
 formula rules allow
 \begin{enumerate}
 \item concluding equality if identical normal forms
-\item reducing $M+1\leq N+1$ to $M\leq N$, repeat until $N\leq N$
+\item reducing $M+1\leq N+1$ to $M\leq N$, repeat until $0\leq N$
 \end{enumerate}
 \end{frame}
 
@@ -276,7 +276,7 @@ see details in the lecture notes
 Extend your implementation of BOL with implementations of SFOL and the translation from BOL to SFOL.
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 8}
+\begin{frame}[fragile]\frametitle{Exercise 8}
 Use an existing absolute SFOL semantics for BOL.
 Concretely this semantics is given in the form of theorem provers like Vampire, E, or Spass.
 These use TPTP as the input format.
@@ -285,6 +285,13 @@ So extend your implementation of SFOL with a printer to TPTP format.
 Compose your translation with that printer to translate your example ontology and an example query (a formula to be proved) to a theorem prover.
 
 See \url{https://www.tptp.org/} for the TPTP resources, including the grammar and a web interface to theorem provers.
+The basic syntax is
+\begin{lstlisting}
+fof(id, type, name : the type).
+fof(id, axiom, the formula).
+fof(id, conjecture, the formula).
+\end{lstlisting}
+where formulas are formed using \lstinline|![X:TYPE]:F|, \lstinline|?[X:TYPE]:F|, \lstinline|F&F|, \lstinline!F|F!, \lstinline|F=>F|, \lstinline|~F|
 \end{frame}
 
 \begin{frame}\frametitle{General Definition}
