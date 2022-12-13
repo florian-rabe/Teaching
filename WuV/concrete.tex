@@ -1,4 +1,4 @@
-We give an SQL-like database language as a language system.
+We give an SQL-like database language as a formal system.
 
 \begin{definition}
 Fig.~\ref{fig:bdl} gives the context-free grammar.
@@ -35,6 +35,9 @@ The vocabulary symbol is $S$. The expression symbols are $T$, $R$, $V$, and $F$.
 \gcomment{cell expressions (i.e., single column, single row--valued queries)}\\
 \gprod{V}{R}{row, but may only contain one column} \\
 \galtprod{\ID(\rep{V})}{built-in function symbol applied to values} \\
+\galtprod{(base\,values)}{as for BOL} \\
+\gcomment{base types}\\
+\gprod{Y}{(base\,types)}{as for BOL} \\
 \gcomment{formulas}\\
 \gprod{F}{V}{boolean value}\\
 \galtprod{V=V}{equality of values}\\
@@ -44,5 +47,5 @@ The vocabulary symbol is $S$. The expression symbols are $T$, $R$, $V$, and $F$.
 \gcomment{Identifiers}\\
 \gprod{\ID}{\text{alphanumeric string}}{}\\
 \end{commgrammar}
-\caption{Syntax of BCL}\label{fig:bdl}
+\caption{Syntax of SQL}\label{fig:bdl}
 \end{figure}
