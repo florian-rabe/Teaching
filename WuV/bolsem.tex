@@ -559,7 +559,7 @@ BOL Syntax $X$ & Semantics $\sem{X}$ in Scala\\
 \hline
 \hline
 ontology & Scala program \\
-$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+$D_1,\ldots,D_n$ & \kw{object} $Program\,\{P,\,\sem{D_1},\ldots,\sem{D_n}\}$ \\
 \hline
 BOL declaration ($C$, $R$, $P$ atomic) & Scala declaration \\
 \kw{individual}\,$i$ & val $i$ = "$i$"; individuals += $i$ \\
@@ -603,13 +603,13 @@ $R_1 \cap R_2$ & $\sem{R_1}$.inter($\sem{R_2}$)\\
 $R_1 ; R_2$ &  \{val r1 = $\sem{R_1}$; val r2 = $\sem{R_2}$; val e = new HashSet[(String,String)]; \\
             & \tb r1.foreach(x $\rA$ r2.foreach(y $\rA$ if (x.\_2 == y.\_1) e += (x.\_1,y.\_2))); e\}\\
 $R^{-1}$    & \{val r = new HashSet[(String,String)]; $\sem{R}$.foreach(x $\rA$ r += (x.\_2,x.\_1)); r\}\\
-$R^*$          & (omitted)\\
+$R^*$          & \{val r = $\sem{R}$; var e = $\sem{\Delta_\top}$; \kw{while} (!equal(comp(e,r), e)) \{e = comp(e,r)\}; e\}\\
 $\Delta_C$     & \{val r = new HashSet[(String,String)]; $\sem{C}$.foreach(x $\rA$ r += (x,x)); r\}\\
 \hline
 Property of type $T$ & HashSet[(String,T)] object\\
 $i$ & $i$\\
 \end{tabular}
-\caption{Interpretation Function for BOL into Scala}\label{fig:bolsem:scala}
+\caption{Interpretation Function for BOL into Scala (assuming functions equal and comp on relations)}\label{fig:bolsem:scala}
 \end{figure}
 
 \begin{remark}[Scala Syntax]

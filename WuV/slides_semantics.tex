@@ -444,6 +444,131 @@ We discuss
 see details in the lecture notes
 \end{frame}
 
+\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
+We discuss
+\begin{itemize}
+\item the grammar of a Scala-like language
+\item the translation from BOL to it
+\item the limitations of the translation
+\end{itemize}
+see details in the lecture notes
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Exercise 9}
+Choose a parser generator for your programming language.
+Then extend your implementation with generated parser for BOL.
+
+Write your example ontology in BOL and parse it into BOL.
+\end{frame}
+
+\section{Situational Relative Semantics}
+
+\begin{frame}\frametitle{Situational vs. Generic Relative Semantics}
+\begin{blockitems}{Generic relative semantics}
+\item vocabularies mapped to vocabularies, expressions to expressions
+\item abstract symbols in input vocabulary yield abstract symbols in output vocabulary
+\item examples:
+ \begin{itemize}
+ \item all BOL translations so far
+ \item compiling a programming language to another language
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Situational relative semantics}
+\item uninterpreted symbols in vocabulary given concrete semantics
+\item situation = maps every symbols to its concrete semantics
+\item expressions interpreted relative to fixed situation
+\item examples
+ \begin{itemize}
+ \item interpreting a program \glec{situation = input+run-time environment}
+ \item interpreting logical formulas \glec{situation = model}
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Interpreted vs. Uninterpreted Symbols}
+\begin{blockitems}{Interpreted = symbols with fixed intended semantics}
+\item base types and their operations \glec{integer, etc.}
+\item concrete data types \glec{enumerations, inductive types}
+\item defined symbols \glec{i.e., abbreviations}
+\end{blockitems}
+
+\begin{blockitems}{Uninterpreted = other symbols}
+\item e.g, $a:\TYPE,\;f:a\to a$, etc.
+\item semantics narrowed down by axioms \lec{possibly underspecified}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Approaches to Uninterpreted Symbols}
+Broad spectrum
+\begin{itemize}
+\item Computation: typically only interpreted symbols
+ \glec{programs can be run directly}
+\item Deduction: typically only uninterpreted symbols
+ \glec{focus on studying the possibly choices of interpretations}
+\end{itemize}
+
+Combinations
+\begin{itemize}
+\item reasoning about programs \glec{e.g., functions with pre-/postconditions}
+\item logics with built-in base types
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Vocabulary vs. Situation}
+\begin{blockitems}{Vocabulary: rules of the world}
+\item type $a$
+\item operation $f:a\to a$
+\item relations $r:a\to \prop$
+\item axioms $F$ about $f,r$
+\end{blockitems}
+
+\begin{blockitems}{Situation: one concrete world $S$}
+\item specific set $S_a$
+\item specific function $S_f$ from $S_a$ to $S_a$
+\item specific subset $S_r$ of $S_a$
+\item proof that $F$ holds about $S_f$, $S_r$
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Situations}
+\begin{blockitems}{Structure}
+\item provides interpretation to every abstract symbol in vocabulary
+\item abstract symbols in input vocabulary yield abstract symbols in output vocabulary
+\item examples:
+ \begin{itemize}
+ \item all BOL translations so far
+ \item compiling a programming language to another language
+ \end{itemize}
+\end{blockitems}
+
+\begin{center}
+\begin{tabular}{l|ll}
+Aspect & Abstract Vocabulary & Situation \\
+\hline
+ontology & TBox & initial situation through ABox \\
+data & schema & database \\
+deduction & theory & model \\
+computation & program & environment \\
+narration & dictionary & domain-specific definitions \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Initial Semantics}
+Default situation that is induced by vocabulary itself
+\begin{itemize}
+\item inhabitants of a type are exactly the terms of that type
+\item functions map exactly as given by axioms
+\end{itemize}
+
+Special case: ABox
+\begin{itemize}
+\item individuals exactly the ones that are declared
+\item concepts, relations hold exactly if assertion declared
+\end{itemize}
+\end{frame}
+
 \section{Absolute Semantics for BOL}
 
 \begin{frame}\frametitle{Judgments}

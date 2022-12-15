@@ -21,10 +21,11 @@ exercise 7 (Dec 7) & implement SFOL and BOL -> SFOL\\
 lecture 16 (Dec 13) & SQL and relative semantics BOL -> SQL \\
 exercise 8 (Dec 14) & absolute SFOL semantics via TPTP and theorem proving, borrowing the SFOL semantics for BOL\\
 lecture 17 (Dec 15) & Scala and relative semantics BOL -> Scala \\
+lecture 18 (Dec 20) & relative semantics BOL -> English \\
+exercise 9 (Dec 21) & finish Ex. 8, parser generator for BOL\\
 \end{tabular}
 
 Tentative:
-lecture 13-18 & BOL semantics by translation \\
 lecture 19-20 & BOL absolute semantics \\
 lecture 21-22 & semantics abstractly \\
 lecture 23-24 & querying \\

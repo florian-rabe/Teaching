@@ -10,15 +10,15 @@ The vocabulary symbol is $P$. The expression symbols are $Y$, $V$, and $F$.
 \gcomment{Vocabularies: Programs}\\
 \gprod{P}{\rep{D}}{}\\
 \gcomment{Declarations}\\
-\gprod{D}{\kw{class}\; \ID[\rep{\ID}]\,\kw{extends}\,\rep{\ID}\{\rep{d}\}}{class definition}\\
+\gprod{D}{\kw{class}\; \ID[\rep{X}]\,\kw{extends}\,\rep{\ID}\{\rep{d}\}}{class definition}\\
 \galtprod{\kw{object}\; \ID\,\kw{extends}\,\rep{\ID}\{\rep{d}\}}{object definition}\\
 \gprod{d}{\kw{val}\;\ID:Y\opt{=T}}{immutable field in a class/object, possibly abstract}\\
 \galtprod{\kw{var}\;\ID:Y=T}{mutable field in a class, with initial value}\\
 \gcomment{Type expressions}\\
-\gprod{Y}{\ID}{atomic type (class)} \\
+\gprod{Y}{\ID[\rep{X}]}{atomic type (class) applied to type arguments} \\
 \galtprod{\ID}{built-in type (booleans, int, etc.)} \\
+\galtprod{X}{type variable} \\
 \galtprod{Y=>Y}{function types} \\
-\galtprod{Y[\rep{Y}]}{type operator applied to type arguments} \\
 \gcomment{Term expressions}\\
 \gprod{T}{\ID}{atomic value (class, value, variable)} \\
 \galtprod{\ID}{built-in value (boolean operators, etc.)} \\
