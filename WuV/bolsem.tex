@@ -728,9 +728,9 @@ $F$ & $\sem{F}$.\\
 \hline
 Formula & sentence \\
 $C_1 \Equiv C_2$ & $\sem{C_1}$ is the same as $\sem{C_2}$.\\
-$C_1 \sqsubseteq C_2$ & everything that $\sem{C_1}$s also $\sem{C_2}$s.\\
+$C_1 \sqsubseteq C_2$ & everything that $\sem{C_1}$ also $\sem{C_2}$.\\
 $I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$.\\
-$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$s $\sem{I_2}$.\\
+$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$ $\sem{I_2}$.\\
 $I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
 \hline
 Individual & noun phrase (to be used as a subject or object)\\
@@ -743,20 +743,20 @@ $\bot$ & is no one\\
 $C_1 \sqcup C_2$ & $\sem{C_1}$ or $\sem{C_2}$\\
 $C_1 \sqcap C_2$ & $\sem{C_1}$ and $\sem{C_2}$\\
 %$C_1 \sqcap C_2$ & is a $\sem{C_1}$ that $\sem{C_2}$s & $C_1$ simple\\
-$\forall R.C$    & $\sem{R}$s only things that $\sem{C}$ \\
-$\exists R.C$    & $\sem{R}$s something that $\sem{C}$\\
-$\dom\, R$ & $\sem{R}$s something\\
-$\rng\, R$ & is $\sem{R}$ed by something\\
+$\forall R.C$    & $\sem{R}$ something only if it $\sem{C}$ \\
+$\exists R.C$    & $\sem{R}$ something that $\sem{C}$\\
+$\dom\, R$ & $\sem{R}$ something\\
+$\rng\, R$ & has something that $\sem{R}$ them\\
 $\dom\, P$ & has some $\sem{P}$\\
 \hline
 Relation & transitive verb phrase (to be plugged between subject and object)\\
-$i$ & $i$\\
-$R_1 \cup R_2$ & $\sem{R_1}$s or $\sem{R_2}$s\\
-$R_1 \cap R_2$ & $\sem{R_1}$s and $\sem{R_2}$s\\
-$R_1 ; R_2$ & $\sem{R_1}$s something that $\sem{R_2}$s\\
-$R^{-1}$    & is $\sem{R}$ed by\\
-$R^*$       & $\sem{R}$s something that $\sem{R}$s something and so on that $\sem{R}$s\\
-$\Delta_C$  & $\sem{C}$s and is the same as\\
+$i$ & $i$ + third person singular s\\
+$R_1 \cup R_2$ & $\sem{R_1}$ or $\sem{R_2}$\\
+$R_1 \cap R_2$ & $\sem{R_1}$ and $\sem{R_2}$\\
+$R_1 ; R_2$ & $\sem{R_1}$ something that $\sem{R_2}$\\
+$R^{-1}$    & has something who $\sem{R}$ them and who is \\
+$R^*$       & $\sem{R}$ something that $\sem{R}$ something and so on that $\sem{R}$\\
+$\Delta_C$  & $\sem{C}$ and is the same as\\
 \hline
 Property of type $T$ & property phrase\\
 $i$ & $i$\\
@@ -790,9 +790,9 @@ WuV has creditValue 7.5.\\
 everything that is a male also is a person.\\
 everything that is a instructor also is a person.\\
 everything that teachs is a instructor.\\
-everything that is teached by something is a instructor.\\
+everything that has something that teachs them is a instructor.\\
 has some creditValue is the same as is a course.\\
-everything that is a course also is teached by something that is a instructor.
+everything that is a course also has something that teachs them and who is a instructor.
 \medskip
 
 This English is very clunky of course.

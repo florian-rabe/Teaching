@@ -294,6 +294,48 @@ fof(id, conjecture, the formula).
 where formulas are formed using \lstinline|![X:TYPE]:F|, \lstinline|?[X:TYPE]:F|, \lstinline|F&F|, \lstinline!F|F!, \lstinline|F=>F|, \lstinline|~F|
 \end{frame}
 
+
+\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
+We discuss
+\begin{itemize}
+\item the grammar of an SQL-like language
+\item the translation from BOL to it
+\item the limitations of the translation
+ \begin{itemize}
+ \item partiality, e.g., for concept assertions where the concept is not atomic
+ \item lack of formal axioms in SQL
+ \end{itemize}
+\end{itemize}
+see details in the lecture notes
+\end{frame}
+
+\begin{frame}\frametitle{Computational Semantics of BOL in Scala}
+We discuss
+\begin{itemize}
+\item the grammar of a Scala-like language
+\item the translation from BOL to it
+\item the limitations of the translation
+\end{itemize}
+see details in the lecture notes
+\end{frame}
+
+
+\begin{frame}\frametitle{Concrete Data Semantics of BOL in English}
+We discuss
+\begin{itemize}
+\item the rough design of how natural languages can be seen as a formal systems
+  \begin{itemize}
+  \item grammar book = syntax
+  \item sentences = formulas
+  \item dictionary + common sense statements = standard library
+  \item domain-specific dictionary + sentences = vocabulary
+  \end{itemize}, , 
+\item the translation from BOL to it
+\item the non-compositional aspects of natural language
+\end{itemize}
+see details in the lecture notes
+\end{frame}
+
 \begin{frame}\frametitle{General Definition}
 A semantics by translation consists of
 \begin{itemize}
@@ -321,21 +363,6 @@ Properties shared by all semantics by translation
   \glec{or something very similar}
  \item complex cases (step cases): compositional
 \end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Translation vs. Embedding}
-\begin{blockitems}{Translation}
-\item as above, $l$ and $L$ are at the same level
-\item $l$-declarations represented as $L$-declarations
-\glec{also called shallow embedding}
-\end{blockitems}
-
-\begin{blockitems}{Embedding}
-\item $L$ is used as meta-language to represent $l$
- \glec{e.g., $L$ is programming language to implement $l$}
-\item $l$-declarations represented as $L$-objects using an inductive type
-\glec{also called deep embedding}
-\end{blockitems}
 \end{frame}
 
 \begin{frame}\frametitle{Compositionality}
@@ -430,45 +457,19 @@ Then both sides of equations act on $E(x_1,\ldots,x_n)$:
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
-We discuss
-\begin{itemize}
-\item the grammar of an SQL-like language
-\item the translation from BOL to it
-\item the limitations of the translation
- \begin{itemize}
- \item partiality, e.g., for concept assertions where the concept is not atomic
- \item lack of formal axioms in SQL
- \end{itemize}
-\end{itemize}
-see details in the lecture notes
-\end{frame}
+\begin{frame}\frametitle{Translation vs. Embedding}
+\begin{blockitems}{Translation}
+\item as above, $l$ and $L$ are at the same level
+\item $l$-declarations represented as $L$-declarations
+\glec{also called shallow embedding}
+\end{blockitems}
 
-\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
-We discuss
-\begin{itemize}
-\item the grammar of a Scala-like language
-\item the translation from BOL to it
-\item the limitations of the translation
-\end{itemize}
-see details in the lecture notes
-\end{frame}
-
-
-\begin{frame}\frametitle{Concrete Data Semantics of BOL in English}
-We discuss
-\begin{itemize}
-\item the rough design of how natural languages can be seen as a formal systems
-  \begin{itemize}
-  \item grammar book = syntax
-  \item sentences = formulas
-  \item dictionary + common sense statements = standard library
-  \item domain-specific dictionary + sentences = vocabulary
-  \end{itemize}, , 
-\item the translation from BOL to it
-\item the non-compositional aspects of natural language
-\end{itemize}
-see details in the lecture notes
+\begin{blockitems}{Embedding}
+\item $L$ is used as meta-language to represent $l$
+ \glec{e.g., $L$ is programming language to implement $l$}
+\item $l$-declarations represented as $L$-objects using an inductive type
+\glec{also called deep embedding}
+\end{blockitems}
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{Exercise 9}
