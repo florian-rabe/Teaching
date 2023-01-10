@@ -23,10 +23,10 @@ exercise 8 (Dec 14) & absolute SFOL semantics via TPTP and theorem proving, borr
 lecture 17 (Dec 15) & Scala and relative semantics BOL -> Scala \\
 lecture 18 (Dec 20) & relative semantics BOL -> English \\
 exercise 9 (Dec 21) & finish Ex. 8, parser generator for BOL\\
+lecture 19 (Jan 10) & absolute semantics for BOL \\
 \end{tabular}
 
 Tentative:
-lecture 19-20 & BOL absolute semantics \\
 lecture 21-22 & semantics abstractly \\
 lecture 23-24 & querying \\
 lecture 25-26 & vocabulary morphisms \\

@@ -202,6 +202,32 @@ For formulas $f$: semantics $\sem{f}$ is a boolean
 \end{blockitems}
 \end{frame}
 
+\begin{frame}\frametitle{General Idea of Absolute Semantics}
+\begin{blockitems}{Typical components of an absolute semantics}
+\item a set of questions that can be asked \glec{e.g., judgments or queries}
+\item a definition of what the answers are
+\end{blockitems}
+
+Three Levels:
+\begin{itemize}
+\item Documentation: answers given as text
+\begin{itemize}
+\item pro: easy to read for humans, critical to build intuitions
+\item con: often ambiguous, contradictory, or incomplete
+\end{itemize}
+\item Specification: correct answers defined by rule system \glec{also called calculus or inference system}
+\begin{itemize}
+\item pro: good stepping stone between the other two levels
+\item con: accomplishes the pros of neither of them
+\end{itemize}
+\item Implementation: answers computed by algorithm
+\begin{itemize}
+\item pro: easy to automate, critical for efficiency and scale
+\item con: essentially impossible to understand or analyze
+\end{itemize}
+\end{itemize}
+\end{frame}
+
 \begin{frame}\frametitle{No Perfect Model for Absolute Semantics}
 \begin{itemize}
 \item Machine-actionable requires reduction to finite set of rules
