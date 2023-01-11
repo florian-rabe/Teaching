@@ -24,6 +24,7 @@ lecture 17 (Dec 15) & Scala and relative semantics BOL -> Scala \\
 lecture 18 (Dec 20) & relative semantics BOL -> English \\
 exercise 9 (Dec 21) & finish Ex. 8, parser generator for BOL\\
 lecture 19 (Jan 10) & absolute semantics for BOL \\
+exercise 10 (Jan 11) & implement an absolute semantics (theorem prover) for some fragment of BOL\\
 \end{tabular}
 
 Tentative:

@@ -767,6 +767,17 @@ Identity at concept $c$:
 \[\rul{\vdash i \isa c}{\vdash i\,\Delta_c i}\]
 \end{frame}
 
+\begin{frame}\frametitle{Exercise 10}
+Implement an absolute semantics for BOL for the judgment $\Gamma\vdash F$.
+
+This is too difficult in general. But it becomes doable if we choose a sufficiently simple fragment of BOL, e.g., only
+\begin{itemize}
+\item formulas: $I\mathtt{is-a} C$, $C\sqsubseteq C$
+\item concepts: identifiers, $C\sqcup C$, $\exists R.C$
+\item relations: identifiers
+\end{itemize}
+\end{frame}
+
 %\begin{frame}\frametitle{Problems}
 %Next
 %\begin{itemize}
