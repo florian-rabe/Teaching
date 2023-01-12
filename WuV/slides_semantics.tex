@@ -202,13 +202,26 @@ For formulas $f$: semantics $\sem{f}$ is a boolean
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{General Idea of Absolute Semantics}
-\begin{blockitems}{Typical components of an absolute semantics}
-\item a set of questions that can be asked \glec{e.g., judgments or queries}
-\item a definition of what the answers are
-\end{blockitems}
+\begin{frame}\frametitle{Semantics as Imperfect Modeling}
+\begin{itemize}
+ \item Actual meaning of real-world difficult to model
+ \begin{itemize}
+ \item practical argument: any practically interesting system has too many rules
+  \glec{cf. physics, e.g., three-body problem already chaotic}
+ \item theoretical argument: no language can fully model itself
+  \glec{cf. G\"odel's incompleteness theorems}
+ \end{itemize}
+ \item Practical semantics is approximation of ideal semantics
+ \item Use practical purpose as guide for defining semantics
+  \begin{itemize}
+   \item a set of questions that can be asked \glec{e.g., judgments or queries}
+   \item a definition of what the answers are
+  \end{itemize}
+  \lec{restrict questions according to practical needs}
+\end{itemize}
+\end{frame}
 
-Three Levels:
+\begin{frame}\frametitle{Levels of Semantics}
 \begin{itemize}
 \item Documentation: answers given as text
 \begin{itemize}
@@ -226,43 +239,8 @@ Three Levels:
 \item con: essentially impossible to understand or analyze
 \end{itemize}
 \end{itemize}
-\end{frame}
 
-\begin{frame}\frametitle{No Perfect Model for Absolute Semantics}
-\begin{itemize}
-\item Machine-actionable requires reduction to finite set of rules
- \lec{whatever a rule is}
-\item Does not work for most domains
- \begin{itemize}
- \item practical argument: any practically interesting system has too many rules
-  \glec{cf. physics, e.g., three-body problem already chaotic}
- \item theoretical argument: no language can fully model itself
-  \glec{cf. G\"odel's incompleteness theorems}
- \end{itemize}
-\item Imperfect representation of intended semantics required
-\lec{focus on some \emph{aspect}}
-\end{itemize}
-
-Big question: what aspects to focus on?
-\end{frame}
-
-\begin{frame}\frametitle{Querying as a Guide}
-\begin{blockitems}{Idea}
-\item Very difficult to choose aspects for absolute semantics
-\item Turn problem around
- \begin{itemize}
- \item ask what the practical purpose of the semantics could be
- \item then choose aspects that allow realizing that purpose
- \end{itemize}
-\end{blockitems}
-
-Meta-remark: We do relative semantics first even though absolute semantics conceptually comes first.
-
-\begin{blockitems}{Querying as the Purpose}
-\item Before: identified different kinds of querying
- \lec{focussing on different aspects of knowledge}
-\item Now: each induces a kind of absolute semantics
-\end{blockitems}
+Rule system is sweet spot to connect human- and machine-friendly definitions.
 \end{frame}
 
 
