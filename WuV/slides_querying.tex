@@ -89,6 +89,7 @@ We assume
 \item a semantics $\sem{-}$ from $l$ to $L$
 \item $l$ has propositions
 \item there is an operation $\truelift$ that maps translations of $l$-propositions to $L$-propositions
+ \lec{called truth lifting}
 \item $L$ has semantics with propositions
 \end{itemize}
 
@@ -103,7 +104,7 @@ We define
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{The $\truelift$ operator}
+\begin{frame}\frametitle{The Truth-Lift operator}
 \begin{blockitems}{Problem with type-preserving translation $\sem{-}$}
 \item must translate $F:\prop^l$ to $\sem{F}:\sem{\prop^l}$
 \item but need not satisfy $\sem{\prop^l}=\prop^L$ \\
@@ -116,14 +117,32 @@ We define
 \item then use $\vdash^L \truelift \sem{F}$ to answer $\vdash^l F$
 \end{blockitems}
 
-\begin{blockitems}{Example: standard semantics of SFOL in set theory}
-\item SFOL-propositions: formulas; set theory propositions: truth values
-\item semantics of formula is function from models to truth values
-\item $\truelift$ takes $\sem{F}$ and returns $1$ iff $\sem{F}(M)=1$ for all models $M$
- \glec{standard notation for $\sem{F}(M)=1$: $\sem{F}^M=1$ or $M\models F$}
+\begin{blockitems}{Example: probabilistic semantics with cutoff}
+\item $\prop^l$: propositions; $\prop^L$: truth values
+\item probabilistic semantics: $\sem{\prop^l}=[0;1]$
+\item $\truelift$ maps $p\in [0;1]$ to truth value, e.g., via cutoff: $\truelift p = p\geq 0.75$
 \end{blockitems}
 \end{frame}
   
+\begin{frame}\frametitle{Situational Semantics as Translation}
+\begin{blockitems}{Example: standard semantics of SFOL in set theory}
+\item set theory propositions: truth values $\{0,1\}$
+\item situations (= models): provide interpretations for all vocabulary symbols \\
+\item semantics is model-specific interpretation function: given vocabulary $V$, $V$-model $M$, and $V$-expression $E$, write $\sem{E}_M$ for semantics of $E$ in $M$
+\end{blockitems}
+
+\begin{blockitems}{Reformulate as semantics by translation}
+\item vocabulary $V$ translated to set-theoretical vocabulary containing required components of model
+\item expression $E$ translated to mapping $\sem{E}:M\mapsto \sem{E}_M$
+\end{blockitems}
+
+\begin{blockitems}{Truth-Lift operator defines theorems}
+\item $\sem{\prop^l}$ is set of mappings $\mu$ from models to truth values
+ \glec{standard notation for $\sem{F}(M)=1$: $\sem{F}_M=1$ or $M\models F$}
+\item $\truelift \mu=1$ iff $\mu(M)=1$ for all models $M$ (theorem = true in all models)
+\end{blockitems}
+\end{frame}
+
 \begin{frame}{Breakout question}
 What can go wrong?
 \end{frame}
