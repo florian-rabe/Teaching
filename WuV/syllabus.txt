@@ -27,15 +27,15 @@ lecture 19 (Jan 10) & absolute semantics for BOL \\
 exercise 10 (Jan 11) & implement an absolute semantics (theorem prover) for some fragment of BOL\\
 lecture 20 (Jan 12) & querying\\
 lecture 21 (Jan 17) & querying continued\\
-exercise 11 (Jan 18) & \\
-lecture 22 (Jan 19) & \\
+exercise 11 (Jan 18) & implement a concrete query engine for some fragment of BOL\\
+lecture 22 (Jan 19) & querying continued\\
 cancelled (Jan 24) & \\
 lecture 23 (Jan 25) & \\
-lecture 23 (Jan 26) & \\
+lecture 24 (Jan 26) & \\
 \end{tabular}
 
 Tentative:
-lecture 22-24 & semantics abstractly \\
+lecture 23-24 & semantics abstractly \\
 lecture 25-26 & vocabulary morphisms \\
 lecture 27-28 & languages abstractly \\
 lecture 29 & recap \\
