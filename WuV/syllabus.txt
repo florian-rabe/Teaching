@@ -30,12 +30,11 @@ lecture 21 (Jan 17) & querying continued\\
 exercise 11 (Jan 18) & implement a concrete query engine for some fragment of BOL\\
 lecture 22 (Jan 19) & querying continued\\
 cancelled (Jan 24) & \\
-lecture 23 (Jan 25) & \\
-lecture 24 (Jan 26) & \\
+lecture 23, 24 (Jan 25, 26) & formal systems and semantics abstractly \\ 
+lecture 25 (Jan 31) & vocabulary morphisms for BOL\\
+exercise 12 (Feb 1) & implement vocabulary morphisms for BOL\\
+lecture 27 (Feb 2) &  vocabulary morphisms abstractly\\
+lecture 28 (Jan 7) & formal system translations abstractly\\
+exercise 13 (Feb 8) & introduction, Tetrapod again\\
+lecture 29 (Feb 9) & question hour\\
 \end{tabular}
-
-Tentative:
-lecture 23-24 & semantics abstractly \\
-lecture 25-26 & vocabulary morphisms \\
-lecture 27-28 & languages abstractly \\
-lecture 29 & recap \\
