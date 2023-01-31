@@ -25,16 +25,14 @@ lecture 18 (Dec 20) & relative semantics BOL -> English \\
 exercise 9 (Dec 21) & finish Ex. 8, parser generator for BOL\\
 lecture 19 (Jan 10) & absolute semantics for BOL \\
 exercise 10 (Jan 11) & implement an absolute semantics (theorem prover) for some fragment of BOL\\
-lecture 20 (Jan 12) & querying\\
-lecture 21 (Jan 17) & querying continued\\
+lecture 20-22 (Jan 12, 17, 19) & querying\\
 exercise 11 (Jan 18) & implement a concrete query engine for some fragment of BOL\\
-lecture 22 (Jan 19) & querying continued\\
 cancelled (Jan 24) & \\
 lecture 23, 24 (Jan 25, 26) & formal systems and semantics abstractly \\ 
 lecture 25 (Jan 31) & vocabulary morphisms for BOL\\
 exercise 12 (Feb 1) & implement vocabulary morphisms for BOL\\
-lecture 27 (Feb 2) &  vocabulary morphisms abstractly\\
-lecture 28 (Jan 7) & formal system translations abstractly\\
+lecture 27 (Feb 2) &  vocabulary morphisms in general\\
+lecture 28 (Jan 7) & formal systems abstractly\\
 exercise 13 (Feb 8) & introduction, Tetrapod again\\
 lecture 29 (Feb 9) & question hour\\
 \end{tabular}

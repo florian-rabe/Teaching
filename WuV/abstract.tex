@@ -8,18 +8,35 @@
 A \textbf{formal system} consists of
 \begin{compactitem}
  \item a set $\Voc$ of vocabularies,
- \item for any two vocabularies $V,W$, a set $\VocM(V,W)$ of vocabulary morphisms from $V$ to $W$
  \item for any vocabulary $V$, a set $\Exp_V$ of expressions
- \item for any vocabulary morphism $m\in\VocM(V,W)$, a mapping $\Exp_m:\Exp_V\to \Exp_W$
 \end{compactitem}
 %In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
 %In case of $\wff{\Theta}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
 
+A formal system with morphisms
+\begin{compactitem}
+ \item additionally provides for any two vocabularies $V,W$, a set $\VocM(V,W)$ of vocabulary morphisms from $V$ to $W$
+ \item for any vocabulary morphism $m\in\VocM(V,W)$, a mapping $\Exp_m:\Exp_V\to \Exp_W$
+\end{compactitem}
+
 A formal system with typing
 \begin{compactitem}
 \item additionally provides a relation $\der_V E:E'$ between expression $E,E'\in\Exp_V$.
-\item such that for $m\in\VocM(V,W)$, we have that if $\der_V E:E'$, then $\Exp_m(E):\Exp_m(E')$.
+\item such that for $m\in\VocM(V,W)$, we have that if $\der_V E:E'$, then $\der_W \Exp_m(E):\Exp_m(E')$.
 \end{compactitem}
+
+A formal system with propositions has typing and
+\begin{compactitem}
+\item additionally provides an expressions $\prop$, in which case
+ \begin{itemize}
+ \item expressions $\der_V F:\prop$ are called \emph{propositions} (or formulas)
+ \item if $\der_V F_\prop$, then expressions $\der_V P:F$ are called \emph{proofs} of $F$
+ \item if some proof $P$ of $F$ exists, we also write $\der_V F$
+ \end{itemize}
+\item and now type preservation guarantees for $m\in\VocM(V,W)$ we have that if $\der_V F$, then $\der_W \Exp_m(F)$.
+\end{compactitem}
+
+A formal system with equality has propositions and additionally provides a proposition $E\doteq_T E'$ for some expressions $T$ and all $E,E'\in\Exp_V(T)$.
 \end{definition}
 
 The vocabularies are usually lists of named declarations.
@@ -32,91 +49,181 @@ In that case, the mapping $\Exp_m$ usually arises by replacing every $V$-identif
 A \textbf{translation} from formal system $l$ to formal system $L$ consists of several mappings, all written $\sem{-}$:
 \begin{compactitem}
  \item a vocabulary translation $\Voc_l\to \Voc_T$,
- \item for any two $l$-vocabularies $V,W$, a morphism translation $\VocM(V,W)\to \VocM(\sem{V},\sem{W})$
  \item for any $l$-vocabulary $V$, an expression translation $\Exp_V\to \Exp_{\sem{V}}$
- \item such that for any vocabulary morphism $m\in\VocM(V,W)$ and expression $E\in\Exp_V$, we have $\sem{\Exp^l_m(E)}=\Exp^L_{\sem{m}}(\sem{E})$
 \end{compactitem}
 %In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
 %In case of $\wff{\Theta}{E}$, we call $E$ a \textbf{well-formed} $\ExpSym$-expression over $\Theta$.
 
-If $l$ and $L$ have typing, the translation \textbf{preserves typing} if $\der^l_V E:E'$ implies $\der^L_{\sem{V}}\sem(E):\sem(E')$.
+If $l$ and $L$ have morphisms, a translation \textbf{maps morphisms} if it additionally provides
+\begin{compactitem}
+ \item for any two $l$-vocabularies $V,W$, a morphism translation $\VocM(V,W)\to \VocM(\sem{V},\sem{W})$
+ \item such that for any vocabulary morphism $m\in\VocM(V,W)$ and expression $E\in\Exp_V$, we have $\sem{\Exp^l_m(E)}=\Exp^L_{\sem{m}}(\sem{E})$
+\end{compactitem}
+
+If $l$ and $L$ have typing, the translation \textbf{preserves typing} if $\der^l_V E:E'$ implies $\der^L_{\sem{V}}\sem{E}:\sem{E'}$.
+
+If $l$ and $L$ have typing, the translation \textbf{preserves propositions} if $\sem{\prop^l}=\prop^L$.
+
+If $l$ and $L$ have equality, the translation \textbf{preserves equality} if $\sem{E\doteq_T E'}=\sem{E}\doteq_{\sem{T}}\sem{E'}$.
 \end{definition}
 
-The vocabulary translation usually consists of a semantics prefix and a declaration-wise translation: A $V$-vocabulary $D_1,\ldots D_n$ is translated to $P,D'_1,\ldots,D'_n$ where the $D'_i$ are the translations of the the $D_i$.
+The vocabulary translation usually consists of a semantic prefix and a declaration-wise translation: A $V$-vocabulary $D_1,\ldots D_n$ is translated to $P,D'_1,\ldots,D'_n$ where the $D'_i$ are the translations of the the $D_i$.
+
+If a translation preserves typing and propositions, it automatically preserves truth, i.e., if $\der^L_{\sem{V}}$ implies $\der^L_{\sem{V}}\sem{F}$.
+But the requirement to preserve propositions is often too strong.
+In practice, it is often better to use the following generalization:
+\begin{definition}
+If $l$ and $L$ have propositions, a \textbf{proposition-lifting} is an operation $\truelift:\sem{\prop^l}\to\prop^L$.
+
+A translation with proposition-lifting \textbf{preserves truth} if $\der^l_V F$ implies $\der^L_{\sem{V}}\truelift\sem{F}$.
+\end{definition}
 
 \subsection{Interpretation}
 
 \begin{definition}
-An \textbf{interpretation} of a formal system $l$ consists of the following parts:
+An \textbf{interpretation} $I$ of a formal system $l$ consists of the following parts:
 \begin{compactitem}
- \item for every $l$-vocabulary $V$ a set $Sit(V)$, whose elements are called situations,
- \item for every $l$-vocabulary $V$, every situation $S\in Sit(V)$, a function mapping every $E\in \Exp_V$ to its interpretation $\sem{E}_S$.
+ \item for every $l$-vocabulary $V$ a set $\Sit_V$, whose elements are called situations,
+ \item for every $l$-vocabulary $V$ and every situation $S\in \Sit_V$, a function $I_S$ mapping every $E\in \Exp_V$ to its interpretation $\sem{E}_S$.
 \end{compactitem}
+If there is only one interpretation, the value $I_S(E)$ is often written as $\semm{E}{S}$.
+
+If $l$ has morphisms, the interpretation is called \textbf{institutional} if it additionally provides
+\begin{compactitem}
+ \item for any $l$-morphism $m:V\to W$, a function $\Sit_m\to \Sit_W\to \Sit_V$
+ \item such that for any $E\in\Exp_V$ and $S\in \Sit_W$, we have that $\semm{\Exp_m(E)}{W} = \semm{E}{\Sit_m(S)}$.
+\end{compactitem}
+
+If $l$ has typing, the interpretation is called \textbf{standard} if $\der^l_V E:E'$ implies $\semm{E}{S}\in \semm{E'}{S}$, i.e., types are interpreted as sets and typing as set membership.
+
+If $l$ has propositions, the interpretation is called \textbf{classical} if $\semm{\prop^l}{S}=\{0,1\}$, i.e., propositions are interpreted as truth values.
+
+If $l$ has equality, the interpretation is called \textbf{canonical} if $\semm{E\doteq_T E'}{S}=1$ iff $\semm{E}{S}=\semm{E'}{S}$
 \end{definition}
 
 \section{Semantics}
 
-Both translations and interpretations can be used to assign semantics to a formal system.
-Both are relative either to another formal system or to a situation.
+Semantics can be defined absolutely or relatively.
+In the latter case, both translations and interpretations can be used to assign relative semantics to a formal system.
+Translation are relative to another formal system, interpretations to a situation.
 
-But we can also distinguish semantics by the kinds of questions they answer.
-
-\subsection{Deductive}
-
-\subsection{Computational}
-
-\subsection{Concrete Data}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% connect to querying
-\section{Kinds of Problems}
-
-\subsection{Problems as Intensional Descriptions}
-
-\begin{remark}[Intensional vs. Extensional]
-Consider a set $S$ of objects.
-An intensional description of $S$
-
-An extensional description of $S$
-\end{remark}
-
-\begin{remark}[Single vs. Multi-Variable Problem]
-We can think of 
-\end{remark}
+\subsection{General Case}
 
 \begin{definition}
-A \textbf{problem} is a theory.
-%Problem = domain + intensional solution
+Given a formal system with propositions, a \textbf{deductive semantics} consists of sets $\Thm_V\sq \Exp_V(\prop)$, called the \textbf{theorems}.
+If $F\in\Thm_V$, we also write $\models_V F$.
 
-A \textbf{solution} is a model of the theory.
-% extensional
+If the formal system has typing, the truth judgment defines a deductive semantics by $\Thm_V=\{F\in\Exp_V(\prop)\;|\;\der_V F\}$.
+In that case, we speak of \textbf{soundness} if $\der_V F$ implies $\models_V F$ and of \textbf{completeness} in the reverse case.
 \end{definition}
 
-\begin{center}
-\begin{tabular}{ll}
-Consistency (or satisfiability) & Does $P$ have a solution?\\
-Decision & Is $S$ a solution of $P$? \\
-Solving & Find a solution of $P$.\\
-Enumeration & List all solutions of $P$.\\
-\end{tabular}
-\end{center}
+\begin{definition}
+Given a formal system with equality, a \textbf{computational semantics} consists of a binary relation $\Eval_V\sq\Exp_V\times\Exp_V$.
+We also write $\Eval_V(E)=E'$ as $\der_V E\rewrites E'$.
 
-\begin{example}
-A constraint satisfaction problem
+If $\Eval_V$ is a function and $\der_V E\rewrites E'$ implies $\der E\doteq_T E'$, we call it a \textbf{normal form}.
 
-\end{example}
+If additionally $\der_V E\doteq E'$ iff $\Eval_V(E)=\Eval_V(E')$, we call it a \textbf{canonical form}.
+\end{definition}
 
-\begin{example}
-A search problem
-%Search = problem + transition system
-\end{example}
+\begin{definition}
+Given a formal system with typing and propositions, a \textbf{concrete semantics} consists of a function $\Inst$ that maps propositions $F$ in context $\Gamma$ to a set  $\Inst_V(\Gamma,F)$ of substitutions $\gamma$ such that: $\der_V \gamma:\Gamma$ and $\der_V F[\gamma]$.
+\end{definition}
 
-\begin{example}
-The satisfiability problem
+We speak of an \textbf{absolute} semantics if the above are provided by a system of inference rules for the typing and truth judgments.
 
-\end{example}
+\subsection{Relative Semantics by Translation}
 
-\subsection{Families of Problems}
+Consider a formal system translation from $l$ to $L$ with proposition lifting.
+
+\begin{definition}
+Given a deductive semantics for $L$, we define a deductive semantics for $l$ by
+\[\models^l_V F \tb\miff\tb \models^L_{\sem{V}}\sem{F}.\]
+\end{definition}
+
+\begin{definition}
+Given a computational semantics for $L$, we define a computational semantics for $l$ by
+\[\der^l_V E\rewrites E' \tb\miff\tb \der^L_\sem{V} \sem{E}\rewrites \sem{E'}.\]
+
+This is a well-defined evaluation function only if $\Eval_L$ is and $\Eval^L_\sem{V}(\sem{E})$ is always in the image of $\sem{-}$.
+\end{definition}
+
+\begin{definition}
+Given a concrete semantics for $L$, we define a concrete semantics for $l$ by
+\[\gamma\in \Inst(\Gamma,F) \tb\miff\tb \sem{\gamma}\in\Inst(\sem{\Gamma},\truelift\sem{F}).\]
+\end{definition}
+
+\subsection{Relative Semantics by Interpretation}
+
+Consider a classical interpretation $I$ of formal system $l$.
+We can cast $I$ as a special case of a formal system translation with proposition-lifting under the following practically reasonable assumptions:
+\begin{itemize}
+\item There is (at least implicitly) a formal system $L$ for the background mathematical language.
+\item The situations in $\Sit_V$ are always tuples containing one component for every $V$-symbol.
+\end{itemize}
+
+In that case we define a translation $\ov{I}:l\to L$ as follows:
+\begin{itemize}
+\item Every vocabulary $V$ is mapped to the $L$-vocabulary containing for every $V$-symbol $s$ a declaration of the same name representing the corresponding element in the tuple.
+\item Every $V$-expression $E\in\Exp_V(T)$ is mapped to the function $\ov{I}(E)$ that maps $\Sit_V\ni S \mapsto I_S(E)$.
+\item The proposition lifting is given by \[\truelift\, \ov{I}(F) = 1 \tb\miff \tb I_S(F)=1 \mforall S\in\Sit_V.\]
+\end{itemize}
+
+We can then use that translation to define semantics as above.
+
+In particular, The proposition lifting becomes a lot more obvious if we write $\sem{}$ for $I$ and look at the induced deductive semantics: $\models F$ iff $\semm{F}{S}=1$ for all $S\in\Sit_V$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% connect to querying
+%\section{Kinds of Problems}
+%
+%\subsection{Problems as Intensional Descriptions}
+%
+%\begin{remark}[Intensional vs. Extensional]
+%Consider a set $S$ of objects.
+%An intensional description of $S$
+%
+%An extensional description of $S$
+%\end{remark}
+%
+%\begin{remark}[Single vs. Multi-Variable Problem]
+%We can think of 
+%\end{remark}
+%
+%\begin{definition}
+%A \textbf{problem} is a theory.
+%%Problem = domain + intensional solution
+%
+%A \textbf{solution} is a model of the theory.
+%% extensional
+%\end{definition}
+%
+%\begin{center}
+%\begin{tabular}{ll}
+%Consistency (or satisfiability) & Does $P$ have a solution?\\
+%Decision & Is $S$ a solution of $P$? \\
+%Solving & Find a solution of $P$.\\
+%Enumeration & List all solutions of $P$.\\
+%\end{tabular}
+%\end{center}
+%
+%\begin{example}
+%A constraint satisfaction problem
+%
+%\end{example}
+%
+%\begin{example}
+%A search problem
+%%Search = problem + transition system
+%\end{example}
+%
+%\begin{example}
+%The satisfiability problem
+%
+%\end{example}
+%
+%\subsection{Families of Problems}
 
 %Problem family = problem-valued function
 %Algorithms: global consistency, global decision, global enumeration

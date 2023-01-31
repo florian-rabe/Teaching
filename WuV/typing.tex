@@ -165,7 +165,7 @@ Python has one intrinsic type of expressions, but these are extrinsically subdiv
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Variable Contexts}
+\section{Variable Contexts and Substitutions}
 
 In the presence of a type system, we often use typing in context.
 
@@ -224,6 +224,21 @@ Consider a reasonably defined type system.
 Given a substitution $\gamma:\Gamma\to \Delta$ and an expression $\Gamma \der E:A$, we have $\Delta\der E[\gamma]:A[\gamma]$.
 \end{theorem}
 
+\section{Vocabulary Morphisms}
+
+For every formal system, we can distinguish three kinds of symbols with associated translations.
+
+\begin{center}
+\begin{tabular}{p{3.5cm}|lp{3cm}p{2.5cm}l}
+symbol   & origin  & owner  & examples & translations \\
+\hline
+logical symbols = language symbols & built into language          & language creator  & $\wedge$ in SFOL, $\sqcup$ in BOL & language translations \\
+non-logical symbols = vocabulary symbols & declared in vocabulary & vocabulary author = language user & $\cn{person}$, $\cn{WuV}$ from Ex.~\ref{ex:bol} & vocabulary morphisms \\
+variables              & declared in context  & containing declaration  & $x, y,\ldots$ & substitutions \\
+\end{tabular}
+\end{center}
+
+Vocabulary morphisms behave like substitutions except that they map vocabulary symbols to expressions as opposed to variables.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abstract and Concrete Data Types}
