@@ -32,7 +32,7 @@ lecture 23, 24 (Jan 25, 26) & formal systems and semantics abstractly \\
 lecture 25 (Jan 31) & vocabulary morphisms for BOL\\
 exercise 12 (Feb 1) & implement vocabulary morphisms for BOL\\
 lecture 27 (Feb 2) &  vocabulary morphisms in general\\
-lecture 28 (Jan 7) & formal systems abstractly\\
+lecture 28 (Jan 7) & formal systems and semantics abstractly, continued\\
 exercise 13 (Feb 8) & introduction, Tetrapod again\\
 lecture 29 (Feb 9) & question hour\\
 \end{tabular}
