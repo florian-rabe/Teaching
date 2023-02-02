@@ -1,0 +1,50 @@
+TODO
+
+%Consider the following test
+%
+%vocabulary in BOL by example
+%
+%domain vocabulary:
+%Old =
+%  concept man
+%  concept woman
+%  axiom a1: man union woman = top
+%  axiom a2: man inter woman = empty
+%
+%codomain vocabulary (still to be worked out, supposed to represent transgender change):
+%New =
+%  concept cisman
+%  concept transman
+%  concept ciswoman
+%  concept transwoman
+%  axiom ...
+%
+%vocabulary morphism m maps every domain symbol to corresponding codomain expression
+%actually: maps every domain declaration to a corresponding codomain expression
+%
+%in particular: axiom establishing F is mapped to a proof of m(F)
+%  works best if we
+%    * give names to the axioms
+%    * extend the language with proof expressions
+%
+%Morphism m : V -> W
+%induces compositional mapping of V-expression E to W-expressions m(E)
+%by replacing every reference to a V-symbol s with the W-expression assigned to s by m, i.e., the expression e such that s:=e in s in m
+%
+%Exactly like for substitutions, but acting on the language symbols instead of the variables.
+%
+%gendermatters : Old -> New =
+%  man :=     <some concept expression over New> , e.g., cisman union transman
+%  woman := <some concept expression over New> , e.g., ciswoman union transwoman
+%  a1 := <some proof of (cisman union transman) union (ciswoman union transwoman) = top>
+%  a2 := <some proof of (cisman union transman) inter (ciswoman union transwoman) = empty>
+%
+%sexmatters : Old -> New =
+%  man :=     cisman union transwoman
+%  woman := ciswoman union transman
+%
+%sexandcismatters : Old -> New =
+%  man := cisman
+%  woman := ciswoman
+%  a1 := <some proof of cisman union ciswoman = top>  // which may or may not exist
+%  a1 := <some proof of cisman inter ciswoman = empty>
