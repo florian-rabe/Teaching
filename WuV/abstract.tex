@@ -127,7 +127,9 @@ If additionally $\der_V E\doteq E'$ iff $\Eval_V(E)=\Eval_V(E')$, we call it a \
 \end{definition}
 
 \begin{definition}
-Given a formal system with typing and propositions, a \textbf{concrete semantics} consists of a function $\Inst$ that maps propositions $F$ in context $\Gamma$ to a set  $\Inst_V(\Gamma,F)$ of substitutions $\gamma$ such that: $\der_V \gamma:\Gamma$ and $\der_V F[\gamma]$.
+Given a formal system with typing and propositions, a \textbf{concrete semantics} consists of a function $\Inst$ that maps propositions $F$ in context $\Gamma$ to a set $\Inst_V(\Gamma,F)$.
+
+If there is a deductive sematics, the concrete semantics and the deductive are compatible if every $\gamma\in \Inst_V(\Gamma,F)$ satisfies $\der_V \gamma:\Gamma$ and $\der_V F[\gamma]$.
 \end{definition}
 
 We speak of an \textbf{absolute} semantics if the above are provided by a system of inference rules for the typing and truth judgments.
