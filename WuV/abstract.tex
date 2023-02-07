@@ -48,7 +48,7 @@ In that case, the mapping $\Exp_m$ usually arises by replacing every $V$-identif
 \begin{definition}\label{def:css}
 A \textbf{translation} from formal system $l$ to formal system $L$ consists of several mappings, all written $\sem{-}$:
 \begin{compactitem}
- \item a vocabulary translation $\Voc_l\to \Voc_T$,
+ \item a vocabulary translation $\Voc_l\to \Voc_L$,
  \item for any $l$-vocabulary $V$, an expression translation $\Exp_V\to \Exp_{\sem{V}}$
 \end{compactitem}
 %In case of $\wft{\Theta}$, we call $\Theta$ \textbf{well-formed}.
@@ -138,14 +138,14 @@ Consider a formal system translation from $l$ to $L$ with proposition lifting.
 
 \begin{definition}
 Given a deductive semantics for $L$, we define a deductive semantics for $l$ by
-\[\models^l_V F \tb\miff\tb \models^L_{\sem{V}}\sem{F}.\]
+\[\models^l_V F \tb\miff\tb \models^L_{\sem{V}}\truelift\sem{F}.\]
 \end{definition}
 
 \begin{definition}
 Given a computational semantics for $L$, we define a computational semantics for $l$ by
-\[\der^l_V E\rewrites E' \tb\miff\tb \der^L_\sem{V} \sem{E}\rewrites \sem{E'}.\]
+\[\der^l_V E\rewrites E' \tb\miff\tb \der^L_{\sem{V}} \sem{E}\rewrites \sem{E'}.\]
 
-This is a well-defined evaluation function only if $\Eval_L$ is and $\Eval^L_\sem{V}(\sem{E})$ is always in the image of $\sem{-}$.
+This is a well-defined evaluation function only if $\Eval_L$ is and $\Eval^L_{\sem{V}}(\sem{E})$ is always in the image of $\sem{-}$.
 \end{definition}
 
 \begin{definition}
