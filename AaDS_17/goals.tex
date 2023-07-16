@@ -742,13 +742,14 @@ Because we are only interested in the complexity class of $C$, this is quite sim
 \begin{compactenum}
 \item The while-loop must be repeated $n$-times. So the algorithm is at least linear.
 \item Each iteration of the while-loop requires one comparison, one multiplication, and two assignments.
- These operations take a constant number $c$ of steps.\footnote{Actually, of course, that depends on how they are implemented and whether $product$ becomes larger than the largest $\Int$. In general, arithmetic of larger numbers may take longer.}\\
+ These operations take a constant number $c$ of steps.\footnotemark\\
  So the entire loop takes $c\cdot n$ steps. The value of $c$ does not matter because we can ignore all constant factors. Thus, the entire loop takes $\Theta(n)$ steps.
 \item The assignments in the first two lines and the return statement take constant time each.
 Because $C(n)$ is at least linear, we can ignore them entirely.
 \item Thus, we obtain $C(n)\in \Theta(n)$ as the complexity class of the algorithm.
 \end{compactenum}
 \end{example}
+\footnotetext{Actually, of course, that depends on how they are implemented and whether $product$ becomes larger than the largest $\Int$. In general, arithmetic of larger numbers may take longer.}
 
 Note how all the subtleties described in Sect.~\ref{sec:ad:complex:general} are rounded away by looking at $\Theta$-classes.
 \medskip
@@ -801,12 +802,12 @@ Asymptotic analysis is the dominant form of assessing the complexity of algorith
 It has the huge advantages that it
 \begin{compactitem}
  \item is mostly largely independent of the implementation and the physical machine,
- \item abstract away from minor details that do not significantly affect the quality of the algorithms.
+ \item abstracts away from minor details that do not significantly affect the quality of the algorithms.
 \end{compactitem}
 
 But it has some disadvantages.
 Most importantly, the terms that it ignores can be huge.
-For example, $n+2^{(2^10000)}\in O(n)$ is linear.
+For example, $n+2^{(2^{10000})}\in O(n)$ is linear.
 But the constant term is so huge that an algorithm with that complexity will never terminate in practice.
 
 More formally, $\Oleq{f}{g}$ only means that $f$ is smaller than $g$ for \emph{sufficiently large} input.
@@ -828,7 +829,7 @@ Therefore, complexity analysis is an important tool for the programmer to judge 
 Most of the time this boils down to relatively simple rules of thumb:
 \begin{compactitem} 
  \item Avoid doing something linearly if you can do it logarithmically or in constant time.
- \item Avoid doing something quadratically if you do it quasi-linearly or linearly.
+ \item Avoid doing something quadratically if you can do it quasi-linearly or linearly.
  \item Avoid doing something exponentially if you can do it polynomially.
 \end{compactitem}
 
@@ -989,7 +990,7 @@ Additionally, a system may behave according to its specification, but the user m
 For example, a user may not be aware that her word document stored its previous revision, thus accidentally exposing an early draft.
 
 \paragraph{Maintainability}
-An often-underestimated goal being able to maintain a program.
+An often-underestimated goal is being able to maintain a program.
 Software usually lives for years, often decades, and programmers will come and go during its life time.
 One of the biggest sources of problems can be unclear or undocumented code---even if it is well-designed, correct, and efficient.
 

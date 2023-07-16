@@ -227,7 +227,7 @@ Then we have the straightforward algorithms
 
 \paragraph{Correctness}
 The algorithms directly implement the definitions.
-Thus, correctness---seemingly---obvious.
+Thus, correctness is---seemingly---obvious.
 
 But there is one subtlety: The functions take two arbitrary matrices---there is no way to force the user to pass matrices of the correct dimensions.
 Therefore, we have to state correctness a bit more carefully:
@@ -269,7 +269,7 @@ Moreover, if matrices are split up like that, we can still obtain their product 
 \[\begin{pmatrix} a & b \\ c & d\end{pmatrix}\cdot \begin{pmatrix} e & f \\ g & h\end{pmatrix}=
   \begin{pmatrix} ae+bg & af+bh \\ ce+dg & cf+dh\end{pmatrix}=\begin{pmatrix} p & q \\ r & s\end{pmatrix}\]
 
-Strassen's algorithm works in the general.
+Strassen's algorithm works in the general case.
 But for simplicity, we only consider the case $l=m=n$, i.e., we are multiplying square matrices.
 Then the naive algorithm has complexity $\Theta(n^3)$, and we know the specification has complexity $\Omega(n^2)$.
 The question is to find a solution in between.
@@ -278,7 +278,7 @@ We further simplify to $n=2^k$, i.e., we can recursively subdivide our $2^k$-mat
 Then we can design a recursive algorithm that only needs $k$ nested recursions.
 
 The complexity depends on the details of the implementation.
-Naively, computing $p,q,r,s$ requires $8$ recursive calls to multiplications and $4$ additions of $2^{k-1}$-matrices.
+Naively, computing $p,q,r,s$ requires $8$ recursive calls to multiplication and $4$ additions of $2^{k-1}$-matrices.
 That yields
  \[C(n)=8\cdot C(n/2) + \Theta(n^2) = \ldots = 8^k\cdot C(1)+\Theta(n^2)\]
 Because $k=\log_2 n$ and $C(1)\in O(1)$, that yields $C(n)\in\Theta(n^{\log_2 8})=\Theta(n^3)$.
