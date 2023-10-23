@@ -3,7 +3,8 @@
 \begin{frame}\frametitle{Typical Structure of a Formal System}
 Vocabularies
 \begin{itemize}
-\item lists of declarations
+\item vocabularies $V$ = lists of declarations
+\item vocabulary morphisms $m:V\to W$ = lists of definitions of $V$-identifiers in terms of $W$-expressions
 \end{itemize}
 
 Declarations
@@ -20,6 +21,7 @@ Expressions
 \item relative to vocabulary \glec{names occur as base cases}
 \item formulas as special case
 \end{itemize}
+Morphisms $m$ map $V$-expressions to $W$-expressions (homomorphic extension)
 \end{frame}
 
 \begin{frame}\frametitle{Example: Vocabularies and Expressions}
@@ -44,10 +46,11 @@ Narration & dictionary & phrases, sentences, texts \\
 \begin{frame}\frametitle{Components and Well-Formedness}
 \begin{blockitems}{Components of formal system $l$}
  \item context-free syntax
- \item distinguished non-terminal symbol $\ThySym$ \glec{words called \textbf{vocabularies}}
+ \item distinguished non-terminal symbols $\ThySym$ and $\MorSym$ \glec{words called \textbf{vocabularies} and \textbf{morphisms}}
  \item some distinguished non-terminal symbols \glec{words called \textbf{expressions}}
- \item unary predicate $\wft{V}$ on vocabularies $V$ \glec{well-formed vocabulary $V$}
- \item unary predicates $\wff{V}{e}$ \glec{well-formed expressions $e$}
+ \item unary predicate $\wft{V}$ on vocabularies $V$ \glec{well-formed vocabulary}
+ \item ternary predicate $\wfm{m}{V}{W}$ on morphisms $m$ from $V$ to $W$ \glec{well-formed morphism}
+ \item unary predicates $\wff{V}{e}$ \glec{well-formed expressions}
 \end{blockitems}
 
 \begin{blockitems}{Intuition}
@@ -77,6 +80,31 @@ where the $J$'s are judgments
 \glec{leave out $\Gamma$ if empty}
 \end{frame}
 
+\begin{frame}\frametitle{Morphisms}
+\begin{center}
+\begin{tabular}{l|l|l}
+            & static & dynamic \\
+\hline
+introduce identifiers     & vocabularies & morphisms \\
+build context-free syntax & expressions & homomorphic extension\\
+restrict context-sensitively & well-formed & well-formedness preservation\\
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+\item Vocabulary $V$ introduces list of identifiers (of various kinds)
+\item $V$-expressions (of various kinds) are syntax trees using $V$-identifiers as leaves
+\item Well-formed $V$ expressions satisfy additional context-sensitive typing conditions
+\end{itemize}
+
+Homomorphisms $m:V\to W$
+\begin{itemize}
+\item map every $V$-identifier to a $W$-expression (of the same kind)
+\item map every $V$-expression to a $W$-expression (of the same kind) by homomorphic extensions
+\item preserve well-formedness
+\end{itemize}
+\end{frame}
+
 \begin{frame}\frametitle{Terminology}
 For an inference system, we define
 \begin{itemize}
@@ -86,8 +114,11 @@ For an inference system, we define
 \item $J$ holds: there is a derivation of $J$
 \end{itemize}
 \[\Voc^l = \{V\,|\,\vdash^l V\}\]
-\[\Exp^l_V(E) = \{e\,|\,\vdash^l_V e:E\}\]
-\[\Exp^l_V = \bigcup_E \Exp^l_V(E)\]
+ \glec{sometimes written $|l|$}
+\[\Mor^l(V,W) = \{m\,|\,\vdash^l m:V\to W\}\]
+ \glec{sometimes written $l(V,W)$}
+\[\Exp^l_V(E) = \{e\,|\,\vdash^l_V e:E\} \tb \Exp^l_V = \bigcup_E \Exp^l_V(E)\]
+\[\Exp^l_m(e):\Exp^l_V \to \Exp^l_W, \tb\text{defined by homomorphic extension}\]
 \end{frame}
 
 \begin{frame}\frametitle{Special Cases}
@@ -687,211 +718,4 @@ Completness: $\vdash^{BOL}_V f$ implied by $\vdash^{Scala}_{\sem{V}}\sem{f}\rewr
  \item complete only if we add induction rule
 \end{itemize}
 }
-\end{frame}
-
-\section{Vocabulary Morphisms}
-
-\begin{frame}\frametitle{Idea}
-Intuition of morphism $m$
-\begin{itemize}
-\item connects two vocabularies, written $m:V\to W$
-\item maps $V$-symbols to $W$-expressions
-\item extends homomorphically to ma $V$-expressions to $W$-expressions
- \glec{replace every symbol with its assignment}
- \glec{like substitutions for contexts}
-\end{itemize}
-
-Purpose
-\begin{itemize}
-\item extend $V$ with entirely new declarations \\
-  special case of $W=V,E$, and maps like identity
-\item extend the vocabulary with definitions \\
-   special case $m:V,E\to V$, and $m$ new symbols to definitions
-\item vocabulary evolution: $V$ is old vocabulary, $W$ new, $m$ interprets $V$ in $W$
-\item transfer legacy content from old to new vocabulary
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Example: The Common Sense Ontology}
-Situation:
-\begin{itemize}
-\item society uses one ontology for common sense knowledge
-\item changes over time
-\end{itemize}
-
-Special aspects:
-\begin{itemize}
-\item unwritten
-\item not actually fully agreed upon
-\item sometimes subject to political debate
-\item no formal ontology language good enough to capture practical nuances
-\item many society members not comfortable with formal languages
-\end{itemize}
-
-\lec{but still always exists implicitly}
-
-Idea: see political proposals as ontology evolution
-\end{frame}
-
-\begin{frame}[fragile]\frametitle{Example: Ontology Change}
-Assume $V$ is BOL vocabulary containing
-\begin{itemize}
-\item concepts $\cn{man}$, $\cn{woman}$
-\item axioms $\cn{man}\sqcup\cn{woman}\equiv \top$ and $\cn{man}\sqcap\cn{woman}\equiv \bot$
-\end{itemize}
-\glec{simplified cis-normative worldview}
-
-and $W$ contains
-\begin{itemize}
-\item concepts $\cn{sexmale}$, $\cn{sexfemale}$, $\cn{cis}$, $\cn{trans}$
-\item appropriate axioms
-\end{itemize}
-\glec{one possible proposal to accommodate transgender people}
-
-Now ontology evolution from $V$ to $W$
-\begin{itemize}
-\item legacy content = any law, policy etc. referring to $V$-concepts
-\item morphism $\cn{gendermatters}$
- \begin{itemize}
- \item $\cn{man}\mapsto (\cn{sexmale}\sqcap\cn{cis})\sqcup (\cn{sexfemale}\sqcap\cn{trans})$
- \item $\cn{woman}\mapsto (\cn{sexfemale}\sqcap\cn{cis})\sqcup (\cn{sexmale}\sqcap\cn{trans})$
- \end{itemize}
-\item alternative morphism $\cn{sexmatters}$
- \begin{itemize}
- \item $\cn{man}\mapsto \cn{sexmale}$
- \item $\cn{woman}\mapsto \cn{sexfemale}$
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Side Note: Knowledge Representation is Apolitical}
-Knowledge representation makes no judgment about which ontologies or morphisms are fair, moral, politically correct, etc.
-
-It can only make judgments about whether an ontology (morphism) is practical, e.g., based on
-\begin{itemize}
-\item well-typedness and consistency of a vocabulary
-\item decidability, efficiency of querying
-\item simplicity, e.g., measured by
-\begin{itemize}
-\item number of declarations or the size of expressions
-\item number of axioms about each symbol
-\end{itemize}
-\item existence and simplicity of morphisms
-\end{itemize}
-
-Languages must allow for expressing whichever knowledge or opinion the user has.
-Users have to judge if an ontology or morphisms is the right one.
-\end{frame}
-
-\begin{frame}\frametitle{BOL Morphisms}
-Syntax: Extend grammar with vocabulary morphisms
-\begin{commgrammar}
-\gprod{M}{\rep{A}: O\to O}{morphisms}\\
-\gprod{A}{\ID\mapsto I}{individual assignment}\\
-\galtprod{\ID\mapsto C}{concept assignment}\\
-\galtprod{\ID\mapsto R}{relation assignment}\\
-\galtprod{\ID \mapsto P}{property assignment}
-\end{commgrammar}
-
-Well-formedness for $M:O\to O'$:
-\begin{itemize}
-\item one assignment $\ID\mapsto E$ for each declaration $\ID$ of $O$
-\item $E$ must be an $O'$-expression of the right type
- \begin{itemize}
- \item individual symbols to individual expressions
- \item concept symbols to concept expressions
- \item relation symbols to relation expressions
- \item property symbols of type $V$ to property expressions of type $V$
- \item what about assertions and axioms? \glec{see below}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Homomorphic Extension}
-Definition:
-\begin{itemize}
-\item Given morphism $m:O\to O'$,
-\item define mapping from $O$-expressions $E$ to $O'$-expressions $m(E)$ by
-\item replacing every $O$-symbol $s$ in $E$ \\ with the expression $s\mapsto E$ provided by $m$.
-\end{itemize}
-
-This is why morphisms must contain exactly one assignment for every $O$-symbol.
-\end{frame}
-
-\begin{frame}\frametitle{BOL Morphisms: What about Axioms?}
-Definition:
-\begin{itemize}
-\item A morphism $m:O\to O'$ is well-formed if
-\item for every axiom/assertion $F$ in $O$,
-\item we have that $m(F)$ is a theorem of $O'$.
-\end{itemize}
-
-Theorem:
-\begin{itemize}
-\item if $\vdash_O E:E'$ then $\vdash_{O'} m(E):m(E')$
-\item if $\vdash_O F$ then $\vdash_{O'} m(F)$
-\end{itemize}
- \lec{morphisms preserve truth}
-
-Mapping axioms works best if
-\begin{itemize}
-\item every axiom/assertion has a name
-\item new expression kind for proofs \glec{given by derivations of some absolute deductive semantics}
- \glec{axioms = proof symbols = atomic proofs}
-\item morphisms contain assignments $a\mapsto P$ of axiom $a$ to proof $P$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Exercise 12}
-Extend your implementation of BOL with vocabulary morphisms.
-This should include a function that computes the homomorphic extension.
-
-Apply it to a test morphism.
-\end{frame}
-
-\begin{frame}\frametitle{Prevalence of Morphisms}
-Deduction
-\begin{itemize}
-\item algebraic hierarchy, e.g., $Monoid\to Group$
-\item theory $\to$ model, e.g., $Group\to Integer$
-\end{itemize}
-Computation
-\begin{itemize}
-\item class extension
-\item interface implementation
-\item type class instances
-\item functor
-\item API adapters
-\end{itemize}
-Concrete data
-\begin{itemize}
-\item between tables: database views
-\item between schemas: database migration
-\end{itemize}
-
-General: module systems for building large vocabularies
-\end{frame}
-
-
-\begin{frame}\frametitle{Example: SFOL Morphisms}
-Morphisms can be defined in the same way for every language.
-
-In an SFOL morphism $m:V\to W$, we assign as follows:
-\begin{itemize}
-\item type symbols $\kw{type}\, y$ to type expressions $Y$
-\item function symbols $\kw{fun}\, f:Y_1 \ldots Y_n \to Y$ to term expressions of type $m(Y)$ with input types $m(Y_1)\ldots m(Y_n)$
-\item predicate symbols $\kw{pred}\, p\sq Y_1 \ldots Y_n$ to formula expressions with input types $m(Y_1)\ldots m(Y_n)$
-\item axioms stating $F$ to proofs of $m(F)$
-\end{itemize}
-
-One subtle issue:
-\begin{itemize}
-\item Problem: SFOL has function/predicate symbols with inputs but no term/formula expressions with inputs
-\item Solution: context represents inputs:
-\begin{itemize}
-\item $f\mapsto [\Gamma] T$ where $\Gamma\vdash_{W} T:m(Y)$
-\item $p\mapsto [\Gamma] F$ where $\Gamma\vdash_{W} F:Formula$
-\end{itemize}
-where $\Gamma=x_1:m(Y_1),\;\ldots\;x_n:m(Y_n)$
-\end{itemize}
 \end{frame}

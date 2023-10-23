@@ -53,18 +53,25 @@ grammar & proper noun & common noun \\
 \end{frame}
 
 \begin{frame}\frametitle{Ontologies as Sets of Triples}
+General idea:
+\begin{itemize}
+\item Turn everything into a relation/property assertion
+\item Represent ontologies as sets of subject-predicate-object triples
+\item Obtain efficient representation of ontologies using RDF and RDFS
+\end{itemize}
+
 \begin{center}
 \begin{tabular}{l|lll}
 Assertion & \multicolumn{3}{c}{Triple} \\
           & Subject & Predicate & Object \\
 \hline
+entities           & \multicolumn{3}{|l}{recover from what's mentioned in assertions} \\
 concept assertion  & "Florian Rabe" & \texttt{is-a} & "instructor" \\
 relation assertion & "Florian Rabe" & "teaches" & "WuV" \\
 property assertion & "WuV" & "has credits" & 7.5 \\
+axiom              & \multicolumn{3}{|l}{only some special cases work, e.g.,}\\
+\tb subconcept axiom & "instructor" & \texttt{subClassOf} & "person"\\
 \end{tabular}
-\medskip
-
-Efficient representation of ontologies using RDF and RDFS standardized special entities.
 \end{center}
 \end{frame}
 
@@ -115,13 +122,217 @@ $\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
 see syntax of BOL in the lecture notes
 \end{frame}
 
+\begin{frame}\frametitle{A Real-Life Ontology Language}
+See online resources for OWL.
+
+Some specialties:
+\begin{itemize}
+\item Slightly different names than in BOL
+\item No strict distinction between individuals, concepts, relations - just resources
+\item Some special axioms, e.g., to make relations transitive
+\item Multiple sublanguages with varying expressivity/implementability: Lite, DL, Full
+\end{itemize}
+
+BOL vs. OWL:
+\begin{itemize}
+\item BOL is simpler, more systematically structured \glec{good for teaching, prototypes}
+\item OWL is the standard \glec{the one to use for better or worse}
+\end{itemize}
+\end{frame}
+
 \begin{frame}\frametitle{Exercise 1}
 As a team, build an ontology for a university.
 
 Using git, OWL, and WebProtege are good ways to start.
+\bigskip
+
+{\small (In WebProtege, set "suffix" to "user supplied name" in "New Entity Settings". Otherwise, it'll get messy when you share your ontology.)}
 \end{frame}
 
-\section{Concrete Knowledge and Typed Ontologies}
+\section{Ontology Morphisms}
+
+\begin{frame}\frametitle{Idea}
+Intuition of morphism $m$
+\begin{itemize}
+\item connects two ontologies, written $m:V\to W$
+\item maps $V$-symbols to $W$-expressions
+\item extends homomorphically to ma $V$-expressions to $W$-expressions
+ \glec{replace every symbol with its assignment}
+ \glec{like substitutions for contexts}
+\end{itemize}
+
+Purpose
+\begin{itemize}
+\item extend $V$ with entirely new declarations \\
+  special case of $W=V,E$, and identity morphism $V\to W$
+\item extend the vocabulary with definitions \\
+   special case $m:V,E\to V$, and $m$ maps new symbols to definitions
+\item ontology evolution: $V$ is old ontology, $W$ new, $m$ interprets $V$ in $W$
+\item transfer legacy content from old to new ontology
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Example: The Common Sense Ontology}
+Situation:
+\begin{itemize}
+\item society uses one ontology for common sense knowledge
+\item changes over time
+\end{itemize}
+
+Special aspects:
+\begin{itemize}
+\item unwritten
+\item not actually fully agreed upon
+\item sometimes subject to political debate
+\item no formal ontology language good enough to capture practical nuances
+\item many society members not comfortable with formal languages
+\end{itemize}
+
+\lec{but still always exists implicitly}
+
+Idea: see political proposals as ontology evolution
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example: Ontology Change}
+Assume $V$ is BOL vocabulary containing
+\begin{itemize}
+\item concepts $\cn{man}$, $\cn{woman}$
+\item axioms $\cn{man}\sqcup\cn{woman}\equiv \top$ and $\cn{man}\sqcap\cn{woman}\equiv \bot$
+\end{itemize}
+\glec{simplified cis-normative world view}
+
+and $W$ contains
+\begin{itemize}
+\item concepts $\cn{sexmale}$, $\cn{sexfemale}$, $\cn{cis}$, $\cn{trans}$
+\item appropriate axioms
+\end{itemize}
+\glec{one possible proposal to accommodate transgender people}
+
+Now ontology evolution from $V$ to $W$
+\begin{itemize}
+\item legacy content = any law, policy etc. referring to $V$-concepts
+\item morphism $\cn{gendermatters}$
+ \begin{itemize}
+ \item $\cn{man}\mapsto (\cn{sexmale}\sqcap\cn{cis})\sqcup (\cn{sexfemale}\sqcap\cn{trans})$
+ \item $\cn{woman}\mapsto (\cn{sexfemale}\sqcap\cn{cis})\sqcup (\cn{sexmale}\sqcap\cn{trans})$
+ \end{itemize}
+\item alternative morphism $\cn{sexmatters}$
+ \begin{itemize}
+ \item $\cn{man}\mapsto \cn{sexmale}$
+ \item $\cn{woman}\mapsto \cn{sexfemale}$
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Side Note: Knowledge Representation is Apolitical}
+Knowledge representation makes no judgment about which ontologies or morphisms are fair, moral, politically correct, etc.
+
+It can only make judgments about whether an ontology (morphism) is practical, e.g., based on
+\begin{itemize}
+\item well-formedness and consistency of an ontology
+\item decidability, efficiency of querying
+\item simplicity, e.g., measured by
+\begin{itemize}
+\item number of declarations or the size of expressions
+\item number of axioms about each symbol
+\end{itemize}
+\item existence and simplicity of morphisms
+\end{itemize}
+
+Languages must allow for expressing whichever knowledge or opinion the user has.
+Users have to judge if an ontology or morphisms is the right one.
+\end{frame}
+
+\begin{frame}\frametitle{BOL Morphisms}
+Syntax: Extend grammar with vocabulary morphisms
+\begin{commgrammar}
+\gprod{M}{\rep{A}: O\to O}{morphisms}\\
+\gprod{A}{\ID\mapsto I}{individual assignment}\\
+\galtprod{\ID\mapsto C}{concept assignment}\\
+\galtprod{\ID\mapsto R}{relation assignment}\\
+\galtprod{\ID \mapsto P}{property assignment}
+\end{commgrammar}
+
+Well-formedness for $M:O\to O'$:
+\begin{itemize}
+\item one assignment $\ID\mapsto E$ for each declaration $\ID$ of $O$
+\item $E$ must be an $O'$-expression of the right type
+ \begin{itemize}
+ \item individual symbols to individual expressions
+ \item concept symbols to concept expressions
+ \item relation symbols to relation expressions
+ \item property symbols of type $V$ to property expressions of type $V$
+ \item what about assertions and axioms? \glec{see below}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Homomorphic Extension}
+Definition:
+\begin{itemize}
+\item Given morphism $m:O\to O'$,
+\item define mapping from $O$-expressions $E$ to $O'$-expressions $m(E)$ by
+\item replacing every $O$-symbol $s$ in $E$ \\ with the expression $s\mapsto E$ provided by $m$.
+\end{itemize}
+
+This is why morphisms must contain exactly one assignment for every $O$-symbol.
+\end{frame}
+
+\begin{frame}\frametitle{BOL Morphisms: What about Axioms?}
+Definition:
+\begin{itemize}
+\item A morphism $m:O\to O'$ is well-formed if
+\item for every axiom/assertion $F$ in $O$,
+\item we have that $m(F)$ is a theorem of $O'$.
+\end{itemize}
+
+Theorem:
+\begin{itemize}
+\item if $\vdash_O E:E'$ then $\vdash_{O'} m(E):m(E')$
+\item if $\vdash_O F$ then $\vdash_{O'} m(F)$
+\end{itemize}
+ \lec{morphisms preserve truth}
+
+Mapping axioms works best if
+\begin{itemize}
+\item every axiom/assertion has a name
+\item new expression kind for proofs \glec{given by derivations of some absolute deductive semantics}
+ \glec{axioms = proof symbols = atomic proofs}
+\item morphisms contain assignments $a\mapsto P$ of axiom $a$ to proof $P$
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Exercise ???}
+Extend your implementation of BOL with vocabulary morphisms.
+This should include a function that computes the homomorphic extension.
+
+Apply it to a test morphism.
+\end{frame}
+
+\begin{frame}\frametitle{Prevalence of Morphisms}
+Deduction
+\begin{itemize}
+\item algebraic hierarchy, e.g., $Monoid\to Group$
+\item theory $\to$ model, e.g., $Group\to Integer$
+\end{itemize}
+Computation
+\begin{itemize}
+\item class extension
+\item interface implementation
+\item type class instances
+\item functor
+\item API adapters
+\end{itemize}
+Concrete data
+\begin{itemize}
+\item between tables: database views
+\item between schemas: database migration
+\end{itemize}
+
+General: module systems for building large vocabularies
+\end{frame}
+
+\section{Typed Ontologies and Database Schmemas}
 
 \begin{frame}\frametitle{Motivation}
 \begin{blockitems}{Main ideas}
@@ -380,8 +591,10 @@ openness of world & tends to be open & tends to be closed \\
 \end{frame}
 
 
-\begin{frame}\frametitle{Exercise 2-3}
+\begin{frame}\frametitle{Exercise 2}
 Extend your ontology with an ABox and axioms.
 Export it in RDF format to a triple store like Virtuoso and run a concrete query in SPARQL.
+
 Export it in OWL format to a reasoner like FaCT++ and run a deductive query.
+Potentially, do this by installing a plugin for a reasoner in your ontology IDE.
 \end{frame}

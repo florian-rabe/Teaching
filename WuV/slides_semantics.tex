@@ -281,6 +281,29 @@ We discuss
 see details in the lecture notes
 \end{frame}
 
+%\begin{frame}\frametitle{Example: SFOL Morphisms}
+%Morphisms can be defined in the same way for every language.
+%
+%In an SFOL morphism $m:V\to W$, we assign as follows:
+%\begin{itemize}
+%\item type symbols $\kw{type}\, y$ to type expressions $Y$
+%\item function symbols $\kw{fun}\, f:Y_1 \ldots Y_n \to Y$ to term expressions of type $m(Y)$ with input types $m(Y_1)\ldots m(Y_n)$
+%\item predicate symbols $\kw{pred}\, p\sq Y_1 \ldots Y_n$ to formula expressions with input types $m(Y_1)\ldots m(Y_n)$
+%\item axioms stating $F$ to proofs of $m(F)$
+%\end{itemize}
+%
+%One subtle issue:
+%\begin{itemize}
+%\item Problem: SFOL has function/predicate symbols with inputs but no term/formula expressions with inputs
+%\item Solution: context represents inputs:
+%\begin{itemize}
+%\item $f\mapsto [\Gamma] T$ where $\Gamma\vdash_{W} T:m(Y)$
+%\item $p\mapsto [\Gamma] F$ where $\Gamma\vdash_{W} F:Formula$
+%\end{itemize}
+%where $\Gamma=x_1:m(Y_1),\;\ldots\;x_n:m(Y_n)$
+%\end{itemize}
+%\end{frame}
+
 \begin{frame}\frametitle{Exercise 7}
 Extend your implementation of BOL with implementations of SFOL and the translation from BOL to SFOL.
 \end{frame}
