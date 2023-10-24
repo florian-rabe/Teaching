@@ -39,7 +39,7 @@ But as a general rule, every \textbf{ontology} declares
  \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
  \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
  \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
- \item \textbf{axioms} --- statements about relations between concepts, typically in the form subconcept of statements like "instructor" $\sqsubseteq$ "person"
+ \item \textbf{terminological axioms} --- statements about relations between concepts, typically in the form subconcept of statements like "instructor" $\sqsubseteq$ "person"
 \end{compactitem}
 
 All assertions can be understood and spoken as subject-predicate-object \textbf{triples} as follows:
@@ -63,10 +63,10 @@ In advanced languages, it is possible that the ontology even introduces its own 
 
 Ontologies are often divided into two parts:
 \begin{compactitem}
- \item The \textbf{abstract} part contains everything that holds in general independent of which individuals: concepts, relations, properties, and axioms.
+ \item The \textbf{abstract} part contains everything that holds in general independent of which individuals: concepts, relations, properties, and terminological axioms.
  It describes the general rules how the worlds works without committing to a particular set of inhabitants of the world.
  This part is commonly called the \textbf{TBox} (T for terminological).
- \item The \textbf{concrete} part contains everything that depends on the choice of individuals: individuals and assertions.
+ \item The \textbf{concrete} part contains everything that depends on the choice of individuals: individuals and assertion axioms.
  It populates the world with inhabitants.
  This part is commonly called the \textbf{ABox} (A for assertional).
 \end{compactitem}
@@ -115,24 +115,21 @@ grammar & proper noun & common noun \\
 \gcomment{Vocabularies: Ontologies}\\
 \gprod{O}{\rep{D}}{}\\
 \gcomment{Declarations}\\
-\gprod{D}{\kw{individual}\; \ID}{atomic individual}\\
-\galtprod{\kw{concept}\; \ID}{atomic concept}\\
-\galtprod{\kw{relation}\; \ID}{atomic relation}\\
-\galtprod{\kw{property}\; \ID: T}{atomic property}\\
-\galtprod{I\; \texttt{is-a}\; C}{concept assertion}\\
-\galtprod{I\; R\; I}{relation assertion}\\
-\galtprod{I\; P\; V}{property assertion}\\
-\galtprod{F}{other axioms}\\
+\gprod{D}{\kw{individual}\; i}{atomic individual}\\
+\galtprod{\kw{concept}\; c}{atomic concept}\\
+\galtprod{\kw{relation}\; r}{atomic relation}\\
+\galtprod{\kw{property}\; p: T}{atomic property}\\
+\galtprod{\kw{axiom}\; F}{axiom}\\
 \gcomment{Formulas}\\
 \gprod{F}{C \Equiv C}{concept equality}\\
 \galtprod{C \sqsubseteq C}{concept subsumption}\\
-\galtprodg{I\; \texttt{is-a}\; C}{concept formula}\\
-\galtprodg{I\; R\; I}{relation formula}\\
-\galtprodg{I\; P\; V}{property formula}\\
+\galtprod{I\; \texttt{is-a}\; C}{concept instance}\\
+\galtprod{I\; R\; I}{relation instance}\\
+\galtprod{I\; P\; V}{property instance}\\
 \gcomment{Individual expressions}\\
-\gprod{I}{\ID}{atomic individuals}\\
+\gprod{I}{i}{atomic individuals}\\
 \gcomment{Concept expressions}\\
-\gprod{C}{\ID}{atomic concepts}\\
+\gprod{C}{c}{atomic concepts}\\
 \galtprod{\top}{universal concept}\\
 \galtprod{\bot}{empty concept}\\
 \galtprod{C \sqcup C}{union of concepts}\\
@@ -143,7 +140,7 @@ grammar & proper noun & common noun \\
 \galtprod{\rng R}{range of a relation}\\
 \galtprod{\dom P}{domain of a property}\\
 \gcomment{Relation expressions}\\
-\gprod{R}{\ID}{atomic relations}\\
+\gprod{R}{r}{atomic relations}\\
 \galtprod{R \cup R}{union of relations}\\
 \galtprod{R \cap R}{intersection of relations}\\
 \galtprod{R ; R}{composition of relations}\\
@@ -151,9 +148,9 @@ grammar & proper noun & common noun \\
 \galtprod{R^{-1}}{dual relation}\\
 \galtprod{\Delta_C}{identity relation of a concept}\\
 \gcomment{Property expressions}\\
-\gprod{P}{\ID}{atomic properties}\\
+\gprod{P}{p}{atomic properties}\\
 \gcomment{Identifiers}\\
-\gprod{\ID}{\text{alphanumeric string}}{}\\
+\gprod{i,c,r,p}{\text{alphanumeric string}}{}\\
 \gcomment{Basic types and values}\\
 \gprod{T}{\itg \alt \float \alt \bool \alt \strg}{types}\\
 \gprod{V}{\text{(omitted)}}{values}
@@ -376,12 +373,3 @@ For example, we could give the objects for the same predicates as a list followi
 
 Concrete syntaxes based on the triple representation of ontologies will usually adopt some kind of structure like this.
 The details may vary.
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "WuV_notes"
-%%% mode: visual-line
-%%% fill-column: 5000
-%%% End:
-
-%  LocalWords:  ontologization sqsubseteq commgrammar gcomment gprod galtprod Equiv sqcup sqcap relativization rng itg strg fig:bolsem sq impl x,y y,x iota,y m,y doteq fig:bolsemsql medskip Kohlhase:ulsmf08 Compositionality sec:compositionality bnfalt bnfalt bnfalt succ mifc mifc mifc iota,z y,z x,x subinductions rdfs:Resource rdf:type rdfs:Class rdf:Property rdfs:subClassOf rdfs:subPropertyOf rdfs:domain rdfs:range rdf rdfs Subject-Centered childs Ranta:gfpmg11,GF:url linearizations

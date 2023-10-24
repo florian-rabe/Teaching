@@ -1,4 +1,32 @@
-TODO
+Ontologies can be used to describe the state of the world.
+Ontology \emph{morphisms} allow relating different worlds (or different versions of a world) to each other.
+
+\begin{definition}[Ontology Morphism]
+Given ontologies $V,W$, an ontology morphism $m:V\to W$ is an expression of the following grammar
+\begin{commgrammar}
+\gcomment{Morphisms}\\
+\gprod{m}{\rep{A}}{}\\
+\gcomment{Definitions}\\
+\gprod{D}{i := I}{individual definition}\\
+\galtprod{c := C}{concept definition}\\
+\galtprod{r := R}{relation definition}\\
+\galtprod{p := P}{property definition}\\
+\end{commgrammar}
+such that for all axioms $F$ in $V$, we have that $\ov{m}(F)$ is a theorem of $W$.
+
+$m$ is well-formed if it contains exactly one definition of every $V$-identifier with a $W$-expression.
+\end{definition}
+
+\begin{definition}[Homomorphic Extension]
+Given a morphism $m:V\to W$, we define its homomorphic extension $\ov{m}$ as the mapping from $V$-expressions to $W$-expressions that replaces
+\begin{itemize}
+\item every individual reference $i$ with $I$ where $i:=I$ is in $m$
+\item every concept reference $c$ with $C$ where $c:=C$ is in $m$
+\item every relation reference $r$ with $R$ where $r:=R$ is in $m$
+\item every property reference $p$ with $P$ where $p:=P$ is in $m$
+\end{itemize}
+\end{definition}
+
 
 %Consider the following test
 %
