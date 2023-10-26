@@ -1,13 +1,17 @@
+\section{Typed Ontologies and Database Schmemas}
+
+\input{slides_ontotyped}
+
 \section{Extrinsic and Intrinsic Typing}
 
 \begin{frame}\frametitle{Breakout Question}
 Is this an improvement over BOL?
 \begin{commgrammar}
 \gcomment{Declarations}\\
-\gprod{D}{\kw{individual}\; \ID: C}{typed atomic individual}\\
-\galtprod{\kw{concept}\; \ID}{atomic concept}\\
-\galtprod{\kw{relation}\; \ID\sq C\times C}{typed atomic relation}\\
-\galtprod{\kw{property}\; \ID\sq C\times T}{typed atomic property}\\
+\gprod{D}{\kw{individual}\; i: C}{typed atomic individual}\\
+\galtprod{\kw{concept}\; c}{atomic concept}\\
+\galtprod{\kw{relation}\; r\sq C\times C}{typed atomic relation}\\
+\galtprod{\kw{property}\; p\sq C\times T}{typed atomic property}\\
 \end{commgrammar}
 \glec{rest as before}
 \end{frame}
