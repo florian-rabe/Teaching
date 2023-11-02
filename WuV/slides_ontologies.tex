@@ -149,6 +149,25 @@ Using git, OWL, and WebProtege are good ways to start.
 {\small (In WebProtege, set "suffix" to "user supplied name" in "New Entity Settings". Otherwise, it'll get messy when you share your ontology.)}
 \end{frame}
 
+\begin{frame}\frametitle{Example: The Common Sense Ontology}
+\begin{blockitems}{Situation}
+\item society uses one ontology for common sense knowledge
+\item changes over time
+\end{blockitems}
+\lec{content relative to ontology: laws, regulations, etc.}
+
+\begin{blockitems}{Special aspects}
+\item unwritten
+\item not actually fully agreed upon
+\item sometimes subject to political debate
+\item no formal ontology language good enough to capture practical nuances
+\item many society members not comfortable with formal languages
+\end{blockitems}
+\lec{but still always exists implicitly}
+
+Idea: see political proposals as ontology evolution
+\end{frame}
+
 \section{Ontology Morphisms}
 
 \begin{frame}\frametitle{Idea}
@@ -170,49 +189,15 @@ Using git, OWL, and WebProtege are good ways to start.
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Example: The Common Sense Ontology}
-\begin{blockitems}{Situation}
-\item society uses one ontology for common sense knowledge
-\item changes over time
-\end{blockitems}
+\begin{frame}[fragile]\frametitle{Exercise 2}
+We write ontologies for sex and gender.
 
-\begin{blockitems}{Special aspects}
-\item unwritten
-\item not actually fully agreed upon
-\item sometimes subject to political debate
-\item no formal ontology language good enough to capture practical nuances
-\item many society members not comfortable with formal languages
-\end{blockitems}
-\lec{but still always exists implicitly}
-
-Idea: see political proposals as ontology evolution
-\end{frame}
-
-\begin{frame}[fragile]\frametitle{Example: Ontology Change}
-\begin{blockitems}{Assume $CisNormative$ is BOL vocabulary containing}
-\item concepts $\cn{man}$, $\cn{woman}$
-\item axioms $\cn{man}\sqcup\cn{woman}\Equiv \top$ and $\cn{man}\sqcap\cn{woman}\Equiv \bot$
-\end{blockitems}
-\glec{simplified cis-normative world view}
-
-\begin{blockitems}{and $TransFriendly$ contains \hfill\small one way to accommodate transgender people}
-\item concepts $\cn{sexmale}$, $\cn{sexfemale}$, $\cn{cis}$, $\cn{trans}$
-\item appropriate axioms
-\end{blockitems}
-
-\begin{blockitems}{Now need ontology morphism $CisNormative \to TransFriendly$}
-\item morphism $\cn{gendermatters}$
- \begin{itemize}
- \item $\cn{man}\mapsto (\cn{sexmale}\sqcap\cn{cis})\sqcup (\cn{sexfemale}\sqcap\cn{trans})$
- \item $\cn{woman}\mapsto (\cn{sexfemale}\sqcap\cn{cis})\sqcup (\cn{sexmale}\sqcap\cn{trans})$
- \end{itemize}
-\item alternative morphism $\cn{sexmatters}$
- \begin{itemize}
- \item $\cn{man}\mapsto \cn{sexmale}$
- \item $\cn{woman}\mapsto \cn{sexfemale}$
- \end{itemize}
-\end{blockitems}
-\lec{important to migrate legacy content: laws, regulations, etc.}
+Write two ontologies for
+\begin{itemize}
+\item cis-normative world view with just men and women
+\item trans-inclusive world view that accommodates sex and gender
+\end{itemize}
+and relate them with ontology morphisms.
 \end{frame}
 
 \begin{frame}\frametitle{Side Note: Knowledge Representation is Apolitical}
@@ -293,6 +278,32 @@ Mapping axioms works best if
  \glec{axioms = proof symbols = atomic proofs}
 \item morphisms contain assignments $a\mapsto P$ of axiom $a$ to proof $P$
 \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example/Exercise 2}
+\begin{blockitems}{Assume $CisNormative$ is BOL vocabulary containing}
+\item concepts $\cn{man}$, $\cn{woman}$
+\item axioms $\cn{man}\sqcup\cn{woman}\Equiv \top$ and $\cn{man}\sqcap\cn{woman}\Equiv \bot$
+\end{blockitems}
+\glec{simplified cis-normative world view}
+
+\begin{blockitems}{and $TransFriendly$ contains \hfill\small one way to accommodate transgender people}
+\item concepts $\cn{sexmale}$, $\cn{sexfemale}$, $\cn{cis}$, $\cn{trans}$
+\item appropriate axioms
+\end{blockitems}
+
+\begin{blockitems}{Now have ontology morphism $CisNormative \to TransFriendly$}
+\item morphism $\cn{gendermatters}$
+ \begin{itemize}
+ \item $\cn{man}\mapsto (\cn{sexmale}\sqcap\cn{cis})\sqcup (\cn{sexfemale}\sqcap\cn{trans})$
+ \item $\cn{woman}\mapsto (\cn{sexfemale}\sqcap\cn{cis})\sqcup (\cn{sexmale}\sqcap\cn{trans})$
+ \end{itemize}
+\item alternative morphism $\cn{sexmatters}$
+ \begin{itemize}
+ \item $\cn{man}\mapsto \cn{sexmale}$
+ \item $\cn{woman}\mapsto \cn{sexfemale}$
+ \end{itemize}
+\end{blockitems}
 \end{frame}
 
 \begin{frame}\frametitle{Prevalence of Morphisms}
