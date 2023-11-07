@@ -20,8 +20,8 @@ KRP = syntax + semantics
 Data is processed in phases
 \begin{enumerate}
 \item data representation format, e.g., string, JSON, XML, binary
-\item parsed --- well-formed syntax tree
-\item type-checked by traversal of the syntax tree --- well-typed syntax tree
+\item parsed --- well-formed context-free syntax tree
+\item context-sensitive check by traversal of the syntax tree --- well-typed syntax tree
 \item computation by traversal of well-typed AST --- semantics
 \end{enumerate}
 \end{frame}
@@ -104,7 +104,7 @@ Pragm. & $\exists x.x\neq x$ & not useful & no model exists\\
  \item If there is a production $N::=rhs$, $N$ is called non-terminal, otherwise terminal.
  \item If a word contains non-terminal symbols, it is called non-terminal, otherwise terminal.
  \end{itemize}
-\item A syntax tree is a tree with nodes are labeled with productions $N::=rhs$ where the non-terminals in rhs are exactly the lhs's of the children.
+\item A syntax tree is a tree whose nodes are labeled with productions $N::=rhs$ where the non-terminals in rhs are exactly the lhs's of the children.
 \item The word produced by a syntax tree is read off by exhaustively replacing every lhs with the respective rhs.
 \end{itemize}
 \end{frame}
@@ -161,6 +161,17 @@ Untyped languages:
 
 \begin{frame}\frametitle{Implementing the Example}
 Done interactively. See the examples in the repository. See also the notes.
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 2}
+Individually, using any programming language, implement the AST for the BOL language.
+Implement a printer for BOL by context-free traversal of the syntax tree.
+
+Remarks:
+\begin{itemize}
+\item To simplify, you can drop most productions for concepts and relations.
+\item To simplify, you can drop properties altogether. But it would be nice to have them and allow for integers and strings as basic types.
+\end{itemize}
 \end{frame}
 
 \section{Context-Sensitive Syntax}
@@ -370,17 +381,13 @@ Type checker: as above but additionally
 \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 2}
-Individually, using any programming language, implement the AST for the BOL language.
-Allow for integers and strings as basic types.
-
+\begin{frame}\frametitle{Exercise 4}
 Implement a type-checker for BOL.
 BOL is untyped, and not much type-checking is needed.
 But the type-checker must check at least that all identifier references are correct.
 The main check needed is that all property assertion use values according to the property type.
-\end{frame}
 
-\begin{frame}\frametitle{Exercise 3}
+
 As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
 
 Individually, extend your implementations of BOL with XML importers and exporters relative to that schema.
