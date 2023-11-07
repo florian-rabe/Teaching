@@ -1,0 +1,264 @@
+\begin{frame}\frametitle{Motivation}
+\begin{blockitems}{Main ideas}
+\item Ontology abstractly describes concepts and relations
+\item Tool maintains concrete data set
+\item Focus on efficiently
+  \begin{itemize}
+  \item identifying (i.e., assign names)
+  \item representing
+  \item processing
+  \item querying
+  \end{itemize}
+  large sets of concrete data
+\end{blockitems}
+
+\begin{blockitems}{Recall: TBox-ABox distinction}
+  \item TBox: general parts, abstract, fixed
+   \lec{main challenge: correct modeling of domain}
+  \item ABox: concrete individuals and assertions about them, growing
+   \lec{main challenge: aggregate them all}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Concrete Data}
+\begin{blockitems}{Concrete is}
+\item Base values: integers, strings, booleans, etc.
+\item Collections: sets, multisets, lists (always finite)
+\item Aggregations: tuples, records (always finite)
+\item User-defined concrete data: enumerations, inductive types
+\item Advanced objects: finite maps, graphs, etc.
+\end{blockitems}
+
+\begin{blockitems}{Concrete is not}
+\item Free symbols to be interpreted by a model
+ \lec{exception: foreign function interfaces}
+\item Variables (free or bound)
+ \lec{$\lambda$-abstraction, quantification}
+\item Symbolic expressions
+ \lec{formulas, algorithms}
+ Exceptions:
+  \begin{itemize}
+  \item expressions of inductive type
+  \item application of built-in functions
+  \item queries that return concrete data
+  \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout question}
+What is the difference between
+\begin{itemize}
+\item an OWL ontology
+\item an SQL database
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Two Approaches}
+\begin{blockitems}{Based on \emph{untyped} (Curry-typed) ontology languages}
+\item Representation based on \emph{knowledge graph}
+\item Ontology written in BOL-like language
+\item Data maintained as \emph{set of triples}
+  \glec{tool = triple store}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{separate}
+  \glec{e.g., OWL, SPARQL}
+ \item triple store and query engine integrated
+  \glec{e.g., Virtuoso tool}
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Based on \emph{typed} (Church-typed) ontology languages}
+\item Representation based on \emph{abstract data types}
+\item Ontology written as database schema
+\item Data maintained as \emph{tables}
+  \glec{tool = (relational) database}
+\item Typical language/tool design
+ \begin{itemize}
+ \item ontology and query language \emph{integrated}
+  \glec{e.g., SQL}
+ \item table store and query engine integrated
+  \glec{e.g., SQLite tool}
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Evolution of Approaches}
+\begin{blockitems}{Our usage is non-standard}
+ \item Common
+  \begin{itemize}
+  \item ontologies = untyped approach, OWL, triples,  SPARQL
+  \item databases = typed approach, tables, SQL
+  \end{itemize}
+ \item Our understanding: two approaches evolved from same idea
+	\begin{itemize}
+	\item triple store = untyped database
+	\item SQL schema = typed ontology
+	\end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Evolution}
+\item Typed-untyped distinction minor technical difference
+\item Optimization of respective advantages causes speciation
+\item Today segregation into different
+ \begin{itemize}
+ \item jargons
+ \item languages, tools
+ \item communities, conferences
+ \item courses
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Curry-typed concrete data}
+\begin{blockitems}{Central data structure = knowledge graph}
+\item nodes = individuals $i$
+ \begin{itemize}
+ \item identifier
+ \item sets of concepts of $i$
+ \item key-value sets of properties of $i$
+ \end{itemize}
+\item edges = relation assertions
+ \begin{itemize}
+ \item from subject to object
+ \item labeled with name of relation
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Processing strengths}
+\item store: as triple set
+\item edit: Protege-style or graph-based
+\item visualize: as graph
+  \glec{different colors for concepts, relations}
+\item query: match, traverse graph structure
+\item untyped data simplifies integration, migration
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Church-typed concrete data}
+\begin{blockitems}{Central data structure = relational database}
+\item tables = abstract data type
+\item rows = objects of that type
+\item columns = fields of ADT
+\item cells = values of fields
+\end{blockitems}
+
+\begin{blockitems}{Processing strengths}
+\item store: as CSV text files, or similar
+\item edit: SQL commands or table editors
+\item visualize: as table view
+\item query: relational algebra
+\item typed data simplifies selecting, sorting, aggregating
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Identifiers}
+\begin{blockitems}{Curry-Typed Knowledge graph}
+\item concept, relation, property names given in TBox
+\item individual names attached to nodes
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item table, column names given in schema
+\item row identified by distinguished column (= key) \\
+options
+ \begin{itemize}
+ \item preexistent characteristic column
+ \item added upon insertion
+  \begin{itemize}
+  \item UUID string
+  \item incremental integers
+  \item concatenation of characteristic list of columns
+  \end{itemize} 
+ \end{itemize}
+\item column/row identifiers formed by qualifying with table name
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Axioms}
+\begin{blockitems}{Curry-Typed Knowledge Graph}
+\item traditionally very expressive axioms
+\item yields inferred assertions
+\item triple store must do consequence closure to return correct query results
+\item not all axioms supported by every triple store
+\end{blockitems}
+
+\begin{blockitems}{Church-Typed Database}
+\item typically no axioms
+\item instead consistency constraints, triggers
+\item allows limited support for axioms without calling it that way
+\item stronger need for users to program the consequence closure manually
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Open/Closed World}
+\begin{itemize}
+\item Question: is the data complete?
+ \begin{itemize}
+ \item closed world: yes
+ \item open world: not necessarily
+ \end{itemize}
+\item Dimensions of openness
+ \begin{itemize}
+  \item existence of individual objects
+  \item assertions about them
+ \end{itemize}
+\item Sources of openness
+  \begin{itemize}
+  \item more exists but has not yet been added
+  \item more could be created later
+  \end{itemize}
+\item Orthogonal to typed/untyped distinction, but in practice
+ \begin{itemize}
+ \item knowledge graphs use open world
+ \item databases use closed world
+ \end{itemize}
+\end{itemize}
+\lec{Open world is natural state, closing adds knowledge}
+\end{frame}
+
+\begin{frame}\frametitle{Closing the World}
+\begin{blockitems}{Derivable consequences}
+ \item induction: prove universal property by proving for each object
+ \item negation by failure: atomic property false if not provable
+ \item term-generation constraint: only nameable objects exist
+\end{blockitems}
+
+\begin{blockitems}{Enabled operations}
+ \item universal set: all objects
+ \item complement of concept/type
+ \item defaults: assume default value for property if not otherwise asserted
+\end{blockitems}
+
+\begin{blockitems}{Monotonicity problem}
+ \item monotone operation: bigger world = more results
+ \item examples: union, intersection, $\exists R.C$, join, IN conditions
+ \item counter-examples: complement, $\forall R.C$, NOT IN conditions
+\end{blockitems}
+\lec{technically, non-monotone operations in open world dubious}
+\end{frame}
+
+\begin{frame}\frametitle{Summary}
+\begin{tabular}{l|ll}
+  & semantic web & relational databases \\
+\hline
+ontology aspect & TBox of ontology & SQL schema \\
+conceptual model & knowledge graph & set of tables \\
+concrete data aspect & ABox of ontology & SQL database \\
+concrete data storage & set of triples & set of rows of the tables \\
+concrete data formats & RDF & CSV \\
+concrete data tool & triple store & database implementation \\
+typing & soft/Curry & hard/Church\\
+query language & SPARQL & SQL SELECT query \\
+openness of world & tends to be open & tends to be closed \\
+\end{tabular}
+\end{frame}
+
+
+\begin{frame}\frametitle{Exercise 2}
+Extend your ontology with an ABox and axioms.
+Export it in RDF format to a triple store like Virtuoso and run a concrete query in SPARQL.
+
+Export it in OWL format to a reasoner like FaCT++ and run a deductive query.
+Potentially, do this by installing a plugin for a reasoner in your ontology IDE.
+\end{frame}
