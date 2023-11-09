@@ -1,38 +1,56 @@
-This is the syllabus of the ongoing 2022 course. The 2021 syllabus in a separate file.
+This is the syllabus from 2022.
+We will deviate this year.
 
 \begin{tabular}
-lecture 1,3 (Oct 19, 25) & introduction, overview and essential concepts & \\
-exercise 1 (Oct 26) & in Protege: as a team design an ontology for a university knowledge management system\\
-lecture 2,4 (Oct 20, & Ontologies: ontological knowledge, BOL, typed ontologies \\
-exercise 2 (Nov 2) & continued: as a team (with tasks distributed) add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
-homework 2 & finish exercise 2 \\
-lecture 5, 6 (Nov 3, 8) & implementing syntax and type checkers in various programming languages (see code in repository)\\
-exercise 3 (Nov 9) & exercise 2 continued \\
-homework 3 & implement syntax and type checker for BOL \\
-lecture 7 (Nov 10) & context-sensitive syntax, type checking \\
-lecture 8, 9 (Nov 15, 17) &  type systems \\
-exercise 4 (Nov 16) & comparing BOL implementations \\
-lecture 10, 11 (Nov 22, 24) & data \\
-exercise 5 (Nov 23) & as a group, define an XML schema for BOL; individually extend your BOL implementations with importers/exporters \\
-lecture 12 (Nov 29) & semantics \\
-exercise 6 (Nov 30) & as a group, define primitive types and their string encodings; individually extend your BOL implementations and importer/exporters\\
-lecture 13-15 (Dec 1, 6, 8) & SFOL and relative semantics BOL -> SFOL \\
-exercise 7 (Dec 7) & implement SFOL and BOL -> SFOL\\
-lecture 16 (Dec 13) & SQL and relative semantics BOL -> SQL \\
-exercise 8 (Dec 14) & absolute SFOL semantics via TPTP and theorem proving, borrowing the SFOL semantics for BOL\\
-lecture 17 (Dec 15) & Scala and relative semantics BOL -> Scala \\
-lecture 18 (Dec 20) & relative semantics BOL -> English \\
-exercise 9 (Dec 21) & finish Ex. 8, parser generator for BOL\\
-lecture 19 (Jan 10) & absolute semantics for BOL \\
-exercise 10 (Jan 11) & implement an absolute semantics (theorem prover) for some fragment of BOL\\
-lecture 20-22 (Jan 12, 17, 19) & querying\\
-exercise 11 (Jan 18) & implement a concrete query engine for some fragment of BOL\\
-cancelled (Jan 24) & \\
-lecture 23, 24 (Jan 25, 26) & formal systems and semantics abstractly \\ 
-lecture 25 (Jan 31) & vocabulary morphisms for BOL\\
-exercise 12 (Feb 1) & implement vocabulary morphisms for BOL\\
-lecture 27 (Feb 2) &  vocabulary morphisms in general\\
-lecture 28 (Jan 7) & formal systems and semantics abstractly, continued\\
-exercise 13 (Feb 8) & introduction, Tetrapod again\\
-lecture 29 (Feb 9) & question hour\\
+lecture 1-2 & introduction, overview and essential concepts \\
+lecture 3-4 & ontological knowledge, BOL \\
+exercise 1 & ontologies in Protege: as a team design an ontology for a university knowledge management system\\
+lecture 5-6 & ontology morphisms, mini-exercise on sex/gender ontology\\
+lecture 7-8 & implementing syntax\\
+exercise 2 & implement BOL\\
+
+
+lecture 5 & concrete knowledge and typed ontologies, OWL vs. SQL\\
+lecture 6 & type systems\\
+homework 2 & figure out how to add axioms to the ontology, make changes as discussed \\
+exercise 2 & continued: as a team (with tasks distributed) add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
+lecture 7-8 & type systems: Curry/Church, ADTs \\
+exercise 3 & continued, also compare OWL and BOL \\
+lecture 9 & special lecture on MMT \\
+lecture 10 & primitive types and encodings \\
+exercise 4 & as a team standardize some data types and codecs (https://pad.stuve.fau.de/p/wuv_codecs)\\
+homework 4 & implement codecs individually in various languages \\
+lecture 11-12 & primitive types and encodings: continued \\
+lecture 13 & representation of syntax and semantics of mini-language for arithmetics in SML and Java \\
+exercise 5 & compare implementations of codecs, send data back and forth\\
+homework 5 & implement BOL, SFOL syntax systematically (individually, any language) \\
+lecture 14 & context-free grammars and inductive data types \\
+lecture 15 & semantics by translation, BOL -> SFOL\\
+exercise 6 & compare homeworks\\
+homework 6 & implement BOL->SFOL systematically, BOL -> SQL (individually, any language) \\
+lecture 16 & BOL->SQL \\
+lecture 17 & compositionality\\
+exercise 7 & compare homeworks, context-sensitive translations\\
+homework 7 & SFOL->TPTP \\
+lecture 18 & BOL->English, non-compositionality \\
+lecture 19 & BOL->Scala, consequence closure, axioms as tests \\
+exercise 8 & uni ontology BOL -> SFOL -> TPTP, run SFOL provers\\
+homework 8 & finish exercise: answer deductive query in BOL via translation to SFOL and applying absolute semantics in SFOL \\
+lecture 20 & formal semantics: overview \\
+lecture 21 & querying: overview, deductive queries via relative semantics \\
+exercise 9 & compare homeworks, concrete queries via deductive semantics\\
+lecture 22 & querying: other aspects \\
+lecture 23 & formal systems, absolute semantics for BOL \\
+homework 10 & implement type checker for BOL and SFOL \\
+exercise 10 & compare, finish homeworks \\
+lecture 24 & semantics: rigorous definition\\
+lecture 25 & semantics: repetition, equivalence \\
+exercise 11 & exam preparation \\
+lecture 26 & syntactic querying \\
+lecture 27 & the Tetrapod model in retrospect \\
 \end{tabular}
+
+Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
+Where appropriate, the instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
+
+Ideas for future topics/case studies: WikiData

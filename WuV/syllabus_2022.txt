@@ -1,0 +1,38 @@
+This is the syllabus of the ongoing 2022 course. The 2021 syllabus in a separate file.
+
+\begin{tabular}
+lecture 1,3 (Oct 19, 25) & introduction, overview and essential concepts & \\
+exercise 1 (Oct 26) & in Protege: as a team design an ontology for a university knowledge management system\\
+lecture 2,4 (Oct 20, & Ontologies: ontological knowledge, BOL, typed ontologies \\
+exercise 2 (Nov 2) & continued: as a team (with tasks distributed) add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
+homework 2 & finish exercise 2 \\
+lecture 5, 6 (Nov 3, 8) & implementing syntax and type checkers in various programming languages (see code in repository)\\
+exercise 3 (Nov 9) & exercise 2 continued \\
+homework 3 & implement syntax and type checker for BOL \\
+lecture 7 (Nov 10) & context-sensitive syntax, type checking \\
+lecture 8, 9 (Nov 15, 17) &  type systems \\
+exercise 4 (Nov 16) & comparing BOL implementations \\
+lecture 10, 11 (Nov 22, 24) & data \\
+exercise 5 (Nov 23) & as a group, define an XML schema for BOL; individually extend your BOL implementations with importers/exporters \\
+lecture 12 (Nov 29) & semantics \\
+exercise 6 (Nov 30) & as a group, define primitive types and their string encodings; individually extend your BOL implementations and importer/exporters\\
+lecture 13-15 (Dec 1, 6, 8) & SFOL and relative semantics BOL -> SFOL \\
+exercise 7 (Dec 7) & implement SFOL and BOL -> SFOL\\
+lecture 16 (Dec 13) & SQL and relative semantics BOL -> SQL \\
+exercise 8 (Dec 14) & absolute SFOL semantics via TPTP and theorem proving, borrowing the SFOL semantics for BOL\\
+lecture 17 (Dec 15) & Scala and relative semantics BOL -> Scala \\
+lecture 18 (Dec 20) & relative semantics BOL -> English \\
+exercise 9 (Dec 21) & finish Ex. 8, parser generator for BOL\\
+lecture 19 (Jan 10) & absolute semantics for BOL \\
+exercise 10 (Jan 11) & implement an absolute semantics (theorem prover) for some fragment of BOL\\
+lecture 20-22 (Jan 12, 17, 19) & querying\\
+exercise 11 (Jan 18) & implement a concrete query engine for some fragment of BOL\\
+cancelled (Jan 24) & \\
+lecture 23, 24 (Jan 25, 26) & formal systems and semantics abstractly \\ 
+lecture 25 (Jan 31) & vocabulary morphisms for BOL\\
+exercise 12 (Feb 1) & implement vocabulary morphisms for BOL\\
+lecture 27 (Feb 2) &  vocabulary morphisms in general\\
+lecture 28 (Jan 7) & formal systems and semantics abstractly, continued\\
+exercise 13 (Feb 8) & introduction, Tetrapod again\\
+lecture 29 (Feb 9) & question hour\\
+\end{tabular}
