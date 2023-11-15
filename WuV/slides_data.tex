@@ -93,6 +93,18 @@ Types usually come with additional operations:
 \end{blockitems}
 \end{frame}
 
+\begin{frame}\frametitle{Exercise 5}
+As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
+
+Individually, extend your implementations of BOL with XML importers and exporters relative to that schema.
+The exporter is a context-free traverser.
+For the importer, use an XML library for your chosen programming language to parse the input. Then write a context-free traverser over the XML data structures that translates the XML into your BOL data structures.
+
+After importing a vocabulary, type-check it.
+
+Write some example vocabularies for BOL and export-import them to each other.
+\end{frame}
+
 \begin{frame}\frametitle{Exercise 6}
 As a group, specify additional primitive datatypes for BOL that are helpful the university knowledge ontology.
 

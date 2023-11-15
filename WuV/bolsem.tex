@@ -277,10 +277,7 @@ BOL declaration & FOL declaration \\
 \kw{concept}\,$i$  & unary predicate symbol $i\sq\iota$ \\
 \kw{relation}\,$i$ & binary predicate symbol $i\sq\iota\times \iota$ \\
 \kw{property}\,$i:T$ & binary predicate symbol $i\sq\iota\times T$ \\
-$I\; \texttt{is-a}\; C$ & axiom $\sem{C}(\sem{I})$\\
-$I_1\; R\; I_2$ & axiom $\sem{R}(\sem{I_1},\sem{I_2})$\\
-$I\; P\; V$ & axiom $\sem{P}(\sem{I},\sem{V})$\\
-$F$ & axiom $\sem{F}$\\
+\kw{axiom}\, $F$ & axiom $\sem{F}$\\
 \hline
 Formula & Formula without free variables\\
 $C_1 \Equiv C_2$ & $\forall x:\iota.\sem{C_1}(x)\Leftrightarrow \sem{C_2}(x)$\\
@@ -418,10 +415,10 @@ BOL declaration ($C$, $R$, $P$ atomic) & SQL statement \\
 \kw{concept}\,$i$  & TABLE $i$ (id: ID)\\
 \kw{relation}\,$i$ & TABLE $i$ (subject: ID, object: ID) \\
 \kw{property}\,$i:Y$ & TABLE $i$ (subject: ID, value: $Y$) \\
-$I\; \texttt{is-a}\; C$ & INSERT VALUES (id=$\sem{I}$) INTO $C$\\
-$I_1\; R\; I_2$ & INSERT VALUES (subject=$\sem{I_1}$, object=$\sem{I_2}$) INTO R\\
-$I\; P\; V$ & INSERT VALUES (subject=$\sem{I}$, value=$V$) INTO P\\
-$F$ & consistency check, consequence closure (omitted)\\
+\kw{axiom}\,$I\; \texttt{is-a}\; C$ & INSERT VALUES (id=$\sem{I}$) INTO $C$\\
+\kw{axiom}\,$I_1\; R\; I_2$ & INSERT VALUES (subject=$\sem{I_1}$, object=$\sem{I_2}$) INTO R\\
+\kw{axiom}\,$I\; P\; V$ & INSERT VALUES (subject=$\sem{I}$, value=$V$) INTO P\\
+\kw{axiom}\,$F$ & consistency check, consequence closure (omitted)\\
 \hline
 Formula & Query that returns empty result iff formula is true \\
 $C_1 \Equiv C_2$ & $(\sem{C_1}\sm\sem{C_2})$ UNION $(\sem{C_2}\sm\sem{C_1})$\\
@@ -566,10 +563,10 @@ BOL declaration ($C$, $R$, $P$ atomic) & Scala declaration \\
 \kw{concept}\,$i$  & val $i$ = new HashSet[String]\\
 \kw{relation}\,$i$ & val $i$ = new HashSet[(String,String)] \\
 \kw{property}\,$i:T$ & val $i$ = new HashSet[(String,T)] \\
-$I\; \texttt{is-a}\; C$ & $\sem{C}$ += $\sem{I}$\\
-$I_1\; R\; I_2$ & $\sem{R}$ += $(\sem{I_1},\sem{I_2})$\\
-$I\; P\; V$ & $\sem{P}$ += $(\sem{I},\sem{V})$\\
-$F$ & assertions, consequence closure (omitted)\\
+\kw{axiom}\,$I\; \texttt{is-a}\; C$ & $\sem{C}$ += $\sem{I}$\\
+\kw{axiom}\,$I_1\; R\; I_2$ & $\sem{R}$ += $(\sem{I_1},\sem{I_2})$\\
+\kw{axiom}\,$I\; P\; V$ & $\sem{P}$ += $(\sem{I},\sem{V})$\\
+\kw{axiom}\,$F$ & assertions, consequence closure (omitted)\\
 \hline
 Formula & Program that evaluates the formula to a Boolean \\
 $C_1 \Equiv C_2$ & \{val $c1$ = $\sem{C_1}$; val $c2$ = $\sem{C_2}$; \\
@@ -721,10 +718,7 @@ BOL declaration & dictionary entry or true sentence\\
 \kw{concept}\,$i$  & $i$ is a common noun.\\
 \kw{relation}\,$i$ & $i$ is a transitive verb. \\
 \kw{property}\,$i:T$ & $i$ is a common noun for a property that can take $T$-values. \\
-$I\; \texttt{is-a}\; C$ & $\sem{I}$ $\sem{C}$.\\
-$I_1\; R\; I_2$ & $\sem{I_1}$ $\sem{R}$ $\sem{I_2}$.\\
-$I\; P\; V$ & $\sem{I}$ has $\sem{P}$ $\sem{V}$.\\ 
-$F$ & $\sem{F}$.\\
+\kw{axiom}\,$F$ & $\sem{F}$.\\
 \hline
 Formula & sentence \\
 $C_1 \Equiv C_2$ & $\sem{C_1}$ is the same as $\sem{C_2}$.\\

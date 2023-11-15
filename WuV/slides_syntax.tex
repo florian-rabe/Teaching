@@ -390,18 +390,6 @@ But the type-checker must check that all identifier references are correct.
 The only additional type-checking that is needed is that all property assertion use values according to the property type.
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 5}
-As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
-
-Individually, extend your implementations of BOL with XML importers and exporters relative to that schema.
-The exporter is a context-free traverser.
-For the importer, use an XML library for your chosen programming language to parse the input. Then write a context-free traverser over the XML data structures that translates the XML into your BOL data structures.
-
-After importing a vocabulary, type-check it.
-
-Write some example vocabularies for BOL and export-import them to each other.
-\end{frame}
-
 %\begin{frame}\frametitle{Exercise 2}
 %Extend your implementation of BOL with vocabulary morphisms.
 %This should include a function that computes the homomorphic extension.
