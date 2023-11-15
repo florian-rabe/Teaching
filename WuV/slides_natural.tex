@@ -1,0 +1,28 @@
+\section{Natural Language}
+
+\begin{frame}\frametitle{Natural Language}
+We give an overview of natural languages as narrative languages as one corner of the Tetrapod.
+\end{frame}
+
+\begin{frame}\frametitle{A Narrative Semantics of BOL}
+We translate BOL into English according to Section 6.6 of the notes.
+\end{frame}
+
+\section{LaTeX}
+
+\begin{frame}\frametitle{The sTeX Dialect of LaTeX}
+LaTeX is a language for natural language documents.
+
+sTeX enriches LaTeX to allow describing the ontology in addition to the narrative document.
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 5}
+Implement a semantics by translation for BOL that translates BOL to sTeX.
+
+Concretely, your translation should take an ontology and a name N.
+And it should return a file N.tex containing
+\begin{itemize}
+ \item for every named declaration: one English sentence with an sTeX declaration
+ \item for every axiom: one English sentence in which all identifier references carry a hyperlink to the corresponding sTeX declaration
+\end{itemize}
+\end{frame}
