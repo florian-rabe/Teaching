@@ -1,6 +1,6 @@
-/* a fragment of BOL and a parser for it - not debugged */
-
-case class Ontology(ds: List[Declaration])
+case class Ontology(ds: List[Declaration]) {
+    def print: String
+}
 
 abstract class Declaration {
     def print: String
@@ -11,6 +11,9 @@ case class ConcDecl(name: String) extends Declaration {
 case class IndDecl(name: String) extends Declaration {
     def print = "individual " + name
 }
+case class PropDecl(name: String, tp: Type) extends Declaration {
+    def print = "property " + name + " : " + tp.print()
+}
 case class Axiom(f: Formula) extends Declaration {
     def print = "axiom " + f.print()
 }
@@ -19,8 +22,14 @@ abstract class Expression {
     def print: String
 }
 
+
 abstract class Individual extends Expression
 case class IndRef(name: String) extends Individual {
+    def print = name
+}
+
+abstract class Property extends Expression
+case class PropRef(name: String) extends Property {
     def print = name
 }
 
@@ -37,12 +46,29 @@ case class Intersection(left: Concept, right: Concept) extends Concept {
 }
 
 abstract class Formula extends Expression 
-case class ConcAss(ind: Individual, conc: Concept) extends Formula {
-    def print = "isa " + ind.print() + conc.print()
-}
 case class Subsume(left: Concept, right: Concept) extends Formula {
     def print = "sub " left.print() + right.print()
 }
+case class ConcAss(ind: Individual, conc: Concept) extends Formula {
+    def print = "isa " + ind.print() + conc.print()
+}
+case class PropAss(ind: Individual, prop: Property, value: Value) extends Formula {
+    def print = "has " + ind.print() + prop.print() + value.print()
+}
+
+abstract class Type(s: String) extends Expression {
+    def print = s
+}
+case class IntType() extends Type("int")
+case class StringType() extends Type("string")
+case class BoolType() extends Type("bool")
+
+abstract class Value(v: Any) extends Expression {
+    def print = v.toString
+}
+case class IntVal(v: Int) extends Value
+case class StringVal(v: String) extends Value
+case class BoolVal(v: Boolean) extends Value
 
 /* every method parse_XXX
    - takes the input string to parse
@@ -132,6 +158,9 @@ object Test {
         val input = readFile(f)
         val (o, r) = Parser.parse_Ontology(input)
         if (r != "") throw ParseError("extraneous input after parsing: " + r)
+        
+        // extra work goes here: check, semantics
+        
         println(o.print())
         0
     }
