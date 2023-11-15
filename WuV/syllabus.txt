@@ -5,10 +5,17 @@ We will deviate this year.
 lecture 1-2 & introduction, overview and essential concepts \\
 lecture 3-4 & ontological knowledge, BOL \\
 exercise 1 & ontologies in Protege: as a team design an ontology for a university knowledge management system\\
-lecture 5-6 & ontology morphisms, mini-exercise on sex/gender ontology\\
-lecture 7-8 & implementing syntax\\
-exercise 2 & implement BOL\\
+lecture 5 & ontology morphisms\\
+exercise 2 & sex/gender ontology and morphisms\\
+lecture 6-7 & implementing syntax\\
+exercise 3 & implement BOL\\
+lecture 8 & parsing, parser for BOL \\
+lecture 9 & context-sensitive checking\\
+exercise 4 & a checker for BOL\\
 
+lecture 10 & natural language, semantics by translation BOL -> English\\
+lecture 11 & sTeX system for natural language\\
+exercise 5 & semantics of BOL as translation BOL -> sTeX\\
 
 lecture 5 & concrete knowledge and typed ontologies, OWL vs. SQL\\
 lecture 6 & type systems\\

@@ -163,7 +163,7 @@ Untyped languages:
 Done interactively. See the examples in the repository. See also the notes.
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 2}
+\begin{frame}\frametitle{Exercise 3}
 Individually, using any programming language, implement the AST for the BOL language.
 Implement a printer for BOL by context-free traversal of the syntax tree.
 
@@ -183,9 +183,9 @@ Generic structure of a context-sensitive language
   \begin{itemize}
   \item named: type/function/predicate symbol etc.
   \item unnamed: axioms etc.
-  \item structural: inclusion/import, datatype definitions
+  \item structural: namespaces/package, inclusion/import
   \end{itemize}
- \item named declarations introduce atomic objects of different kinds
+ \item named declarations introduce atomic objects of various kinds
  \item for each kind, a non-terminal for complex expressions of that kind
  \item references to names introduced by declarations are base cases of expressions
 \end{itemize}
@@ -318,7 +318,7 @@ Add to default vocabulary: $Nat: TYPE$, $String: TYPE$
 
 \begin{frame}\frametitle{Context-Sensitivity}
 A reference to a declared name must respect the way in which it was declared in the vocabulary
-\glec{examples errors relative to $V$ above}
+\glec{examples below relative to $V$ above}
 \begin{itemize}
  \item occur in a position where an expression of the right kind is expected
   \glec{example error: $prime(1)=1$}
@@ -383,11 +383,14 @@ Type checker: as above but additionally
 
 \begin{frame}\frametitle{Exercise 4}
 Implement a type-checker for BOL.
+
 BOL is untyped, and not much type-checking is needed.
-But the type-checker must check at least that all identifier references are correct.
-The main check needed is that all property assertion use values according to the property type.
+But the type-checker must check that all identifier references are correct.
 
+The only additional type-checking that is needed is that all property assertion use values according to the property type.
+\end{frame}
 
+\begin{frame}\frametitle{Exercise 5}
 As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
 
 Individually, extend your implementations of BOL with XML importers and exporters relative to that schema.
@@ -398,7 +401,6 @@ After importing a vocabulary, type-check it.
 
 Write some example vocabularies for BOL and export-import them to each other.
 \end{frame}
-
 
 %\begin{frame}\frametitle{Exercise 2}
 %Extend your implementation of BOL with vocabulary morphisms.
