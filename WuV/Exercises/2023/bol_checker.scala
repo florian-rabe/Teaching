@@ -19,6 +19,10 @@ case class IndDecl(name: String) extends Declaration {
     def print = "individual " + name
     def nameO = Some(name)
 }
+case class RelDecl(name: String) extends Declaration {
+    def print = "relation " + name
+    def nameO = Some(name)
+}
 case class PropDecl(name: String, tp: Type) extends Declaration {
     def print = "property " + name + " : " + tp.print()
     def nameO = Some(name)
@@ -28,10 +32,11 @@ case class Axiom(f: Formula) extends Declaration {
     def nameO = None
 }
 
+// Expressions
+
 abstract class Expression {
     def print: String
 }
-
 
 abstract class Individual extends Expression
 case class IndRef(name: String) extends Individual {
@@ -54,6 +59,12 @@ case class Union(left: Concept, right: Concept) extends Concept {
 case class Intersection(left: Concept, right: Concept) extends Concept {
     def print = "intersect " + left.print() + right.print()
 }
+case class Forall(rel: Relation, conc: Concept) extends Concept {
+    def print = "forall " + rel.print() + conc.print()
+}
+
+abstract class Relation extends Expression
+case class RelRef(n: String) extends Relation
 
 abstract class Formula extends Expression 
 case class Subsume(left: Concept, right: Concept) extends Formula {
@@ -61,6 +72,9 @@ case class Subsume(left: Concept, right: Concept) extends Formula {
 }
 case class ConcAss(ind: Individual, conc: Concept) extends Formula {
     def print = "isa " + ind.print() + conc.print()
+}
+case class RelAss(subj: Individual, rel: Relation, obj: Individual) extends Formula {
+    def print = "rel " + subj.print() + rel.print() + obj.print()
 }
 case class PropAss(ind: Individual, prop: Property, value: Value) extends Formula {
     def print = "has " + ind.print() + prop.print() + value.print()
@@ -83,15 +97,18 @@ case class BoolVal(v: Boolean) extends Value
 
 object Checker {
     def checkOntology(ctx: Ontology, o: Ontology) {
-        
+        o.decls match {
+            case Nil =>
+            case d::rest =>
+               checkDeclaration(ctx, d)
+               checkOntology(Ontology(ctx.decls ::: List(d), Ontology(rest)))
+        }
     }
     def checkDeclaration(ctx: Ontology, d: Declaration) {
-        d match {
-            case ConcDecl(n) =>
-               if (ctx.declares(n)) throw CheckError("identifier already declared: " + n)
-            case Axiom(f) => checkFormula(ctx, f)
+        d.nameO match {
+           case None => // unnamed, always allowed
+           case Some(n) => if (ctx.declares(n)) throw CheckError("identifier already declared: " + n)
         }
-        
     }
     def checkFormula(ctx: Ontology, f: Formula) {
         f match {
@@ -101,12 +118,15 @@ object Checker {
           case ConcAss(ind, c) =>
             checkIndividual(ctx, i)
             checkConcept(ctx, c)
+          case RelAss(s, r, o) =>
+            checkIndividual(ctx, s)
+            checkRelation(ctx, r)
+            checkIndividual(ctx, o)
           case PropAss(i, p, v) =>
             checkIndividual(ctx, i)
             val t = checkProperty(ctx, p)
             checkValue(ctx, v, t)
-        }
-        
+        }        
     }
     def checkConcept(ctx: Ontology, c: Concept) {
         c match {
@@ -117,19 +137,49 @@ object Checker {
                val decl = ctx.loopup(n)
                decl match {
                    case _: ConcDecl => 
-                   case _ => throw CheckError("expected concept; found " + c)
+                   case _ => throw CheckError("expected concept; found " + n)
                }
         }
         
     }
     def checkIndividual(ctx: Ontology, i: Individual) {
-        
+        i match {
+          case IndRef(n) =>
+             val decl = ctx.loopup(n)
+             decl match {
+                 case _: IndDecl => 
+                 case _ => throw CheckError("expected individual; found " + n)
+             }
+        }
+    }
+    def checkRelation(ctx: Ontology, r: Relation) {
+        r match {
+          case RelRef(n) =>
+             val decl = ctx.loopup(n)
+             decl match {
+                 case _: RelDecl => 
+                 case _ => throw CheckError("expected relation; found " + n)
+             }
+        }
     }
     def checkProperty(ctx: Ontolgoy, p: Property): Type = {
-        
+        p match {
+          case PropRef(n) =>
+             val decl = ctx.loopup(n)
+             decl match {
+                 case PropDecl(_,t) => t
+                 case _ => throw CheckError("expected property; found " + n)
+             }
     }
     def checkValue(ctx: Ontology, v: Value, t: Type) {
-        
+        val type_of_v = v match {
+          case IntValue(_) => IntType()
+          case BoolValue(_) => BoolType()
+          case StringValue(_) => StringType()
+        }
+        if (type_of_v != t) {
+          throw CheckError("expected " + t.print() + "; found " + type_of_v.print() + ": " + v.print())
+        }
     }
 }
 
@@ -221,9 +271,7 @@ object Test {
         val input = readFile(f)
         val (o, r) = Parser.parse_Ontology(input)
         if (r != "") throw ParseError("extraneous input after parsing: " + r)
-        
-        // extra work goes here: check, semantics
-        
+        Checker.checkOntology(o)
         println(o.print())
         0
     }
