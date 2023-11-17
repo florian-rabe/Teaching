@@ -384,10 +384,13 @@ Type checker: as above but additionally
 \begin{frame}\frametitle{Exercise 4}
 Implement a type-checker for BOL.
 
-BOL is untyped, and not much type-checking is needed.
-But the type-checker must check that all identifier references are correct.
-
-The only additional type-checking that is needed is that all property assertion use values according to the property type.
+The type-checker must check that all identifier references are used according to their declaration:
+\begin{itemize}
+\item concept identifiers as concepts
+\item relation identifiers as relations
+\item individual identifiers as individuals
+\item properties identifiers of type $Y$ as properties for values of type $Y$individual identifiers as individuals
+\end{itemize}
 \end{frame}
 
 %\begin{frame}\frametitle{Exercise 2}
