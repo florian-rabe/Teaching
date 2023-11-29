@@ -35,17 +35,17 @@ The vocabulary symbol is $Thy$. The expression symbols are $Y$, $T$, and $F$.
 \gcomment{Vocabularies: theories}\\
 \gprod{Thy}{\rep{D}}{}\\
 \gcomment{Declarations}\\
-\gprod{D}{\kw{type}\; \ID}{type declaration}\\
-\galtprod{\kw{fun}\; \ID:\rep{Y}\to Y}{function symbol declaration}\\
-\galtprod{\kw{pred}\; \ID\sq\rep{Y}}{predicate symbol declaration}\\
+\gprod{D}{\kw{type}\; y}{type declaration}\\
+\galtprod{\kw{fun}\; f:\rep{Y}\to Y}{function symbol declaration}\\
+\galtprod{\kw{pred}\; p\sq\rep{Y}}{predicate symbol declaration}\\
 \galtprod{\kw{axiom}\;F}{axiom}\\
 \gcomment{type expressions}\\
-\gprod{Y}{\ID}{atomic type} \\
+\gprod{Y}{y}{atomic type} \\
 \gcomment{term expressions}\\
-\gprod{T}{\ID(\rep{T})}{function symbol applied to arguments} \\
-\galtprod{\ID}{term variables} \\
+\gprod{T}{f(\rep{T})}{function symbol applied to arguments} \\
+\galtprod{x}{term variables} \\
 \gcomment{formula expressions}\\
-\gprod{F}{\ID(\rep{T})}{predicate symbol applied to arguments} \\
+\gprod{F}{p(\rep{T})}{predicate symbol applied to arguments} \\
 \galtprod{T\doteq_Y T}{equality of terms at a type} \\
 \galtprod{\top}{truth} \\
 \galtprod{\bot}{falsity} \\
@@ -54,10 +54,10 @@ The vocabulary symbol is $Thy$. The expression symbols are $Y$, $T$, and $F$.
 \galtprod{F\impl F}{implication} \\
 \galtprod{F\Leftrightarrow F}{equivalence} \\
 \galtprod{\neg F}{negation} \\
-\galtprod{\forall \ID:Y.F}{universal quantification at a type} \\
-\galtprod{\exists \ID:Y.F}{existential quantification at a type} \\
+\galtprod{\forall x:Y.F}{universal quantification at a type} \\
+\galtprod{\exists x:Y.F}{existential quantification at a type} \\
 \gcomment{Identifiers}\\
-\gprod{\ID}{\text{alphanumeric string}}{}\\
+\gprod{y,f,p,x}{\text{alphanumeric string}}{}\\
 \end{commgrammar}
 \caption{Syntax of SFOL}\label{fig:sfol}
 \end{figure}
