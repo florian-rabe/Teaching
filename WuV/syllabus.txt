@@ -12,10 +12,14 @@ exercise 3 & implement BOL\\
 lecture 8 & parsing, parser for BOL \\
 lecture 9 & context-sensitive checking\\
 exercise 4 & a checker for BOL\\
-
 lecture 10 & natural language, semantics by translation BOL -> English\\
 lecture 11 & sTeX system for natural language\\
 exercise 5 & semantics of BOL as translation BOL -> sTeX\\
+lecture 12 & deductive language, syntax of SFOL\\
+lecture 11 & type-checking\\
+exercise 6 & implementing SFOL\\
+
+%% future
 
 lecture 5 & concrete knowledge and typed ontologies, OWL vs. SQL\\
 lecture 6 & type systems\\

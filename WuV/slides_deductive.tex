@@ -1,0 +1,92 @@
+\section{Typed First-Order Logic}
+
+\begin{frame}\frametitle{Syntax}
+We give an overview of first-order logic as the main example of the deductive corner of the Tetrapod.
+The grammar is given in Section 6.3 of the notes.
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 6}
+Implement the syntax (with printer but not necessarily with parser) and type-checking of SFOL.
+\end{frame}
+
+
+\section{Type Systems}
+
+\begin{frame}\frametitle{Overview}
+\begin{blockitems}{General Goal}
+\item subdivide expressions into groups (called sorts, types, kinds, etc.)
+\item written $\vdash_V E:T$ for expression $E$ of type $T$ and vocabulary $V$
+\end{blockitems}
+
+\begin{blockitems}{Basic Type System}
+\item expressions are always subdivided by their non-terminals
+\item the types are the non-terminals
+\item type of expression immediately clear from expression
+\item context only needed to \emph{check} well-formedness of expression, not to \emph{infer} its type
+\end{blockitems}
+
+\begin{blockitems}{Refined Type System}
+\item for some non-terminals, the expressions are additionally subdivided
+\item the types are other expressions
+ \glec{$E$ and $T$ can be from same or different non-terminals}
+\item relation between $E$ and $T$ entirely up to the language
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Local Variables}
+\begin{blockitems}{Type Systems with Variables}
+\item $\Gamma\vdash E:T$ for expression $E$ of type $T$
+\item $\Gamma=x_1:Y_1,\ldots,x_n:Y_n$ declares free variables that may occur in $E$ and $T$
+\item confusingly: $\Gamma$ usually also called \emph{context}
+\end{blockitems}
+
+\begin{blockitems}{Choice of $\Gamma$}
+\item for BOL: nothing (BOL has no variable binding)
+\item for SFOL: variables introduced by $\forall$ and $\exists$
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Algorithms for Type Systems}
+Judgment $\Gamma\vdash_V E: T$
+\begin{blockitems}{Type Checking}
+\item input: $V$, $\Gamma$, $E$, $T$
+\item output: boolean
+\end{blockitems}
+
+\begin{blockitems}{Type Inference}
+\item input: $\Gamma$, $V$, $E$
+\item output: $T$
+\end{blockitems}
+
+\glec{in practice: also return error messages, e.g., as exceptions}
+
+\begin{blockitems}{Advanced Variants}
+\item as above but additionally return $E'$ and $T'$
+\item $E$ and $T$ have gaps that are filled by the algorithms resulting in $E'$ and $T'$
+\end{blockitems}
+\end{frame}
+
+
+\begin{frame}\frametitle{Implementing a Type-Checker}
+\begin{blockitems}{Structure of Syntax}
+\item structural level: vocabularies (and morphisms), declarations
+\item expressions: some non-terminals are designated as expressions
+ \begin{itemize}
+ \item usually at least one per declaration kind
+ \item usually includes (or can be extended to include) formulas
+ \end{itemize}
+\end{blockitems}
+
+\begin{blockitems}{Structure of Type-Checker}
+\item function check-$N$ for each non-terminal $N$
+ \begin{itemize}
+ \item takes context ($V$ and $\Gamma$) and $N$-word
+ \item returns error message(s)
+ \end{itemize}
+\item whenever $N$-words are typed by $Y$-words, instead
+ \begin{itemize}
+ \item function check-$N$ takes $V$, $\Gamma$, $N$-word, \emph{and} $Y$-word (expected type)
+ \item function infer-$N$ takes $V$, $\Gamma$, $N$-word; returns $Y$-word (inferred type)
+ \end{itemize}
+\end{blockitems}
+\end{frame}
