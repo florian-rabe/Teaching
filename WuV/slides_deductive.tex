@@ -89,6 +89,82 @@ Judgment $\Gamma\vdash_V E: T$
 Implement the syntax (with printer but not necessarily with parser) and type-checking of SFOL.
 \end{frame}
 
+\section{Theory Morphisms}
+
+\begin{frame}\frametitle{Syntax}
+\begin{blockitems}{Syntax like for BOL: morphism $m:V\to W$ maps}
+\item type symbols to type expressions
+ \[y:=Y\]
+\item function symbols to function expressions
+ \[f:=[x_1,\ldots,x_n]T\]
+ \glec{$n$-ary function expression = term with $n$ free variables}
+\item predicate symbols to predicate expressions
+ \[p:=[x_1,\ldots,x_n]F\]
+ \glec{$n$-ary predicate expression = formula with $n$ free variables}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example}
+$V$:
+\begin{lstlisting}[basicstyle={\footnotesize\color{gray}}]
+type person
+type int
+fun age: person $\to$ int
+pred sibling $\subseteq$ person person
+\end{lstlisting}
+
+$W$:
+\begin{lstlisting}[basicstyle={\footnotesize\color{gray}}]
+type human
+type int
+fun minus: int int $\to$ int
+fun birthYear: person $\to$ int
+fun currentYear: $\to$ int
+pred parent $\subseteq$ person person
+\end{lstlisting}
+
+One possible morphism $m:V\to W$:
+\begin{lstlisting}[basicstyle={\footnotesize\color{gray}}]
+person := human
+int    := int
+age    := [p] minus(currentYear, birthYear(p))
+sibling:= [x,y] $\forall$ p:human. parent(p,x) $\equiv$ parent(p,y)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}\frametitle{Type-Checking}
+\begin{blockitems}{Slight more complex than for BOL}
+\item for $V$-type symbol $y:=Y$: $y:=Y$ well-typed if
+ \[\vdash_W Y: \TYPE\]
+i.e., if $Y$ is a type-expression
+\item $V$-function symbol $f:Y_1 \ldots Y_n\to Y$: $f:=[x_1,\ldots,x_n]T$ well-typed if
+ \[x_1:m(Y_1),\ldots,x_n:m(Y_n)\vdash_W f': m(Y)\]
+i.e., if $T$ is a well-typed term with
+ \begin{itemize}
+  \item free variables whose types correspond to the arguments of $f$
+  \item output corresponding to the output type of $f$
+ \end{itemize}
+\item $V$-predicate symbol $p\subseteq Y_1\ldots Y_n$: $p:=[x_1,\ldots,x_n]F$ well-typed if
+ \[x_1:m(Y_1),\ldots,x_n:m(Y_n)\vdash_W F: \FORM\]
+i.e., if $F$ is a well-typed formula with free variables whose types correspond to the arguments of $p$
+\item $V$-axiom asserting $F$: $m(F)$ must be a theorem
+\end{blockitems}
+\end{frame}
+
+%\begin{frame}\frametitle{Homomorphic Extension}
+%Given morphism $m:V\to W$
+%\begin{blockitems}{In principle like for BOL}
+%\item map $V$-expression $E$ to $W$-expression $m(E)$ by replacing every symbol reference with the expression provided by $m$
+% \[y:=Y\]
+%\item function symbols to function expressions
+% \[f:=[x_1,\ldots,x_n]T\]
+% \glec{$n$-ary function expression = term with $n$ free variables}
+%\item predicate symbols to predicate expressions
+% \[p:=[x_1,\ldots,x_n]F\]
+% \glec{$n$-ary predicate expression = formula with $n$ free variables}
+%\end{blockitems}
+%\end{frame}
+
 \section{Semantics}
 
 \begin{frame}\frametitle{Theorems}
@@ -178,12 +254,12 @@ Implement the syntax (with printer but not necessarily with parser) and type-che
 \begin{blockitems}{Expressions}
 \item \lstinline|![X:TYPE]:F| and \lstinline|?[X:TYPE]:F| for quantifiers
 \item \lstinline!F & G!, \lstinline!F | G!, \lstinline!F => G!, \lstinline!~F! for connectives
-\item \lstinline|s(T1,...,Tn)| for function/predicate symbol applications
+\item \lstinline|s(T1,...,Tn)| for function/predicate applications
 \end{blockitems}
 
 \begin{blockitems}{Identifiers}
 \item variables must start with upper-case letter
-\item type/function/predicate symbol names must start with a lower-case letter
+\item type/function/predicate symbols must start with a lower-case letter
 \item remaining characters alphanumeric
 \end{blockitems}
 
@@ -196,9 +272,9 @@ Implement the syntax (with printer but not necessarily with parser) and type-che
 \begin{frame}\frametitle{Exercise 7}
 Extend your implementation of SFOL as follows:
 \begin{itemize}
-\item Add theory morphisms to the AST and add a check method for them
-\item Implement a function that takes a morphism $m:S\to T$ and an $S$-expression $E$ (one function each for terms, types, formulas) and returns the homomorphic translation $m(E)$.
-Run your checker on some example inputs $E$ to test if you are indeed correctly translating well-typed $S$-expressions to well-typed $T$-expressions.
+\item Add theory morphisms to the AST and (optionally) add a check method for them.
+\item Optionally: Implement a function that takes a morphism $m:S\to T$ and an $S$-expression $E$ (one function each for terms, types, formulas) and returns the homomorphic translation $m(E)$.
+%Run your checker on some example inputs $E$ to test if you are indeed correctly translating well-typed $S$-expressions to well-typed $T$-expressions.
 \item Add a printer for printing SFOL theories and expressions in TPTP syntax.
 \item Add a function that takes a theory and a conjecture and produces the corresponding TPTP input. Use an ATP to (try to) prove the conjecture.
 \end{itemize}
