@@ -66,7 +66,6 @@ Judgment $\Gamma\vdash_V E: T$
 \end{blockitems}
 \end{frame}
 
-
 \begin{frame}\frametitle{Implementing a Type-Checker}
 \begin{blockitems}{Structure of Syntax}
 \item structural level: vocabularies (and morphisms), declarations
@@ -89,4 +88,98 @@ Judgment $\Gamma\vdash_V E: T$
  \item function infer-$N$ takes $V$, $\Gamma$, $N$-word; returns $Y$-word (inferred type)
  \end{itemize}
 \end{blockitems}
+\end{frame}
+
+
+\begin{frame}\frametitle{Implementing Semantics}
+\begin{blockitems}{Automated Theorem Prover (ATP)}
+\item input: an SFOL-theory $T$ and a well-typed formula $F$ (called the conjecture)
+\item output: $F$ is theorem/$F$ is contradiction/timeout
+\end{blockitems}
+
+\begin{blockitems}{Theorem status undecidable for most logics}
+\item theorem provers try proving/refuting until interrupted
+\item typical: proof/refutation in a few seconds/minutes or never
+\end{blockitems}
+
+\glec{many ATPs for SFOL: Vampire, E, Spass, \ldots}
+\glec{ATPs compete in the annual CASC competition}
+\end{frame}
+
+\begin{frame}\frametitle{TPTP: A Standard Concrete Syntax}
+\glec{recall: concrete syntax = grammar with all the terminal symbols}
+\begin{blockitems}{TPTP}
+\item designed by Sutcliffe for CASC competition
+\item gradually became de facto standard
+\item today: every SFOL ATP supports TPTP as input syntax
+\item various extensions of TPTP for other logics
+\end{blockitems}
+
+\glec{Online interface for SFOL ATPs at \url{http://www.tptp.org}}
+\end{frame}
+
+\begin{frame}\frametitle{TPTP Syntax}
+\glec{recall: concrete syntax = grammar with all the terminal symbols}
+\begin{blockitems}{TPTP}
+\item designed by Sutcliffe for CASC competition
+\item gradually became de facto standard
+\item today: every SFOL ATP supports TPTP as input syntax
+\item various extensions of TPTP for other logics
+\end{blockitems}
+
+\glec{Online interface for SFOL ATPs at \url{http://www.tptp.org}}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{TPTP Syntax: Declarations}
+\begin{blockitems}{Theory}
+\item text file containing one line per declaration/axiom/conjecture
+\end{blockitems}
+
+\begin{blockitems}{Declarations}
+\item named: line \lstinline|tff(decl_N, decl, N: TYPE).| where
+\begin{itemize}
+\item \lstinline|N| is the name
+\item \lstinline|TYPE| is
+ \begin{itemize}
+ \item \lstinline[mathescape=false]|$tType| for a type declaration
+ \item \lstinline|Y1*...*Yn>Y| for a function declaration
+ \item \lstinline[mathescape=false]|Y1*...*Yn>$o| for a predicate declaration
+ \end{itemize}
+\end{itemize}
+\item axiom: line \lstinline|tff(N, axiom, F).| where
+\begin{itemize}
+\item \lstinline|N| is some name
+\item \lstinline|F| is the formula
+\end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{TPTP Syntax: Expressions}
+\begin{blockitems}{Expressions}
+\item \lstinline|![X:TYPE]:F| and \lstinline|?[X:TYPE]:F| for quantifiers
+\item \lstinline!F & G!, \lstinline!F | G!, \lstinline!F => G!, \lstinline!~F! for connectives
+\item \lstinline|s(T1,...,Tn)| for function/predicate symbol applications
+\end{blockitems}
+
+\begin{blockitems}{Identifiers}
+\item variables must start with upper-case letter
+\item type/function/predicate symbol names must start with a lower-case letter
+\item remaining characters alphanumeric
+\end{blockitems}
+
+\begin{blockitems}{Conjecture (the formula to prove)}
+\item like an axiom
+\item but with \lstinline|conjecture| instead of \lstinline|axiom|
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 7}
+Extend your implementation of SFOL as follows:
+\begin{itemize}
+\item Add theory morphisms to the AST and add a check method for them
+\item Implement a function that takes a morphism $m:S\to T$ and an $S$-expression $E$ (one function each for terms, types, formulas) and returns the homomorphic translation $m(E)$.
+Run your checker on some example inputs $E$ to test if you are indeed correctly translating well-typed $S$-expressions to well-typed $T$-expressions.
+\item Add a printer for printing SFOL theories and expressions in TPTP syntax.
+\item Add a function that takes a theory and a conjecture and produces the corresponding TPTP input. Use an ATP to (try to) prove the conjecture.
+\end{itemize}
 \end{frame}
