@@ -5,11 +5,6 @@ We give an overview of first-order logic as the main example of the deductive co
 The grammar is given in Section 6.3 of the notes.
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 6}
-Implement the syntax (with printer but not necessarily with parser) and type-checking of SFOL.
-\end{frame}
-
-
 \section{Type Systems}
 
 \begin{frame}\frametitle{Overview}
@@ -90,10 +85,42 @@ Judgment $\Gamma\vdash_V E: T$
 \end{blockitems}
 \end{frame}
 
+\begin{frame}\frametitle{Exercise 6}
+Implement the syntax (with printer but not necessarily with parser) and type-checking of SFOL.
+\end{frame}
+
+\section{Semantics}
+
+\begin{frame}\frametitle{Theorems}
+\begin{blockitems}{Semantics for an SFOL theory $V$}
+\item theorem: a formula that is implied (must be true) by the axioms
+\item contradiction: a formula that must be false due to the axioms
+\glec{if there is negation: $F$ is contradiction iff $\neg F$ is theorem}
+\item $V$ is inconsistent iff all formulas are theorems \\ (equivalently: iff all formulas are contradictions)
+\end{blockitems}
+\glec{more details on semantics later}
+
+\begin{blockitems}{Kinds of Formulas}
+\item ill-formed: cannot be represented in AST, parse error
+\item ill-typed: can be represented in AST, but rejected by type-checker
+\item well-typed: accepted by type-checker and one of
+\begin{itemize}
+\item theorem
+\item contradiction
+\item other
+ \glec{usually, most formulas are neither theorem not contradiction}
+\end{itemize}
+\end{blockitems}
+\end{frame}
+
 
 \begin{frame}\frametitle{Implementing Semantics}
 \begin{blockitems}{Automated Theorem Prover (ATP)}
-\item input: an SFOL-theory $T$ and a well-typed formula $F$ (called the conjecture)
+\item input:
+ \begin{itemize}
+ \item an SFOL-theory $V$
+ \item a well-typed $V$-formula $F$ (called the conjecture)
+ \end{itemize}
 \item output: $F$ is theorem/$F$ is contradiction/timeout
 \end{blockitems}
 
@@ -103,26 +130,19 @@ Judgment $\Gamma\vdash_V E: T$
 \end{blockitems}
 
 \glec{many ATPs for SFOL: Vampire, E, Spass, \ldots}
-\glec{ATPs compete in the annual CASC competition}
 \end{frame}
 
 \begin{frame}\frametitle{TPTP: A Standard Concrete Syntax}
+\begin{blockitems}{SFOL Syntax Standardization}
+\item basically only one choice for abstract syntax of SFOL
+\item but lots of options for concrete syntax
 \glec{recall: concrete syntax = grammar with all the terminal symbols}
-\begin{blockitems}{TPTP}
-\item designed by Sutcliffe for CASC competition
-\item gradually became de facto standard
-\item today: every SFOL ATP supports TPTP as input syntax
-\item various extensions of TPTP for other logics
 \end{blockitems}
 
-\glec{Online interface for SFOL ATPs at \url{http://www.tptp.org}}
-\end{frame}
-
-\begin{frame}\frametitle{TPTP Syntax}
-\glec{recall: concrete syntax = grammar with all the terminal symbols}
-\begin{blockitems}{TPTP}
+\begin{blockitems}{TPTP Concrete Syntax}
 \item designed by Sutcliffe for CASC competition
-\item gradually became de facto standard
+\glec{annual competition of SFOL ATPs}
+\item gradually became de facto standard syntax for SFOL
 \item today: every SFOL ATP supports TPTP as input syntax
 \item various extensions of TPTP for other logics
 \end{blockitems}
