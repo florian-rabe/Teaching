@@ -132,38 +132,67 @@ sibling:= [x,y] $\forall$ p:human. parent(p,x) $\equiv$ parent(p,y)
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}\frametitle{Type-Checking}
-\begin{blockitems}{Slight more complex than for BOL}
-\item for $V$-type symbol $y:=Y$: $y:=Y$ well-typed if
+\begin{frame}\frametitle{Type-Checking (1)}
+\begin{blockitems}{The easy cases --- like for BOL}
+\item for $V$-type symbol $y:=Y$ mapped by $y:=Y$ \\
+well-typed if
  \[\vdash_W Y: \TYPE\]
 i.e., if $Y$ is a type-expression
-\item $V$-function symbol $f:Y_1 \ldots Y_n\to Y$: $f:=[x_1,\ldots,x_n]T$ well-typed if
+\item $V$-axiom asserting $F$: mapping of named symbols must be such that $m(F)$ is a theorem
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Type-Checking (2)}
+\begin{blockitems}{Conditions for function/predicate symbols slightly technical}
+\item $V$-function symbol $f:Y_1 \ldots Y_n\to Y$ mapped by $f:=[x_1,\ldots,x_n]T$\\
  \[x_1:m(Y_1),\ldots,x_n:m(Y_n)\vdash_W f': m(Y)\]
-i.e., if $T$ is a well-typed term with
+i.e., well-typed if $T$ is a well-typed term with
  \begin{itemize}
   \item free variables whose types correspond to the arguments of $f$
   \item output corresponding to the output type of $f$
  \end{itemize}
-\item $V$-predicate symbol $p\subseteq Y_1\ldots Y_n$: $p:=[x_1,\ldots,x_n]F$ well-typed if
+\item $V$-predicate symbol $p\subseteq Y_1\ldots Y_n$ mapped by $p:=[x_1,\ldots,x_n]F$
  \[x_1:m(Y_1),\ldots,x_n:m(Y_n)\vdash_W F: \FORM\]
-i.e., if $F$ is a well-typed formula with free variables whose types correspond to the arguments of $p$
-\item $V$-axiom asserting $F$: $m(F)$ must be a theorem
+i.e., well-typed if $F$ is a well-typed formula with free variables whose types correspond to the arguments of $p$
+ \glec{like for function symbols but no output type}
 \end{blockitems}
 \end{frame}
 
-%\begin{frame}\frametitle{Homomorphic Extension}
-%Given morphism $m:V\to W$
-%\begin{blockitems}{In principle like for BOL}
-%\item map $V$-expression $E$ to $W$-expression $m(E)$ by replacing every symbol reference with the expression provided by $m$
-% \[y:=Y\]
-%\item function symbols to function expressions
-% \[f:=[x_1,\ldots,x_n]T\]
-% \glec{$n$-ary function expression = term with $n$ free variables}
-%\item predicate symbols to predicate expressions
-% \[p:=[x_1,\ldots,x_n]F\]
-% \glec{$n$-ary predicate expression = formula with $n$ free variables}
-%\end{blockitems}
-%\end{frame}
+
+\begin{frame}\frametitle{Homomorphic Extension}
+\begin{blockitems}{Given morphism $m:V\to W$}
+\item In principle like for BOL: map $V$-expression $E$ to $W$-expression $m(E)$ by replacing every symbol reference with the expression provided by $m$
+\item But one subtlety for function/predicate application
+\begin{itemize}
+ \item if $m$ contains $f:=[x_1,\ldots,x_n]T$:
+   \[m(f(t_1,\ldots,t_n))=T[x_1/m(t_1),\ldots,x_n/m(t_n)]\]
+  (term $T$ with each variable $x_i$ substituted with $t_i$)
+ \item if $m$ contains $p:=[x_1,\ldots,x_n]F$:
+   \[m(p(t_1,\ldots,t_n))=F[x_1/m(t_1),\ldots,x_n/m(t_n)]\]
+  (formula $F$ with each variable $x_i$ substituted with $t_i$)
+\end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Theory Morphisms Preserve Theorems}
+\begin{blockitems}{Given}
+\item well-typed theories $V$, $W$
+\item well-typed theory morphism $m:V\to W$
+\item well-typed $V$-formula $F$ that is a theorem \glec{i.e., consequence of the $V$-axioms}
+\end{blockitems}
+
+Then:
+\[m(F) \tb\text{is a } W\text{-theorem}\]
+
+\begin{blockitems}{Enables Big Picture Applications}
+\item reuse theorems across theories
+\item show equivalence of theories
+\item find structural connection between seemingly large theories
+\item build module system using inheritance and functors
+\item build large theories from small systematically
+\end{blockitems}
+\end{frame}
+
 
 \section{Semantics}
 
@@ -188,7 +217,6 @@ i.e., if $F$ is a well-typed formula with free variables whose types correspond 
 \end{itemize}
 \end{blockitems}
 \end{frame}
-
 
 \begin{frame}\frametitle{Implementing Semantics}
 \begin{blockitems}{Automated Theorem Prover (ATP)}
@@ -272,10 +300,16 @@ i.e., if $F$ is a well-typed formula with free variables whose types correspond 
 \begin{frame}\frametitle{Exercise 7}
 Extend your implementation of SFOL as follows:
 \begin{itemize}
-\item Add theory morphisms to the AST and (optionally) add a check method for them.
-\item Optionally: Implement a function that takes a morphism $m:S\to T$ and an $S$-expression $E$ (one function each for terms, types, formulas) and returns the homomorphic translation $m(E)$.
-%Run your checker on some example inputs $E$ to test if you are indeed correctly translating well-typed $S$-expressions to well-typed $T$-expressions.
-\item Add a printer for printing SFOL theories and expressions in TPTP syntax.
+\item Add a printer for printing SFOL theories and expressions that produces strings in TPTP syntax.
 \item Add a function that takes a theory and a conjecture and produces the corresponding TPTP input. Use an ATP to (try to) prove the conjecture.
+\item Optionally:
+\begin{itemize}
+ \item Add theory morphisms to the AST.
+ \item Implement the homomorphic extension --- a function that takes a morphism $m:V\to W$ and a $V$-expression $E$ and returns the $W$-expression $m(E)$.
+ \glec{actually one function each for terms, types, formulas}
+ \item Add a check method for morphisms that calls the homomorphic extension, your type checker, and a theorem prover as needed.
+ \item Check an example theory morphism.
+ %Run your checker on some example inputs $E$ to test if you are indeed correctly translating well-typed $S$-expressions to well-typed $T$-expressions.
+\end{itemize}
 \end{itemize}
 \end{frame}
