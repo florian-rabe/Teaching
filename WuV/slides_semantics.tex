@@ -28,6 +28,68 @@ Representing
 \end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Semantics as Querying}
+\begin{blockitems}{General Idea}
+ \item Semantics answers questions about the syntax
+ \item Based on the intended meaning of the syntax
+ \item Specifies the meaning by giving the answers
+\end{blockitems}
+
+\begin{blockitems}{Special Cases}
+ \item Deductive semantics: answers the question whether a formula is a theorem
+ \item Computational semantics: answers the question what the result of a program is
+ \item Narrative semantics: allows answering any question if we understand natural language
+ \item Concrete data semantics: answers the question what objects with certain properties exist
+\end{blockitems}
+\end{frame}
+
+
+\begin{frame}\frametitle{Semantics as Imperfect Modeling}
+\begin{itemize}
+ \item Actual meaning of real-world difficult to model
+ \begin{itemize}
+ \item practical argument: any practically interesting system has too many rules
+  \glec{cf. physics, e.g., three-body problem already chaotic}
+ \item theoretical argument: no language can fully model itself
+  \glec{cf. G\"odel's incompleteness theorems}
+ \end{itemize}
+ \item Practical semantics is approximation of ideal semantics
+ \item Use practical purpose as guide for defining semantics
+  \begin{itemize}
+   \item a set of questions that can be asked \glec{e.g., judgments or queries}
+   \item a definition of what the answers are
+  \end{itemize}
+  \lec{restrict questions according to practical needs}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Aspects of Semantics}
+\begin{itemize}
+\item Documentation: answers given as text
+\begin{itemize}
+\item pro: easy to read for humans, critical to build intuitions
+\item con: often ambiguous, contradictory, or incomplete
+\end{itemize}
+\item Specification: correct answers defined by rule system \glec{also called calculus or inference system}
+\begin{itemize}
+\item pro: good stepping stone between the other two levels
+\item con: accomplishes the pros of neither of them
+\end{itemize}
+\item Implementation: answers computed by algorithm
+\begin{itemize}
+\item pro: easy to automate, critical for efficiency and scale
+\item con: essentially impossible to understand or analyze
+\end{itemize}
+\item Unit testing: set of query/answer pairs
+\begin{itemize}
+\item pro: easy to write, automate
+\item con: does not cover the whole semantics
+\end{itemize}
+\end{itemize}
+
+Rule system is sweet spot to connect human- and machine-friendly definitions.
+\end{frame}
+
 \begin{frame}\frametitle{Relative Semantics by Translation}
 Components:
 \begin{itemize}
@@ -202,52 +264,6 @@ For formulas $f$: semantics $\sem{f}$ is a boolean
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Semantics as Imperfect Modeling}
-\begin{itemize}
- \item Actual meaning of real-world difficult to model
- \begin{itemize}
- \item practical argument: any practically interesting system has too many rules
-  \glec{cf. physics, e.g., three-body problem already chaotic}
- \item theoretical argument: no language can fully model itself
-  \glec{cf. G\"odel's incompleteness theorems}
- \end{itemize}
- \item Practical semantics is approximation of ideal semantics
- \item Use practical purpose as guide for defining semantics
-  \begin{itemize}
-   \item a set of questions that can be asked \glec{e.g., judgments or queries}
-   \item a definition of what the answers are
-  \end{itemize}
-  \lec{restrict questions according to practical needs}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Levels of Semantics}
-\begin{itemize}
-\item Documentation: answers given as text
-\begin{itemize}
-\item pro: easy to read for humans, critical to build intuitions
-\item con: often ambiguous, contradictory, or incomplete
-\end{itemize}
-\item Specification: correct answers defined by rule system \glec{also called calculus or inference system}
-\begin{itemize}
-\item pro: good stepping stone between the other two levels
-\item con: accomplishes the pros of neither of them
-\end{itemize}
-\item Implementation: answers computed by algorithm
-\begin{itemize}
-\item pro: easy to automate, critical for efficiency and scale
-\item con: essentially impossible to understand or analyze
-\end{itemize}
-\item Unit testing: set of query/answer pairs
-\begin{itemize}
-\item pro: easy to write, automate
-\item con: does not cover the whole semantics
-\end{itemize}
-\end{itemize}
-
-Rule system is sweet spot to connect human- and machine-friendly definitions.
-\end{frame}
-
 
 \section{Relative Semantics for BOL}
 
@@ -262,6 +278,22 @@ computation & programming language & Scala \\
 narration & natural language & English \\
 \end{tabular}
 \end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Narrative Semantics of BOL in English}
+We discussed earlier
+\begin{itemize}
+\item the rough design of how natural languages can be seen as a formal systems
+  \begin{itemize}
+  \item grammar book = syntax
+  \item sentences = formulas
+  \item dictionary + common sense statements = standard library
+  \item domain-specific dictionary + sentences = vocabulary
+  \end{itemize}, , 
+\item the translation from BOL to it
+\item the non-compositional aspects of natural language
+\end{itemize}
+see details in the lecture notes
 \end{frame}
 
 \begin{frame}\frametitle{Deductive Semantics of BOL in SFOL}
@@ -304,69 +336,37 @@ see details in the lecture notes
 %\end{itemize}
 %\end{frame}
 
-\begin{frame}\frametitle{Exercise 7}
-Extend your implementation of BOL with implementations of SFOL and the translation from BOL to SFOL.
-\end{frame}
+\begin{frame}\frametitle{Exercise 8}
+Implement the translation from BOL to SFOL.
+Translate your university ontology.
 
-\begin{frame}[fragile]\frametitle{Exercise 8}
-Use an existing absolute SFOL semantics for BOL.
-Concretely this semantics is given in the form of theorem provers like Vampire, E, or Spass.
-These use TPTP as the input format.
-
-So extend your implementation of SFOL with a printer to TPTP format.
-Compose your translation with that printer to translate your example ontology and an example query (a formula to be proved) to a theorem prover.
-
-See \url{https://www.tptp.org/} for the TPTP resources, including the grammar and a web interface to theorem provers.
-The basic syntax is
-\begin{lstlisting}
-fof(id, type, name : the type).
-fof(id, axiom, the formula).
-fof(id, conjecture, the formula).
-\end{lstlisting}
-where formulas are formed using \lstinline|![X:TYPE]:F|, \lstinline|?[X:TYPE]:F|, \lstinline|F&F|, \lstinline!F|F!, \lstinline|F=>F|, \lstinline|~F|
+Formulate a BOL-conjecture and prove it by sending the translated version to an SFOL theorem prover.
 \end{frame}
 
 
-\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
-We discuss
-\begin{itemize}
-\item the grammar of an SQL-like language
-\item the translation from BOL to it
-\item the limitations of the translation
- \begin{itemize}
- \item partiality, e.g., for concept assertions where the concept is not atomic
- \item lack of formal axioms in SQL
- \end{itemize}
-\end{itemize}
-see details in the lecture notes
-\end{frame}
-
-\begin{frame}\frametitle{Computational Semantics of BOL in Scala}
-We discuss
-\begin{itemize}
-\item the grammar of a Scala-like language
-\item the translation from BOL to it
-\item the limitations of the translation
-\end{itemize}
-see details in the lecture notes
-\end{frame}
-
-
-\begin{frame}\frametitle{Concrete Data Semantics of BOL in English}
-We discuss
-\begin{itemize}
-\item the rough design of how natural languages can be seen as a formal systems
-  \begin{itemize}
-  \item grammar book = syntax
-  \item sentences = formulas
-  \item dictionary + common sense statements = standard library
-  \item domain-specific dictionary + sentences = vocabulary
-  \end{itemize}, , 
-\item the translation from BOL to it
-\item the non-compositional aspects of natural language
-\end{itemize}
-see details in the lecture notes
-\end{frame}
+%\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
+%We discuss
+%\begin{itemize}
+%\item the grammar of an SQL-like language
+%\item the translation from BOL to it
+%\item the limitations of the translation
+% \begin{itemize}
+% \item partiality, e.g., for concept assertions where the concept is not atomic
+% \item lack of formal axioms in SQL
+% \end{itemize}
+%\end{itemize}
+%see details in the lecture notes
+%\end{frame}
+%
+%\begin{frame}\frametitle{Computational Semantics of BOL in Scala}
+%We discuss
+%\begin{itemize}
+%\item the grammar of a Scala-like language
+%\item the translation from BOL to it
+%\item the limitations of the translation
+%\end{itemize}
+%see details in the lecture notes
+%\end{frame}
 
 \section{Relative Semantics by Translation}
 

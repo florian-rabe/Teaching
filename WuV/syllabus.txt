@@ -16,8 +16,14 @@ lecture 10 & natural language, semantics by translation BOL -> English\\
 lecture 11 & sTeX system for natural language\\
 exercise 5 & semantics of BOL as translation BOL -> sTeX\\
 lecture 12 & deductive language, syntax of SFOL\\
-lecture 11 & type-checking\\
+lecture 13 & type-checking SFOL\\
 exercise 6 & implementing SFOL\\
+lecture 14 & SFOL theory morphisms\\
+lecture 15 & SFOL theorem provers\\
+exercise 7 & implement an SFOL->TPTP, use existing theorem provers\\
+lecture 16 & language translations, BOL->SFOL\\
+lecture 17 & relative semantics, compositional translations\\
+exercise 8 & implement BOL->SFOL, use a SFOL theorem prover for the university ontology\\
 
 %% future
 
@@ -34,19 +40,10 @@ homework 4 & implement codecs individually in various languages \\
 lecture 11-12 & primitive types and encodings: continued \\
 lecture 13 & representation of syntax and semantics of mini-language for arithmetics in SML and Java \\
 exercise 5 & compare implementations of codecs, send data back and forth\\
-homework 5 & implement BOL, SFOL syntax systematically (individually, any language) \\
-lecture 14 & context-free grammars and inductive data types \\
-lecture 15 & semantics by translation, BOL -> SFOL\\
-exercise 6 & compare homeworks\\
-homework 6 & implement BOL->SFOL systematically, BOL -> SQL (individually, any language) \\
 lecture 16 & BOL->SQL \\
 lecture 17 & compositionality\\
 exercise 7 & compare homeworks, context-sensitive translations\\
-homework 7 & SFOL->TPTP \\
-lecture 18 & BOL->English, non-compositionality \\
 lecture 19 & BOL->Scala, consequence closure, axioms as tests \\
-exercise 8 & uni ontology BOL -> SFOL -> TPTP, run SFOL provers\\
-homework 8 & finish exercise: answer deductive query in BOL via translation to SFOL and applying absolute semantics in SFOL \\
 lecture 20 & formal semantics: overview \\
 lecture 21 & querying: overview, deductive queries via relative semantics \\
 exercise 9 & compare homeworks, concrete queries via deductive semantics\\

@@ -270,13 +270,13 @@ BOL Syntax $X$ & Semantics $\sem{X}$ in SFOL\\
 \hline
 \hline
 ontology & SFOL theory \\
-$D_1,\ldots,D_n$ & $\sem{D_1},\ldots,\sem{D_n}$ \\
+$D_1,\ldots,D_n$ & $\kw{type}\,\iota,\,\sem{D_1},\ldots,\sem{D_n}$ \\
 \hline
-BOL declaration & FOL declaration \\
+BOL declaration & SFOL declaration \\
 \kw{individual}\,$i$ & nullary function symbol $i:\iota$ \\
-\kw{concept}\,$i$  & unary predicate symbol $i\sq\iota$ \\
-\kw{relation}\,$i$ & binary predicate symbol $i\sq\iota\times \iota$ \\
-\kw{property}\,$i:T$ & binary predicate symbol $i\sq\iota\times T$ \\
+\kw{concept}\,$c$  & unary predicate symbol $c\sq\iota$ \\
+\kw{relation}\,$r$ & binary predicate symbol $r\sq\iota\times \iota$ \\
+\kw{property}\,$p:T$ & binary predicate symbol $p\sq\iota\times T$ \\
 \kw{axiom}\, $F$ & axiom $\sem{F}$\\
 \hline
 Formula & Formula without free variables\\
@@ -290,7 +290,7 @@ Individual & Terms of type $\iota$ \\
 $i$ & $i$ \\
 \hline
 Concept & Formula with free variable $x:\iota$\\
-$i$ & $i(x)$\\
+$c$ & $c(x)$\\
 $\top$ & $\true$\\
 $\bot$ & $\false$\\
 $C_1 \sqcup C_2$ & $\sem{C_1}(x)\vee\sem{C_2}(x)$\\
@@ -302,7 +302,7 @@ $\rng\, R$ & $\exists y:\iota.\sem{R}(y,x)$\\
 $\dom\, P$ & $\exists y:T.\sem{P}(x,y)$  \tb($T$ is type of $P$)\\
 \hline
 Relation & Formula with free variables $x:\iota,y:\iota$\\
-$i$ & $i(x,y)$\\
+$r$ & $r(x,y)$\\
 $R_1 \cup R_2$ & $\sem{R_1}(x,y)\vee \sem{R_2}(x,y)$\\
 $R_1 \cap R_2$ & $\sem{R_1}(x,y)\wedge \sem{R_2}(x,y)$\\
 $R_1 ; R_2$ & $\exists m:\iota.\sem{R_1}(x,m)\wedge \sem{R_2}(m,y)$\\
@@ -311,7 +311,7 @@ $R^*$          & (tricky, omitted)\\
 $\Delta_C$     & $x\doteq y\wedge \sem{C}(x)$\\
 \hline
 Property of type $T$ & Formula with free variables $x:\iota,y:T$\\
-$i$ & $i(x,y)$\\
+$p$ & $p(x,y)$\\
 \end{tabular}
 \caption{Interpretation Function for BOL into SFOL}\label{fig:bolsem:sfol}
 \end{figure}
