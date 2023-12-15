@@ -336,14 +336,6 @@ see details in the lecture notes
 %\end{itemize}
 %\end{frame}
 
-\begin{frame}\frametitle{Exercise 8}
-Implement the translation from BOL to SFOL.
-Translate your university ontology.
-
-Formulate a BOL-conjecture and prove it by sending the translated version to an SFOL theorem prover.
-\end{frame}
-
-
 %\begin{frame}\frametitle{Concrete Data Semantics of BOL in SQL}
 %We discuss
 %\begin{itemize}
@@ -506,17 +498,17 @@ Then both sides of equations act on $E(x_1,\ldots,x_n)$:
 \end{blockitems}
 \end{frame}
 
-\begin{frame}[fragile]\frametitle{Exercise 9}
-Choose a parser generator for your programming language.
-Then extend your implementation with generated parser for BOL.
+\begin{frame}\frametitle{Exercise 8}
+Implement the translation from BOL to SFOL.
+Translate your university ontology.
 
-Write your example ontology in BOL and parse it into BOL.
+Formulate a BOL-conjecture and prove it by sending the translated version to an SFOL theorem prover.
 \end{frame}
 
 \section{Situational Relative Semantics}
 
-\begin{frame}\frametitle{Situational vs. Generic Relative Semantics}
-\begin{blockitems}{Generic relative semantics}
+\begin{frame}\frametitle{Situational vs. Translational Relative Semantics}
+\begin{blockitems}{Translational relative semantics}
 \item vocabularies mapped to vocabularies, expressions to expressions
 \item abstract symbols in input vocabulary yield abstract symbols in output vocabulary
 \item examples:
@@ -527,7 +519,7 @@ Write your example ontology in BOL and parse it into BOL.
 \end{blockitems}
 
 \begin{blockitems}{Situational relative semantics}
-\item uninterpreted symbols in vocabulary given concrete semantics
+\item uninterpreted symbols in vocabulary given concrete values
 \item situation = maps every symbols to its concrete semantics
 \item expressions interpreted relative to fixed situation
 \item examples
@@ -552,19 +544,17 @@ Write your example ontology in BOL and parse it into BOL.
 \end{frame}
 
 \begin{frame}\frametitle{Approaches to Uninterpreted Symbols}
-Broad spectrum
-\begin{itemize}
+\begin{blockitems}{Usually only one extreme}
 \item Computation: typically only interpreted symbols
  \glec{programs can be run directly}
 \item Deduction: typically only uninterpreted symbols
  \glec{focus on studying the possibly choices of interpretations}
-\end{itemize}
+\end{blockitems}
 
-Combinations
-\begin{itemize}
+\begin{blockitems}{Some attempts at combining}
 \item reasoning about programs \glec{e.g., functions with pre-/postconditions}
-\item logics with built-in base types
-\end{itemize}
+\item logics with built-in base types \glec{e.g., SMT solving}
+\end{blockitems}
 \end{frame}
 
 \begin{frame}\frametitle{Vocabulary vs. Situation}
