@@ -24,16 +24,12 @@ exercise 7 & implement an SFOL->TPTP, use existing theorem provers\\
 lecture 16 & language translations, BOL->SFOL\\
 lecture 17 & relative semantics, compositional translations\\
 exercise 8 & implement BOL->SFOL, use a SFOL theorem prover for the university ontology\\
+lecture 17 & absolute and denotational semantics\\
+lecture 18 & extrinsic and intrinsic typing\\
+exercise 9 & semantics/querying of the university ontology\\
 
 %% future
 
-lecture 5 & concrete knowledge and typed ontologies, OWL vs. SQL\\
-lecture 6 & type systems\\
-homework 2 & figure out how to add axioms to the ontology, make changes as discussed \\
-exercise 2 & continued: as a team (with tasks distributed) add ABox and axioms, do SPARQL query via Virtuoso, do logic query via FaCT++ \\
-lecture 7-8 & type systems: Curry/Church, ADTs \\
-exercise 3 & continued, also compare OWL and BOL \\
-lecture 9 & special lecture on MMT \\
 lecture 10 & primitive types and encodings \\
 exercise 4 & as a team standardize some data types and codecs (https://pad.stuve.fau.de/p/wuv_codecs)\\
 homework 4 & implement codecs individually in various languages \\

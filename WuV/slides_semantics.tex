@@ -505,59 +505,53 @@ Translate your university ontology.
 Formulate a BOL-conjecture and prove it by sending the translated version to an SFOL theorem prover.
 \end{frame}
 
-\section{Situational Relative Semantics}
+\section{Denotational Semantics}
 
-\begin{frame}\frametitle{Situational vs. Translational Relative Semantics}
-\begin{blockitems}{Translational relative semantics}
+\begin{frame}\frametitle{Relative Semantics: Denotation vs. Translation}
+\begin{blockitems}{Translation semantics}
 \item vocabularies mapped to vocabularies, expressions to expressions
-\item abstract symbols in input vocabulary yield abstract symbols in output vocabulary
+\item symbols in input vocabulary yield symbols in output vocabulary
 \item examples:
  \begin{itemize}
- \item all BOL translations so far
+ \item BOL to SFOL
  \item compiling a programming language to another language
  \end{itemize}
 \end{blockitems}
 
-\begin{blockitems}{Situational relative semantics}
-\item uninterpreted symbols in vocabulary given concrete values
-\item situation = maps every symbols to its concrete semantics
+\begin{blockitems}{Denotational semantics}
+\item symbols in vocabulary given concrete value
+ \glec{value/meaning/denotation/interpretation}
+\item model: maps every symbols to its concrete value
 \item expressions interpreted relative to fixed situation
 \item examples
  \begin{itemize}
  \item interpreting a program \glec{situation = input+run-time environment}
- \item interpreting logical formulas \glec{situation = model}
+ \item interpreting logical formulas in a model \glec{situation = model}
  \end{itemize}
 \end{blockitems}
 \end{frame}
 
 \begin{frame}\frametitle{Interpreted vs. Uninterpreted Symbols}
-\begin{blockitems}{Interpreted = symbols with fixed intended semantics}
+\begin{blockitems}{Interpreted = symbols with fixed semantics}
 \item base types and their operations \glec{integer, etc.}
 \item concrete data types \glec{enumerations, inductive types}
-\item defined symbols \glec{i.e., abbreviations}
 \end{blockitems}
+\glec{semantics fixed by language}
 
-\begin{blockitems}{Uninterpreted = other symbols}
+\begin{blockitems}{Uninterpreted = semantics open to interpretation}
 \item e.g, $a:\TYPE,\;f:a\to a$, etc.
-\item semantics narrowed down by axioms \lec{possibly underspecified}
+\item axioms/definitions constrain/specify possible interpretations
+\end{blockitems}
+\glec{semantics constrained by vocabulary, fixed by situation}
+
+\begin{blockitems}{Relative to situation}
+\item semantics of all symbols fixed
+\item semantics of every expression can be determined
+ \glec{often but not necessarily computable}
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Approaches to Uninterpreted Symbols}
-\begin{blockitems}{Usually only one extreme}
-\item Computation: typically only interpreted symbols
- \glec{programs can be run directly}
-\item Deduction: typically only uninterpreted symbols
- \glec{focus on studying the possibly choices of interpretations}
-\end{blockitems}
-
-\begin{blockitems}{Some attempts at combining}
-\item reasoning about programs \glec{e.g., functions with pre-/postconditions}
-\item logics with built-in base types \glec{e.g., SMT solving}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Vocabulary vs. Situation}
+\begin{frame}\frametitle{Example}
 \begin{blockitems}{Vocabulary: rules of the world}
 \item type $a$
 \item operation $f:a\to a$
@@ -566,22 +560,10 @@ Formulate a BOL-conjecture and prove it by sending the translated version to an 
 \end{blockitems}
 
 \begin{blockitems}{Situation: one concrete world $S$}
-\item specific set $S_a$
-\item specific function $S_f$ from $S_a$ to $S_a$
-\item specific subset $S_r$ of $S_a$
-\item proof that $F$ holds about $S_f$, $S_r$
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Situations}
-\begin{blockitems}{Structure}
-\item provides interpretation to every abstract symbol in vocabulary
-\item abstract symbols in input vocabulary yield abstract symbols in output vocabulary
-\item examples:
- \begin{itemize}
- \item all BOL translations so far
- \item compiling a programming language to another language
- \end{itemize}
+\item specific set $a^S$
+\item specific function $f^S$ from $a^S$ to $a^S$
+\item specific subset $r^S$ of $a^S$
+\item proof that $F$ holds about $f^S$, $r^S$
 \end{blockitems}
 
 \begin{center}
@@ -597,65 +579,73 @@ narration & dictionary & domain-specific definitions \\
 \end{center}
 \end{frame}
 
+\begin{frame}\frametitle{Terminology}
+``vocabulary'' and ``situation'' are not standard names.
+They are introduced here to unify the different kinds of languages.
+
+The standard names vary by knowledge aspect:
+\begin{center}
+\begin{tabular}{l|lll}
+Aspect & Vocabulary & Situation & Vocabulary+Situation\\
+\hline
+ontology & TBox & ABox & ontology \\
+data & schema & database & SQL dump\\
+deduction & theory & model & concrete theory\\
+computation & program & environment & execution\\
+narration & dictionary & technical jargon & \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Approaches to Uninterpreted Symbols}
+\begin{blockitems}{Usually only one extreme}
+\item Computation: typically mostly interpreted symbols, situation only provides input/environment
+ \glec{programs can be run directly}
+\item Deduction: typically only uninterpreted symbols
+ \glec{focus on studying the possible models}
+\end{blockitems}
+
+\begin{blockitems}{Some attempts at combining}
+\item reasoning about programs \glec{e.g., functions with pre-/postconditions}
+\item logics with built-in base types \glec{e.g., SMT solving}
+\end{blockitems}
+\end{frame}
+
 \begin{frame}\frametitle{Initial Semantics}
-Default situation that is induced by vocabulary itself
-\begin{itemize}
+\begin{blockitems}{Some situations can be captured in vocabulary}
+\item ABox part of ontology 
+\item schema and table entries part of SQL syntax
+\item trickier when vocabulary symbols represent abstract sets/functions
+ \glec{usually meta-language needed to define concrete semantics}
+\end{blockitems}
+
+\begin{blockitems}{Any vocabulary induces default situation}
 \item inhabitants of a type are exactly the terms of that type
 \item functions map exactly as given by axioms
-\end{itemize}
-
-Special case: ABox
+\item every situation must be an extension
+\item called initial situation, or initial semantics
+\item examples:
 \begin{itemize}
-\item individuals exactly the ones that are declared
-\item concepts, relations hold exactly if assertion declared
+\item ABox, database tables if part of vocabulary
+\item Herbrand model of logical theory
 \end{itemize}
+\end{blockitems}
 \end{frame}
 
 \section{Absolute Semantics for BOL}
 
 \begin{frame}\frametitle{Judgments}
-Typing:  \[\Gamma\vdash^{BOL}_V e:E\]
-Deduction: \[\Gamma\vdash^{BOL}_V F\]
+Goal: Answer the question whether a formula is a theorem.
 
-Propositions $\prop$:
-\begin{itemize}
-\item $C\sqsubseteq D$, $C\Equiv D$
-\item all three kinds of assertions
-\end{itemize}
+Use deduction judgment: \[\Gamma\vdash^{BOL}_V F\]
+for formula $F$
 
 Notation:
 \begin{itemize}
-\item We drop the superscript $^{BOL}$ everywhere.
-\item We drop the subscript $_V$ unless we need to use $V$.
-\item We drop the context $\Gamma$ unless we need to use/change $\Gamma$.
+\item We drop the superscript $^{BOL}$ whenever clear.
+\item We drop the subscript $_V$ whenever clear.
+\item We drop the context $\Gamma$ if it is empty.
 \end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Typing}
-Trivial intrinsic typing (Church) $\vdash e:^{int} E$
-\begin{itemize}
-\item $E$ is a non-terminal
-\item $e$ an expression derived from $E$
-\end{itemize}
-\medskip
-
-Refined by extrinsic typing (Curry) $\vdash e :^{ext} E$
-\begin{itemize}
-\item $e$ is an individual, i.e., $\vdash e :^{int} I$
-\item $E$ is a concept, i.e., $\vdash E :^{int} C$
- \glec{where $I$ and $C$ are the non-terminals from the grammar}
-\item $e$ has concept $E$, i.e., $\vdash e \isa E$
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Propositions as Types}
-Say also $\vdash p:f$ for proofs $p$ of proposition $f$
-\lec{in particular: $x:f$ in contexts to make local assumptions}
-\medskip
-
-Notation:
-\[\Gamma,\; f \tb\text{instead of} \tb \Gamma,\;p:f\]
-\glec{sufficient if we only state the rules, not build proofs}
 \end{frame}
 
 \begin{frame}\frametitle{Lookup Rules}
@@ -763,20 +753,20 @@ Identity at concept $c$:
 \[\rul{\vdash i \isa c}{\vdash i\,\Delta_c i}\]
 \end{frame}
 
-\begin{frame}\frametitle{Exercise 10}
-Implement an absolute semantics for BOL for the judgment $\Gamma\vdash F$.
-
-This is too difficult in general. But it becomes doable if we choose a sufficiently simple fragment of BOL, e.g., only
-\begin{itemize}
-\item formulas: $I\mathtt{is-a} C$, $C\sqsubseteq C$
-\item concepts: identifiers, $C\sqcup C$, $\exists R.C$
-\item relations: identifiers
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Exercise 11}
-Implement an absolute concrete semantics for BOL.
-\end{frame}
+%\begin{frame}\frametitle{Exercise 10}
+%Implement an absolute semantics for BOL for the judgment $\Gamma\vdash F$.
+%
+%This is too difficult in general. But it becomes doable if we choose a sufficiently simple fragment of BOL, e.g., only
+%\begin{itemize}
+%\item formulas: $I\mathtt{is-a} C$, $C\sqsubseteq C$
+%\item concepts: identifiers, $C\sqcup C$, $\exists R.C$
+%\item relations: identifiers
+%\end{itemize}
+%\end{frame}
+%
+%\begin{frame}\frametitle{Exercise 11}
+%Implement an absolute concrete semantics for BOL.
+%\end{frame}
 
 %\begin{frame}\frametitle{Problems}
 %Next

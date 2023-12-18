@@ -1,4 +1,4 @@
-\begin{frame}\frametitle{Motivation}
+\begin{frame}\frametitle{Recall: Ontologies}
 \begin{blockitems}{Main ideas}
 \item Ontology abstractly describes concepts and relations
 \item Tool maintains concrete data set
@@ -30,31 +30,22 @@
 \end{blockitems}
 
 \begin{blockitems}{Concrete is not}
-\item Free symbols to be interpreted by a model
- \lec{exception: foreign function interfaces}
+\item Uninterpreted symbols
 \item Variables (free or bound)
- \lec{$\lambda$-abstraction, quantification}
+ \glec{$\lambda$-abstraction, quantification}
 \item Symbolic expressions
  \lec{formulas, algorithms}
- Exceptions:
-  \begin{itemize}
-  \item expressions of inductive type
-  \item application of built-in functions
-  \item queries that return concrete data
-  \end{itemize}
+% Exceptions:
+%  \begin{itemize}
+%  \item expressions of inductive type
+%  \item application of built-in functions
+%  \item queries that return concrete data
+%  \end{itemize}
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Breakout question}
-What is the difference between
-\begin{itemize}
-\item an OWL ontology
-\item an SQL database
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Two Approaches}
-\begin{blockitems}{Based on \emph{untyped} (Curry-typed) ontology languages}
+\begin{frame}\frametitle{Two Approaches to Representing Concrete Data}
+\begin{blockitems}{\emph{Curry}-typed ontology languages (e.g., BOL, OWL)}
 \item Representation based on \emph{knowledge graph}
 \item Ontology written in BOL-like language
 \item Data maintained as \emph{set of triples}
@@ -68,9 +59,9 @@ What is the difference between
  \end{itemize}
 \end{blockitems}
 
-\begin{blockitems}{Based on \emph{typed} (Church-typed) ontology languages}
+\begin{blockitems}{\emph{Church}-typed languages (e.g., SQL, UML)}
 \item Representation based on \emph{abstract data types}
-\item Ontology written as database schema
+\item Ontology written as set of related ADTs \glec{SQL database schema}
 \item Data maintained as \emph{tables}
   \glec{tool = (relational) database}
 \item Typical language/tool design
@@ -87,13 +78,13 @@ What is the difference between
 \begin{blockitems}{Our usage is non-standard}
  \item Common
   \begin{itemize}
-  \item ontologies = untyped approach, OWL, triples,  SPARQL
-  \item databases = typed approach, tables, SQL
+  \item ontologies = untyped approach, OWL, triples, SPARQL
+  \item relational databases = typed approach, tables, SQL
   \end{itemize}
  \item Our understanding: two approaches evolved from same idea
 	\begin{itemize}
-	\item triple store = untyped database
-	\item SQL schema = typed ontology
+	\item ontolgoies = Curry-typed ontology + data store
+	\item relational database = Church-typed ontology + data store
 	\end{itemize}
 \end{blockitems}
 
@@ -110,7 +101,7 @@ What is the difference between
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Curry-typed concrete data}
+\begin{frame}\frametitle{Data structures for Curry-typed concrete data}
 \begin{blockitems}{Central data structure = knowledge graph}
 \item nodes = individuals $i$
  \begin{itemize}
@@ -135,7 +126,7 @@ What is the difference between
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Church-typed concrete data}
+\begin{frame}\frametitle{Data structures for Church-typed concrete data}
 \begin{blockitems}{Central data structure = relational database}
 \item tables = abstract data type
 \item rows = objects of that type
@@ -255,10 +246,16 @@ openness of world & tends to be open & tends to be closed \\
 \end{frame}
 
 
-\begin{frame}\frametitle{Exercise 2}
-Extend your ontology with an ABox and axioms.
-Export it in RDF format to a triple store like Virtuoso and run a concrete query in SPARQL.
-
-Export it in OWL format to a reasoner like FaCT++ and run a deductive query.
+\begin{frame}\frametitle{Exercise 9}
+Absolute semantics:
+\begin{itemize}
+\item Via concrete data: Export your ontology to a triple store like Virtuoso and run a concrete query in SPARQL.
+\item Via deduction: Export your ontology in OWL format to a reasoner like FaCT++ and prove a theorem.
 Potentially, do this by installing a plugin for a reasoner in your ontology IDE.
+\end{itemize}
+
+Relative semantics:
+\begin{itemize}
+\item Via deduction: finish exercise 8 and prove a theorem via an SFOL theorem prover.
+\end{itemize}
 \end{frame}
