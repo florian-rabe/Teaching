@@ -1,4 +1,4 @@
-\section{Motivation}
+\section{Codecs}
 
 \begin{frame}\frametitle{Data Interoperability}
 \begin{blockitems}{Situation}
@@ -18,104 +18,9 @@
 \end{blockitems}
 
 \begin{blockitems}{Solution}
- \item standardize primitive data types
+ \item standardize basic data types
  \item standardize encoding in interchange languages
 \end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Treatment in this Course}
-\begin{blockitems}{BOL syntax and semantics so far}
-\item primitive types omitted in syntax
-\item assumed reasonable collection available
-\item assumed same (quasi-)primitive objects in semantic languages
- \glec{irrelevant if interpreting primitive objects as primitive or quasi-primitive}
-\end{blockitems}
-\lec{largely justified by practice in common languages}
-
-No universal set of types standardized, but some types much more common than others.
-\end{frame}
-
-\begin{frame}\frametitle{Common Primitive Types}
-\begin{blockitems}{Typical (quasi-)primitive types}
- \item natural numbers (= $\N$)
- \item arbitrary precision integers (= $\Z$)
- \item fixed precision integers (32 bit, 64 bit, \ldots)
- \item floating point (float, double, \ldots)
- \item Booleans
- \item characters (ASCII, Unicode)
- \item strings
-\end{blockitems}
-
-Observation:
-\begin{itemize}
-\item essentially the same in every language
- \lec{including whatever language used for semantics}
-\item semantics by translation trivial
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Less Common Primitive Types}
-\begin{blockitems}{Problem}
- \item quickly encounter primitive types not supported by common languages
- \item need to encode them using existing types
-  \lec{typically as strings, ints, or prodcuts/lists thereof}
-\end{blockitems}
-
-\begin{blockitems}{Examples}
-\item date, time, color, location on earth
-\item graph, function
-\item picture, audio, video
-\item physical quantities ($1m$, $1in$, etc.)
-\item gene, person
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Types and their Operations}
-Types usually come with additional operations:
-
-\begin{blockitems}{Triple Structure: 3 kinds of named objects}
- \item the type \glec{eg: 'int'}
- \item values of the type \glec{eg: 0, 1, -1, \ldots}
- \item operations on type \glec{eg: addition, multiplication, \ldots}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Specifying a Primitive Type}
-\begin{blockitems}{Components}
-\item name
-\item set of values
-\item string encoding \lec{injective function from values to strings}
-\end{blockitems}
-
-\begin{blockitems}{Examples}
-\item IEEE floating point numbers
-\item ISO 8601 for date/time
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Exercise 5}
-As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
-
-Individually, extend your implementations of BOL with XML importers and exporters relative to that schema.
-The exporter is a context-free traverser.
-For the importer, use an XML library for your chosen programming language to parse the input. Then write a context-free traverser over the XML data structures that translates the XML into your BOL data structures.
-
-After importing a vocabulary, type-check it.
-
-Write some example vocabularies for BOL and export-import them to each other.
-\end{frame}
-
-\begin{frame}\frametitle{Exercise 6}
-As a group, specify additional primitive datatypes for BOL that are helpful the university knowledge ontology.
-
-For each new type, you have to give
-\begin{itemize}
-\item name
-\item values
-\item string encoding of each value
-\end{itemize}
-The name is added by an additional BOL-production for non-terminal, the values by additional productions for V.
-The string encodings are used by the import/export functions.
 \end{frame}
 
 \begin{frame}\frametitle{Failures of Encodings}
@@ -154,35 +59,132 @@ The string encodings are used by the import/export functions.
 \lec{SQL injection similar: complex data encoded as string, no decoding}
 \end{frame}
 
-\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
-\begin{blockitems}{Standardization of Common Data Types}
- \item Ontology language optimized for declaring types, values, operations
- \glec{semantics must exist but can be extra-linguistic}
- \item Vocabulary declaring such objects
- \glec{should be standardized, modular, extensible}
-\end{blockitems}
+\begin{frame}\frametitle{General Definition}
+Throughout this section, we fix a data representation language $L$.
+\lec{$L$-words called codes}
 
-\begin{blockitems}{Standardization of Codecs}
-\item Fixed small set of primitive objects
- \glec{should be (quasi-)primitive in every language}
- \glec{not too expressive, possibly untyped}
-\item Standard codecs for translating common types to interchange languages
-\end{blockitems}
-
-\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
-\item coding function $A$-values $\to$ $L$-objects
-\item partial decoding function $L$-objects $\to$ $A$-values
-\item inverse to each other \glec{in some sense}
-\end{blockitems}
+Given a data type $T$, a codec for $T$ consists
+\begin{itemize}
+ \item coding function: $c:T \to L$
+ \item partial decoding function: $d:L\to^? T$
+ \item such that
+  \[d(c(x))=x\]
+\end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{Overview}
-Next steps
-\begin{enumerate}
-\item Data interchange languages
-\item Data types
-\item Codecs
-\end{enumerate}
+\begin{frame}\frametitle{Codec Operators}
+Given a data type operator $T$ taking $n$ type arguments,\\
+a codec operator $C$ for $T$
+\begin{itemize}
+ \item takes $n$ codecs $C_i$ for $T_i$
+ \item returns a codec $C(C_1,\ldots,C_n)$ for $T(T_1,\ldots,T_n)$
+\end{itemize}
+\end{frame}
+
+%\begin{frame}\frametitle{Exercise 4}
+%We fix strings as the data representation language $L$.
+%
+%Then, 
+%\begin{enumerate}
+% \item Jointly specify
+%  \begin{itemize}
+%  \item additional BDL types and constructors for univis-specific data
+%  \item codecs and codec operators for all types resp. type operators
+%  \end{itemize}
+% \item Individually, in any programming language, implement
+%  \begin{itemize}
+%   \item data structures for BDL
+%   \item string codecs (operators) for all BDL base types (operators)
+%  \end{itemize}
+% \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
+%\end{enumerate}
+%\end{frame}
+
+\begin{frame}\frametitle{Codecs for Base Types}
+We define codecs for the base types using strings as the data representation language $L$.
+
+Easy cases:
+\begin{itemize}
+\item StandardFloat: as specified in IEEE floating point standard
+\item StandardString: as themselves, quoted
+\item StandardBool: as $true$ or $false$
+\item StandardInt (64-bit): decimal digit-sequences as usual
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout Question}
+How to encode unlimited precision integers?
+\end{frame}
+
+\begin{frame}\frametitle{Codecs for Unlimited Precision Integers}
+Encode $z\in\Z$
+\begin{itemize}
+\item $L$ is strings: decimal digit sequence as usual
+\item $L$ is JSON:
+ \begin{itemize}
+ \item IntAsInt: decimal digit sequence as usual
+   \glec{JSON does not specify precision}
+   \glec{but target systems may get in trouble}
+ \item IntAsString: string containing decimal digit sequence
+   \glec{safe but awkward}
+ \item IntAsDecList: list of decimal digits
+   \glec{safe but awkward}
+ \item IntAsList1: as list of digits for base $2^{64}$
+   \glec{OK, but we can do better}
+ \item IntAsList2: as list of
+   \begin{itemize}
+   \item integer for the number of digits, sign indicate sign of $z$
+   \item list of digits of $|z|$ for base $2^{64}$
+   \end{itemize}
+   Question: Why is this smart?
+   
+   \onslide<2>{Can use lexicographic ordering for size comparison}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Codecs for Lists}
+Encode list $x$ of elements of type $T$
+\begin{itemize}
+\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
+\item $L$ is JSON:
+ \begin{itemize}
+ \item ListAsString: like for strings above
+ \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Additional Types}
+Examples: semester
+
+Extend BDL:
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{Sem}{semester}\\
+\gcomment{Data}\\
+\gprod{D}{sem(int, bool)}{i.e., year + summer$^?$}\\
+\end{commgrammar}
+
+Define standard codec:
+\[sem(y,true) \rewrites "SSY"\]
+\[sem(y,false) \rewrites "WSY"\]
+where $Y$ is encoding of $y$
+\end{frame}
+
+\begin{frame}\frametitle{Additional Types (2)}
+Examples: timestamps
+
+Extend BDL:
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{timestamp}{}\\
+\gcomment{Data}\\
+\gprod{D}{\text{(productions for dates, times, etc.)}}{}
+\end{commgrammar}
+
+Standard codec: encode as string as defined in ISO 8601
 \end{frame}
 
 \section{Data Representation Languages}
@@ -355,174 +357,29 @@ Weird structure but very similar
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data Types}
-
-\begin{frame}\frametitle{A Basic Language for Typed Data}
-Let BDL be given by
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
-\galtprod{\cn{list}\,T}{homogeneous lists}\\
-\galtprod{\rep{(\ID:T)}}{record types}\\
-\galtprod{\ldots}{additional types}\\
-\gcomment{Data}\\
-\gprod{D}{(64\, bit\, integers)}{}\\
-\galtprod{(IEEE\, double)}{}\\
-\galtprod{"(Unicode\, strings)"}{}\\
-\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
-\galtprod{\rep{D}}{lists}\\
-\galtprod{\rep{(\ID=D)}}{records}\\
-\galtprod{\ldots}{constructors for additional types}\\
-\end{commgrammar}
-\end{frame}
-
-\begin{frame}\frametitle{BDL Extended with Named ADTs}\label{def:bdl+adt}
-\begin{commgrammar}
-\gprod{V}{\rep{Decl}}{Vocabularies}\\
-\gprod{Decl}{\kw{adt}\,t\,\{\rep{\ID:T}\}}{ADT definitions}\\
-\galtprod{\kw{datum}\,d:T=D}{data definitions}\\
-\gcomment{Types}\\
-\gprod{T}{\ldots}{as before}\\
-\galtprod{t}{reference to a named ADT}\\
-\gcomment{Data}\\
-\gprod{D}{\ldots}{as before}\\
-\galtprod{d}{reference to a named datum}\\
-\galtprod{t\{\rep{(\ID=D)}\}}{ADT elements}\\
-\end{commgrammar}
-\end{frame}
-
-\section{Codecs}
-
-\begin{frame}\frametitle{General Definition}
-Throughout this section, we fix a data representation language $L$.
-\lec{$L$-words called codes}
-
-Given a data type $T$, a codec for $T$ consists
-\begin{itemize}
- \item coding function: $c:T \to L$
- \item partial decoding function: $d:L\to^? T$
- \item such that
-  \[d(c(x))=x\]
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Codec Operators}
-Given a data type operator $T$ taking $n$ type arguments,\\
-a codec operator $C$ for $T$
-\begin{itemize}
- \item takes $n$ codecs $C_i$ for $T_i$
- \item returns a codec $C(C_1,\ldots,C_n)$ for $T(T_1,\ldots,T_n)$
-\end{itemize}
-\end{frame}
-
-%\begin{frame}\frametitle{Exercise 4}
-%We fix strings as the data representation language $L$.
-%
-%Then, 
-%\begin{enumerate}
-% \item Jointly specify
-%  \begin{itemize}
-%  \item additional BDL types and constructors for univis-specific data
-%  \item codecs and codec operators for all types resp. type operators
-%  \end{itemize}
-% \item Individually, in any programming language, implement
-%  \begin{itemize}
-%   \item data structures for BDL
-%   \item string codecs (operators) for all BDL base types (operators)
-%  \end{itemize}
-% \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
-%\end{enumerate}
-%\end{frame}
-
-\begin{frame}\frametitle{Codecs for Base Types}
-We define codecs for the base types using strings as the data representation language $L$.
-
-Easy cases:
-\begin{itemize}
-\item StandardFloat: as specified in IEEE floating point standard
-\item StandardString: as themselves, quoted
-\item StandardBool: as $true$ or $false$
-\item StandardInt (64-bit): decimal digit-sequences as usual
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Breakout Question}
-How to encode unlimited precision integers?
-\end{frame}
-
-\begin{frame}\frametitle{Codecs for Unlimited Precision Integers}
-Encode $z\in\Z$
-\begin{itemize}
-\item $L$ is strings: decimal digit sequence as usual
-\item $L$ is JSON:
- \begin{itemize}
- \item IntAsInt: decimal digit sequence as usual
-   \glec{JSON does not specify precision}
-   \glec{but target systems may get in trouble}
- \item IntAsString: string containing decimal digit sequence
-   \glec{safe but awkward}
- \item IntAsDecList: list of decimal digits
-   \glec{safe but awkward}
- \item IntAsList1: as list of digits for base $2^{64}$
-   \glec{OK, but we can do better}
- \item IntAsList2: as list of
-   \begin{itemize}
-   \item integer for the number of digits, sign indicate sign of $z$
-   \item list of digits of $|z|$ for base $2^{64}$
-   \end{itemize}
-   Question: Why is this smart?
-   
-   \onslide<2>{Can use lexicographic ordering for size comparison}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Codecs for Lists}
-Encode list $x$ of elements of type $T$
-\begin{itemize}
-\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
-\item $L$ is JSON:
- \begin{itemize}
- \item ListAsString: like for strings above
- \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}\frametitle{Additional Types}
-Examples: semester
-
-Extend BDL:
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{Sem}{semester}\\
-\gcomment{Data}\\
-\gprod{D}{sem(int, bool)}{i.e., year + summer$^?$}\\
-\end{commgrammar}
-
-Define standard codec:
-\[sem(y,true) \rewrites "SSY"\]
-\[sem(y,false) \rewrites "WSY"\]
-where $Y$ is encoding of $y$
-\end{frame}
-
-\begin{frame}\frametitle{Additional Types (2)}
-Examples: timestamps
-
-Extend BDL:
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{timestamp}{}\\
-\gcomment{Data}\\
-\gprod{D}{\text{(productions for dates, times, etc.)}}{}
-\end{commgrammar}
-
-Standard codec: encode as string as defined in ISO 8601
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Interchange}
+
+\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
+\begin{blockitems}{Standardization of Common Data Types}
+ \item Ontology language optimized for declaring types, values, operations
+ \glec{semantics must exist but can be extra-linguistic}
+ \item Vocabulary declaring such objects
+ \glec{should be standardized, modular, extensible}
+\end{blockitems}
+
+\begin{blockitems}{Standardization of Codecs}
+\item Fixed small set of primitive objects
+ \glec{should be (quasi-)primitive in every language}
+ \glec{not too expressive, possibly untyped}
+\item Standard codecs for translating common types to interchange languages
+\end{blockitems}
+
+\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
+\item coding function $A$-values $\to$ $L$-objects
+\item partial decoding function $L$-objects $\to$ $A$-values
+\item inverse to each other \glec{in some sense}
+\end{blockitems}
+\end{frame}
 
 \begin{frame}\frametitle{Design}
 \begin{enumerate}
@@ -654,6 +511,20 @@ Similar problems
 \end{itemize}
 \end{itemize}
 \end{frame}
+
+\begin{frame}\frametitle{Exercise 11}
+As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
+
+Use the string encodings for your agreed-upon primitive types to encode values of primitive types.
+
+Individually, extend your implementations of BOL with XML importers and exporters relative to that schema.
+
+The exporter is a context-free traverser.
+For the importer, use an XML library for your chosen programming language to parse the input. Then write a context-free traverser over the XML data structures that translates the XML into your BOL data structures.
+
+Exchange your vocabularies with each other. Type-check each other's vocabularies after importing.
+\end{frame}
+
 
 %\begin{frame}\frametitle{Exercise 5, part 1}
 %We build on the implementation of BDL and codecs from Exercise 4 and on the database schemas from Exercise 3.

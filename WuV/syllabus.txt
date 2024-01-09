@@ -1,5 +1,4 @@
-This is the syllabus from 2022.
-We will deviate this year.
+This is the syllabus from 2023.
 
 \begin{tabular}
 lecture 1-2 & introduction, overview and essential concepts \\
@@ -24,37 +23,25 @@ exercise 7 & implement an SFOL->TPTP, use existing theorem provers\\
 lecture 16 & language translations, BOL->SFOL\\
 lecture 17 & relative semantics, compositional translations\\
 exercise 8 & implement BOL->SFOL, use a SFOL theorem prover for the university ontology\\
-lecture 17 & absolute and denotational semantics\\
-lecture 18 & extrinsic and intrinsic typing\\
+lecture 18 & absolute and denotational semantics\\
+lecture 19 & extrinsic and intrinsic typing\\
 exercise 9 & semantics/querying of the university ontology\\
-
-%% future
-
-lecture 10 & primitive types and encodings \\
-exercise 4 & as a team standardize some data types and codecs (https://pad.stuve.fau.de/p/wuv_codecs)\\
-homework 4 & implement codecs individually in various languages \\
-lecture 11-12 & primitive types and encodings: continued \\
-lecture 13 & representation of syntax and semantics of mini-language for arithmetics in SML and Java \\
-exercise 5 & compare implementations of codecs, send data back and forth\\
-lecture 16 & BOL->SQL \\
-lecture 17 & compositionality\\
-exercise 7 & compare homeworks, context-sensitive translations\\
-lecture 19 & BOL->Scala, consequence closure, axioms as tests \\
-lecture 20 & formal semantics: overview \\
-lecture 21 & querying: overview, deductive queries via relative semantics \\
-exercise 9 & compare homeworks, concrete queries via deductive semantics\\
-lecture 22 & querying: other aspects \\
-lecture 23 & formal systems, absolute semantics for BOL \\
-homework 10 & implement type checker for BOL and SFOL \\
-exercise 10 & compare, finish homeworks \\
-lecture 24 & semantics: rigorous definition\\
-lecture 25 & semantics: repetition, equivalence \\
-exercise 11 & exam preparation \\
-lecture 26 & syntactic querying \\
-lecture 27 & the Tetrapod model in retrospect \\
+lecture 20 & kinds of types\\
+lecture 21 & recursive types\\
+exercise 10 & built-in types for BOL/SFOL\\
+lecture 22 & codecs\\
+lecture 23 & data languages\\
+exercise 11 & XML encodings for BOL\\
+lecture 24 & querying\\
+lecture 25 & querying\\
+exercise 12 & \\
+lecture 26 & formal systems rigorously\\
+lecture 27 & translations, compositionality\\
+exercise 13 & \\
+lecture 28 & semantic equivalence\\
+lecture 29 & Tetrapod model in retrospect, revision\\
+exercise 14 & questions, exam prep\\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
 Where appropriate, the instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
-
-Ideas for future topics/case studies: WikiData

@@ -203,6 +203,10 @@ Subtyping works best with Curry Typing
 
 \section{Kinds of Types}
 
+\begin{frame}\frametitle{Question}
+What kind of types are there?
+\end{frame}
+
 \begin{frame}\frametitle{Abstract vs. Concrete Types}
 \textbf{Concrete} type: values are
 \begin{itemize}
@@ -221,8 +225,8 @@ Subtyping works best with Curry Typing
 \lec{main example: abstract data types}
 \end{frame}
 
-\begin{frame}\frametitle{Plain vs. Recursive Types}
-\textbf{Plain} types 
+\begin{frame}\frametitle{Non-Recursive vs. Recursive Types}
+\textbf{Non-Recursive} types 
 \begin{itemize}
 \item given by some expressions
 \item can be anonymous
@@ -257,7 +261,7 @@ so type must have a name
 \end{frame}
 
 \begin{frame}\frametitle{Type operators vs. Dependent type Families}
-Both are symbols that take arguments and return a type.
+Both are complex: take arguments and return a type
 
 \textbf{Type operators} take \emph{only type arguments}, e.g.,
  \begin{itemize}
@@ -276,7 +280,95 @@ Both are symbols that take arguments and return a type.
 \lec{harder to starndardize}
 \end{frame}
 
+
+\begin{frame}\frametitle{Built-in vs. User-Defined Types}
+\textbf{Built-in} types
+\begin{itemize}
+\item syntax and semantics fixed by language designer
+\item part of grammar, implementation, etc.
+\item usually concrete, atomic, non-recursive
+\end{itemize}
+\lec{typical: integers, strings, lists}
+\glec{sometimes also called primitive or basic types}
+
+\textbf{User-Defined} types
+\begin{itemize}
+\item declared by users in vocabulary
+\item standard syntax prescribed by grammar, possibly customizable
+\item semantics given by operations and their axioms
+\end{itemize}
+\lec{anything the language can axiomatize}
+\glec{usually difficult to axiomatize recursive properties}
+\end{frame}
+
 \section{Non-Recursive Data Types}
+
+
+\begin{frame}\frametitle{Common Built-in Types}
+\begin{blockitems}{Typical (quasi-)primitive types}
+ \item natural numbers (= $\N$)
+ \item arbitrary precision integers (= $\Z$)
+ \item fixed precision integers (32 bit, 64 bit, \ldots)
+ \item floating point (float, double, \ldots)
+ \item Booleans
+ \item characters (ASCII, Unicode)
+ \item strings
+\end{blockitems}
+
+Observation:
+\begin{itemize}
+\item essentially the same in every language
+ \lec{including whatever language used for semantics}
+\item semantics by translation trivial
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Less Common Types}
+\begin{blockitems}{Problem}
+ \item quickly encounter primitive types not supported by common languages
+ \item need to encode them using existing types
+  \lec{typically as strings, ints, or prodcuts/lists thereof}
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item date, time, color, location on earth
+\item graph, function
+\item picture, audio, video
+\item physical quantities ($1m$, $1in$, etc.)
+\item gene, person
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Specifying a Type}
+\begin{blockitems}{Components}
+ \item the type \glec{eg: 'int'}
+ \item values of the type \glec{eg: 0, 1, -1, \ldots}
+ \item string encoding \lec{injective function from values to strings}
+ \item operations on type \glec{eg: addition, multiplication, \ldots}
+\end{blockitems}
+
+\begin{blockitems}{Examples}
+\item IEEE floating point numbers
+\item ISO 8601 for date/time
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Type Operators}
+As for types, but taking $n$ type argument.
+
+\begin{blockitems}{Component}
+ \item the type \glec{eg: 'list'}
+ \item arity $n$ \glec{eg: $1$}
+ \item for argument types $A_1,\ldots,A_n$ with string encodings $E_1,\ldots,E_n$
+  \begin{itemize}
+  \item values of the type \lec{eg: $[a_1,\ldots,a_n]$ for $a_i$ values of $A_1$}
+  \item string encoding \lec{eg: "[" $E(a_1)$ "," \ldots "," $E_1(a_n)$ "]"}
+  \item operations on the type \glec{eg: concatenation, element access, \ldots}
+  \end{itemize}
+\end{blockitems}
+
+No good standards, but part of most languages
+\end{frame}
 
 \begin{frame}\frametitle{Basic Atomic Types}
 \begin{blockitems}{typical in IT systems}
@@ -354,28 +446,25 @@ Both are symbols that take arguments and return a type.
 \glec{but recursive labeled disjoint union = inductive data type}
 \end{frame}
 
-\begin{frame}\frametitle{Subtyping}
-\begin{itemize}
- \item relatively easy if all data types disjoint
- \item better with subtyping
- \lec{open problem how to do it nicely}
-\end{itemize}
-
-\begin{blockitems}{Subtyping Atomic Types}
- \item $\N <: \Z$
- \item ASCII $<:$ Unicode
-\end{blockitems}
-
-\begin{blockitems}{Subtyping Complex Types}
- \item covariance subtyping (= vertical subtyping)
- \glec{same for disjoint unions}
-  \[A <: A' \impl list\,A <: list\, A'\]
-  \[A_i <: A_i' \impl \{\ldots, a_i:A_i,\ldots\} <: \{\ldots, a_i:A'_i,\ldots\}\]
- \item structural subtyping (= horizontal subtyping)
-  \[\{a:A,b:B\} :> \{a:A,b:B,c:C\}\]
-  \[a(A)|b(B) <: a(A)|b(B)|c(C)\]
-\end{blockitems}
+\begin{frame}\frametitle{A Basic Language for Data Types}
+Let BDL be given by
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{int \bnfalt float \bnfalt string \bnfalt bool}{base types}\\
+\galtprod{\cn{list}\,T}{homogeneous lists}\\
+\galtprod{\rep{(\ID:T)}}{record types}\\
+\galtprod{\ldots}{additional types}\\
+\gcomment{Data}\\
+\gprod{D}{(64\, bit\, integers)}{}\\
+\galtprod{(IEEE\, double)}{}\\
+\galtprod{"(Unicode\, strings)"}{}\\
+\galtprod{\cn{true} \bnfalt \cn{false}}{}\\
+\galtprod{\rep{D}}{lists}\\
+\galtprod{\rep{(\ID=D)}}{records}\\
+\galtprod{\ldots}{constructors for additional types}\\
+\end{commgrammar}
 \end{frame}
+
 
 \section{Recursive Concrete Data Types}
 
@@ -486,6 +575,19 @@ inductive F = equal(E,E) | less(E,E)
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}\frametitle{BDL Extended with Named Inductive Types}\label{def:bdl+cdt}
+\begin{commgrammar}
+\gprod{V}{\rep{Decl}}{Vocabularies}\\
+\gprod{Decl}{\kw{inductive}\,t\,\{\rep{(\ID:\rep{T}\to t)}\}}{type definitions}\\
+\gcomment{Types}\\
+\gprod{T}{\ldots}{as before}\\
+\galtprod{t}{reference to a named type}\\
+\gcomment{Data}\\
+\gprod{D}{\ldots}{as before}\\
+\galtprod{\ID(\rep{D})}{constructor application}\\
+\end{commgrammar}
+\end{frame}
+
 \section{Recursive Abstract Data Types}
 
 \begin{frame}\frametitle{Breakout Question}
@@ -572,6 +674,7 @@ ontologization & UML & class \\
 concretization & SQL & table schema \\
 computation & Scala & class, interface \\
 deduction & various & theory, specification, module, locale \\
+ & & if recursive: coinductive type \\
 narration & various & emergent feature
 \end{tabular}
 \end{center}
@@ -603,7 +706,7 @@ Values depend on the environment in which the type is used:
 
 \begin{frame}\frametitle{Definition}
 Given some type system, an \textbf{abstract data type} (ADT) is defined by
-  \[\kw{class} a = \{c_1:T_1[=t_1],\ldots,c_n:T_n[=t_n]\}\]
+  \[\kw{class}\, a = \{c_1:T_1[=t_1],\ldots,c_n:T_n[=t_n]\}\]
   where
   \begin{itemize}
   \item $c_i$ are distinct names
@@ -615,6 +718,19 @@ Given some type system, an \textbf{abstract data type} (ADT) is defined by
 \item general case: $a$ may occur in the $T_i$
 \item if non-recursive: called a record type
 \end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{BDL Extended with Named ADTs}\label{def:bdl+adt}
+\begin{commgrammar}
+\gprod{V}{\rep{Decl}}{Vocabularies}\\
+\gprod{Decl}{\kw{class}\,t\,\{\rep{\ID:T}\}}{ADT definitions}\\
+\gcomment{Types}\\
+\gprod{T}{\ldots}{as before}\\
+\galtprod{t}{reference to a named ADT}\\
+\gcomment{Data}\\
+\gprod{D}{\ldots}{as before}\\
+\galtprod{t\{\rep{(\ID=D)}\}}{ADT elements}\\
+\end{commgrammar}
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{Inheritance}
@@ -691,4 +807,44 @@ how to fully realize abstract data types
 \item essentially join of tables $A$ and $B$ on common fields
 \item some subtleties depending on ADT flattening
 \end{blockitems}
+\end{frame}
+
+\section{Subtyping}
+
+\begin{frame}\frametitle{Subtyping}
+\begin{itemize}
+ \item relatively easy if all data types disjoint
+ \item better with subtyping
+ \lec{open problem how to do it nicely}
+\end{itemize}
+
+\begin{blockitems}{Subtyping Atomic Types}
+ \item $\N <: \Z$
+ \item ASCII $<:$ Unicode
+\end{blockitems}
+
+\begin{blockitems}{Subtyping Complex Types}
+ \item covariance subtyping (= vertical subtyping)
+ \glec{same for disjoint unions}
+  \[A <: A' \impl list\,A <: list\, A'\]
+  \[A_i <: A_i' \impl \{\ldots, a_i:A_i,\ldots\} <: \{\ldots, a_i:A'_i,\ldots\}\]
+ \item structural subtyping (= horizontal subtyping)
+  \[\{a:A,b:B\} :> \{a:A,b:B,c:C\}\]
+  \[a(A)|b(B) <: a(A)|b(B)|c(C)\]
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Exercise 10}
+As a single group, write a joint document that specifies a choice of built-in datatypes for BOL and SFOL.
+They should be helpful in general and for the university ontology in particular.
+
+For each new type, you have to give
+\begin{itemize}
+\item name
+\item values
+\item string encoding of each value (for printing, import/export)
+\end{itemize}
+
+Add the types and their values to your BOL and SFOL implementations and adjust your translation to translates values to themselves.
+(Note: Not all types will be supported by theorem provers; so your TPTP printer may have to be partial.)
 \end{frame}
