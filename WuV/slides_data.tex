@@ -187,7 +187,164 @@ Extend BDL:
 Standard codec: encode as string as defined in ISO 8601
 \end{frame}
 
-\section{Data Representation Languages}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data Interchange}
+
+\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
+\begin{blockitems}{Standardization of Common Data Types}
+ \item Ontology language optimized for declaring types, values, operations
+ \glec{semantics must exist but can be extra-linguistic}
+ \item Vocabulary declaring such objects
+ \glec{should be standardized, modular, extensible}
+\end{blockitems}
+
+\begin{blockitems}{Standardization of Codecs}
+\item Fixed small set of primitive objects
+ \glec{should be (quasi-)primitive in every language}
+ \glec{not too expressive, possibly untyped}
+\item Standard codecs for translating common types to interchange languages
+\end{blockitems}
+
+\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
+\item coding function $A$-values $\to$ $L$-objects
+\item partial decoding function $L$-objects $\to$ $A$-values
+\item inverse to each other \glec{in some sense}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Design}
+\begin{enumerate}
+\item Specify types
+ \begin{itemize}
+ \item types
+ \item constructors
+ \item operations
+ \end{itemize}
+ \glec{can be done in appropriate type theory}
+\item Pick data representation language $L$
+\item Specify codecs for type system and $L$
+ \begin{itemize}
+ \item at least one codec per base type
+ \item at least one codec operator per type operator
+ \end{itemize}
+ \glec{on paper}
+\item Every system implements
+ \begin{itemize}
+ \item type system (as they like)
+  \glec{typically aspect-specific constraints}
+ \item codecs as specified
+ \item function mapping types to codecs
+ \end{itemize}
+\item Systems can exchange data by encoding-decoding
+ \lec{type-safe because codecs chosen by type}
+\end{enumerate}
+\end{frame}
+
+%\begin{frame}\frametitle{Example}
+%Implementation in Scala part of course resources
+%\end{frame}
+
+\begin{frame}\frametitle{BDL-Mediated Interoperability}
+Idea
+ \begin{itemize}
+ \item define data types in BDL \glec{or similar typed ontology language}
+ \item use ADTs
+ \item generate corresponding
+  \begin{itemize}
+  \item class definitions for programming languages PL
+   \lec{one class per ADT}
+  \item table definitions in SQL
+   \lec{one table per ADT}
+  \end{itemize}
+ \item use codecs to convert automatically when interchanging data between PL and SQL
+ \end{itemize}
+
+Open research problem
+ \lec{no shiny solution yet that can be presented in lectures}
+\end{frame}
+
+\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
+\includegraphics[width=\textwidth]{MitM.png}
+\end{frame}
+
+\begin{frame}\frametitle{Codecs in ADT Definitions}
+\begin{blockitems}{SQL table schema = list of fields where field is}
+\item name
+\item type \glec{only types of database supported}
+\end{blockitems}
+
+\begin{blockitems}{BDL semantic table schema = list of fields where field is}
+\item name
+\item type $T$ of \emph{type system} \glec{independent of database}
+\item codec for $T$ using primitive objects of database as codes
+\glec{see research paper \url{https://kwarc.info/people/frabe/Research/WKR_virtual_17.pdf}}
+\end{blockitems}
+
+Codec could be chosen automatically, but we want to allow multiple users a choice of codecs for the same type.
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example}
+Ontology based on BDL-ADTs with additional codec information:
+\begin{lstlisting}[basicstyle=\footnotesize]
+schema Instructor
+  name:    string      codec StandardString
+  age:     int         codec StandardInt
+  courses: list Course codec CommaSeparatedList CourseAsName
+schema Course
+  name:     string     codec StandardString
+  credits:  float      codec StandardFloat
+  semester: Semester   codec SemesterAsString
+\end{lstlisting}
+\medskip
+
+Generated SQL tables:
+\begin{lstlisting}[basicstyle=\footnotesize]
+CREATE TABLE Instructor
+  (name string, age int, courses string)
+CREATE TABLE Course
+  (name string, credits float, semester string)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}\frametitle{Open Problem: Non-Compositionality}
+\begin{blockitems}{Sometimes optimal translation is non-compositional}
+\item example translate $list$-type in ADT to comma-separated string in DB
+\item better break up $list\,B$ fields in type $A$ into separate table with columns for $A$ and $B$
+\end{blockitems}
+
+Similar problems
+\begin{itemize}
+\item a pair type in an ADT could be translated to two separate columns
+\item an option type in an ADT could translated to a normal column using SQL's NULL value
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Open Problem: Querying}
+\begin{itemize}
+\item General setup
+ \begin{itemize}
+ \item write SQL-style queries using at the BDL level
+ \item automatically encode values when writing to database from PL
+ \item automatically decode query results when reading from DB
+ \end{itemize}
+\item But queries using semantic operations cannot always be translated to DB
+ \begin{itemize}
+  \item operation $IsSummer: Semester \to bool$ in BDL
+  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
+  \item how to map $IsSummer$ to SQL?
+ \end{itemize}
+\item Ontology operations need commuting operations on codes
+\begin{itemize}
+\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
+\item SQL function $f'$ commutes with $f$ iff \\
+  \[B.decode (f'(C.encode\,a)) = f(a)\]
+  for all $a:A$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Concrete Data Representation Languages}
 
 \begin{frame}\frametitle{Overview}
 \begin{blockitems}{General Properties}
@@ -356,164 +513,45 @@ Weird structure but very similar
 \lec{supported by XML, YAML}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data Interchange}
-
-\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
-\begin{blockitems}{Standardization of Common Data Types}
- \item Ontology language optimized for declaring types, values, operations
- \glec{semantics must exist but can be extra-linguistic}
- \item Vocabulary declaring such objects
- \glec{should be standardized, modular, extensible}
-\end{blockitems}
-
-\begin{blockitems}{Standardization of Codecs}
-\item Fixed small set of primitive objects
- \glec{should be (quasi-)primitive in every language}
- \glec{not too expressive, possibly untyped}
-\item Standard codecs for translating common types to interchange languages
-\end{blockitems}
-
-\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
-\item coding function $A$-values $\to$ $L$-objects
-\item partial decoding function $L$-objects $\to$ $A$-values
-\item inverse to each other \glec{in some sense}
+\begin{frame}\frametitle{Syntax Trees as Data}
+\begin{blockitems}{Two kinds of data in syntax}
+\item Basic data that occurs literally in the source
+ \begin{itemize}
+ \item in BOL, SFOL: strings for names, basic types/values
+ \item typically leaves of the syntax tree
+ \item often needs a codec
+ \end{itemize}
+\item The syntax tree structure
+ \begin{itemize}
+ \item names of the productions/constructors
+ \item names of the children/constructor arguments
+ \item nesting of nodes
+ \end{itemize}
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Design}
-\begin{enumerate}
-\item Specify types
- \begin{itemize}
- \item types
- \item constructors
- \item operations
- \end{itemize}
- \glec{can be done in appropriate type theory}
-\item Pick data representation language $L$
-\item Specify codecs for type system and $L$
- \begin{itemize}
- \item at least one codec per base type
- \item at least one codec operator per type operator
- \end{itemize}
- \glec{on paper}
-\item Every system implements
- \begin{itemize}
- \item type system (as they like)
-  \glec{typically aspect-specific constraints}
- \item codecs as specified
- \item function mapping types to codecs
- \end{itemize}
-\item Systems can exchange data by encoding-decoding
- \lec{type-safe because codecs chosen by type}
-\end{enumerate}
-\end{frame}
-
-%\begin{frame}\frametitle{Example}
-%Implementation in Scala part of course resources
-%\end{frame}
-
-\begin{frame}\frametitle{BDL-Mediated Interoperability}
-Idea
- \begin{itemize}
- \item define data types in BDL \glec{or similar typed ontology language}
- \item use ADTs
- \item generate corresponding
+\begin{frame}\frametitle{Representing a Syntax Tree in XML}
+Context-free traverser of the AST (printer)
+\begin{itemize}
+\item For basic data, use the type as the tag and give the string encoding in an attribute:
+ \[<\text{identifier value="NAME"}/>\]
+ \[<\text{int value="ENCODED\_VALUE"}/>\]
+\item For node $N=c(e_1,\ldots,e_n)$ where
   \begin{itemize}
-  \item class definitions for programming languages PL
-   \lec{one class per ADT}
-  \item table definitions in SQL
-   \lec{one table per ADT}
+  \item $c$ is the constructor/production name
+  \item $e_i$ are the subtrees
   \end{itemize}
- \item use codecs to convert automatically when interchanging data between PL and SQL
- \end{itemize}
-
-Open research problem
- \lec{no shiny solution yet that can be presented in lectures}
-\end{frame}
-
-\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
-\includegraphics[width=\textwidth]{MitM.png}
-\end{frame}
-
-\begin{frame}\frametitle{Codecs in ADT Definitions}
-\begin{blockitems}{SQL table schema = list of fields where field is}
-\item name
-\item type \glec{only types of database supported}
-\end{blockitems}
-
-\begin{blockitems}{BDL semantic table schema = list of fields where field is}
-\item name
-\item type $T$ of \emph{type system} \glec{independent of database}
-\item codec for $T$ using primitive objects of database as codes
-\glec{see research paper \url{https://kwarc.info/people/frabe/Research/WKR_virtual_17.pdf}}
-\end{blockitems}
-
-Codec could be chosen automatically, but we want to allow multiple users a choice of codecs for the same type.
-\end{frame}
-
-\begin{frame}[fragile]\frametitle{Example}
-Ontology based on BDL-ADTs with additional codec information:
-\begin{lstlisting}[basicstyle=\footnotesize]
-schema Instructor
-  name:    string      codec StandardString
-  age:     int         codec StandardInt
-  courses: list Course codec CommaSeparatedList CourseAsName
-schema Course
-  name:     string     codec StandardString
-  credits:  float      codec StandardFloat
-  semester: Semester   codec SemesterAsString
-\end{lstlisting}
-\medskip
-
-Generated SQL tables:
-\begin{lstlisting}[basicstyle=\footnotesize]
-CREATE TABLE Instructor
-  (name string, age int, courses string)
-CREATE TABLE Course
-  (name string, credits float, semester string)
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}\frametitle{Open Problem: Non-Compositionality}
-\begin{blockitems}{Sometimes optimal translation is non-compositional}
-\item example translate $list$-type in ADT to comma-separated string in DB
-\item better break up $list\,B$ fields in type $A$ into separate table with columns for $A$ and $B$
-\end{blockitems}
-
-Similar problems
-\begin{itemize}
-\item a pair type in an ADT could be translated to two separate columns
-\item an option type in an ADT could translated to a normal column using SQL's NULL value
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Open Problem: Querying}
-\begin{itemize}
-\item General setup
- \begin{itemize}
- \item write SQL-style queries using at the BDL level
- \item automatically encode values when writing to database from PL
- \item automatically decode query results when reading from DB
- \end{itemize}
-\item But queries using semantic operations cannot always be translated to DB
- \begin{itemize}
-  \item operation $IsSummer: Semester \to bool$ in BDL
-  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
-  \item how to map $IsSummer$ to SQL?
- \end{itemize}
-\item Ontology operations need commuting operations on codes
-\begin{itemize}
-\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
-\item SQL function $f'$ commutes with $f$ iff \\
-  \[B.decode (f'(C.encode\,a)) = f(a)\]
-  for all $a:A$
-\end{itemize}
+ \[XML(N) = <c>XML(e_1) \ldots XML(e_n)</c>\]
+ optionally: wrap every $XML(e_i)$ in another tag that gives the name of the constructor argument, e.g., for $C\sqcup D$
+    \[\scriptstyle<union><left>XML(C)</left><right>XML(D)</right></union>\]
+    \[\scriptstyle<union>XML(C)XML(D)</union>\]
 \end{itemize}
 \end{frame}
 
 \begin{frame}\frametitle{Exercise 11}
 As a group, define an XML schema for BOL using the RelaxNG compact syntax. See \url{https://relaxng.org/compact-tutorial-20030326.html}.
+
+Use names for all productions and constructor arguments, to obtain the tag names for the tree structure.
 
 Use the string encodings for your agreed-upon primitive types to encode values of primitive types.
 

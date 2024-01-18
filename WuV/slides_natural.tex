@@ -52,25 +52,25 @@ sTeX enriches LaTeX to allow describing the ontology in addition to the narrativ
 In particular: definitions and references to them:
 
 \begin{blockitems}{sTeX primitives}
- \item \lstinline|\begin{smodule}{<name>}| starts a module (groups definitions)
+\item \lstinline|\begin{smodule}{<name>}| starts a module (groups definitions)
 \item \lstinline|\symdecl*{<sym>}| delcares/reserves a symbol (name)
 \item \lstinline|\begin{sdefinition}| starts a definition
-\item \lstinline|\definiendum{<sym>}{<print>}| makes a definiendum for \lstinline|<sym<>|
+\item \lstinline|\definiendum{<sym>}{<print>}| makes a definiendum for \lstinline|<sym>|
   in a definition 
 \item \lstinline|\sr{<sym>}{<print>}| references \lstinline|<sym>| (e.g. as a link on
   \lstinline|<print>|
 \end{blockitems}
 \end{frame}
 
-\begin{frame}
-  \lstset{language=[LaTeX]TeX}
-  \frametitle{sTeX Example}
-  \begin{lstlisting}[gobble=
-    \documentclass{stex}
-    \begin{document}
-    \end{document}
-  \end{lstlisting}
-\end{frame}
+%\begin{frame}
+%  \lstset{language=[LaTeX]TeX}
+%  \frametitle{sTeX Example}
+%  \begin{lstlisting}[gobble=4]
+%    \documentclass{stex}
+%    \begin{document}
+%    \end{document}
+%  \end{lstlisting}
+%\end{frame}
 
 \begin{frame}\frametitle{Exercise 5}
 Implement a semantics by translation for BOL that translates BOL to sTeX.
