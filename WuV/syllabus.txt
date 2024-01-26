@@ -32,16 +32,23 @@ exercise 10 & built-in types for BOL/SFOL\\
 lecture 22 & codecs\\
 lecture 23 & data languages\\
 exercise 11 & XML encodings for BOL\\
-lecture 24 & querying\\
-lecture 25 & querying\\
-exercise 12 & \\
-lecture 26 & formal systems rigorously\\
-lecture 27 & translations, compositionality\\
-exercise 13 & \\
-lecture 28 & semantic equivalence\\
+lecture 24 & semantic querying\\
+lecture 25 & compositionality, contexts, semantic querying\\
+exercise 12 & continue/catch up on previous exercises\\
+lecture 26 & syntactic querying\\
+lecture 27 & formal systems abstractly\\
+exercise 13 & continue/catch up on previous exercises\\
+lecture 28 & formal systems abstractly\\
 lecture 29 & Tetrapod model in retrospect, revision\\
 exercise 14 & questions, exam prep\\
 \end{tabular}
 
 Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
 Where appropriate, the instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
+
+The slides are almost complete. Only a few sessions made use of the lecture notes.
+These were in particular:
+\begin{itemize}
+\item the section on syntax
+\item the definitions of BOL, SFOL, and the translation BOL$\to$ SFOL
+\end{itemize}
