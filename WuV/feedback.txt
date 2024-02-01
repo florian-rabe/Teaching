@@ -1,6 +1,10 @@
+2022/2023:
+
 https://gitlab.cs.fau.de/
-
 end a little earlier, leave room for general discussion
-
 create simple slides, don't show notes
 
+2023/2024:
+
+use 2 exercise sessions without new task to allow catching up, one at half-time
+make everybody use the same language, at least for the later exercises (most groups switched to whatever language I gave examples in)
