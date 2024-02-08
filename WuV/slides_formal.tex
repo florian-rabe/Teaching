@@ -578,12 +578,12 @@ Interesting variants of computational semantics
 \section{Abstract Semantics with Morphisms}
 
 \begin{frame}\frametitle{Adjusted Definitions}
-If the formal system has morphisms, we adjust the definitions as follows:
+If the formal system has morphisms $m\in\Mor^l(V,W)$, the homomorphic extension $\Exp^l_m:\Exp^l_V\to\Exp^l_W$ must preserve the semantics.
 
 \begin{blockitems}{Deductive semantics}
 \item morphisms must preserve theorems
 \item for morphism $m\in\Mor^l(V,W)$
-   \[F\in \Thm^l(V)\tb\text{implies}\tb \Exp^l(F)\in \Thm^l(W)\]
+   \[F\in \Thm^l(V)\tb\text{implies}\tb \Exp^l_m(F)\in \Thm^l(W)\]
 \end{blockitems}
 
 \begin{blockitems}{Computational semantics}
@@ -591,26 +591,48 @@ If the formal system has morphisms, we adjust the definitions as follows:
 \item for morphism $m\in\Mor^l(V,W)$
  \[\Eval^l_W(\Exp^l_m(e))=\Exp^l_m(\Eval^l_V(e))\]
 \end{blockitems}
-These properties must be proved individually for every formal system.\\
-But if they does not hold, we can consider the formal system mis-designed.
+This must be proved individually for every formal system.\\
+But if it does not hold, we can consider the formal system mis-designed.
 \end{frame}
 
 
 \section{Translations}
 
 \begin{frame}\frametitle{Translations}
-\begin{blockitems}{A translation $T$ from formal system $l$ to formal system $L$ consists of}
+Given: formal systems $l$ and $L$
+\begin{blockitems}{A translation $T$ from $l$ to $L$ consists}
 \item function $\Voc^T:\Voc^l\to\Voc^L$
+ \lec{vocabulary translation}
 \item family of functions $\Exp^T_V:\Exp^l_V\to\Exp^L_{\Voc^T(V)}$
+ \lec{expression translation}
+ \glec{one function for each expression kind}
 \end{blockitems}
 
+\begin{blockitems}{Example: BOL$\to$SFOL}
+\item $\Voc^T(V)$
+ \begin{itemize}
+  \item semantic prefix to declare type $\iota$
+  \item for each BOL-declaration, one SFOL declaration of the same name
+ \end{itemize}
+\item $\Exp^T_V$
+ \begin{itemize}
+  \item $\vdash^{BOL}_V C:\mathtt{Concept}$ translated to $x:\iota\vdash_{\Voc^T(V)}\Exp^T_V(C):\prop$, etc.
+  \item identifiers mapped to themselves
+ \end{itemize}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Properties of Translations}
 \begin{blockitems}{Desirable properties}
 \item Should satisfy type preservation:
 \[\vdash^l_V e:E \tb\mimplies\tb \vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E)\]
 \lec{intuition: what we have, is preserved}
-\item Might satisfy type reflection/conservativity: 
-\[\vdash^L_{\Voc^T(V)} e':\Exp^T_V(E) \tb\mimplies\tb \vdash^l_V e:E \mforsome e\]
-\lec{intuition: nothing new is added}
+\item Should satisfy type reflection
+\[\vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E) \tb\mimplies\tb \vdash^l_V e:E\]
+\lec{intuition: nothing new gets added}
+\item Might satisfy conservativity for $V$-propositions $F$
+\[\vdash^L_{\Voc^T(V)} \Exp^T_V(F) \tb\mimplies\tb \vdash^l_V F\]
+\lec{intuition: semantics is not changed} 
 \end{blockitems}
 \end{frame}
 
@@ -624,8 +646,10 @@ But if they does not hold, we can consider the formal system mis-designed.
 \begin{blockitems}{Desirable properties}
 \item Type preservation:
 \[\Gamma\vdash^l_V e:E \tb\mimplies\tb \Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E)\]
+\item Type reflection
+\[\Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)} \Exp^T_V(e):\Exp^T_V(E)\tb\mimplies\tb \Gamma\vdash^l_V e:E \]
 \item Conservativity:
-\[\Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)} e':\Exp^T_V(E) \tb\mimplies\tb \Gamma\vdash^l_V e:E \mforsome e\]
+\[\Cont^T_V(\Gamma)\vdash^L_{\Voc^T(V)} \Exp^T_V(F) \tb\mimplies\tb \Gamma\vdash^l_V F\]
 \end{blockitems}
 \end{frame}
 
@@ -650,20 +674,21 @@ But if they does not hold, we can consider the formal system mis-designed.
 \section{Compositionality}
 
 \begin{frame}\frametitle{3 Layers of Syntax}
-\begin{tabular}{l|lll}
+\begin{tabular}{p{2cm}|lp{2cm}l}
 symbol                 & origin     & owner  & examples \\
 \hline
 logical, built-in      & language   & language creator  & $\wedge$ in SFOL, $\sqcup$ in BOL \\
 non-logical, user-defined & vocabulary & vocabulary author & $\cn{person}$, $\cn{WuV}$\\
 variables, locally bound  & context    & containing declaration & $x, y,\ldots$ \\
 \end{tabular}
+
 \end{frame}
 
 \begin{frame}\frametitle{3 Layers of Translations}
 \begin{tabular}{l|ll}
 level & translation & define by\\
 \hline
-language & translation & one case per production (= built-in operation)\\
+language & translation & one case per production (= built-in)\\
 vocabulary & morphism & one expression per symbol\\
 context & substitution & one expressions per variable \\
 \end{tabular}
@@ -708,6 +733,7 @@ Given:
   \draw[->] (10) --node[right]{$\ov{\sem{m}}$} (11);
 \end{tikzpicture}
 \end{center}
+\glec{$\ov{m}$ is the homomorphic extension of $m$, also written $\Exp^l_m$}
 \end{frame}
 
 \begin{frame}\frametitle{Substitution Theorem for translation/substitutions}
