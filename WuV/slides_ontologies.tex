@@ -119,7 +119,67 @@ $\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
 \end{frame}
 
 \begin{frame}\frametitle{An Example Ontology Language}
-see syntax of BOL in the lecture notes
+The structural part declares/introduces names:
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Vocabularies: Ontologies}\\
+\gprod{O}{\rep{D}}{}\\
+\gcomment{Declarations}\\
+\gprod{D}{\kw{individual}\; i}{atomic individual}\\
+\galtprod{\kw{concept}\; c}{atomic concept}\\
+\galtprod{\kw{relation}\; r}{atomic relation}\\
+\galtprod{\kw{property}\; p: T}{atomic property}\\
+\galtprod{\kw{axiom}\; F}{axiom}\\
+\gcomment{Identifiers}\\
+\gprod{i,c,r,p}{\text{alphanumeric string}}{}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language}
+Expressions use the declared names to build complex entities
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Individual expressions}\\
+\gprod{I}{i}{atomic individuals}\\
+\gcomment{Concept expressions}\\
+\gprod{C}{c}{atomic concepts}\\
+\galtprod{\top}{universal concept}\\
+\galtprod{\bot}{empty concept}\\
+\galtprod{C \sqcup C}{union of concepts}\\
+\galtprod{C \sqcap C}{intersection of concepts}\\
+\galtprod{\forall R.C}{universal relativization}\\
+\galtprod{\exists R.C}{existential relativization}\\
+\galtprod{\dom R}{domain of a relation}\\
+\galtprod{\rng R}{range of a relation}\\
+\galtprod{\dom P}{domain of a property}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language}
+Typically one kind of expression for every kind of declaration:
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Relation expressions}\\
+\gprod{R}{r}{atomic relations}\\
+\galtprod{R \cup R}{union of relations}\\
+\galtprod{R \cap R}{intersection of relations}\\
+\galtprod{R ; R}{composition of relations}\\
+\galtprod{R^*}{transitive closure of a relation}\\
+\galtprod{R^{-1}}{dual relation}\\
+\galtprod{\Delta_C}{identity relation of a concept}\\
+\gcomment{Property expressions}\\
+\gprod{P}{p}{atomic properties}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language}
+Built-in types and values may be part of the expressions
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Basic types and values}\\
+\gprod{T}{\itg \bnfalt \float \bnfalt \bool \bnfalt \strg}{types}\\
+\gprod{V}{\text{(omitted)}}{values}
+\end{commgrammar}
 \end{frame}
 
 \begin{frame}\frametitle{A Real-Life Ontology Language}
