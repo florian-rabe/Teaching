@@ -91,10 +91,22 @@ case class InfixOperatorApply(operator: String, left: Expression, right: Express
    def print() = "(" + left.print() + " " + operator + " " + right.print() + ")"
 }
 
+// E :: var I = E
+// declaration of a variable
+case class VarDecl(name: String, initValue: Expression) extends Expression {
+  def print() = "var " + name + " = " + initValue.print()
+}
+
 // E ::= I
 // reference to variable called 'name'
 case class Var(name: String) extends Expression {
    def print() = name
+}
+
+// E ::= I = E
+// assignment to a variable
+case class VarAssign(name: String, newValue: Expression) extends Expression {
+   def print() = name + " = " + newValue.print()
 }
 
 // E ::= N
@@ -103,10 +115,23 @@ case class IntegerLiteral(value: Int) extends Expression {
    def print() = value.toString()
 }
 
+// E ::= string
+// string literal of value 'value'
+case class StringLiteral(value: String) extends Expression {
+   def print() = "\"" + value.toString() + "\""
+}
+
+/* removed - special case of FunApply
 // E ::= print(E)
 case class Print(e: Expression) extends Expression {
    def print() = "print(" + e.print() + ")"
 }
+
+// E ::= read(E)
+case class Read(e: Expression) extends Expression {
+   def print() = "read(" + e.print() + ")"
+}
+*/
 
 // E ::= if (E) E [else E]
 case class IfThenElse(condition: Expression, thenBranch: Expression, elseBranch: Option[Expression]) extends Expression {
@@ -133,6 +158,203 @@ case class For(vr: String, range: Expression, body: Expression) extends Expressi
    }
 }
 
+/* parsing is dual to printing, converting strings to syntax fragments
+   Essentially, one method of type string -> N per non-terminal N
+   Many different approaches for parsers exist because parsing is so difficult.
+   The easiest style (hopefully) is the following:
+     * keep the input string to parse as a variable
+     * keep a variable index telling us where in the input we are
+     * each method parseX
+       * consumes characters at the position 'index' of the input
+       * advances the index accordingly
+       * and returns an X
+*/
+class Parser(input: String) {
+  private var index = 0
+
+  case class ParseError(msg: String) extends Error(msg)
+  def fail(msg: String) = {
+     throw ParseError(msg + "; found " + input.substring(index))
+  }
+
+  // all input has been parsed
+  def atEnd = {index == input.length}
+
+  // string s occurs at the current index in the input
+  def startsWith(s: String): Boolean = {
+     index+s.length <= input.length &&
+     input.substring(index, index+s.length) == s
+  }
+
+  def next = input(index)
+
+  // parses all whitespace at the current position
+  def trim = {while (!atEnd && next.isWhitespace) index += 1}
+
+  // parses the string s and throws it away
+  def skip(s: String) = {
+    if (!startsWith(s)) fail("expected " + s)
+    index += s.length
+  }
+
+  def parseName = {
+    val begin = index
+    while (!atEnd && next.isLetterOrDigit) index += 1
+    input.substring(begin,index)
+  }
+  
+  def parseProgram: Program = {
+    var decls: List[Declaration] = Nil
+    trim
+    while (startsWith("def")) {
+       decls = decls ++ List(parseDeclaration)
+       trim
+    }
+    val main = parseExpression
+    trim
+    if (!atEnd) fail("input left after parsing")
+    Program(decls,main)
+  }
+  
+  def parseDeclaration: Declaration = {
+    if (startsWith("def")) {
+        skip("def")
+        trim
+        val n = parseName
+        trim
+        skip("(")
+        var varnames: List[String] = Nil
+        while (next != ')') {
+          varnames = varnames ++ List(parseName)
+          trim
+          if (next != ')') skip(",")
+          trim
+        }
+        skip(")")
+        trim
+        skip("=")
+        val body = parseExpression
+        FunDef(n, varnames, body)
+    } else {
+        throw ParseError("keyword expected")
+    }
+  }
+
+  def parseExpression: Expression = {
+     trim
+     if (startsWith("{")) {
+        skip("{")
+        var es: List[Expression] = Nil
+        while (next != '}') {
+           es = es ++ List(parseExpression)
+           trim
+           if (next != '}') {
+             skip(";")
+             trim
+           }
+        }
+        skip("}")
+        Block(es)
+     } else if (startsWith("var")) {
+        skip("var")
+        trim
+        val n = parseName
+        trim
+        skip("=")
+        trim
+        val iv = parseExpression
+        VarDecl(n, iv)
+     } else if (startsWith("return")) {
+        skip("return")
+        val e = parseExpression
+        Return(e)
+     } else if (startsWith("while")) {
+        skip("while")
+        val c = parseExpressionInBrackets
+        val b = parseExpression
+        While(c,b)
+     } else if (startsWith("for")) {
+        skip("for")
+        val v = parseName
+        trim
+        skip("in")
+        trim
+        val r = parseExpression
+        val b = parseExpression
+        For(v,r,b)
+     } else if (startsWith("if")) {
+        skip("if")
+        val c = parseExpressionInBrackets
+        val th = parseExpression
+        trim
+        val el = if (startsWith("else")) {
+           skip("else")
+           Some(parseExpression)
+        } else None
+        IfThenElse(c,th,el)
+     } else if (startsWith("\"")) {
+        skip("\"")
+        val begin = index
+        while (next != '"') index += 1
+        val end = index
+        skip("\"")
+        StringLiteral(input.substring(begin,end))
+     } else if(next.isDigit || next == '-') {
+        val begin = index
+        if (next == '-') skip("-")
+        while (!atEnd && next.isDigit) index+=1
+        val i = input.substring(begin,index).toInt
+        IntegerLiteral(i)
+     } else if (next == '(') {
+        skip("(")
+        val l = parseExpression
+        trim
+        val o = next.toString
+        skip(o)
+        trim
+        val r = parseExpression
+        trim
+        skip(")")
+        InfixOperatorApply(o, l, r)
+     } else {
+        // function application, variable assignment, or variable reference
+        val n = parseName
+        trim
+        if (next == '(') {
+          skip("(")
+          var es : List[Expression] = Nil
+          while (next != ')') {
+            es = es ++ List(parseExpression)
+            trim
+            if (next != ')') {
+              skip(",")
+              trim
+            }
+          }
+          skip(")")
+          FunApply(n, es)
+        } else if (next == '=') {
+          skip("=")
+          trim
+          val nv = parseExpression
+          VarAssign(n, nv)
+        } else {
+          Var(n)
+        }
+     }
+  }
+
+  def parseExpressionInBrackets = {
+     trim
+     skip("(")
+     val e = parseExpression
+     trim
+     skip(")")
+     e
+  }
+}
+
+
 // alternative printer: all print action collected in one place
 object Printer {
    def print(sf: SyntaxFragment): String = {
@@ -149,9 +371,11 @@ object Printer {
          n + "(" + as.map(print(_)).mkString(",") + ")"
        case InfixOperatorApply(o,l,r) =>
          "(" + print(l) + " " + o + " " + print(r) + ")"
+       case VarDecl(n,iv) => "var " + n + " = " + print(iv)
        case Var(n) => n
+       case VarAssign(n,nv) => n + " = " + print(nv)
        case IntegerLiteral(v) => v.toString()
-       case Print(e) => "print(" + print(e) + ")"
+       case StringLiteral(v) => "\"" + v + "\n"
        case IfThenElse(c,th,el) =>
          val elsePrinted = el match {
           case None => ""
@@ -175,9 +399,10 @@ case class Vocabulary(decls: List[Declaration]) {
 object Checker {
    case class SyntaxError(msg: String) extends Error(msg)
   
-   val infixOperators = List("+", "*", "-", "&&", "||", "/")
+   val infixOperators = List("+", "*", "-", "&&", "||", "/", "<", ">")
+   val builtInFunctions = List("print", "read", "int")
 
-   val forbiddenNames = List("def", "for", "in", "while", "if", "else", "print", "return")
+   val forbiddenNames = List("def", "for", "in", "while", "if", "else", "print", "return", "var")
    def checkName(n: String) = !forbiddenNames.contains(n) && n != "" && n(0).isLetter && n.forall(_.isLetterOrDigit)
    
    def check(voc: Vocabulary, sf: SyntaxFragment): Unit = {
@@ -203,7 +428,11 @@ object Checker {
        case Return(r) =>
          check(voc, r)
        case FunApply(n,as) =>
-         voc.lookup(n) match {
+         if (builtInFunctions.contains(n)) {
+           // TODO: change this if there is ever a built-in function that expects more than 1 argument
+           if (as.length != 1) throw SyntaxError("one arguments expected")
+         } else {
+           voc.lookup(n) match {
             case None => throw SyntaxError("name " + n + " not declared")
             case Some(FunDef(_, vrs, bd)) => 
               if (vrs.length != as.length)
@@ -211,17 +440,23 @@ object Checker {
                      " (expected: " + vrs.length + "; found: " + as.length + ")")
               as.foreach(check(voc, _))
             case Some(_) => throw SyntaxError("name " + n + " exists but does not refer to a function")
+           }
          }
-         
        case InfixOperatorApply(o,l,r) =>
          if (!infixOperators.contains(o)) throw SyntaxError("unknown operator")
          check(voc, l)
          check(voc, r)
+       case VarDecl(n,iv) =>
+         checkName(n)
+         check(voc, iv)
        case Var(n) =>
          // TODO: where applicable, throw SyntaxError("variable " + n + " not in scope")
+       case VarAssign(n,nv) =>
+         // TODO: where applicable, throw SyntaxError("variable " + n + " not in scope")
+         // TODO: check if n is mutable (i.e., if we're allowed to change the value of this variable)
+         check(voc, nv)
        case IntegerLiteral(v) =>
-       case Print(e) =>
-         check(voc, e)
+       case StringLiteral(v) =>
        case IfThenElse(c,th,el) =>
          val elsePrinted = el match {
           case None =>
@@ -240,20 +475,72 @@ object Checker {
    }
 }
 
+// Relative semantics: translate the program to another language, whose semantics is already defined
+object PythonTranslator {
+   def print(sf: SyntaxFragment): String = {
+     sf match {
+       case Program(defs,mn) =>
+         defs.map(print(_)+"\n").mkString("\n") + "\n" + print(mn)
+       case FunDef(name, varnames, body) => 
+         "def " + name + "(" + varnames.mkString(",") + "):\n" + print(body).indent(2)
+       case Block(es) =>
+         es.map(print(_)).mkString("\n")
+       case Return(r) =>
+         "return " + print(r)
+       case FunApply(n,as) =>
+         n match {
+           case "read" =>  "input(" + print(as(0)) + ")"
+           case "print" | "int" | _ => n + "(" + as.map(print(_)).mkString(",") + ")"
+         }
+       case InfixOperatorApply(o,l,r) =>
+         "(" + print(l) + " " + o + " " + print(r) + ")"
+       case VarDecl(n, iv) => n + " = " + print(iv)
+       case Var(n) => n
+       case VarAssign(n,nv) => n + " = " + print(nv)
+       case IntegerLiteral(v) => v.toString()
+       case StringLiteral(s) => "\"" + s + "\""
+       case IfThenElse(c,th,el) =>
+         val elsePrinted = el match {
+          case None => ""
+          case Some(e) => "else:\n" + print(e).indent(2)
+         }
+         "if (" + print(c) + "):\n" + print(th).indent(2) + elsePrinted
+       case While(c, b) =>
+         "while (" + print(c) + "):\n" + print(b).indent(2)
+       case For(v,r,b) =>
+         "for " + v + " in " + print(r) + ":\n" + print(b).indent(2)
+     }      
+   }
+}
+
 
 object Main {
    def main(args: Array[String]) = {
-      // example program:
-      // def f(x,y) =
-      //   return x + 2*y
-      // def g(x) = 
-      //   return f(x,1)
-      // print(f(z,2))
+      // parse an example program
+      val prog = new Parser("""
+def sum(x,y) = if ((x > y))
+    return 0
+  else {
+    var n = x;
+    var s = 0;
+    while ((n<y)) {
+      s = (s+n);
+      n=(n+1)
+    };
+    return s
+  }
+def average(x,y) = return (sum(x,y)/(y-x))
+def test() = {
+  var x = int(input("Enter first number"));
+  var y = int(input("Enter second number"));
+  return sum(x,y)
+}
+print(test())
+"""
+      ).parseProgram
       
-      // if we already had a parser, we would just call it this way
-      // val prog = parse("def f(x,y):\n  return x + 2*y\nprint(f(1,2))")
-      
-      // instead, we manually construct the parse result for now
+      // alternatively, we manually construct the parse result
+      /*
       val prog = Program(List(
         FunDef("f", List("x", "y"),
            Return(
@@ -266,14 +553,18 @@ object Main {
            )
         )
       ),
-        Print(FunApply("f", List(Var("z"), IntegerLiteral(2)))
-      ))
+        Print(FunApply("f", List(IntegerLiteral(1), IntegerLiteral(2)))
+      )) */
+
 
       // check the syntax
       Checker.check(Vocabulary(Nil), prog)
 
       // print the syntax
       // println(prog.print())
-      println(Printer.print(prog))
+      // println(Printer.print(prog))
+
+      // translate to Python
+      println(PythonTranslator.print(prog))
    }
 }
