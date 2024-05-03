@@ -64,6 +64,11 @@ case class FunDef(name: String, varnames: List[String], body: Expression) extend
    }
 }
 
+/*
+case class ImportDecl(package: String) extends Declaration {
+  def print() : String = {"import " + package}
+}*/
+
 // E ::= {E^*}
 case class Block(exprs: List[Expression]) extends Expression {
   def print(): String = {
@@ -516,6 +521,8 @@ object PythonTranslator {
 
 object Main {
    def main(args: Array[String]) = {
+      // val inFile = new os.Path(args(0))
+      // val s = os.read(inFile)
       // parse an example program
       val prog = new Parser("""
 def sum(x,y) = if ((x > y))
