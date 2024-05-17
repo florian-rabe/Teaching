@@ -55,12 +55,16 @@ case class Program(defs: List[Declaration], main: Expression) extends SyntaxFrag
    }
 }
 
-// D ::= def I(I^*): E^*
+case class VarDecl(name: String, tp: Type) extends SyntaxFragment {
+  def print(): String = name + " : " + tp.print()
+}
+
+// D ::= def I((x:Y)*): E^*
 // e.g.
-// def name(varnames) = body
-case class FunDef(name: String, varnames: List[String], body: Expression) extends Declaration {
+// def name(x:int, y: bool, ...) = body
+case class FunDef(name: String, inputs: List[VarDecl], outputType: Type, body: Expression) extends Declaration {
    def print(): String = {
-      "def " + name + "(" + varnames.mkString(",") + ") = " + body.print()
+      "def " + name + "(" + inputs.mkString(",") + "): " + outputType.print() + " = " + body.print()
    }
 }
 
@@ -96,34 +100,22 @@ case class InfixOperatorApply(operator: String, left: Expression, right: Express
    def print() = "(" + left.print() + " " + operator + " " + right.print() + ")"
 }
 
-// E :: var I = E
+// E :: var x: Y = E
 // declaration of a variable
-case class VarDecl(name: String, initValue: Expression) extends Expression {
-  def print() = "var " + name + " = " + initValue.print()
+case class VarDef(vr: VarDecl, initValue: Expression) extends Expression {
+  def print() = "var " + vr.print() + " = " + initValue.print()
 }
 
-// E ::= I
+// E ::= x
 // reference to variable called 'name'
 case class Var(name: String) extends Expression {
    def print() = name
 }
 
-// E ::= I = E
+// E ::= x = E
 // assignment to a variable
 case class VarAssign(name: String, newValue: Expression) extends Expression {
    def print() = name + " = " + newValue.print()
-}
-
-// E ::= N
-// integer literal of value 'value'
-case class IntegerLiteral(value: Int) extends Expression {
-   def print() = value.toString()
-}
-
-// E ::= string
-// string literal of value 'value'
-case class StringLiteral(value: String) extends Expression {
-   def print() = "\"" + value.toString() + "\""
 }
 
 /* removed - special case of FunApply
@@ -162,6 +154,95 @@ case class For(vr: String, range: Expression, body: Expression) extends Expressi
        "for " + vr + " in " + range.print() + " " + body.print()
    }
 }
+
+// E ::= N
+// integer literal of value 'value'
+case class IntegerLiteral(value: Int) extends Expression {
+   def print() = value.toString()
+}
+
+// E ::= digits . digits
+// float literal of value 'value'
+case class FloatLiteral(value: Float) extends Expression {
+   def print() = value.toString()
+}
+
+// E ::= true | false
+case class BoolLiteral(value: Boolean) extends Expression {
+   def print() = value.toString()
+}
+
+// E ::= string
+// string literal of value 'value'
+case class StringLiteral(value: String) extends Expression {
+   def print() = "\"" + value.toString() + "\""
+}
+
+// E ::= ' c '
+// charact literal of value 'value'
+case class CharLiteral(value: Character) extends Expression {
+   def print() = "'" + value.toString() + "'"
+}
+
+/*
+  General intuitions for types
+  * Typically one type added to every identifier declaration.
+  * Standard notation "id: type" (or in some languages: "type id")
+  * 2 kinds of type systems: extrinsic vs. intrinsic; here: intrinsic
+    ---> we can infer a unique type for every expressions
+         types do not overlap
+  * Choice of types up to language designer
+    typically: at least built-in base type like int, bool
+    often: builtin-type constructors like list, option, product, ...
+    possibly: declarations that introduce types like classes
+  * Built-in type: names is introduced in the grammar; user-defined type: name is introduced in the vocabulary
+  * In the grammar, types comes in triplets of
+    - type production that creates the type
+      eg: Y ::= string                                  Y ::= (Y,Y)
+    - expression productions for the constructors (= how to create values of the type)
+      eg: Y ::= " CHARACTER* " (string literals)        E ::= (E,E)
+    - expression production for the accessors (= what to do with values of the type)
+      intuition: all accessors together allow recovering the specific value
+      eg: E ::= length(E) | charAt(E,E)                 E ::= E.1 | E.2
+*/
+
+abstract class Type extends SyntaxFragment
+
+// Y ::= int
+// constructors: integer literals
+// accessors: binary operators like +, *, ...; for-loops
+case class IntegerType() extends Type {
+  def print() = "int"
+}
+
+// Y ::= char
+// constructors: one constructor for each charactor, 'a', '1', ...
+// accessors: the unicode number of the character, charToString
+case class CharType() extends Type {
+   def print() = "char"
+}
+
+// Y ::= string
+// constructors: string literals
+// accessors: length, charAt
+case class StringType() extends Type {
+  def print() = "string"
+}
+
+// Y ::= float
+// constructors: float literals
+// accessors: binary operators like +, *, ...
+case class FloatType() extends Type {
+  def print() = "float"
+}
+
+// Y ::= bool
+// constructors: true/false
+// accessors: if-then-else
+case class BoolType() extends Type {
+  def print() = "bool"
+}
+
 
 /* parsing is dual to printing, converting strings to syntax fragments
    Essentially, one method of type string -> N per non-terminal N
@@ -228,23 +309,34 @@ class Parser(input: String) {
         val n = parseName
         trim
         skip("(")
-        var varnames: List[String] = Nil
+        var inputs: List[VarDecl] = Nil
         while (next != ')') {
-          varnames = varnames ++ List(parseName)
+          inputs = inputs ++ List(parseVarDecl)
           trim
           if (next != ')') skip(",")
           trim
         }
         skip(")")
         trim
+        skip(":")
+        val outTp = parseType
+        trim
         skip("=")
         val body = parseExpression
-        FunDef(n, varnames, body)
+        FunDef(n, inputs, outTp, body)
     } else {
         throw ParseError("keyword expected")
     }
   }
 
+  def parseVarDecl: VarDecl = {
+    val n = parseName
+    trim
+    skip(":")
+    val t = parseType
+    VarDecl(n,t)
+  }
+  
   def parseExpression: Expression = {
      trim
      if (startsWith("{")) {
@@ -263,12 +355,12 @@ class Parser(input: String) {
      } else if (startsWith("var")) {
         skip("var")
         trim
-        val n = parseName
+        val vd = parseVarDecl
         trim
         skip("=")
         trim
         val iv = parseExpression
-        VarDecl(n, iv)
+        VarDef(vd, iv)
      } else if (startsWith("return")) {
         skip("return")
         val e = parseExpression
@@ -304,12 +396,28 @@ class Parser(input: String) {
         val end = index
         skip("\"")
         StringLiteral(input.substring(begin,end))
+     } else if (startsWith("'")) {
+        skip("'")
+        val c = next
+        skip(c.toString)
+        skip("'")
+        CharLiteral(c)
+     } else if (startsWith("true")) {
+        skip("true")
+        BoolLiteral(true)
+     } else if (startsWith("false")) {
+        skip("false")
+        BoolLiteral(false)
      } else if(next.isDigit || next == '-') {
         val begin = index
         if (next == '-') skip("-")
-        while (!atEnd && next.isDigit) index+=1
-        val i = input.substring(begin,index).toInt
-        IntegerLiteral(i)
+        var seenDot = false
+        while (!atEnd && (next.isDigit || (!seenDot && next == '.'))) {
+          if (next == '.') seenDot = true
+          index+=1
+        }
+        val s = input.substring(begin,index)
+        if (seenDot) FloatLiteral(s.toFloat) else IntegerLiteral(s.toInt)
      } else if (next == '(') {
         skip("(")
         val l = parseExpression
@@ -357,17 +465,29 @@ class Parser(input: String) {
      skip(")")
      e
   }
+  
+  def parseType: Type = {
+    trim
+         if (startsWith("int")) {skip("int"); IntegerType()}
+    else if (startsWith("float")) {skip("float"); FloatType()}
+    else if (startsWith("char")) {skip("char"); CharType()}
+    else if (startsWith("string")) {skip("string"); StringType()}
+    else if (startsWith("bool")) {skip("bool"); BoolType()}
+    else fail("unknown type")
+  }
+  
 }
 
-
 // alternative printer: all print action collected in one place
+// not complete; not used anymore
 object Printer {
    def print(sf: SyntaxFragment): String = {
      sf match {
        case Program(defs,mn) =>
          defs.map(print(_)+"\n").mkString("\n") + "\n" + print(mn)
-       case FunDef(name, varnames, body) => 
-         "def " + name + "(" + varnames.mkString(",") + ") = "  + print(body)
+       case FunDef(name, ins, out, body) => 
+         "def " + name + "(" + ins.map(print(_)).mkString(",") + "): " + print(out) + " = "  + print(body)
+       case VarDecl(n,y) => n + ": " + print(y)
        case Block(es) =>
          "{" + es.map(print(_)).mkString("; ") + "}"
        case Return(r) =>
@@ -376,11 +496,9 @@ object Printer {
          n + "(" + as.map(print(_)).mkString(",") + ")"
        case InfixOperatorApply(o,l,r) =>
          "(" + print(l) + " " + o + " " + print(r) + ")"
-       case VarDecl(n,iv) => "var " + n + " = " + print(iv)
+       case VarDef(vd,iv) => "var " + print(vd) + " = " + print(iv)
        case Var(n) => n
        case VarAssign(n,nv) => n + " = " + print(nv)
-       case IntegerLiteral(v) => v.toString()
-       case StringLiteral(v) => "\"" + v + "\n"
        case IfThenElse(c,th,el) =>
          val elsePrinted = el match {
           case None => ""
@@ -391,6 +509,17 @@ object Printer {
          "while (" + print(c) + ") " + print(b)
        case For(v,r,b) =>
          "for " + v + " in " + print(r) + " " + print(b)
+       case IntegerLiteral(v) => v.toString()
+       case StringLiteral(v) => "\"" + v + "\""
+       case BoolLiteral(v) => v.toString()
+       case FloatLiteral(v) => v.toString()
+       case CharLiteral(v) => "'" + v.toString() + "'"
+       
+       case IntegerType() => "int"
+       case BoolType() => "bool"
+       case StringType() => "string"
+       case FloatType() => "float"
+       case CharType() => "char"
      }      
    }
 }
@@ -401,37 +530,99 @@ case class Vocabulary(decls: List[Declaration]) {
 }
 
 // a second AST traversal: checking
+// often: it is more succinct to have a separate function for each non-terminal; the Printer and PythonTranslator could be adjusted accordingly
 object Checker {
    case class SyntaxError(msg: String) extends Error(msg)
   
-   val infixOperators = List("+", "*", "-", "&&", "||", "/", "<", ">")
-   val builtInFunctions = List("print", "read", "int")
+   val infixOperators = List("+", "*", "-", "&&", "||", "/", "<", ">", "++")
+   val builtInFunctions = List("print", "read", "stringToInt", "stringToFloat", "intToFloat", "charToString", "length", "charAt")
 
    val forbiddenNames = List("def", "for", "in", "while", "if", "else", "print", "return", "var")
    def checkName(n: String) = !forbiddenNames.contains(n) && n != "" && n(0).isLetter && n.forall(_.isLetterOrDigit)
    
+   // if we ever need to check an arbitrary syntax fragment, this method delegates to the proper specialized method
+   // but normally, we know what kind of fragment we have and call the specialized method directly
    def check(voc: Vocabulary, sf: SyntaxFragment): Unit = {
      sf match {
+       case p: Program => checkProgram(voc, p)
+       case d: Declaration => checkDeclaration(voc, d)
+       case v: VarDecl => checkVarDecl(voc, v)
+       case e: Expression => checkExpression(voc, e)
+       case y: Type => checkType(voc, y)
+     }
+   }
+       
+   // now one check method for each non-terminal N
+   // every check method takes a vocabulary and an N-object and raises errors if it finds any
+   def checkProgram(voc: Vocabulary, p: Program) = p match {
        case Program(defs,mn) =>
          var vocE = voc
+         // check each declaration relative to the preceding ones (vocE)
          defs.foreach {d =>
-            check(vocE, d)
+            checkDeclaration(vocE, d)
             vocE = vocE.append(d)
          }
-         check(vocE, mn)
-       case FunDef(name, varnames, body) => 
+         // check the main expression relative to the whole vocabulary
+         checkExpression(vocE, mn)
+   }
+   
+   def checkDeclaration(voc: Vocabulary, d: Declaration) = d match {
+       case FunDef(name, ins, out, body) =>
+         // check the name and check that it's not defined yet
          checkName(name)
          voc.lookup(name) match {
            case Some(_) => throw SyntaxError("name " + name + " already defined")
            case None =>
          }
+         // check that all variable names are different
+         val varnames = ins.map(_.name)
          if (varnames.distinct.length != varnames.length) throw SyntaxError("variable names not unique")
-         varnames.foreach(checkName(_))
-         check(voc, body)
+         // check the input declarations
+         ins.foreach(checkVarDecl(voc, _))
+         // check the output type
+         checkType(voc, out)
+         // check the body
+         checkExpression(voc, body)
+   }
+   
+   def checkVarDecl(voc: Vocabulary, vd: VarDecl) = vd match {
+     case VarDecl(n, y) =>
+        checkName(n)
+        checkType(voc, y)
+   }
+   
+   
+   /* Expressions are typed by the types. We write e:y if expression e has type y.
+      Checking of expressions must not only check that e is well-formed but also check e:y.
+      It is typically done by two methods:
+      * type-checking:  take e and y as input, check that e:y
+      * type-inference: take e as input, compute and return y
+      
+      In an intrinsic type system, the intelligence can be mostly done by type inference,
+      with type checking just comparing infered and expected type.
+   */
+   
+   // TODO this is a dummy function used temporarily to make the not-yet-modified code work in which no expected type is passed
+   // we need to find all occurrences of this function and add the expected type as the third argument
+   // then we need to delete this dummy function
+   def checkExpression(voc: Vocabulary, e: Expression): Unit = checkExpression(voc, e, null)
+   
+   // type-check an expression against an expected type
+   def checkExpression(voc: Vocabulary, e: Expression, expectedType: Type): Unit = {
+     // infer the type
+     val inferedType = inferExpression(voc, e)
+     // check it is equal to the expected one
+     if (inferedType != expectedType) {
+       throw SyntaxError("expected: " + expectedType.print() + "; found: " + inferedType.print())
+     }
+   }
+   
+   // infer the type of an expression
+   def inferExpression(voc: Vocabulary, e: Expression): Type = {e match {
        case Block(es) =>
-         es.foreach(check(voc, _))
+         es.foreach(checkExpression(voc, _))
        case Return(r) =>
-         check(voc, r)
+         checkExpression(voc, r)
        case FunApply(n,as) =>
          if (builtInFunctions.contains(n)) {
            // TODO: change this if there is ever a built-in function that expects more than 1 argument
@@ -439,21 +630,21 @@ object Checker {
          } else {
            voc.lookup(n) match {
             case None => throw SyntaxError("name " + n + " not declared")
-            case Some(FunDef(_, vrs, bd)) => 
-              if (vrs.length != as.length)
+            case Some(FunDef(_, ins, _, bd)) => 
+              if (ins.length != as.length)
                 throw SyntaxError("function " + n + " applied to wrong number of arguments" +
-                     " (expected: " + vrs.length + "; found: " + as.length + ")")
-              as.foreach(check(voc, _))
+                     " (expected: " + ins.length + "; found: " + as.length + ")")
+              as.foreach(checkExpression(voc, _))
             case Some(_) => throw SyntaxError("name " + n + " exists but does not refer to a function")
            }
          }
        case InfixOperatorApply(o,l,r) =>
          if (!infixOperators.contains(o)) throw SyntaxError("unknown operator")
-         check(voc, l)
-         check(voc, r)
-       case VarDecl(n,iv) =>
-         checkName(n)
-         check(voc, iv)
+         checkExpression(voc, l)
+         checkExpression(voc, r)
+       case VarDef(vd,iv) =>
+         checkVarDecl(voc, vd)
+         checkExpression(voc, iv)
        case Var(n) =>
          // TODO: where applicable, throw SyntaxError("variable " + n + " not in scope")
        case VarAssign(n,nv) =>
@@ -465,19 +656,31 @@ object Checker {
        case IfThenElse(c,th,el) =>
          val elsePrinted = el match {
           case None =>
-          case Some(e) => check(voc, e)
+          case Some(e) => checkExpression(voc, e)
          }
-         check(voc, c)
-         check(voc, th)
+         checkExpression(voc, c)
+         checkExpression(voc, th)
        case While(c, b) =>
-         check(voc, c)
-         check(voc, b)
+         checkExpression(voc, c)
+         checkExpression(voc, b)
        case For(v,r,b) =>
          checkName(v) 
-         check(voc, r)
-         check(voc, b)
-     }      
-   }
+         checkExpression(voc, r)
+         checkExpression(voc, b)
+     }
+     // TODO: eventually we need to return the actual type
+     // for now we return a dummy value to make the program work
+     null
+     }
+
+     def checkType(voc: Vocabulary, y: Type) = y match {
+       // nothing to check for the built-in base types
+       case IntegerType() =>
+       case BoolType() =>
+       case FloatType() =>
+       case CharType() =>
+       case StringType() =>
+     }
 }
 
 // Relative semantics: translate the program to another language, whose semantics is already defined
@@ -486,8 +689,9 @@ object PythonTranslator {
      sf match {
        case Program(defs,mn) =>
          defs.map(print(_)+"\n").mkString("\n") + "\n" + print(mn)
-       case FunDef(name, varnames, body) => 
-         "def " + name + "(" + varnames.mkString(",") + "):\n" + print(body).indent(2)
+       case FunDef(name, ins, out, body) => 
+         "def " + name + "(" + ins.map(print(_)).mkString(",") + "):\n" + print(body).indent(2)
+       case VarDecl(n,y) => n
        case Block(es) =>
          es.map(print(_)).mkString("\n")
        case Return(r) =>
@@ -499,7 +703,7 @@ object PythonTranslator {
          }
        case InfixOperatorApply(o,l,r) =>
          "(" + print(l) + " " + o + " " + print(r) + ")"
-       case VarDecl(n, iv) => n + " = " + print(iv)
+       case VarDef(vd, iv) => print(vd) + " = " + print(iv)
        case Var(n) => n
        case VarAssign(n,nv) => n + " = " + print(nv)
        case IntegerLiteral(v) => v.toString()
@@ -523,38 +727,41 @@ object Main {
    def main(args: Array[String]) = {
       // val inFile = new os.Path(args(0))
       // val s = os.read(inFile)
-      // parse an example program
-      val prog = new Parser("""
-def sum(x,y) = if ((x > y))
+      
+      // an example program
+      val progString =
+"""
+def sumFromTo(x: int, y: int): int  = if ((x > y))
     return 0
   else {
-    var n = x;
-    var s = 0;
+    var n: int = x;
+    var s: int = 0;
     while ((n<y)) {
       s = (s+n);
-      n=(n+1)
+      n = (n+1)
     };
     return s
   }
-def average(x,y) = return (sum(x,y)/(y-x))
-def test() = {
-  var x = int(input("Enter first number"));
-  var y = int(input("Enter second number"));
-  return sum(x,y)
+def average(x: float,y: float): float = return (sumFromTo(x,y)/(y-x))
+def test(): int = {
+  var x: int = stringToInt(input("Enter first number"));
+  var y: int = stringToInt(input("Enter second number"));
+  return sumFromTo(x,y)
 }
 print(test())
-"""
-      ).parseProgram
+"""   
+      // Step 1 (context-free syntax): parse
+      val prog = new Parser(progString).parseProgram
       
-      // alternatively, we manually construct the parse result
+      // alternatively, we manually construct a program like
       /*
       val prog = Program(List(
-        FunDef("f", List("x", "y"),
+        FunDef("f", List(VarDecl("x", IntegerType()), VarDecl("x", IntegerType())), IntegerType(),
            Return(
               InfixOperatorApply("+", Var("x"), InfixOperatorApply("*", IntegerLiteral(2), Var("y")))
            )
         ),
-        FunDef("g", List("x"),
+        FunDef("g", List(VarDecl("x", IntegerType())), IntegerType(),
            Return(
               FunApply("f", List(Var("x"), IntegerLiteral(1)))
            )
@@ -564,14 +771,14 @@ print(test())
       )) */
 
 
-      // check the syntax
+      // Step 2 (context-sensitive syntax): check
       Checker.check(Vocabulary(Nil), prog)
 
-      // print the syntax
-      // println(prog.print())
-      // println(Printer.print(prog))
+      // optionally: print
+      //println(prog.print())
+      //println(Printer.print(prog))
 
-      // translate to Python
+      // Step 3 (semantics): translate to Python
       println(PythonTranslator.print(prog))
    }
 }
