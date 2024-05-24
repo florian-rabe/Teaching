@@ -184,6 +184,8 @@ case class CharLiteral(value: Character) extends Expression {
    def print() = "'" + value.toString() + "'"
 }
 
+// E ::= ()
+// the unique expression of unit type
 case class UnitExpr() extends Expression {
    def print () = "()"
 }
@@ -249,18 +251,25 @@ case class BoolType() extends Type {
 
 // Y ::= unit
 // special type containing only one value, written ()
+// constructors: only ()
+// accessors: none needed
 case class UnitType() extends Type {
   def print() = "unit"
 }
 
 // Y ::= empty
 // special type containing no values
+// constructors: none
+// accessors: none needed
 case class EmptyType() extends Type {
   def print() = "empty"
 }
 
 // Y ::= list[Y]
 // lists containing elements of type Y
+// TODO
+// constructors: empty list, adding an element (the head) at the beginning of a list (the tail)
+// accessors: isempty, head, tail
 case class ListType(elemType: Type) extends Type {
   def print() = "list[" + elemType + "]"
 }
@@ -512,7 +521,7 @@ class Parser(input: String) {
 }
 
 // alternative printer: all print action collected in one place
-// not complete; not used anymore
+// possibly not complete; not used anymore
 object Printer {
    def print(sf: SyntaxFragment): String = {
      sf match {
@@ -547,13 +556,17 @@ object Printer {
        case BoolLiteral(v) => v.toString()
        case FloatLiteral(v) => v.toString()
        case CharLiteral(v) => "'" + v.toString() + "'"
+       case UnitExpr() => "()"
        
        case IntegerType() => "int"
        case BoolType() => "bool"
        case StringType() => "string"
        case FloatType() => "float"
        case CharType() => "char"
-     }      
+       case UnitType() => "unit"
+       case EmptyType() => "empty"
+       case ListType(y) => "list[" + print(y) + "]"
+      }      
    }
 }
 
@@ -582,7 +595,9 @@ object Checker {
    case class SyntaxError(msg: String) extends Error(msg)
   
    val infixOperators = List("+", "*", "-", "&&", "||", "/", "<", ">", "++", "==", "!=")
-   val builtInFunctions = List("print", "read", "stringToInt", "stringToFloat", "intToFloat", "charToString", "length", "charAt")
+   val builtInFunctions = List("print", "read", "stringToInt", "stringToFloat", "intToFloat", "charToString", "length", "charAt",
+     "nil", "cons", "isempty", "head", "tail" // functions for lists
+   )
 
    val forbiddenNames = List("def", "for", "in", "while", "if", "else", "print", "return", "var")
    def checkName(n: String) = !forbiddenNames.contains(n) && n != "" && n(0).isLetter && n.forall(_.isLetterOrDigit)
@@ -661,8 +676,10 @@ object Checker {
    def checkExpression(voc: Vocabulary, ctx: Context, e: Expression, expectedType: Type, returnType: Option[Type]): Unit = {
      // infer the type
      val inferedType = inferExpression(voc, ctx, e, returnType)
-     // check it is equal to the expected one
-     if (inferedType != expectedType) {
+     // check it the infered type is compatible with (i.e., smaller than) the expected type
+     // the only way to be smaller is to be empty because we do not have subtyping
+     // so we check if the infered type is empty or the expected type
+     if (inferedType != EmptyType() && inferedType != expectedType) {
        throw SyntaxError("error while checking " + e.print() + ": " + "expected " + expectedType.print() + "; found " + inferedType.print())
      }
    }
@@ -733,6 +750,26 @@ object Checker {
                checkExpression(voc, ctx, a, StringType(), returnType)
                checkExpression(voc, ctx, b, IntegerType(), returnType)
                CharType()
+             case "nil" =>
+               if (as.length != 0) throw SyntaxError("zero arguments expected") 
+               ListType(EmptyType())
+             case "cons" =>
+               if (as.length != 2) throw SyntaxError("two arguments expected")
+               val aI = inferExpression(voc, ctx, as(0), returnType)
+               checkExpression(voc, ctx, as(1), ListType(aI), returnType)
+               ListType(aI)
+             case "isempty" | "head" | "tail" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               val aI = inferExpression(voc, ctx, a, returnType)
+               aI match {
+                 case ListType(y) => n match {
+                   case "head" => y
+                   case "tail" => ListType(y)
+                   case "isempty" => BoolType()
+                 }
+                 case _ => throw SyntaxError("list expected")
+               }
            }
          } else {
            voc.lookup(n) match {
@@ -847,40 +884,75 @@ object Checker {
 
 // Relative semantics: translate the program to another language, whose semantics is already defined
 object PythonTranslator {
-   def print(sf: SyntaxFragment): String = {
-     sf match {
-       case Program(defs,mn) =>
-         defs.map(print(_)+"\n").mkString("\n") + "\n" + print(mn)
+   def translateProgram(p: Program): String = p match {
+       case Program(decls,mainCall) =>
+         decls.map(translateDeclaration(_)+"\n").mkString("\n") + "\n" + translateExpression(mainCall, false)
+   }
+   def translateDeclaration(d: Declaration): String = d match {
        case FunDef(name, ins, out, body) => 
-         "def " + name + "(" + ins.map(print(_)).mkString(",") + "):\n" + print(body).indent(2)
-       case VarDecl(n,y) => n
+         // we drop the output type
+         "def " + name + "(" + ins.map(translateVarDecl(_)).mkString(",") + "):\n" + translateExpression(body, true).indent(2)
+   }
+   def translateVarDecl(vd: VarDecl) = vd match {
+       case VarDecl(n,y) =>
+         // we drop the types of all variables
+         n
+   }
+   def translateType(y: Type) = ""  // should never occur
+
+   // Sometimes we need to add "return " in Python, namely in front of the last expression in a function body.
+   // needsReturn is true if exp is such an expression.
+   def translateExpression(exp: Expression, needsReturn: Boolean): String = {
+     val returnKeyword = if (needsReturn) "return " else ""
+     exp match {
        case Block(es) =>
-         es.map(print(_)).mkString("\n")
+         // last expression in block may need to return
+         (es.init.map(translateExpression(_, false)) ::: List(translateExpression(es.last, needsReturn))).mkString("\n")
        case Return(r) =>
-         "return " + print(r)
+         "return " + translateExpression(r, false)
        case FunApply(n,as) =>
-         n match {
-           case "read" =>  "input(" + print(as(0)) + ")"
-           case "print" | "int" | _ => n + "(" + as.map(print(_)).mkString(",") + ")"
+         val expT = if (Checker.builtInFunctions.contains(n)) n match {
+           case "charAt" =>
+             // charAt(s,i) ---> s[i]
+             translateExpression(as(0), false) + "(" + translateExpression(as(1), false) + ")"
+           case "charToString" =>
+             // characters are just strings in Python
+             translateExpression(as(0), false)
+           case _ => 
+             val pythonName = n match {
+                case "read" => "input"
+                case "length" => "len"
+                case "stringToInt" => "int"
+                case "stringToFloat" => "float"
+                case s => s
+             }
+             pythonName + "(" + as.map(translateExpression(_, false)).mkString(",") + ")"
+         } else {
+            n + "(" + as.map(translateExpression(_, false)).mkString(",") + ")"
          }
+         returnKeyword + expT
        case InfixOperatorApply(o,l,r) =>
-         "(" + print(l) + " " + o + " " + print(r) + ")"
-       case VarDef(vd, iv) => print(vd) + " = " + print(iv)
-       case Var(n) => n
-       case VarAssign(n,nv) => n + " = " + print(nv)
-       case IntegerLiteral(v) => v.toString()
-       case StringLiteral(s) => "\"" + s + "\""
+         returnKeyword + "(" + translateExpression(l, false) + " " + o + " " + translateExpression(r, false) + ")"
+       case VarDef(vd, iv) => vd.name + " = " + translateExpression(iv, false)
+       case VarAssign(n,nv) => n + " = " + translateExpression(nv, false)
+       case Var(n) => returnKeyword + n
+       case IntegerLiteral(v) => returnKeyword + v.toString()
+       case StringLiteral(v) => returnKeyword + "\"" + v + "\""
+       case CharLiteral(v) => returnKeyword + "\"" + v + "\"" // characters are strings of length 1 in Python
+       case FloatLiteral(v) => returnKeyword + v.toString()
+       case BoolLiteral(v) => returnKeyword + (if (v) "True" else "False")
+       case UnitExpr() => "None" // Python has no units, but we never do anythign with them anyway, so any value works
        case IfThenElse(c,th,el) =>
          val elsePrinted = el match {
           case None => ""
-          case Some(e) => "else:\n" + print(e).indent(2)
+          case Some(e) => "else:\n" + translateExpression(e, needsReturn).indent(2)
          }
-         "if (" + print(c) + "):\n" + print(th).indent(2) + elsePrinted
+         "if " + translateExpression(c, false) + ":\n" + translateExpression(th, needsReturn).indent(2) + elsePrinted
        case While(c, b) =>
-         "while (" + print(c) + "):\n" + print(b).indent(2)
-       case For(v,r,b) =>
-         "for " + v + " in " + print(r) + ":\n" + print(b).indent(2)
-     }      
+         "while " + translateExpression(c, false) + ":\n" + translateExpression(b, false).indent(2)
+       case For(v,l,b) =>
+         "for " + v + " in " + translateExpression(l, false) + ":\n" + translateExpression(b, false).indent(2)
+     }
    }
 }
 
@@ -941,6 +1013,6 @@ print(test())
       //println(Printer.print(prog))
 
       // Step 3 (semantics): translate to Python
-      println(PythonTranslator.print(prog))
+      println(PythonTranslator.translateProgram(prog))
    }
 }
