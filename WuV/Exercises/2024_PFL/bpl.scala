@@ -184,6 +184,10 @@ case class CharLiteral(value: Character) extends Expression {
    def print() = "'" + value.toString() + "'"
 }
 
+case class UnitExpr() extends Expression {
+   def print () = "()"
+}
+
 /*
   General intuitions for types
   * Typically one type added to every identifier declaration.
@@ -241,6 +245,24 @@ case class FloatType() extends Type {
 // accessors: if-then-else
 case class BoolType() extends Type {
   def print() = "bool"
+}
+
+// Y ::= unit
+// special type containing only one value, written ()
+case class UnitType() extends Type {
+  def print() = "unit"
+}
+
+// Y ::= empty
+// special type containing no values
+case class EmptyType() extends Type {
+  def print() = "empty"
+}
+
+// Y ::= list[Y]
+// lists containing elements of type Y
+case class ListType(elemType: Type) extends Type {
+  def print() = "list[" + elemType + "]"
 }
 
 
@@ -408,6 +430,9 @@ class Parser(input: String) {
      } else if (startsWith("false")) {
         skip("false")
         BoolLiteral(false)
+     } else if (startsWith("()")) {
+        skip("()")
+        UnitExpr()
      } else if(next.isDigit || next == '-') {
         val begin = index
         if (next == '-') skip("-")
@@ -473,6 +498,14 @@ class Parser(input: String) {
     else if (startsWith("char")) {skip("char"); CharType()}
     else if (startsWith("string")) {skip("string"); StringType()}
     else if (startsWith("bool")) {skip("bool"); BoolType()}
+    else if (startsWith("unit")) {skip("unit"); UnitType()}
+    else if (startsWith("empty")) {skip("empty"); EmptyType()}
+    else if (startsWith("list[")) {
+      skip("list[")
+      val y = parseType
+      skip("]")
+      ListType(y)
+    }
     else fail("unknown type")
   }
   
@@ -524,9 +557,23 @@ object Printer {
    }
 }
 
+/* There are two kinds of names:
+   - global declarations: visible everywhere, usable from the outside (e.g., when importing a package), names can't be changed easily
+     e.g., def f(...): ... = ..., also classes, types, ...
+   - local (variable) declarations: visible in the current block only, names can be changed easily 
+     e.g., variable declarations x:Y
+*/
+   
+// the vocabulary tracks the list of declarations that are in scope
 case class Vocabulary(decls: List[Declaration]) {
    def lookup(n: String) : Option[Declaration] = decls.find(_.name == n)
    def append(d: Declaration) = Vocabulary(decls ++ List(d))
+}
+
+// the context tracks the list of variable declarations that are in scope
+case class Context(vardecls: List[VarDecl]) {
+   def lookup(n: String) : Option[VarDecl] = vardecls.find(_.name == n)
+   def append(vd: VarDecl) = Context(vardecls ++ List(vd))  
 }
 
 // a second AST traversal: checking
@@ -534,7 +581,7 @@ case class Vocabulary(decls: List[Declaration]) {
 object Checker {
    case class SyntaxError(msg: String) extends Error(msg)
   
-   val infixOperators = List("+", "*", "-", "&&", "||", "/", "<", ">", "++")
+   val infixOperators = List("+", "*", "-", "&&", "||", "/", "<", ">", "++", "==", "!=")
    val builtInFunctions = List("print", "read", "stringToInt", "stringToFloat", "intToFloat", "charToString", "length", "charAt")
 
    val forbiddenNames = List("def", "for", "in", "while", "if", "else", "print", "return", "var")
@@ -547,7 +594,7 @@ object Checker {
        case p: Program => checkProgram(voc, p)
        case d: Declaration => checkDeclaration(voc, d)
        case v: VarDecl => checkVarDecl(voc, v)
-       case e: Expression => checkExpression(voc, e)
+       case e: Expression => inferExpression(voc, Context(Nil), e, None)
        case y: Type => checkType(voc, y)
      }
    }
@@ -563,7 +610,9 @@ object Checker {
             vocE = vocE.append(d)
          }
          // check the main expression relative to the whole vocabulary
-         checkExpression(vocE, mn)
+         // at this point, there are no variables declared, so we use the empty context
+         // no return statement is allowed, so we do not pass a returnType
+         inferExpression(vocE, Context(Nil), mn, None)
    }
    
    def checkDeclaration(voc: Vocabulary, d: Declaration) = d match {
@@ -581,8 +630,8 @@ object Checker {
          ins.foreach(checkVarDecl(voc, _))
          // check the output type
          checkType(voc, out)
-         // check the body
-         checkExpression(voc, body)
+         // check the body relative to the input variables, against the output type, remembering the return type
+         checkExpression(voc, Context(ins), body, out, Some(out))
    }
    
    def checkVarDecl(voc: Vocabulary, vd: VarDecl) = vd match {
@@ -602,84 +651,197 @@ object Checker {
       with type checking just comparing infered and expected type.
    */
    
-   // TODO this is a dummy function used temporarily to make the not-yet-modified code work in which no expected type is passed
-   // we need to find all occurrences of this function and add the expected type as the third argument
-   // then we need to delete this dummy function
-   def checkExpression(voc: Vocabulary, e: Expression): Unit = checkExpression(voc, e, null)
    
-   // type-check an expression against an expected type
-   def checkExpression(voc: Vocabulary, e: Expression, expectedType: Type): Unit = {
+   // type-check an expression against an expected type and an optional return type
+   /* for example, when checking 
+      def f(x:int): int = {var x: string = read("enter an int"); stringToInt(x)}
+      the check for read("enter an int"), must look as follows: 
+      checkExpression(voc, ctx, FunApply("read", List(StringLiteral("enter an int"))), StringType(), Some(IntType()))
+   */
+   def checkExpression(voc: Vocabulary, ctx: Context, e: Expression, expectedType: Type, returnType: Option[Type]): Unit = {
      // infer the type
-     val inferedType = inferExpression(voc, e)
+     val inferedType = inferExpression(voc, ctx, e, returnType)
      // check it is equal to the expected one
      if (inferedType != expectedType) {
-       throw SyntaxError("expected: " + expectedType.print() + "; found: " + inferedType.print())
+       throw SyntaxError("error while checking " + e.print() + ": " + "expected " + expectedType.print() + "; found " + inferedType.print())
      }
    }
    
    // infer the type of an expression
-   def inferExpression(voc: Vocabulary, e: Expression): Type = {e match {
+   def inferExpression(voc: Vocabulary, ctx: Context, exp: Expression, returnType: Option[Type]): Type = exp match {
        case Block(es) =>
-         es.foreach(checkExpression(voc, _))
+         var currentContext = ctx
+         var inferredType : Type = null
+         es.foreach {e =>
+           inferredType = inferExpression(voc, currentContext, e, returnType)
+           e match {
+             case VarDef(vd, _) => currentContext = currentContext.append(vd)
+             case _ => 
+           }
+         }
+         if (inferredType == null) {
+           // block was empty
+           UnitType()
+         } else {
+           // type of block is the type of the last expression in the block
+           inferredType
+         }
        case Return(r) =>
-         checkExpression(voc, r)
+         returnType match {
+           case None => throw SyntaxError("return statement not allowed here")
+           case Some(y) =>
+             checkExpression(voc, ctx, r, y, returnType)
+             EmptyType()
+         }
        case FunApply(n,as) =>
          if (builtInFunctions.contains(n)) {
-           // TODO: change this if there is ever a built-in function that expects more than 1 argument
-           if (as.length != 1) throw SyntaxError("one arguments expected")
+           n match {
+             case "print" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               val aI = inferExpression(voc, ctx, a, returnType)
+               UnitType()
+             case "read" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               checkExpression(voc, ctx, a, StringType(), returnType)
+               StringType()
+             case "stringToInt" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               checkExpression(voc, ctx, a, StringType(), returnType)
+               IntegerType()
+             case "stringToFloat" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               checkExpression(voc, ctx, a, StringType(), returnType)
+               FloatType()
+             case "charToString" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               checkExpression(voc, ctx, a, CharType(), returnType)
+               StringType()
+             case "length" => 
+               if (as.length != 1) throw SyntaxError("one argument expected")
+               val a = as(0)
+               checkExpression(voc, ctx, a, StringType(), returnType)
+               IntegerType()
+             case "charAt" => 
+               if (as.length != 2) throw SyntaxError("two arguments expected")
+               val a = as(0)
+               val b = as(1)
+               checkExpression(voc, ctx, a, StringType(), returnType)
+               checkExpression(voc, ctx, b, IntegerType(), returnType)
+               CharType()
+           }
          } else {
            voc.lookup(n) match {
             case None => throw SyntaxError("name " + n + " not declared")
-            case Some(FunDef(_, ins, _, bd)) => 
+            case Some(FunDef(_, ins, out, bd)) => 
               if (ins.length != as.length)
                 throw SyntaxError("function " + n + " applied to wrong number of arguments" +
                      " (expected: " + ins.length + "; found: " + as.length + ")")
-              as.foreach(checkExpression(voc, _))
+              // (as zip ins) is the list of pairs of argument expressions and input variable declarations
+              // the foreach-loop checks each argument a against the type of the corresponding variable declaration in
+              (as zip ins).foreach {case (a,in) => checkExpression(voc, ctx, a, in.tp, returnType)}
+              out
             case Some(_) => throw SyntaxError("name " + n + " exists but does not refer to a function")
            }
          }
        case InfixOperatorApply(o,l,r) =>
          if (!infixOperators.contains(o)) throw SyntaxError("unknown operator")
-         checkExpression(voc, l)
-         checkExpression(voc, r)
+         o match {
+           case "==" | "!=" =>
+             val y = inferExpression(voc, ctx, l, returnType)
+             checkExpression(voc, ctx, r, y, returnType)
+             BoolType()
+           case "+" | "*" | "-" | "/" =>
+             val lI = inferExpression(voc, ctx, l, returnType)
+             val rI = inferExpression(voc, ctx, r, returnType)
+             (lI, rI) match {
+               case (IntegerType(), IntegerType()) =>
+                 if (o == "/") FloatType() else IntegerType()
+               case (FloatType(), FloatType()) => FloatType()
+               case (IntegerType(), FloatType()) => FloatType()
+               case (FloatType(), IntegerType()) => FloatType()
+               case _ => throw SyntaxError("operator used with bad type: " + o + "(" + lI.print() + ", " + rI.print() + ")")
+             }
+           case "&&" | "||" =>
+              checkExpression(voc, ctx, l, BoolType(), returnType)
+              checkExpression(voc, ctx, r, BoolType(), returnType)
+              BoolType()
+           case "<" | ">" =>
+             val lI = inferExpression(voc, ctx, l, returnType)
+             val rI = inferExpression(voc, ctx, r, returnType)
+             (lI, rI) match {
+               case (IntegerType(), IntegerType()) =>
+               case (FloatType(), FloatType()) =>
+               case (IntegerType(), FloatType()) =>
+               case (FloatType(), IntegerType()) =>
+               case _ => throw SyntaxError("operator used with bad type: " + o + "(" + lI.print() + ", " + rI.print() + ")")
+             }
+             BoolType()
+           case "++" =>
+             checkExpression(voc, ctx, l, StringType(), returnType)
+             checkExpression(voc, ctx, r, StringType(), returnType)
+             StringType()
+         }
        case VarDef(vd,iv) =>
          checkVarDecl(voc, vd)
-         checkExpression(voc, iv)
+         checkExpression(voc, ctx, iv, vd.tp, returnType)
+         UnitType()
        case Var(n) =>
-         // TODO: where applicable, throw SyntaxError("variable " + n + " not in scope")
+          // look up n in context
+          ctx.lookup(n) match {
+            case None => throw SyntaxError("undeclared variable")
+            case Some(VarDecl(_, y)) => y
+          }
        case VarAssign(n,nv) =>
-         // TODO: where applicable, throw SyntaxError("variable " + n + " not in scope")
-         // TODO: check if n is mutable (i.e., if we're allowed to change the value of this variable)
-         check(voc, nv)
-       case IntegerLiteral(v) =>
-       case StringLiteral(v) =>
+          ctx.lookup(n) match {
+            case None => throw SyntaxError("undeclared variable")
+            case Some(VarDecl(_, y)) => checkExpression(voc, ctx, nv, y, returnType)
+          }
+          UnitType()
+       case IntegerLiteral(v) => IntegerType()
+       case StringLiteral(v) => StringType()
+       case CharLiteral(v) => CharType()
+       case FloatLiteral(v) => FloatType()
+       case BoolLiteral(v) => BoolType()
+       case UnitExpr() => UnitType()
        case IfThenElse(c,th,el) =>
-         val elsePrinted = el match {
+         checkExpression(voc, ctx, c, BoolType(), returnType)
+         val thInferred = inferExpression(voc, ctx, th, returnType)
+         el match {
           case None =>
-          case Some(e) => checkExpression(voc, e)
+            UnitType()
+          case Some(e) =>
+            checkExpression(voc, ctx, e, thInferred, returnType)
+            thInferred
          }
-         checkExpression(voc, c)
-         checkExpression(voc, th)
        case While(c, b) =>
-         checkExpression(voc, c)
-         checkExpression(voc, b)
-       case For(v,r,b) =>
-         checkName(v) 
-         checkExpression(voc, r)
-         checkExpression(voc, b)
-     }
-     // TODO: eventually we need to return the actual type
-     // for now we return a dummy value to make the program work
-     null
+         checkExpression(voc, ctx, c, BoolType(), returnType)
+         inferExpression(voc, ctx, b, returnType)
+         UnitType()
+       case For(v,l,b) =>
+         checkName(v)
+         inferExpression(voc, ctx, l, returnType) match {
+           case ListType(y) =>
+             inferExpression(voc, ctx.append(VarDecl(v,y)), b, returnType)
+             UnitType()
+           case _ => throw SyntaxError("for-loop must run over a list")
+         }
      }
 
-     def checkType(voc: Vocabulary, y: Type) = y match {
+     def checkType(voc: Vocabulary, y: Type): Unit = y match {
        // nothing to check for the built-in base types
        case IntegerType() =>
        case BoolType() =>
        case FloatType() =>
        case CharType() =>
        case StringType() =>
+       case UnitType() =>
+       case EmptyType() =>
+       case ListType(y) => checkType(voc, y)
      }
 }
 
@@ -732,7 +894,7 @@ object Main {
       val progString =
 """
 def sumFromTo(x: int, y: int): int  = if ((x > y))
-    return 0
+    0
   else {
     var n: int = x;
     var s: int = 0;
@@ -740,13 +902,13 @@ def sumFromTo(x: int, y: int): int  = if ((x > y))
       s = (s+n);
       n = (n+1)
     };
-    return s
+    s
   }
-def average(x: float,y: float): float = return (sumFromTo(x,y)/(y-x))
+def average(x: int, y: int): float = (sumFromTo(x,y)/(y-x))
 def test(): int = {
-  var x: int = stringToInt(input("Enter first number"));
-  var y: int = stringToInt(input("Enter second number"));
-  return sumFromTo(x,y)
+  var x: int = stringToInt(read("Enter first number"));
+  var y: int = stringToInt(read("Enter second number"));
+  sumFromTo(x,y)
 }
 print(test())
 """   
