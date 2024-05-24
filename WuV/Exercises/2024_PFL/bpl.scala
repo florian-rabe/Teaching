@@ -314,10 +314,18 @@ class Parser(input: String) {
     index += s.length
   }
 
-  def parseName = {
+  def parseName: String = {
     val begin = index
     while (!atEnd && next.isLetterOrDigit) index += 1
     input.substring(begin,index)
+  }
+
+  def parseOperator: String = {
+    trim
+    Checker.infixOperators.foreach {o =>
+      if (startsWith(o)) {skip(o); return o}
+    }
+    fail("expected operator")
   }
   
   def parseProgram: Program = {
@@ -398,11 +406,12 @@ class Parser(input: String) {
         Return(e)
      } else if (startsWith("while")) {
         skip("while")
-        val c = parseExpressionInBrackets
+        val c = parseExpression
         val b = parseExpression
         While(c,b)
      } else if (startsWith("for")) {
         skip("for")
+        trim
         val v = parseName
         trim
         skip("in")
@@ -412,7 +421,7 @@ class Parser(input: String) {
         For(v,r,b)
      } else if (startsWith("if")) {
         skip("if")
-        val c = parseExpressionInBrackets
+        val c = parseExpression
         val th = parseExpression
         trim
         val el = if (startsWith("else")) {
@@ -455,10 +464,7 @@ class Parser(input: String) {
      } else if (next == '(') {
         skip("(")
         val l = parseExpression
-        trim
-        val o = next.toString
-        skip(o)
-        trim
+        val o = parseOperator
         val r = parseExpression
         trim
         skip(")")
@@ -480,7 +486,7 @@ class Parser(input: String) {
           }
           skip(")")
           FunApply(n, es)
-        } else if (next == '=') {
+        } else if (startsWith("=") && !Checker.infixOperators.exists(startsWith(_))) {
           skip("=")
           trim
           val nv = parseExpression
@@ -489,15 +495,6 @@ class Parser(input: String) {
           Var(n)
         }
      }
-  }
-
-  def parseExpressionInBrackets = {
-     trim
-     skip("(")
-     val e = parseExpression
-     trim
-     skip(")")
-     e
   }
   
   def parseType: Type = {
@@ -677,11 +674,21 @@ object Checker {
      // infer the type
      val inferedType = inferExpression(voc, ctx, e, returnType)
      // check it the infered type is compatible with (i.e., smaller than) the expected type
-     // the only way to be smaller is to be empty because we do not have subtyping
-     // so we check if the infered type is empty or the expected type
-     if (inferedType != EmptyType() && inferedType != expectedType) {
+     if (!subtype(inferedType, expectedType)) {
        throw SyntaxError("error while checking " + e.print() + ": " + "expected " + expectedType.print() + "; found " + inferedType.print())
      }
+   }
+
+   // true if infered is smaller than expected
+   def subtype(infered: Type, expected: Type): Boolean = (infered, expected) match {
+     case (EmptyType(), _) =>
+       true // empty type is smaller than every type
+     case (ListType(i), ListType(e)) =>
+       // list[i] is smaller than list[e] if i is smaller than e
+       subtype(i,e)
+     case _ =>
+       // every type is smaller than itself
+       infered == expected
    }
    
    // infer the type of an expression
@@ -830,12 +837,12 @@ object Checker {
        case Var(n) =>
           // look up n in context
           ctx.lookup(n) match {
-            case None => throw SyntaxError("undeclared variable")
+            case None => throw SyntaxError("undeclared variable: " + n)
             case Some(VarDecl(_, y)) => y
           }
        case VarAssign(n,nv) =>
           ctx.lookup(n) match {
-            case None => throw SyntaxError("undeclared variable")
+            case None => throw SyntaxError("undeclared variable: " + n)
             case Some(VarDecl(_, y)) => checkExpression(voc, ctx, nv, y, returnType)
           }
           UnitType()
@@ -918,6 +925,11 @@ object PythonTranslator {
            case "charToString" =>
              // characters are just strings in Python
              translateExpression(as(0), false)
+           case "nil" => "[]"
+           case "cons" => "[" + translateExpression(as(0), false) + "] + " + translateExpression(as(1), false)
+           case "isempty" => translateExpression(as(0), false) + " == []"
+           case "head" => translateExpression(as(0), false) + "[0]"
+           case "tail" => translateExpression(as(0), false) + "[1:]"
            case _ => 
              val pythonName = n match {
                 case "read" => "input"
@@ -965,12 +977,12 @@ object Main {
       // an example program
       val progString =
 """
-def sumFromTo(x: int, y: int): int  = if ((x > y))
+def sumFromTo(x: int, y: int): int = if (x > y)
     0
   else {
     var n: int = x;
     var s: int = 0;
-    while ((n<y)) {
+    while (n<y) {
       s = (s+n);
       n = (n+1)
     };
@@ -981,6 +993,25 @@ def test(): int = {
   var x: int = stringToInt(read("Enter first number"));
   var y: int = stringToInt(read("Enter second number"));
   sumFromTo(x,y)
+}
+def range(n: int): list[int] = {
+  var res : list[int] = nil();
+  var x: int = 0;
+  while (x < n) {res = cons(x, res); x = (x+1)};
+  res
+}
+def stringToList(s: string): list[char] = {
+  var res : list[char] = nil();
+  for i in range(length(s)) {
+    res = cons(charAt(s, i), res)
+  };
+  res
+}
+def occursIn(s: string, c: char): bool = {
+  for x in stringToList(s) {
+    if (c == x) return true;
+  };
+  return false
 }
 print(test())
 """   
