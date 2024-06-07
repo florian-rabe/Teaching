@@ -55,7 +55,7 @@ case class Program(defs: List[Declaration], main: Expression) extends SyntaxFrag
    }
 }
 
-case class VarDecl(name: String, tp: Type) extends SyntaxFragment {
+case class VarDecl(name: String, tp: Type, mutable: Boolean) extends SyntaxFragment {
   def print(): String = name + " : " + tp.print()
 }
 
@@ -350,7 +350,7 @@ class Parser(input: String) {
         skip("(")
         var inputs: List[VarDecl] = Nil
         while (next != ')') {
-          inputs = inputs ++ List(parseVarDecl)
+          inputs = inputs ++ List(parseVarDecl(false))
           trim
           if (next != ')') skip(",")
           trim
@@ -368,12 +368,12 @@ class Parser(input: String) {
     }
   }
 
-  def parseVarDecl: VarDecl = {
+  def parseVarDecl(m: Boolean): VarDecl = {
     val n = parseName
     trim
     skip(":")
     val t = parseType
-    VarDecl(n,t)
+    VarDecl(n,t,m)
   }
   
   def parseExpression: Expression = {
@@ -394,7 +394,7 @@ class Parser(input: String) {
      } else if (startsWith("var")) {
         skip("var")
         trim
-        val vd = parseVarDecl
+        val vd = parseVarDecl(true)
         trim
         skip("=")
         trim
@@ -526,7 +526,7 @@ object Printer {
          defs.map(print(_)+"\n").mkString("\n") + "\n" + print(mn)
        case FunDef(name, ins, out, body) => 
          "def " + name + "(" + ins.map(print(_)).mkString(",") + "): " + print(out) + " = "  + print(body)
-       case VarDecl(n,y) => n + ": " + print(y)
+       case VarDecl(n,y,m) => (if (m) "var" else "val") + " " + n + " : " + print(y)
        case Block(es) =>
          "{" + es.map(print(_)).mkString("; ") + "}"
        case Return(r) =>
@@ -639,6 +639,7 @@ object Checker {
          val varnames = ins.map(_.name)
          if (varnames.distinct.length != varnames.length) throw SyntaxError("variable names not unique")
          // check the input declarations
+         ins.foreach(d => if (d.mutable) throw SyntaxError("function variables must be immutable"))
          ins.foreach(checkVarDecl(voc, _))
          // check the output type
          checkType(voc, out)
@@ -647,7 +648,7 @@ object Checker {
    }
    
    def checkVarDecl(voc: Vocabulary, vd: VarDecl) = vd match {
-     case VarDecl(n, y) =>
+     case VarDecl(n, y, _) =>
         checkName(n)
         checkType(voc, y)
    }
@@ -838,12 +839,14 @@ object Checker {
           // look up n in context
           ctx.lookup(n) match {
             case None => throw SyntaxError("undeclared variable: " + n)
-            case Some(VarDecl(_, y)) => y
+            case Some(VarDecl(_, y, _)) => y
           }
        case VarAssign(n,nv) =>
           ctx.lookup(n) match {
             case None => throw SyntaxError("undeclared variable: " + n)
-            case Some(VarDecl(_, y)) => checkExpression(voc, ctx, nv, y, returnType)
+            case Some(VarDecl(_, y, m)) =>
+              if (!m) throw SyntaxError("assignment to immutable variable: " + n)
+              checkExpression(voc, ctx, nv, y, returnType)
           }
           UnitType()
        case IntegerLiteral(v) => IntegerType()
@@ -870,7 +873,7 @@ object Checker {
          checkName(v)
          inferExpression(voc, ctx, l, returnType) match {
            case ListType(y) =>
-             inferExpression(voc, ctx.append(VarDecl(v,y)), b, returnType)
+             inferExpression(voc, ctx.append(VarDecl(v,y,false)), b, returnType)
              UnitType()
            case _ => throw SyntaxError("for-loop must run over a list")
          }
@@ -901,7 +904,7 @@ object PythonTranslator {
          "def " + name + "(" + ins.map(translateVarDecl(_)).mkString(",") + "):\n" + translateExpression(body, true).indent(2)
    }
    def translateVarDecl(vd: VarDecl) = vd match {
-       case VarDecl(n,y) =>
+       case VarDecl(n,y,_) =>
          // we drop the types of all variables
          n
    }

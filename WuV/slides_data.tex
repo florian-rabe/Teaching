@@ -1,350 +1,51 @@
-\section{Codecs}
+\section{Data Languages vs. Ontology Languages}
 
-\begin{frame}\frametitle{Data Interoperability}
-\begin{blockitems}{Situation}
- \item languages focus on different aspects
-  \lec{frequent need to exchange data}
- \item generally, lots of aspect/language-specific objects
-  \lec{proofs, programs, tables, sentences}
- \item but same/similar \emph{primitive} data types used across systems
-  \lec{should be easy to exchange}
+\begin{frame}\frametitle{Data as Part of Ontology}
+\begin{blockitems}{Terminology vs. Data}
+ \item schema describes general shape of the data
+  \begin{itemize}
+  \item small
+  \item rarely changed
+  \item carefully designed to model the world
+  \end{itemize}
+ \item data must conform to the schema
+  \begin{itemize}
+  \item often large
+  \item easy to change, extend
+  \item requires expensive curation
+  \end{itemize}
  \end{blockitems}
  
-\begin{blockitems}{Problem}
- \item crossing system barriers usually requires interchange language
-  \lec{serialize as string and reparse}
- \item interchange languages typically untyped
-  \lec{XML, JSON, YAML, \ldots}
-\end{blockitems}
-
-\begin{blockitems}{Solution}
- \item standardize basic data types
- \item standardize encoding in interchange languages
+\begin{blockitems}{Examples}
+ \item OWL-style: TBox for terminology, ABox for data
+ \item SQL-style: schema for terminology, tables for data
 \end{blockitems}
 \end{frame}
 
-\begin{frame}\frametitle{Failures of Encodings}
-\begin{blockitems}{Y2K bug}
-\item date encoded as tuple of integers, using $2$ digits for year
-\item needed fixing in year 2000
-\item estimated $\$300$ billion spent to change software
-\item possible repeat: in 2038, number of seconds since 1970-01-01 (used by Unix to encode time as integer) overflows 32-bit integers
+\begin{frame}\frametitle{Standalone Data Languages}
+\begin{blockitems}{Ontology-backing common but not technically necessary}
+ \item OWL-style data with optional terminology: RDF
+ \item SQL-style data with optional schema: CSV
 \end{blockitems}
 
-\begin{blockitems}{Genes in Excel}
- \item 2016 study found errors in 20\% of spreadsheets accompanying genomics journal papers
- \item gene names encoded as strings but auto-converted to other types by Excel
- \begin{itemize}
- \item "SEPT2" (Septin 2) converted to September 02
- \item REKIN identifiers, e.g., "2310009E13", converted to float $2.31E+1$
- \end{itemize}
- \glec{\url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Failures of Encodings (2)}
-\begin{blockitems}{Mars Climate Orbiter}
-\item two components exchanged physical quantity
-\item specification required encoding as number using unit Newton seconds
-\item one component used wrong encoding (with pound seconds as unit)
-\item led to false trajectory and loss of $\$300$ million device
+\begin{blockitems}{Ontology-backing possible but not as common or standardized}
+ \item variety of structurally similar languages \glec{JSON, XML, YAML}
+ \item various schema and typing standards
+ \item expression-only, no vocabularies
+   \glec{adding vocabularies would create integrated ontology+data language}
 \end{blockitems}
 
-\begin{blockitems}{Shellshock}
-\item bash allowed gaining root access from 1998 to 2014
-\item function definitions were encoded as source code
-\item not decoded at all; instead, code simply run (as root)
-\item allowed appending "; ..." to function definitions
-\end{blockitems}
-\lec{SQL injection similar: complex data encoded as string, no decoding}
+\lec{major challenge: data interoperability}
 \end{frame}
 
-\begin{frame}\frametitle{General Definition}
-Throughout this section, we fix a data representation language $L$.
-\lec{$L$-words called codes}
-
-Given a data type $T$, a codec for $T$ consists
-\begin{itemize}
- \item coding function: $c:T \to L$
- \item partial decoding function: $d:L\to^? T$
- \item such that
-  \[d(c(x))=x\]
-\end{itemize}
+\begin{frame}\frametitle{CSV}
 \end{frame}
 
-\begin{frame}\frametitle{Codec Operators}
-Given a data type operator $T$ taking $n$ type arguments,\\
-a codec operator $C$ for $T$
-\begin{itemize}
- \item takes $n$ codecs $C_i$ for $T_i$
- \item returns a codec $C(C_1,\ldots,C_n)$ for $T(T_1,\ldots,T_n)$
-\end{itemize}
-\end{frame}
-
-%\begin{frame}\frametitle{Exercise 4}
-%We fix strings as the data representation language $L$.
-%
-%Then, 
-%\begin{enumerate}
-% \item Jointly specify
-%  \begin{itemize}
-%  \item additional BDL types and constructors for univis-specific data
-%  \item codecs and codec operators for all types resp. type operators
-%  \end{itemize}
-% \item Individually, in any programming language, implement
-%  \begin{itemize}
-%   \item data structures for BDL
-%   \item string codecs (operators) for all BDL base types (operators)
-%  \end{itemize}
-% \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
-%\end{enumerate}
-%\end{frame}
-
-\begin{frame}\frametitle{Codecs for Base Types}
-We define codecs for the base types using strings as the data representation language $L$.
-
-Easy cases:
-\begin{itemize}
-\item StandardFloat: as specified in IEEE floating point standard
-\item StandardString: as themselves, quoted
-\item StandardBool: as $true$ or $false$
-\item StandardInt (64-bit): decimal digit-sequences as usual
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Breakout Question}
-How to encode unlimited precision integers?
-\end{frame}
-
-\begin{frame}\frametitle{Codecs for Unlimited Precision Integers}
-Encode $z\in\Z$
-\begin{itemize}
-\item $L$ is strings: decimal digit sequence as usual
-\item $L$ is JSON:
- \begin{itemize}
- \item IntAsInt: decimal digit sequence as usual
-   \glec{JSON does not specify precision}
-   \glec{but target systems may get in trouble}
- \item IntAsString: string containing decimal digit sequence
-   \glec{safe but awkward}
- \item IntAsDecList: list of decimal digits
-   \glec{safe but awkward}
- \item IntAsList1: as list of digits for base $2^{64}$
-   \glec{OK, but we can do better}
- \item IntAsList2: as list of
-   \begin{itemize}
-   \item integer for the number of digits, sign indicate sign of $z$
-   \item list of digits of $|z|$ for base $2^{64}$
-   \end{itemize}
-   Question: Why is this smart?
-   
-   \onslide<2>{Can use lexicographic ordering for size comparison}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Codecs for Lists}
-Encode list $x$ of elements of type $T$
-\begin{itemize}
-\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
-\item $L$ is JSON:
- \begin{itemize}
- \item ListAsString: like for strings above
- \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}\frametitle{Additional Types}
-Examples: semester
-
-Extend BDL:
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{Sem}{semester}\\
-\gcomment{Data}\\
-\gprod{D}{sem(int, bool)}{i.e., year + summer$^?$}\\
-\end{commgrammar}
-
-Define standard codec:
-\[sem(y,true) \rewrites "SSY"\]
-\[sem(y,false) \rewrites "WSY"\]
-where $Y$ is encoding of $y$
-\end{frame}
-
-\begin{frame}\frametitle{Additional Types (2)}
-Examples: timestamps
-
-Extend BDL:
-\begin{commgrammar}
-\gcomment{Types}\\
-\gprod{T}{timestamp}{}\\
-\gcomment{Data}\\
-\gprod{D}{\text{(productions for dates, times, etc.)}}{}
-\end{commgrammar}
-
-Standard codec: encode as string as defined in ISO 8601
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data Interchange}
-
-\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
-\begin{blockitems}{Standardization of Common Data Types}
- \item Ontology language optimized for declaring types, values, operations
- \glec{semantics must exist but can be extra-linguistic}
- \item Vocabulary declaring such objects
- \glec{should be standardized, modular, extensible}
-\end{blockitems}
-
-\begin{blockitems}{Standardization of Codecs}
-\item Fixed small set of primitive objects
- \glec{should be (quasi-)primitive in every language}
- \glec{not too expressive, possibly untyped}
-\item Standard codecs for translating common types to interchange languages
-\end{blockitems}
-
-\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
-\item coding function $A$-values $\to$ $L$-objects
-\item partial decoding function $L$-objects $\to$ $A$-values
-\item inverse to each other \glec{in some sense}
-\end{blockitems}
-\end{frame}
-
-\begin{frame}\frametitle{Design}
-\begin{enumerate}
-\item Specify types
- \begin{itemize}
- \item types
- \item constructors
- \item operations
- \end{itemize}
- \glec{can be done in appropriate type theory}
-\item Pick data representation language $L$
-\item Specify codecs for type system and $L$
- \begin{itemize}
- \item at least one codec per base type
- \item at least one codec operator per type operator
- \end{itemize}
- \glec{on paper}
-\item Every system implements
- \begin{itemize}
- \item type system (as they like)
-  \glec{typically aspect-specific constraints}
- \item codecs as specified
- \item function mapping types to codecs
- \end{itemize}
-\item Systems can exchange data by encoding-decoding
- \lec{type-safe because codecs chosen by type}
-\end{enumerate}
-\end{frame}
-
-%\begin{frame}\frametitle{Example}
-%Implementation in Scala part of course resources
-%\end{frame}
-
-\begin{frame}\frametitle{BDL-Mediated Interoperability}
-Idea
- \begin{itemize}
- \item define data types in BDL \glec{or similar typed ontology language}
- \item use ADTs
- \item generate corresponding
-  \begin{itemize}
-  \item class definitions for programming languages PL
-   \lec{one class per ADT}
-  \item table definitions in SQL
-   \lec{one table per ADT}
-  \end{itemize}
- \item use codecs to convert automatically when interchanging data between PL and SQL
- \end{itemize}
-
-Open research problem
- \lec{no shiny solution yet that can be presented in lectures}
-\end{frame}
-
-\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
-\includegraphics[width=\textwidth]{MitM.png}
-\end{frame}
-
-\begin{frame}\frametitle{Codecs in ADT Definitions}
-\begin{blockitems}{SQL table schema = list of fields where field is}
-\item name
-\item type \glec{only types of database supported}
-\end{blockitems}
-
-\begin{blockitems}{BDL semantic table schema = list of fields where field is}
-\item name
-\item type $T$ of \emph{type system} \glec{independent of database}
-\item codec for $T$ using primitive objects of database as codes
-\glec{see research paper \url{https://kwarc.info/people/frabe/Research/WKR_virtual_17.pdf}}
-\end{blockitems}
-
-Codec could be chosen automatically, but we want to allow multiple users a choice of codecs for the same type.
-\end{frame}
-
-\begin{frame}[fragile]\frametitle{Example}
-Ontology based on BDL-ADTs with additional codec information:
-\begin{lstlisting}[basicstyle=\footnotesize]
-schema Instructor
-  name:    string      codec StandardString
-  age:     int         codec StandardInt
-  courses: list Course codec CommaSeparatedList CourseAsName
-schema Course
-  name:     string     codec StandardString
-  credits:  float      codec StandardFloat
-  semester: Semester   codec SemesterAsString
-\end{lstlisting}
-\medskip
-
-Generated SQL tables:
-\begin{lstlisting}[basicstyle=\footnotesize]
-CREATE TABLE Instructor
-  (name string, age int, courses string)
-CREATE TABLE Course
-  (name string, credits float, semester string)
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}\frametitle{Open Problem: Non-Compositionality}
-\begin{blockitems}{Sometimes optimal translation is non-compositional}
-\item example translate $list$-type in ADT to comma-separated string in DB
-\item better break up $list\,B$ fields in type $A$ into separate table with columns for $A$ and $B$
-\end{blockitems}
-
-Similar problems
-\begin{itemize}
-\item a pair type in an ADT could be translated to two separate columns
-\item an option type in an ADT could translated to a normal column using SQL's NULL value
-\end{itemize}
-\end{frame}
-
-\begin{frame}\frametitle{Open Problem: Querying}
-\begin{itemize}
-\item General setup
- \begin{itemize}
- \item write SQL-style queries using at the BDL level
- \item automatically encode values when writing to database from PL
- \item automatically decode query results when reading from DB
- \end{itemize}
-\item But queries using semantic operations cannot always be translated to DB
- \begin{itemize}
-  \item operation $IsSummer: Semester \to bool$ in BDL
-  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
-  \item how to map $IsSummer$ to SQL?
- \end{itemize}
-\item Ontology operations need commuting operations on codes
-\begin{itemize}
-\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
-\item SQL function $f'$ commutes with $f$ iff \\
-  \[B.decode (f'(C.encode\,a)) = f(a)\]
-  for all $a:A$
-\end{itemize}
-\end{itemize}
+\begin{frame}\frametitle{RDF}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Concrete Data Representation Languages}
+\section{Standalone Data Languages}
 
 \begin{frame}\frametitle{Overview}
 \begin{blockitems}{General Properties}
@@ -561,6 +262,351 @@ The exporter is a context-free traverser.
 For the importer, use an XML library for your chosen programming language to parse the input. Then write a context-free traverser over the XML data structures that translates the XML into your BOL data structures.
 
 Exchange your vocabularies with each other. Type-check each other's vocabularies after importing.
+\end{frame}
+
+\section{Data Interoperability through Codecs}
+
+\begin{frame}\frametitle{Data Interoperability}
+\begin{blockitems}{Situation}
+ \item languages focus on different aspects
+  \lec{frequent need to exchange data}
+ \item generally, lots of aspect/language-specific objects
+  \lec{proofs, programs, tables, sentences}
+ \item but same/similar \emph{primitive} data types used across systems
+  \lec{should be easy to exchange}
+ \end{blockitems}
+ 
+\begin{blockitems}{Problem}
+ \item crossing system barriers usually requires interchange language
+  \lec{serialize as string and reparse}
+ \item interchange languages typically untyped
+  \lec{RDF, CSV, XML, JSON, YAML, \ldots}
+\end{blockitems}
+
+\begin{blockitems}{Solution}
+ \item standardize basic data types
+ \item standardize encoding in interchange languages
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Failures of Encodings}
+\begin{blockitems}{Y2K bug}
+\item date encoded as tuple of integers, using $2$ digits for year
+\item needed fixing in year 2000
+\item estimated $\$300$ billion spent to change software
+\item possible repeat: in 2038, number of seconds since 1970-01-01 (used by Unix to encode time as integer) overflows 32-bit integers
+\end{blockitems}
+
+\begin{blockitems}{Genes in Excel}
+ \item 2016 study found errors in 20\% of spreadsheets accompanying genomics journal papers
+ \item gene names encoded as strings but auto-converted to other types by Excel
+ \begin{itemize}
+ \item "SEPT2" (Septin 2) converted to September 02
+ \item REKIN identifiers, e.g., "2310009E13", converted to float $2.31E+1$
+ \end{itemize}
+ \glec{\url{https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-1044-7}}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Failures of Encodings (2)}
+\begin{blockitems}{Mars Climate Orbiter}
+\item two components exchanged physical quantity
+\item specification required encoding as number using unit Newton seconds
+\item one component used wrong encoding (with pound seconds as unit)
+\item led to false trajectory and loss of $\$300$ million device
+\end{blockitems}
+
+\begin{blockitems}{Shellshock}
+\item bash allowed gaining root access from 1998 to 2014
+\item function definitions were encoded as source code
+\item not decoded at all; instead, code simply run (as root)
+\item allowed appending "; ..." to function definitions
+\end{blockitems}
+\lec{SQL injection similar: complex data encoded as string, no decoding}
+\end{frame}
+
+\begin{frame}\frametitle{General Definition}
+Throughout this section, we fix a data representation language $L$.
+\lec{$L$-words called codes}
+
+Given a data type $T$, a codec for $T$ consists
+\begin{itemize}
+ \item coding function: $c:T \to L$
+ \item partial decoding function: $d:L\to^? T$
+ \item such that
+  \[d(c(x))=x\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Codec Operators}
+Given a data type operator $T$ taking $n$ type arguments,\\
+a codec operator $C$ for $T$
+\begin{itemize}
+ \item takes $n$ codecs $C_i$ for $T_i$
+ \item returns a codec $C(C_1,\ldots,C_n)$ for $T(T_1,\ldots,T_n)$
+\end{itemize}
+\end{frame}
+
+%\begin{frame}\frametitle{Exercise 4}
+%We fix strings as the data representation language $L$.
+%
+%Then, 
+%\begin{enumerate}
+% \item Jointly specify
+%  \begin{itemize}
+%  \item additional BDL types and constructors for univis-specific data
+%  \item codecs and codec operators for all types resp. type operators
+%  \end{itemize}
+% \item Individually, in any programming language, implement
+%  \begin{itemize}
+%   \item data structures for BDL
+%   \item string codecs (operators) for all BDL base types (operators)
+%  \end{itemize}
+% \item Use your codecs to exchange example data with your fellow students, who used different implementations and different programming languages.
+%\end{enumerate}
+%\end{frame}
+
+\begin{frame}\frametitle{Codecs for Base Types}
+We define codecs for the base types using strings as the data representation language $L$.
+
+Easy cases:
+\begin{itemize}
+\item StandardFloat: as specified in IEEE floating point standard
+\item StandardString: as themselves, quoted
+\item StandardBool: as $true$ or $false$
+\item StandardInt (64-bit): decimal digit-sequences as usual
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Breakout Question}
+How to encode unlimited precision integers?
+\end{frame}
+
+\begin{frame}\frametitle{Codecs for Unlimited Precision Integers}
+Encode $z\in\Z$
+\begin{itemize}
+\item $L$ is strings: decimal digit sequence as usual
+\item $L$ is JSON:
+ \begin{itemize}
+ \item IntAsInt: decimal digit sequence as usual
+   \glec{JSON does not specify precision}
+   \glec{but target systems may get in trouble}
+ \item IntAsString: string containing decimal digit sequence
+   \glec{safe but awkward}
+ \item IntAsDecList: list of decimal digits
+   \glec{safe but awkward}
+ \item IntAsList1: as list of digits for base $2^{64}$
+   \glec{OK, but we can do better}
+ \item IntAsList2: as list of
+   \begin{itemize}
+   \item integer for the number of digits, sign indicate sign of $z$
+   \item list of digits of $|z|$ for base $2^{64}$
+   \end{itemize}
+   Question: Why is this smart?
+   
+   \onslide<2>{Can use lexicographic ordering for size comparison}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Codecs for Lists}
+Encode list $x$ of elements of type $T$
+\begin{itemize}
+\item $L$ is strings: e.g., comma-separated list of $T$-encoded elements of $x$
+\item $L$ is JSON:
+ \begin{itemize}
+ \item ListAsString: like for strings above
+ \item ListAsArray: lists JSON array of $T$-encoded elements of $x$
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Additional Types}
+Examples: semester
+
+Extend BDL:
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{Sem}{semester}\\
+\gcomment{Data}\\
+\gprod{D}{sem(int, bool)}{i.e., year + summer$^?$}\\
+\end{commgrammar}
+
+Define standard codec:
+\[sem(y,true) \rewrites "SSY"\]
+\[sem(y,false) \rewrites "WSY"\]
+where $Y$ is encoding of $y$
+\end{frame}
+
+\begin{frame}\frametitle{Additional Types (2)}
+Examples: timestamps
+
+Extend BDL:
+\begin{commgrammar}
+\gcomment{Types}\\
+\gprod{T}{timestamp}{}\\
+\gcomment{Data}\\
+\gprod{D}{\text{(productions for dates, times, etc.)}}{}
+\end{commgrammar}
+
+Standard codec: encode as string as defined in ISO 8601
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Ontology-Backed Data Interchange}
+
+\begin{frame}\frametitle{Research Goal for Aspect-Independent Data in Tetrapod}
+\begin{blockitems}{Standardization of Common Data Types}
+ \item Ontology language optimized for declaring types, values, operations
+ \glec{semantics must exist but can be extra-linguistic}
+ \item Vocabulary declaring such objects
+ \glec{should be standardized, modular, extensible}
+\end{blockitems}
+
+\begin{blockitems}{Standardization of Codecs}
+\item Fixed small set of primitive objects
+ \glec{should be (quasi-)primitive in every language}
+ \glec{not too expressive, possibly untyped}
+\item Standard codecs for translating common types to interchange languages
+\end{blockitems}
+
+\begin{blockitems}{Codec for type $A$ and int. lang. $L$}
+\item coding function $A$-values $\to$ $L$-objects
+\item partial decoding function $L$-objects $\to$ $A$-values
+\item inverse to each other \glec{in some sense}
+\end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Design}
+\begin{enumerate}
+\item Specify types
+ \begin{itemize}
+ \item types
+ \item constructors
+ \item operations
+ \end{itemize}
+ \glec{can be done in appropriate type theory}
+\item Pick data representation language $L$
+\item Specify codecs for type system and $L$
+ \begin{itemize}
+ \item at least one codec per base type
+ \item at least one codec operator per type operator
+ \end{itemize}
+ \glec{on paper}
+\item Every system implements
+ \begin{itemize}
+ \item type system (as they like)
+  \glec{typically aspect-specific constraints}
+ \item codecs as specified
+ \item function mapping types to codecs
+ \end{itemize}
+\item Systems can exchange data by encoding-decoding
+ \lec{type-safe because codecs chosen by type}
+\end{enumerate}
+\end{frame}
+
+%\begin{frame}\frametitle{Example}
+%Implementation in Scala part of course resources
+%\end{frame}
+
+\begin{frame}\frametitle{BDL-Mediated Interoperability}
+Idea
+ \begin{itemize}
+ \item define data types in BDL \glec{or similar typed ontology language}
+ \item use ADTs
+ \item generate corresponding
+  \begin{itemize}
+  \item class definitions for programming languages PL
+   \lec{one class per ADT}
+  \item table definitions in SQL
+   \lec{one table per ADT}
+  \end{itemize}
+ \item use codecs to convert automatically when interchanging data between PL and SQL
+ \end{itemize}
+
+Open research problem
+ \lec{no shiny solution yet that can be presented in lectures}
+\end{frame}
+
+\begin{frame}\frametitle{Example Application: OpenDreamKit research project}
+\includegraphics[width=\textwidth]{MitM.png}
+\end{frame}
+
+\begin{frame}\frametitle{Codecs in ADT Definitions}
+\begin{blockitems}{SQL table schema = list of fields where field is}
+\item name
+\item type \glec{only types of database supported}
+\end{blockitems}
+
+\begin{blockitems}{BDL semantic table schema = list of fields where field is}
+\item name
+\item type $T$ of \emph{type system} \glec{independent of database}
+\item codec for $T$ using primitive objects of database as codes
+\glec{see research paper \url{https://kwarc.info/people/frabe/Research/WKR_virtual_17.pdf}}
+\end{blockitems}
+
+Codec could be chosen automatically, but we want to allow multiple users a choice of codecs for the same type.
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Example}
+Ontology based on BDL-ADTs with additional codec information:
+\begin{lstlisting}[basicstyle=\footnotesize]
+schema Instructor
+  name:    string      codec StandardString
+  age:     int         codec StandardInt
+  courses: list Course codec CommaSeparatedList CourseAsName
+schema Course
+  name:     string     codec StandardString
+  credits:  float      codec StandardFloat
+  semester: Semester   codec SemesterAsString
+\end{lstlisting}
+\medskip
+
+Generated SQL tables:
+\begin{lstlisting}[basicstyle=\footnotesize]
+CREATE TABLE Instructor
+  (name string, age int, courses string)
+CREATE TABLE Course
+  (name string, credits float, semester string)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}\frametitle{Open Problem: Non-Compositionality}
+\begin{blockitems}{Sometimes optimal translation is non-compositional}
+\item example translate $list$-type in ADT to comma-separated string in DB
+\item better break up $list\,B$ fields in type $A$ into separate table with columns for $A$ and $B$
+\end{blockitems}
+
+Similar problems
+\begin{itemize}
+\item a pair type in an ADT could be translated to two separate columns
+\item an option type in an ADT could translated to a normal column using SQL's NULL value
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Open Problem: Querying}
+\begin{itemize}
+\item General setup
+ \begin{itemize}
+ \item write SQL-style queries using at the BDL level
+ \item automatically encode values when writing to database from PL
+ \item automatically decode query results when reading from DB
+ \end{itemize}
+\item But queries using semantic operations cannot always be translated to DB
+ \begin{itemize}
+  \item operation $IsSummer: Semester \to bool$ in BDL
+  \item query \lstinline|SELECT * FROM course WHERE $IsSummer$(semester)|
+  \item how to map $IsSummer$ to SQL?
+ \end{itemize}
+\item Ontology operations need commuting operations on codes
+\begin{itemize}
+\item given $f: A\to B$ in BDL, codecs $C,D$ for $A$ and $B$
+\item SQL function $f'$ commutes with $f$ iff \\
+  \[B.decode (f'(C.encode\,a)) = f(a)\]
+  for all $a:A$
+\end{itemize}
+\end{itemize}
 \end{frame}
 
 

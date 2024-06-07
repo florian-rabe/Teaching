@@ -1,4 +1,4 @@
-\section{Ontological Knowledge}
+\section{OWL-Style Ontology Languages}
 
 \begin{frame}\frametitle{Components of an Ontology}
 8 main declarations
@@ -7,11 +7,85 @@
  \item \textbf{concept} --- abstract groups of individuals, e.g., "instructor" or "course"
  \item \textbf{relation} --- binary relations between two individuals, e.g., "teaches"
  \item \textbf{properties} --- binary relations between an individuals and a concrete value (a number, a date, etc.), e.g., "has-credits"
- \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
- \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
- \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
- \item \textbf{axioms} --- statements about relations between concepts, e.g., "instructor" $\sqsubseteq$ "person"
+ \item axioms
+  \begin{itemize}
+   \item \textbf{concept assertions} --- the statement that a particular individual is an instance of a particular concept
+   \item \textbf{relation assertions} --- the statement that a particular relation holds about two individuals
+   \item \textbf{property assertions} --- the statement that a particular individual has a particular value for a particular property
+   \item \textbf{terminological axioms} --- statements about relations between concepts, e.g., "instructor" $\sqsubseteq$ "person"
+  \end{itemize}
 \end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language: Structural Parts}
+The structural part declares/introduces names:
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Vocabularies: Ontologies}\\
+\gprod{O}{\rep{D}}{}\\
+\gcomment{Declarations}\\
+\gprod{D}{\kw{individual}\; i}{atomic individual}\\
+\galtprod{\kw{concept}\; c}{atomic concept}\\
+\galtprod{\kw{relation}\; r}{atomic relation}\\
+\galtprod{\kw{property}\; p: T}{atomic property}\\
+\galtprod{\kw{axiom}\; F}{axiom}\\
+\gcomment{Identifiers}\\
+\gprod{i,c,r,p}{\text{alphanumeric string}}{}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language: Expressions (1)}
+Expressions use the declared names to build complex entities
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Individual expressions}\\
+\gprod{I}{i}{atomic individuals}\\
+\gcomment{Concept expressions}\\
+\gprod{C}{c}{atomic concepts}\\
+\galtprod{\top}{universal concept}\\
+\galtprod{\bot}{empty concept}\\
+\galtprod{C \sqcup C}{union of concepts}\\
+\galtprod{C \sqcap C}{intersection of concepts}\\
+\galtprod{\forall R.C}{universal relativization}\\
+\galtprod{\exists R.C}{existential relativization}\\
+\galtprod{\dom R}{domain of a relation}\\
+\galtprod{\rng R}{range of a relation}\\
+\galtprod{\dom P}{domain of a property}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language: Expressions (2)}
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Relation expressions}\\
+\gprod{R}{r}{atomic relations}\\
+\galtprod{R \cup R}{union of relations}\\
+\galtprod{R \cap R}{intersection of relations}\\
+\galtprod{R ; R}{composition of relations}\\
+\galtprod{R^*}{transitive closure of a relation}\\
+\galtprod{R^{-1}}{dual relation}\\
+\galtprod{\Delta_C}{identity relation of a concept}\\
+\gcomment{Formulas}\\
+\gprod{F}{C \Equiv C}{concept equality}\\
+\galtprod{C \sqsubseteq C}{concept subsumption}\\
+\galtprod{I\; \texttt{is-a}\; C}{concept instance}\\
+\galtprod{I\; R\; I}{relation instance}\\
+\galtprod{I\; P\; V}{property instance}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{An Example Ontology Language: Expressions (3)}
+Built-in types and values are part of the expressions in order to use them with properties
+%see syntax of BOL in the lecture notes
+\begin{commgrammar}
+\gcomment{Property expressions}\\
+\gprod{P}{p}{atomic properties}\\
+\gcomment{Basic types and values}\\
+\gprod{T}{\itg \bnfalt \float \bnfalt \bool \bnfalt \strg}{types}\\
+\gprod{V}{\text{(omitted)}}{values}
+\end{commgrammar}
+
+Typical: one kind of expression for every kind of declaration, plus some other expression kinds (here: formulas, types, and values)
 \end{frame}
 
 \begin{frame}\frametitle{Divisions of an Ontology}
@@ -118,70 +192,6 @@ $\rng\, r\Equiv c$ & $r$ & "rdfs:range" & $c$ \\
 \end{center}
 \end{frame}
 
-\begin{frame}\frametitle{An Example Ontology Language}
-The structural part declares/introduces names:
-%see syntax of BOL in the lecture notes
-\begin{commgrammar}
-\gcomment{Vocabularies: Ontologies}\\
-\gprod{O}{\rep{D}}{}\\
-\gcomment{Declarations}\\
-\gprod{D}{\kw{individual}\; i}{atomic individual}\\
-\galtprod{\kw{concept}\; c}{atomic concept}\\
-\galtprod{\kw{relation}\; r}{atomic relation}\\
-\galtprod{\kw{property}\; p: T}{atomic property}\\
-\galtprod{\kw{axiom}\; F}{axiom}\\
-\gcomment{Identifiers}\\
-\gprod{i,c,r,p}{\text{alphanumeric string}}{}\\
-\end{commgrammar}
-\end{frame}
-
-\begin{frame}\frametitle{An Example Ontology Language}
-Expressions use the declared names to build complex entities
-%see syntax of BOL in the lecture notes
-\begin{commgrammar}
-\gcomment{Individual expressions}\\
-\gprod{I}{i}{atomic individuals}\\
-\gcomment{Concept expressions}\\
-\gprod{C}{c}{atomic concepts}\\
-\galtprod{\top}{universal concept}\\
-\galtprod{\bot}{empty concept}\\
-\galtprod{C \sqcup C}{union of concepts}\\
-\galtprod{C \sqcap C}{intersection of concepts}\\
-\galtprod{\forall R.C}{universal relativization}\\
-\galtprod{\exists R.C}{existential relativization}\\
-\galtprod{\dom R}{domain of a relation}\\
-\galtprod{\rng R}{range of a relation}\\
-\galtprod{\dom P}{domain of a property}\\
-\end{commgrammar}
-\end{frame}
-
-\begin{frame}\frametitle{An Example Ontology Language}
-Typically one kind of expression for every kind of declaration:
-%see syntax of BOL in the lecture notes
-\begin{commgrammar}
-\gcomment{Relation expressions}\\
-\gprod{R}{r}{atomic relations}\\
-\galtprod{R \cup R}{union of relations}\\
-\galtprod{R \cap R}{intersection of relations}\\
-\galtprod{R ; R}{composition of relations}\\
-\galtprod{R^*}{transitive closure of a relation}\\
-\galtprod{R^{-1}}{dual relation}\\
-\galtprod{\Delta_C}{identity relation of a concept}\\
-\gcomment{Property expressions}\\
-\gprod{P}{p}{atomic properties}\\
-\end{commgrammar}
-\end{frame}
-
-\begin{frame}\frametitle{An Example Ontology Language}
-Built-in types and values may be part of the expressions
-%see syntax of BOL in the lecture notes
-\begin{commgrammar}
-\gcomment{Basic types and values}\\
-\gprod{T}{\itg \bnfalt \float \bnfalt \bool \bnfalt \strg}{types}\\
-\gprod{V}{\text{(omitted)}}{values}
-\end{commgrammar}
-\end{frame}
-
 \begin{frame}\frametitle{A Real-Life Ontology Language}
 See online resources for OWL.
 
@@ -227,4 +237,8 @@ Using git, OWL, and WebProtege are good ways to start.
 
 Idea: see political proposals as ontology evolution
 \end{frame}
+
+\section{OWL-Style vs. SQL-Style Ontology Languages}
+
+\input{slides_ontotyped}
 
