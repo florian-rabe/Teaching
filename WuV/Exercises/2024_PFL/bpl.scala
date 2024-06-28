@@ -2,6 +2,7 @@
 //    * in particular, this has a print method
 sealed abstract class SyntaxFragment {
    def print(): String
+   def toXML(): String = "<not implemented yet/>"
 }
 
 // 1) one type (represented as an abstract class) for every non-terminal
@@ -139,6 +140,11 @@ case class IfThenElse(condition: Expression, thenBranch: Expression, elseBranch:
       }
       "if (" + condition.print() + ")" + thenBranch.print() + elsePrinted
    }
+   override def toXML() = "<ifthenelse>" +
+                    "<condition>"+condition.toXML()+"</condition>" +
+                     <thenBranch>"+thenBranch.toXML()+"</thenBranch>" +
+                     (elseBranch match {case None => "" case Some(e) => "<elseBranch>"+e.toXML()"</elseBranch>"+
+                 "</ifthenelse>"
 }
 
 // E ::= while (E) {E}
