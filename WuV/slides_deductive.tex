@@ -1,8 +1,34 @@
 \section{Typed First-Order Logic}
 
-\begin{frame}\frametitle{Syntax}
-We give an overview of first-order logic as the main example of the deductive corner of the Tetrapod.
-The grammar is given in Section 6.3 of the notes.
+\begin{frame}\frametitle{Syntax: Declarations}
+\begin{commgrammar}
+\gcomment{Vocabularies: theories}\\
+\gprod{T}{\rep{D}}{}\\
+\gcomment{Declarations}\\
+\gprod{D}{\kw{type}\; y}{type declaration}\\
+\galtprod{\kw{fun}\; f:\rep{Y}\to Y}{function symbol declaration}\\
+\galtprod{\kw{pred}\; p\sq\rep{Y}}{predicate symbol declaration}\\
+\galtprod{\kw{axiom}\;F}{axiom}\\
+\gcomment{Identifiers}\\
+\gprod{y,f,p,x}{\text{alphanumeric string}}{}\\
+\end{commgrammar}
+\end{frame}
+
+\begin{frame}\frametitle{Syntax: Expressions}
+\begin{commgrammar}
+\gcomment{type expressions}\\
+\gprod{Y}{y}{atomic type} \\
+\gcomment{term expressions}\\
+\gprod{E}{f(\rep{E})}{function symbol applied to arguments} \\
+\galtprod{x}{term variables} \\
+\gcomment{formula expressions}\\
+\gprod{F}{p(\rep{E})}{predicate symbol applied to arguments} \\
+\galtprod{E\doteq_Y E}{equality of terms at a type} \\
+\galtprod{\top \bnfalt \bot \bnfalt \neg F}{truth, falsity, negation} \\
+\galtprod{F\wedge F \bnfalt F \vee F}{conjunction, disjunction} \\
+\galtprod{F\impl F \bnfalt F\Leftrightarrow F}{implication, equivalence} \\
+\galtprod{\forall x:Y.F \bnfalt \exists x:Y.F}{universal, existential quantification} \\
+\end{commgrammar}
 \end{frame}
 
 \section{Type Systems}
@@ -10,7 +36,7 @@ The grammar is given in Section 6.3 of the notes.
 \begin{frame}\frametitle{Overview}
 \begin{blockitems}{General Goal}
 \item subdivide expressions into groups (called sorts, types, kinds, etc.)
-\item written $\vdash_V E:T$ for expression $E$ of type $T$ and vocabulary $V$
+\item written $\vdash_T E:Y$ for expression $E$ of type $Y$ and vocabulary $T$
 \end{blockitems}
 
 \begin{blockitems}{Basic Type System}
@@ -23,15 +49,15 @@ The grammar is given in Section 6.3 of the notes.
 \begin{blockitems}{Refined Type System}
 \item for some non-terminals, the expressions are additionally subdivided
 \item the types are other expressions
- \glec{$E$ and $T$ can be from same or different non-terminals}
-\item relation between $E$ and $T$ entirely up to the language
+ \glec{$E$ and $Y$ can be from same or different non-terminals}
+\item relation between $E$ and $Y$ entirely up to the language
 \end{blockitems}
 \end{frame}
 
 \begin{frame}\frametitle{Local Variables}
 \begin{blockitems}{Type Systems with Variables}
-\item $\Gamma\vdash E:T$ for expression $E$ of type $T$
-\item $\Gamma=x_1:Y_1,\ldots,x_n:Y_n$ declares free variables that may occur in $E$ and $T$
+\item $\Gamma\vdash E:Y$ for expression $E$ of type $Y$
+\item $\Gamma=x_1:Y_1,\ldots,x_n:Y_n$ declares free variables that may occur in $E$ and $Y$
 \item confusingly: $\Gamma$ usually also called \emph{context}
 \end{blockitems}
 
@@ -42,22 +68,22 @@ The grammar is given in Section 6.3 of the notes.
 \end{frame}
 
 \begin{frame}\frametitle{Algorithms for Type Systems}
-Judgment $\Gamma\vdash_V E: T$
+Typing judgment $\Gamma\vdash_T E: Y$
 \begin{blockitems}{Type Checking}
-\item input: $V$, $\Gamma$, $E$, $T$
+\item input: $T$, $\Gamma$, $E$, $Y$
 \item output: boolean
 \end{blockitems}
 
 \begin{blockitems}{Type Inference}
-\item input: $\Gamma$, $V$, $E$
-\item output: $T$
+\item input: $T$, $\Gamma$, $E$
+\item output: $Y$
 \end{blockitems}
 
 \glec{in practice: also return error messages, e.g., as exceptions}
 
 \begin{blockitems}{Advanced Variants}
-\item as above but additionally return $E'$ and $T'$
-\item $E$ and $T$ have gaps that are filled by the algorithms resulting in $E'$ and $T'$
+\item as above but additionally return $E'$ and $Y'$
+\item $E$ and $Y$ have gaps that are filled by the algorithms resulting in $E'$ and $Y'$
 \end{blockitems}
 \end{frame}
 
@@ -72,17 +98,21 @@ Judgment $\Gamma\vdash_V E: T$
 \end{blockitems}
 
 \begin{blockitems}{Structure of Type-Checker}
-\item function check-$N$ for each non-terminal $N$
+\item function called check-$N$ for each non-terminal $N$
  \begin{itemize}
- \item takes context ($V$ and $\Gamma$) and $N$-word
- \item returns error message(s)
+ \item takes context ($T$ and $\Gamma$) and $N$-word
+ \item returns Boolean (or error message(s))
  \end{itemize}
-\item whenever $N$-words are typed by $Y$-words, instead
+\item special case: if $E$-words are typed by $Y$-words, instead
  \begin{itemize}
- \item function check-$N$ takes $V$, $\Gamma$, $N$-word, \emph{and} $Y$-word (expected type)
- \item function infer-$N$ takes $V$, $\Gamma$, $N$-word; returns $Y$-word (inferred type)
+ \item function check-$E$ takes $T$, $\Gamma$, $E$-word, \emph{and} $Y$-word (expected type)
+ \item function infer-$E$ takes $T$, $\Gamma$, $E$-word; returns $Y$-word (inferred type)
  \end{itemize}
 \end{blockitems}
+\end{frame}
+
+\begin{frame}\frametitle{Type System for SFOL}
+We discussed all rules of the SFOL type system.
 \end{frame}
 
 \begin{frame}\frametitle{Exercise 6}
