@@ -1,0 +1,2 @@
+examples: more often, deeper, small is OK
+  put on slides instead of just saying

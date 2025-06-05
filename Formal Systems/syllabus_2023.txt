@@ -1,0 +1,54 @@
+This is the syllabus from 2023.
+
+\begin{tabular}
+lecture 1-2 & introduction, overview and essential concepts \\
+lecture 3-4 & ontological knowledge, BOL \\
+exercise 1 & ontologies in Protege: as a team design an ontology for a university knowledge management system\\
+lecture 5 & ontology morphisms\\
+exercise 2 & sex/gender ontology and morphisms\\
+lecture 6-7 & implementing syntax\\
+exercise 3 & implement BOL\\
+lecture 8 & parsing, parser for BOL \\
+lecture 9 & context-sensitive checking\\
+exercise 4 & a checker for BOL\\
+lecture 10 & natural language, semantics by translation BOL -> English\\
+lecture 11 & sTeX system for natural language\\
+exercise 5 & semantics of BOL as translation BOL -> sTeX\\
+lecture 12 & deductive language, syntax of SFOL\\
+lecture 13 & type-checking SFOL\\
+exercise 6 & implementing SFOL\\
+lecture 14 & SFOL theory morphisms\\
+lecture 15 & SFOL theorem provers\\
+exercise 7 & implement an SFOL->TPTP, use existing theorem provers\\
+lecture 16 & language translations, BOL->SFOL\\
+lecture 17 & relative semantics, compositional translations\\
+exercise 8 & implement BOL->SFOL, use a SFOL theorem prover for the university ontology\\
+lecture 18 & absolute and denotational semantics\\
+lecture 19 & extrinsic and intrinsic typing\\
+exercise 9 & semantics/querying of the university ontology\\
+lecture 20 & kinds of types\\
+lecture 21 & recursive types\\
+exercise 10 & built-in types for BOL/SFOL\\
+lecture 22 & codecs\\
+lecture 23 & data languages\\
+exercise 11 & XML encodings for BOL\\
+lecture 24 & semantic querying\\
+lecture 25 & compositionality, contexts, semantic querying\\
+exercise 12 & continue/catch up on previous exercises\\
+lecture 26 & syntactic querying\\
+lecture 27 & formal systems abstractly\\
+exercise 13 & continue/catch up on previous exercises\\
+lecture 28 & formal systems abstractly\\
+lecture 29 & Tetrapod model in retrospect, revision\\
+exercise 14 & questions, exam prep\\
+\end{tabular}
+
+Exercises were done mostly during the scheduled time slot, often as team tasks, possibly refined in homeworks.
+Where appropriate, the instructor acted both as a customer giving vague problems and an advisor giving hints how to solve them.
+
+The slides are almost complete. Only a few sessions made use of the lecture notes.
+These were in particular:
+\begin{itemize}
+\item the section on syntax
+\item the definitions of BOL, SFOL, and the translation BOL$\to$ SFOL
+\end{itemize}

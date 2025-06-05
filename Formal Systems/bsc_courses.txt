@@ -1,0 +1,23 @@
+Algorithmen und Datenstrukturen (Sem 1)
+ Java, recursion (in Java), complexity, data types (lists, stacks, trees, graphs via Java)
+
+Parallele und funktionale Programmierung (Sem 2)
+ continues A&D with functional programming (via Scala) und parallel programming (via Java)
+
+Grundlagen der Logik in der Informatik (Sem 3)
+ propositional logic, first-order logic, syntax, semantics, proof theories, automated proving
+
+Theorie der Programmierung (Sem 4)
+ continues GLOIN, rewriting, lambda calculus, domain theory, co(inductive) data types, verification (via Hoare), automata and bisimulation
+ 
+Konzeptionelle Modellierung (Sem 1)
+ entity relationship model, UML, relational databases, XML, ontologies
+ 
+Berechenbarkeit und Formale Sprachen (Sem 3)
+ automata, Turing machines, computability, NP, grammars and Chomsky
+ 
+Softwareentwicklung in Groﬂprojekten (Sem 3)
+ GUIs, UML and code generation, patterns, testing, refactoring
+
+Implementierung von Datenbanksystemen (Sem 5)
+ hierarchy from files to SQL
